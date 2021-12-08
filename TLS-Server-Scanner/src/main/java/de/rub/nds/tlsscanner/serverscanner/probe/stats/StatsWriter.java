@@ -13,10 +13,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author robert
- */
 public class StatsWriter {
 
     private final List<StatExtractor> extractorList;
@@ -25,11 +21,14 @@ public class StatsWriter {
 
     public StatsWriter() {
         extractorList = new LinkedList<>();
+        extractorList.add(new CookieExtractor());
         extractorList.add(new RandomExtractor());
         extractorList.add(new DhPublicKeyExtractor());
         extractorList.add(new EcPublicKeyExtractor());
         extractorList.add(new CbcIvExtractor());
         extractorList.add(new SessionIdExtractor());
+        extractorList.add(new DtlsRetransmissionsExtractor());
+        extractorList.add(new DestinationPortExtractor());
     }
 
     public void extract(State state) {

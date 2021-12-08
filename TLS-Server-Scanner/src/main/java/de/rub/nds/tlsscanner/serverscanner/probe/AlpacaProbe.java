@@ -14,14 +14,12 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
@@ -40,19 +38,14 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            TestResult strictSni = isSupportingStrictSni();
-            TestResult strictAlpn;
-            if (!alpnSupported) {
-                strictAlpn = TestResult.FALSE;
-            } else {
-                strictAlpn = isSupportingStrictAlpn();
-            }
-            return new AlpacaResult(strictAlpn, strictSni);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new AlpacaResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        TestResult strictSni = isSupportingStrictSni();
+        TestResult strictAlpn;
+        if (!alpnSupported) {
+            strictAlpn = TestResult.FALSE;
+        } else {
+            strictAlpn = isSupportingStrictAlpn();
         }
+        return new AlpacaResult(strictAlpn, strictSni);
     }
 
     private Config getBaseConfig() {
@@ -63,13 +56,11 @@ public class AlpacaProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        // Dont send extensions if we are in sslv2
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);

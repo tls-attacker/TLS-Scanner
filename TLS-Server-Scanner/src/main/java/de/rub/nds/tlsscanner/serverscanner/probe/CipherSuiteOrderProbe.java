@@ -27,10 +27,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CipherSuiteOrderProbe extends TlsProbe {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -39,20 +35,15 @@ public class CipherSuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            Collections.reverse(toTestList);
-            CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            return new CipherSuiteOrderResult(
-                firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
-        }
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+        Collections.reverse(toTestList);
+        CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+        return new CipherSuiteOrderResult(
+            firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -60,14 +51,14 @@ public class CipherSuiteOrderProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);

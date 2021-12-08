@@ -12,10 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public enum AnsiColor {
     RESET("\u001B[0m"),
     BLACK("\u001B[30m"),

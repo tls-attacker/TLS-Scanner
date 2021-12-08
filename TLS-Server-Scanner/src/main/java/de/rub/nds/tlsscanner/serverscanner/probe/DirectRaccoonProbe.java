@@ -40,10 +40,6 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -59,27 +55,21 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
-            loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
-                if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
-                    || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
-                    for (CipherSuite suite : pair.getCipherSuiteList()) {
-                        if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
-                                createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
-                                    DirectRaccoonWorkflowType.CKE_CCS_FIN);
-                            testResultList.add(informationLeakTest);
+        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
+        for (VersionSuiteListPair pair : serverSupportedSuites) {
+            if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
+                for (CipherSuite suite : pair.getCipherSuiteList()) {
+                    if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
+                        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
+                            createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
+                                DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                        testResultList.add(informationLeakTest);
 
-                        }
                     }
                 }
             }
-            return new DirectRaccoonResult(testResultList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new DirectRaccoonResult(TestResult.ERROR_DURING_TEST);
         }
+        return new DirectRaccoonResult(testResultList);
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
@@ -174,7 +164,9 @@ public class DirectRaccoonProbe extends TlsProbe {
         if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
             && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
             && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2), TestResult.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {

@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
@@ -21,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -34,7 +34,11 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
+import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -43,7 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
@@ -55,35 +59,30 @@ import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
 import java.security.PublicKey;
-import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
 import javax.xml.bind.JAXBException;
+import org.apache.commons.lang3.StringUtils;
 
 import org.joda.time.Duration;
 import org.joda.time.Period;
@@ -124,17 +123,17 @@ public class SiteReportPrinter {
     public String getFullReport() {
         StringBuilder builder = new StringBuilder();
         builder.append("Report for ");
-        builder.append(report.getHost());
+        builder.append(report.getHost() + ":" + report.getPort());
         builder.append("\n");
         if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
-        if (Objects.equals(report.getSupportsSslTls(), Boolean.FALSE)) {
-            builder.append("Server does not seem to support SSL / TLS on the scanned port");
+        if (Objects.equals(report.getSpeaksProtocol(), Boolean.FALSE)) {
+            builder.append(
+                "Server does not seem to support " + report.getProtocolType().getName() + " on the scanned port");
             return builder.toString();
         }
-        //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
@@ -163,11 +162,67 @@ public class SiteReportPrinter {
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            appendDtlsSpecificResults(builder);
+        }
         appendScoringResults(builder);
         appendRecommendations(builder);
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            appendGuidelines(builder);
+        }
         appendPerformanceData(builder);
 
         return builder.toString();
+    }
+
+    private void appendDtlsSpecificResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "DTLS Features");
+        prettyAppend(builder, "Server changes port", AnalyzedProperty.CHANGES_PORT);
+        if (report.getResult(AnalyzedProperty.CHANGES_PORT) == TestResult.TRUE) {
+            prettyAppend(builder, "-To random ports", AnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS);
+        }
+        prettyAppend(builder, "Supports fragmentation", AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        prettyAppend(builder, "Supports reordering", AnalyzedProperty.SUPPORTS_REORDERING);
+
+        prettyAppendHeading(builder, "DTLS Hello Verify Request");
+        prettyAppend(builder, "HVR Retransmissions", AnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
+        if (report.getCookieLength() != null) {
+            prettyAppend(builder, "Cookie length", report.getCookieLength());
+        } else {
+            prettyAppend(builder, "Cookie length", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        }
+        prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        prettyAppend(builder, "Cookie is influenced by");
+        prettyAppend(builder, "-version", AnalyzedProperty.USES_VERSION_FOR_COOKIE);
+        prettyAppend(builder, "-random", AnalyzedProperty.USES_RANDOM_FOR_COOKIE);
+        prettyAppend(builder, "-session id", AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
+        prettyAppend(builder, "-cipher suites", AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
+        prettyAppend(builder, "-compressions", AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+
+        prettyAppendHeading(builder, "DTLS Message Sequence Number");
+        prettyAppend(builder, "Accepts start with invalid msg seq",
+            AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
+        prettyAppend(builder, "Misses msg seq checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, "-Accepts: 0,4,5,6", AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
+            prettyAppend(builder, "-Accepts: 0,4,8,9", AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
+            prettyAppend(builder, "-Accepts: 0,8,4,5", AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
+        }
+
+        prettyAppendHeading(builder, "DTLS Retransmissions");
+        prettyAppend(builder, "Sends retransmissions", AnalyzedProperty.SENDS_RETRANSMISSIONS);
+        prettyAppend(builder, "Processes retransmissions", AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+        prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && report.getRetransmissionCounters() != null) {
+            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet()) {
+                prettyAppend(builder, "-" + type.getName(), report.getRetransmissionCounters().get(type));
+            }
+        }
+
+        prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
+        prettyAppend(builder, "Accepts Finished with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
+        prettyAppend(builder, "Accepts App Data with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
@@ -388,6 +443,10 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Secure (CipherSuite)",
             AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE);
         prettyAppend(builder, "Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in renegotiation",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
+        }
         return builder;
     }
 
@@ -751,8 +810,18 @@ public class SiteReportPrinter {
 
     public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
-        prettyAppend(builder, "Supports Session Resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
-        prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Supports Session ID Resumption", AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in Session ID Resumption",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        }
+        prettyAppend(builder, "Issues Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Supports Session Ticket Resumption",
+            AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in Session Ticket Resumption",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        }
         prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         prettyAppend(builder, "Supports TLS 1.3 PSK", AnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(builder, "Supports TLS 1.3 PSK-DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
@@ -856,11 +925,16 @@ public class SiteReportPrinter {
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
         prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", AnalyzedProperty.ALPACA_MITIGATED);
-        prettyAppend(builder, "Renegotiation Attack (ext)",
-            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION);
-        prettyAppend(builder, "Renegotiation Attack (cs)",
-            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE);
-
+        prettyAppend(builder, "Renegotiation Attack (ext)");
+        prettyAppend(builder, "-1.hs without ext, 2.hs with ext",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1);
+        prettyAppend(builder, "-1.hs with ext, 2.hs without ext",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2);
+        prettyAppend(builder, "Renegotiation Attack (cs)");
+        prettyAppend(builder, "-1.hs without cs, 2.hs with cs",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1);
+        prettyAppend(builder, "-1.hs with cs, 2.hs without cs",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2);
         return builder;
     }
 
@@ -1035,42 +1109,21 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendBleichenbacherResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "Bleichenbacher Details");
         try {
+            prettyAppendHeading(builder, "Bleichenbacher response map");
             if (report.getBleichenbacherTestResultList() == null
                 || report.getBleichenbacherTestResultList().isEmpty()) {
                 prettyAppend(builder, "No test results");
             } else {
-                for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
-                    String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
-                    if (testResult.getVulnerable() == Boolean.TRUE) {
-                        prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE",
-                            AnsiColor.RED);
-                    } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                        prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
-                    } else {
-                        prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
-                    }
+                prettyAppend(builder, "No vulnerability present to identify");
 
-                    if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
-                        if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                            prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                            if (testResult.getVectorFingerPrintPairList() != null
-                                && !testResult.getVectorFingerPrintPairList().isEmpty()) {
-                                for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
-                                    prettyAppend(builder,
-                                        padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
-                                            + vectorFingerPrintPair.getFingerprint().toHumanReadable());
-                                }
-                            } else {
-                                prettyAppend(builder, "\tNULL");
-                            }
-                        }
-                    }
-                }
+                // TODO this recopying is weird
+                List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+                informationLeakTestList.addAll(report.getBleichenbacherTestResultList());
+                appendInformationLeakTestList(builder, informationLeakTestList, "Bleichenbacher Details");
             }
         } catch (Exception e) {
-            prettyAppend(builder, " Error: " + e.getMessage());
+            prettyAppend(builder, "Error:" + e.getMessage());
         }
         return builder;
     }
@@ -1296,6 +1349,8 @@ public class SiteReportPrinter {
     public StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (report.getVersions() != null) {
             prettyAppendHeading(builder, "Versions");
+            prettyAppend(builder, "DTLS 1.0", AnalyzedProperty.SUPPORTS_DTLS_1_0);
+            prettyAppend(builder, "DTLS 1.2", AnalyzedProperty.SUPPORTS_DTLS_1_2);
             prettyAppend(builder, "SSL 2.0", AnalyzedProperty.SUPPORTS_SSL_2);
             prettyAppend(builder, "SSL 3.0", AnalyzedProperty.SUPPORTS_SSL_3);
             prettyAppend(builder, "TLS 1.0", AnalyzedProperty.SUPPORTS_TLS_1_0);
@@ -1482,6 +1537,9 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Uses Unixtime", AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM);
 
             for (EntropyReport entropyReport : report.getEntropyReportList()) {
+                if (report.getProtocolType() == ProtocolType.TLS && entropyReport.getType() == RandomType.COOKIE) {
+                    continue;
+                }
                 prettyAppendSubheading(builder, entropyReport.getType().getHumanReadableName());
                 prettyAppend(builder, "Datapoints", "" + entropyReport.getNumberOfValues());
                 int bytesTotal = entropyReport.getNumberOfBytes();
@@ -1496,6 +1554,9 @@ public class SiteReportPrinter {
                 }
 
                 prettyAppend(builder, "Duplicates", entropyReport.isDuplicates());
+                if (entropyReport.isDuplicates()) {
+                    prettyAppend(builder, "Total duplicates", entropyReport.getNumberOfDuplicates());
+                }
                 prettyAppend(builder, "Failed Entropy Test", entropyReport.isFailedEntropyTest());
                 prettyAppend(builder, "Failed Fourier Test", entropyReport.isFailedFourierTest());
                 prettyAppend(builder, "Failed Frequency Test", entropyReport.isFailedFrequencyTest());
@@ -1578,6 +1639,52 @@ public class SiteReportPrinter {
         }
     }
 
+    public void appendGuidelines(StringBuilder builder) {
+        if (this.report.getGuidelineReports() != null && this.report.getGuidelineReports().size() > 0) {
+            prettyAppendHeading(builder, "Guidelines");
+            for (GuidelineReport report : this.report.getGuidelineReports()) {
+                appendGuideline(builder, report);
+            }
+        }
+    }
+
+    private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
+        prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
+        prettyAppend(builder, "Passed: " + guidelineReport.getPassed().size(), AnsiColor.GREEN);
+        prettyAppend(builder, "Skipped: " + guidelineReport.getSkipped().size());
+        prettyAppend(builder, "Failed: " + guidelineReport.getFailed().size(), AnsiColor.RED);
+        prettyAppend(builder, "Uncertain: " + guidelineReport.getUncertain().size(), AnsiColor.YELLOW);
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Passed Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getPassed()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
+            }
+            prettyAppendSubSubheading(builder, "Failed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getFailed()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+            }
+            prettyAppendSubSubheading(builder, "Uncertain Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+            }
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Skipped Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()));
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
+            }
+        }
+    }
+
     public void appendRecommendations(StringBuilder builder) {
         if (report.getScoreReport() == null) {
             return;
@@ -1588,9 +1695,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = report.getScoreReport();
             Recommendations recommendations = SiteReportRater.getRecommendations("en");
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
-            influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue());
-            }).forEach((entry) -> {
+            influencers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
@@ -1689,7 +1794,7 @@ public class SiteReportPrinter {
                     builder.append(group.name());
                     if (detail == ScannerDetail.ALL) {
                         builder.append("\n  Found using:");
-                        NamedCurveWitness witness = report.getSupportedNamedGroupsWitnesses().get(group);
+                        NamedGroupWitness witness = report.getSupportedNamedGroupsWitnesses().get(group);
                         for (CipherSuite cipher : witness.getCipherSuites()) {
                             builder.append("\n    ").append(cipher.toString());
                         }
@@ -1716,6 +1821,9 @@ public class SiteReportPrinter {
                 if (report.getResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResult.TRUE) {
                     prettyAppend(builder, "Groups required for ECDSA validation are not enforced", AnsiColor.YELLOW);
                 }
+                prettyAppendHeading(builder, "NamedGroups General");
+                prettyAppend(builder, "Enforces client's named group ordering",
+                    AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
             } else {
                 builder.append("none\n");
             }
@@ -1728,6 +1836,19 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
                 for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithms()) {
+                    prettyAppend(builder, algorithm.toString());
+                }
+                prettyAppendHeading(builder, "Signature and Hash Algorithms General");
+                prettyAppend(builder, "Enforces client's signature has algorithm ordering",
+                    AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
+            } else {
+                builder.append("none\n");
+            }
+        }
+        if (report.getSupportedSignatureAndHashAlgorithmsTls13() != null) {
+            prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
+            if (report.getSupportedSignatureAndHashAlgorithmsTls13().size() > 0) {
+                for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsTls13()) {
                     prettyAppend(builder, algorithm.toString());
                 }
             } else {
@@ -1752,22 +1873,47 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (printColorful ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String greenString = new String();
+        if (printColorful) {
+            greenString += AnsiColor.GREEN.getCode();
+        }
+        greenString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            greenString += AnsiColor.RESET.getCode();
+        }
+        return greenString;
     }
 
     private String getYellowString(String value, String format) {
-        return (printColorful ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String yellowString = new String();
+        if (printColorful) {
+            yellowString += AnsiColor.YELLOW.getCode();
+        }
+        yellowString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            yellowString += AnsiColor.RESET.getCode();
+        }
+        return yellowString;
     }
 
     private String getRedString(String value, String format) {
-        return (printColorful ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String redString = new String();
+        if (printColorful) {
+            redString += AnsiColor.RED.getCode();
+        }
+        redString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            redString += AnsiColor.RESET.getCode();
+        }
+        return redString;
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value == null ? "Unknown" : value).append("\n");
+    }
+
+    private StringBuilder prettyAppend(StringBuilder builder, String name, int value) {
+        return prettyAppend(builder, name, "" + value);
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, double value) {
@@ -1827,11 +1973,14 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
-
-        return builder
-            .append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode())
-            .append("\n------------------------------------------------------------\n").append(value).append("\n\n")
-            .append(AnsiColor.RESET.getCode());
+        if (printColorful) {
+            builder.append(AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode());
+        }
+        builder.append("\n------------------------------------------------------------\n").append(value).append("\n\n");
+        if (printColorful) {
+            builder.append(AnsiColor.RESET.getCode());
+        }
+        return builder;
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
@@ -1957,33 +2106,6 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private void prettyAppendRandom(StringBuilder builder, String testName,
-        RandomEvaluationResult randomEvaluationResult) {
-        if (randomEvaluationResult == null) {
-            prettyAppend(builder, testName, "unknown", AnsiColor.DEFAULT_COLOR);
-            return;
-        }
-        switch (randomEvaluationResult) {
-            case DUPLICATES:
-                prettyAppend(builder, testName, "true - exploitable", AnsiColor.RED);
-                break;
-            case NOT_ANALYZED:
-                prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
-                break;
-            case NOT_RANDOM:
-                prettyAppend(builder, testName, "does not seem to be random", AnsiColor.DEFAULT_COLOR);
-                break;
-            case UNIX_TIME:
-                prettyAppend(builder, testName, "contains unix time", AnsiColor.DEFAULT_COLOR);
-                break;
-            case NO_DUPLICATES:
-                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);
-                break;
-            default:
-                ;
-        }
-    }
-
     public void setDepth(int depth) {
         this.depth = depth;
     }
@@ -1992,7 +2114,9 @@ public class SiteReportPrinter {
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendHeading(builder, "Scanner Performance");
             try {
-                prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                if (report.getProtocolType() == ProtocolType.TLS) {
+                    prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                }
                 prettyAppendSubheading(builder, "Probe execution performance");
                 for (PerformanceData data : report.getPerformanceList()) {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

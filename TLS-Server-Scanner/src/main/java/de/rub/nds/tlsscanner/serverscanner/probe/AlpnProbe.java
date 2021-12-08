@@ -15,7 +15,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -23,7 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
@@ -38,13 +37,9 @@ public class AlpnProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
-            return new AlpnProbeResult(supportedAlpnProtocols);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new AlpnProbeResult(null);
-        }
+        List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
+        return new AlpnResult(supportedAlpnProtocols);
+
     }
 
     private List<String> getSupportedAlpnProtocols() {
@@ -55,13 +50,12 @@ public class AlpnProbe extends TlsProbe {
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
@@ -118,7 +112,7 @@ public class AlpnProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new AlpnProbeResult(new LinkedList<>());
+        return new AlpnResult(new LinkedList<>());
     }
 
     @Override

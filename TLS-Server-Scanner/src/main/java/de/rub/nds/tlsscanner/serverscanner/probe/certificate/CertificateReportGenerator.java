@@ -19,8 +19,24 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.jce.provider.X509CertificateObject;
+
+import javax.annotation.Nullable;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -29,20 +45,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.crypto.tls.Certificate;
-import org.bouncycastle.jce.provider.X509CertificateObject;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateReportGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(CertificateReportGenerator.class.getName());
@@ -76,6 +79,7 @@ public class CertificateReportGenerator {
         setRevoked(report, cert);
         setDnsCCA(report, cert);
         setSha256Hash(report, cert);
+        setExtendedKeyUsage(report, cert);
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
@@ -99,6 +103,19 @@ public class CertificateReportGenerator {
         } else {
             report.setSubject("--not specified--");
         }
+    }
+
+    private static void setExtendedKeyUsage(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        Extensions extensions = new X509CertificateHolder(cert).getExtensions();
+        if (extensions == null) {
+            return;
+        }
+        ExtendedKeyUsage extension = ExtendedKeyUsage.fromExtensions(extensions);
+        if (extension == null) {
+            return;
+        }
+        report.setExtendedKeyUsageServerAuth(extension.hasKeyPurposeId(KeyPurposeId.id_kp_serverAuth));
+        report.setExtendedKeyUsagePresent(extension.hasKeyPurposeId(KeyPurposeId.anyExtendedKeyUsage));
     }
 
     private static void setCommonNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
@@ -153,8 +170,8 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setSignatureAndHashAlgorithm(CertificateReport report,
-        org.bouncycastle.asn1.x509.Certificate cert) {
+    @Nullable
+    public static SignatureAndHashAlgorithm getSignatureAndHashAlgorithm(org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
@@ -164,24 +181,31 @@ public class CertificateReportGenerator {
                 String[] algos = sigAndHashString.toUpperCase().split("WITH");
                 if (algos.length != 2) {
                     LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHashAlgorithm");
-                    return;
+                    return null;
                 }
                 SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
                 HashAlgorithm hashAlgorithm = HashAlgorithm.valueOf(algos[0]);
                 if (hashAlgorithm == null) {
                     LOGGER.warn("Parsed an unknown HashAlgorithm");
-                    return;
+                    return null;
                 }
                 if (signatureAlgorithm == null) {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
-                    return;
+                    return null;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo =
-                    SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
-                report.setSignatureAndHashAlgorithm(sigHashAlgo);
+                return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
             }
         } catch (Exception e) {
             LOGGER.debug("Could not extract SignatureAndHashAlgorithm from String:" + sigAndHashString, e);
+        }
+        return null;
+    }
+
+    private static void setSignatureAndHashAlgorithm(CertificateReport report,
+        org.bouncycastle.asn1.x509.Certificate cert) {
+        SignatureAndHashAlgorithm sigHashAlgo = getSignatureAndHashAlgorithm(cert);
+        if (sigHashAlgo != null) {
+            report.setSignatureAndHashAlgorithm(sigHashAlgo);
         }
     }
 
@@ -210,17 +234,9 @@ public class CertificateReportGenerator {
 
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
-        try {
-            String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-            if (ocspUrl != null) {
-                report.setOcspSupported(true);
-            }
-        } catch (NoSuchFieldException e) {
-            report.setOcspSupported(false);
-            LOGGER.debug("OCSP is not supported for this certificate.");
-        } catch (Exception e) {
-            report.setOcspSupported(false);
-            LOGGER.error("An error happened during retrieving OCSP information for this certificate.");
+        String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
+        if (ocspUrl != null) {
+            report.setOcspSupported(true);
         }
     }
 
@@ -257,14 +273,16 @@ public class CertificateReportGenerator {
                 mainCertOcspUrl = new URL(mainCertExtractor.getOcspServerUrl());
                 ocspRequest = new OCSPRequest(cert, issuerCert, mainCertOcspUrl);
                 OCSPResponse ocspResponse = ocspRequest.makeRequest();
-                CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
-                int revocationStatus = certificateStatus.getCertificateStatus();
-                if (revocationStatus == 0) {
-                    report.setRevoked(false);
-                } else if (revocationStatus == 1) {
-                    report.setRevoked(true);
+                if (ocspResponse != null) {
+                    CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
+                    int revocationStatus = certificateStatus.getCertificateStatus();
+                    if (revocationStatus == 0) {
+                        report.setRevoked(false);
+                    } else if (revocationStatus == 1) {
+                        report.setRevoked(true);
+                    }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }

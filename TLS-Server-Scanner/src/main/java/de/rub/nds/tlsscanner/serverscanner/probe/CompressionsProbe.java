@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -29,10 +28,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -41,13 +36,8 @@ public class CompressionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<CompressionMethod> compressions = getSupportedCompressionMethods();
-            return new CompressionsResult(compressions);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CompressionsResult(null);
-        }
+        List<CompressionMethod> compressions = getSupportedCompressionMethods();
+        return new CompressionsResult(compressions);
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {
@@ -58,13 +48,12 @@ public class CompressionsProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);

@@ -13,10 +13,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public abstract class ProbeResult {
 
     private final ProbeType type;
@@ -56,7 +52,9 @@ public abstract class ProbeResult {
     }
 
     public void merge(SiteReport report) {
-        report.getPerformanceList().add(getPerformanceData());
+        if (startTime != 0 && stopTime != 0) {
+            report.getPerformanceList().add(getPerformanceData());
+        }
         this.mergeData(report);
         report.markAsChangedAndNotify();
     }

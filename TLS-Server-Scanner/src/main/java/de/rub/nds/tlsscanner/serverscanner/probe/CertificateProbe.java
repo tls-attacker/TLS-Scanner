@@ -36,10 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateProbe extends TlsProbe {
 
     private boolean scanForRsaCert = true;
@@ -64,40 +60,35 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            ecdsaPkGroupsStatic = new LinkedList<>();
-            ecdsaPkGroupsEphemeral = new LinkedList<>();
-            ecdsaPkGroupsTls13 = new LinkedList<>();
-            ecdsaCertSigGroupsStatic = new LinkedList<>();
-            ecdsaCertSigGroupsEphemeral = new LinkedList<>();
-            ecdsaCertSigGroupsTls13 = new LinkedList<>();
+        ecdsaPkGroupsStatic = new LinkedList<>();
+        ecdsaPkGroupsEphemeral = new LinkedList<>();
+        ecdsaPkGroupsTls13 = new LinkedList<>();
+        ecdsaCertSigGroupsStatic = new LinkedList<>();
+        ecdsaCertSigGroupsEphemeral = new LinkedList<>();
+        ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
-            Set<CertificateChain> certificates = new HashSet<>();
-            if (scanForRsaCert) {
-                certificates.addAll(getRsaCerts());
-            }
-            if (scanForDssCert) {
-                certificates.addAll(getDssCerts());
-            }
-            if (scanForEcdsaCert) {
-                certificates.addAll(getEcdsaCerts());
-            }
-            if (scanForGostCert) {
-                certificates.addAll(getGostCert());
-            }
-            if (scanForTls13) {
-                certificates.addAll(getTls13Certs());
-            }
+        Set<CertificateChain> certificates = new HashSet<>();
+        if (scanForRsaCert) {
+            certificates.addAll(getRsaCerts());
+        }
+        if (scanForDssCert) {
+            certificates.addAll(getDssCerts());
+        }
+        if (scanForEcdsaCert) {
+            certificates.addAll(getEcdsaCerts());
+        }
+        if (scanForGostCert) {
+            certificates.addAll(getGostCert());
+        }
+        if (scanForTls13) {
+            certificates.addAll(getTls13Certs());
+        }
 
-            if (certificates.isEmpty()) {
-                return getCouldNotExecuteResult();
-            } else {
-                return new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
-                    ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+        if (certificates.isEmpty()) {
             return getCouldNotExecuteResult();
+        } else {
+            return new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
+                ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
         }
     }
 
@@ -124,7 +115,7 @@ public class CertificateProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
             scanForTls13 = false;
         }
     }
@@ -339,7 +330,8 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

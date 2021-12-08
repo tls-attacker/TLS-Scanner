@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
-/**
- *
- * @author ic0ns
- */
 public enum PaddingOracleStrength {
     WEAK,
     STRONG,

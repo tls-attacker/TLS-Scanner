@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public enum ProbeType {
     ALPN("ALPN"),
     ESNI("ESNI"),
@@ -27,11 +23,13 @@ public enum ProbeType {
     DROWN("Drown"),
     EARLY_CCS("Early CCS"),
     NAMED_GROUPS("Named groups"),
+    NAMED_GROUPS_ORDER("Named groups order"),
     PADDING_ORACLE("Padding oracle"),
     TLS_POODLE("TLS-Poodle"),
     PROTOCOL_VERSION("Protocol version"),
     INVALID_CURVE("Invalid curve"),
     SIGNATURE_AND_HASH("Signature and hash algorithm"),
+    SIGNATURE_HASH_ALGORITHM_ORDER("Signature Hash Algorithm Order"),
     EXTENSIONS("Extensions"),
     TOKENBINDING("Tokenbinding"),
     COMPRESSIONS("Compression"),
@@ -49,10 +47,16 @@ public enum ProbeType {
     DIRECT_RACCOON("Direct RACCOON"),
     EC_POINT_FORMAT("EC point formats"),
     RACCOON_ATTACK("RACCOON attack"),
+    DTLS_HELLO_VERIFY_REQUEST("DTLS hello verify request"),
+    DTLS_COMMON_BUGS("DTLS common bugs"),
+    DTLS_FEATURES("DTLS features"),
+    DTLS_MESSAGE_SEQUENCE_NUMBER("DTLS message sequence number"),
+    DTLS_RETRANSMISSIONS("DTLS retransmissions"),
     HTTP_FALSE_START("HTTP false start"),
     HELLO_RETRY("Hello retry"),
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),
-    RANDOMNESS("Randomness");
+    RANDOMNESS("Randomness"),
+    TLS_FALLBACK_SCSV("TLS Fallback SCSV");
 
     private String humanReadableName;
 

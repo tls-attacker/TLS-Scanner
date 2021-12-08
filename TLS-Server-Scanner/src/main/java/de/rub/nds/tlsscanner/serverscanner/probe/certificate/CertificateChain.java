@@ -12,7 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustPlatform;
-import java.security.cert.CertificateException;
+
+import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedList;
@@ -31,15 +32,13 @@ import org.bouncycastle.cert.path.validations.BasicConstraintsValidation;
 import org.bouncycastle.cert.path.validations.KeyUsageValidation;
 import org.bouncycastle.cert.path.validations.ParentCertIssuedValidation;
 import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.est.jcajce.JsseDefaultHostnameAuthorizer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import sun.security.util.HostnameChecker;
 
 /**
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS code)). This code is not
  * meant for productive usage and is very very likely doing things which are terribly bad in any real system. This code
  * is only built for security analysis purposes. Do not use it for anything but this!
- *
- * @author ic0ns
  */
 public class CertificateChain {
 
@@ -183,11 +182,13 @@ public class CertificateChain {
             if (report.getValidTo().before(new Date())) {
                 containsExpired = true;
             }
-            if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
-                && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
-                && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
-                || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
-                containsWeakSignedNonTrustStoresCertificates = true;
+            if (report.getSignatureAndHashAlgorithm() != null) {
+                if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
+                    && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
+                    && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
+                    || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
+                    containsWeakSignedNonTrustStoresCertificates = true;
+                }
             }
         }
         for (CertificateReport report : certificateReportList) {
@@ -224,7 +225,9 @@ public class CertificateChain {
                 CertPathValidationException[] causes = certPathValidationResult.getCauses();
                 if (causes != null) {
                     for (CertPathValidationException exception : causes) {
-                        if (exception.getCause().getMessage().contains("Unhandled Critical Extensions")) {
+                        if (exception.getMessage().contains("Unhandled Critical Extensions")
+                            || (exception.getCause() != null && exception.getCause().getMessage() != null
+                                && exception.getCause().getMessage().contains("Unhandled Critical Extensions"))) {
                             certificateIssues.add(CertificateIssue.UNHANDLED_CRITICAL_EXTENSIONS);
                         } else {
                             LOGGER.error("Unknown path validation issue", exception);
@@ -339,12 +342,15 @@ public class CertificateChain {
     }
 
     public final boolean isCertificateSuitableForHost(X509Certificate cert, String host) {
-        HostnameChecker checker = HostnameChecker.getInstance(HostnameChecker.TYPE_TLS);
+        JsseDefaultHostnameAuthorizer checker = new JsseDefaultHostnameAuthorizer(null);
         try {
-            checker.match(host, cert);
-            return true;
-        } catch (CertificateException ex) {
-            LOGGER.debug("Cert is not valid for " + host + ":" + host);
+            boolean result = checker.verify(host, cert);
+            if (!result) {
+                LOGGER.debug("Hostname of Certificate is not valid for {}", host);
+            }
+            return result;
+        } catch (IOException ex) {
+            LOGGER.warn("Cert for {} caused IO Exception", host);
             return false;
         }
     }

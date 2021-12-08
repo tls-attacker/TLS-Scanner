@@ -1,4 +1,4 @@
-FROM maven:3.6.1-jdk-8 AS build-image
+FROM maven:3.6.1-jdk-11 AS build-image
 WORKDIR /build
 RUN git clone https://github.com/RUB-NDS/TLS-Scanner.git --recurse-submodules
 

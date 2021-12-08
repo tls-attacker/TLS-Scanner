@@ -30,7 +30,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ECPointFormatProbe extends TlsProbe {
 
@@ -43,27 +42,22 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<ECPointFormat> pointFormats = null;
-            if (shouldTestPointFormats) {
-                pointFormats = getSupportedPointFormats();
-            }
-            TestResult tls13SecpCompressionSupported;
-            if (shouldTestTls13) {
-                tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
-            } else {
-                tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
-            }
-            if (pointFormats != null) {
-                return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
+        List<ECPointFormat> pointFormats = null;
+        if (shouldTestPointFormats) {
+            pointFormats = getSupportedPointFormats();
+        }
+        TestResult tls13SecpCompressionSupported;
+        if (shouldTestTls13) {
+            tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
+        } else {
+            tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
+        }
+        if (pointFormats != null) {
+            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
 
-            } else {
-                LOGGER.debug("Unable to determine supported point formats");
-                return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
+        } else {
+            LOGGER.debug("Unable to determine supported point formats");
+            return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
         }
     }
 
@@ -103,17 +97,18 @@ public class ECPointFormatProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setQuickReceive(true);
         config.setDefaultSelectedPointFormat(format);
         config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
         config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
         State state = new State(config);
         executeState(state);
@@ -159,7 +154,12 @@ public class ECPointFormatProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for Tls13SecpCompression", e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for Tls13SecpCompression", e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -178,7 +178,9 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
+            || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
+            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
             || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
             || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;

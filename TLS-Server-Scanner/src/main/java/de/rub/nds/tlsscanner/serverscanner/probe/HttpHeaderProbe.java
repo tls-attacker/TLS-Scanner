@@ -48,64 +48,59 @@ public class HttpHeaderProbe extends HttpsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config tlsConfig = getScannerConfig().createConfig();
-            List<CipherSuite> cipherSuites = new LinkedList<>();
-            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-            tlsConfig.setEnforceSettings(false);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(true);
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setHttpsParsingEnabled(true);
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-            tlsConfig.setStopActionsAfterIOException(true);
-            // Don't send extensions if we are in SSLv2
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-            tlsConfig.setAddRenegotiationInfoExtension(true);
+        Config tlsConfig = getScannerConfig().createConfig();
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setHttpsParsingEnabled(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+        tlsConfig.setStopActionsAfterIOException(true);
+        // Don't send extensions if we are in SSLv2
+        tlsConfig.setAddECPointFormatExtension(true);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddRenegotiationInfoExtension(true);
 
-            List<NamedGroup> namedGroups = NamedGroup.getImplemented();
-            namedGroups.remove(NamedGroup.ECDH_X25519);
-            tlsConfig.setDefaultClientNamedGroups(namedGroups);
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(new SendAction(this.getHttpsRequest()));
-            trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
-            State state = new State(tlsConfig, trace);
-            executeState(state);
-            ReceivingAction action = trace.getLastReceivingAction();
-            HttpsResponseMessage responseMessage = null;
-            if (action.getReceivedMessages() != null) {
-                for (ProtocolMessage message : action.getReceivedMessages()) {
-                    if (message instanceof HttpsResponseMessage) {
-                        responseMessage = (HttpsResponseMessage) message;
-                        break;
-                    }
+        List<NamedGroup> namedGroups = NamedGroup.getImplemented();
+        namedGroups.remove(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new SendAction(this.getHttpsRequest()));
+        trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
+        State state = new State(tlsConfig, trace);
+        executeState(state);
+        ReceivingAction action = trace.getLastReceivingAction();
+        HttpsResponseMessage responseMessage = null;
+        if (action.getReceivedMessages() != null) {
+            for (ProtocolMessage message : action.getReceivedMessages()) {
+                if (message instanceof HttpsResponseMessage) {
+                    responseMessage = (HttpsResponseMessage) message;
+                    break;
                 }
             }
-            boolean speaksHttps = responseMessage != null;
-            List<HttpsHeader> headerList;
-            if (speaksHttps) {
-                headerList = responseMessage.getHeader();
-            } else {
-                headerList = new LinkedList<>();
-            }
-            return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
+        boolean speaksHttps = responseMessage != null;
+        List<HttpsHeader> headerList;
+        if (speaksHttps) {
+            headerList = responseMessage.getHeader();
+        } else {
+            headerList = new LinkedList<>();
+        }
+        return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
     }
 
     @Override

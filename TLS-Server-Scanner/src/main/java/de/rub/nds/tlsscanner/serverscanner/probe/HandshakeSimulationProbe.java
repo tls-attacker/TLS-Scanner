@@ -60,30 +60,30 @@ public class HandshakeSimulationProbe extends TlsProbe {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 }
             } catch (Exception e) {
-                LOGGER.error("Could not load " + configFileName, e);
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                    throw new RuntimeException(e);
+                } else {
+                    LOGGER.error("Could not load " + configFileName, e);
+                }
             }
         }
     }
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<State> clientStateList = new LinkedList<>();
-            List<SimulatedClientResult> resultList = new LinkedList<>();
-            for (SimulationRequest request : simulationRequestList) {
-                State state = request.getExecutableState(scannerConfig);
-                clientStateList.add(state);
-            }
-            executeState(clientStateList);
-            for (SimulatedClientResult result : resultList) {
-                // evaluateClientConfig(result);
-                // evaluateReceivedMessages(result);
-            }
-            return new HandshakeSimulationResult(resultList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new HandshakeSimulationResult(null);
+        List<State> clientStateList = new LinkedList<>();
+        List<SimulatedClientResult> resultList = new LinkedList<>();
+        for (SimulationRequest request : simulationRequestList) {
+            State state = request.getExecutableState(scannerConfig);
+            clientStateList.add(state);
         }
+        executeState(clientStateList);
+        for (SimulatedClientResult result : resultList) {
+            // evaluateClientConfig(result);
+            // evaluateReceivedMessages(result);
+        }
+        return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {

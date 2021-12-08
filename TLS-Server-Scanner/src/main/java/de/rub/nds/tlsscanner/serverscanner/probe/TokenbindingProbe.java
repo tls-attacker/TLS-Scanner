@@ -32,10 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author robert
- */
 public class TokenbindingProbe extends TlsProbe {
 
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -44,18 +40,13 @@ public class TokenbindingProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
-            supportedTokenBindingVersion.addAll(getSupportedVersions());
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
-            if (!supportedTokenBindingVersion.isEmpty()) {
-                supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
-            }
-            return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new TokenbindingResult(null, null);
+        List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
+        supportedTokenBindingVersion.addAll(getSupportedVersions());
+        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
+        if (!supportedTokenBindingVersion.isEmpty()) {
+            supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
+        return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
