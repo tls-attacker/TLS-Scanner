@@ -151,7 +151,7 @@ public class CommonBugProbe extends TlsProbe {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(clientHello));
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+        if (config.getHighestProtocolVersion().isDTLS() && config.isDtlsCookieExchange()) {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
             trace.addTlsAction(new SendAction(clientHello));
         }
