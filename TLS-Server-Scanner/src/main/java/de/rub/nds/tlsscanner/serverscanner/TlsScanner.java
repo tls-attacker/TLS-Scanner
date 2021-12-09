@@ -199,7 +199,7 @@ public class TlsScanner {
                     } catch (JAXBException ex) {
                         LOGGER.error("Could not retrieve scoring results");
                     }
-                    if(protocolType != ProtocolType.DTLS) {
+                    if (protocolType != ProtocolType.DTLS) {
                         executeGuidelineEvaluation(siteReport);
                     }
                     long scanEndTime = System.currentTimeMillis();
