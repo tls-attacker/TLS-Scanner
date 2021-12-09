@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -190,6 +191,9 @@ public class ScannerConfig extends TLSDelegateConfig {
         }
 
         config.getDefaultClientConnection().setTimeout(timeout);
+        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
+            config.getDefaultClientConnection().setFirstTimeout(timeout);
+        }
         return config;
     }
 

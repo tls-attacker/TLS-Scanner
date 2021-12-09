@@ -39,9 +39,9 @@ public class ConfigSelector {
                 .collect(Collectors.toList());
         config.setDefaultClientSupportedCipherSuites(filteredCipherSuites);
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-        List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
-        sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
-        config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
+        List<SignatureAndHashAlgorithm> filteredSigHashList = Arrays.asList(SignatureAndHashAlgorithm.values()).stream()
+            .filter(signatureAndHashAlgorithm -> !signatureAndHashAlgorithm.isGrease()).collect(Collectors.toList());
+        config.setDefaultClientSupportedSignatureAndHashAlgorithms(filteredSigHashList);
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
             CompressionMethod.DEFLATE);
         config.setQuickReceive(true);
