@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.scan;
 
-/**
- *
- * @author robert
- */
 public enum ScanJobExecutorType {
     SINGLE,
     MULTI

@@ -33,10 +33,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();

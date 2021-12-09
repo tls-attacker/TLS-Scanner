@@ -16,12 +16,11 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -46,7 +45,6 @@ public class TlsFallbackScsvProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
-
         List<CipherSuite> cipherSuites = new ArrayList<>(CipherSuite.getImplemented());
         cipherSuites.add(CipherSuite.TLS_FALLBACK_SCSV);
         tlsConfig.setDefaultSelectedProtocolVersion(this.secondHighestVersion);
@@ -59,14 +57,13 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        State state = new State(tlsConfig, getWorkflowTrace());
+
+        State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
             return new TlsFallbackScsvResult(TestResult.TRUE);
@@ -77,9 +74,10 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         }
     }
 
-    private WorkflowTrace getWorkflowTrace() {
-        WorkflowTrace trace = new WorkflowTrace();
-        trace.addTlsAction(new SendAction(new ClientHelloMessage()));
+    private WorkflowTrace getWorkflowTrace(Config config) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, config.getDefaultRunningMode());
+        trace.removeTlsAction(trace.getTlsActions().size() - 1);
         AlertMessage alertMessage = new AlertMessage();
         alertMessage.setDescription(AlertDescription.INAPPROPRIATE_FALLBACK.getValue());
         alertMessage.setLevel(AlertLevel.FATAL.getValue());
