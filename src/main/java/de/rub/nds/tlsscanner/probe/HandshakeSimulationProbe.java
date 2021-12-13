@@ -1,4 +1,4 @@
-/**
+/*
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH

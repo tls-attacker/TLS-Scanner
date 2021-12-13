@@ -1,4 +1,4 @@
-/**
+/*
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
-import de.rub.nds.modifiablevariable.util.ByteArrayAdapter;
+import de.rub.nds.modifiablevariable.util.UnformattedByteArrayAdapter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.handler.ClientHelloHandler;
@@ -37,7 +37,7 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
-    @XmlJavaTypeAdapter(ByteArrayAdapter.class)
+    @XmlJavaTypeAdapter(UnformattedByteArrayAdapter.class)
     private byte[] initialBytes;
     private Boolean isSSL2CompatibleClientHello = false;
 
