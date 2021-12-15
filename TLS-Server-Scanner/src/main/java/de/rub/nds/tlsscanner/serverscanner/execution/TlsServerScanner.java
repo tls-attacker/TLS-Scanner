@@ -266,9 +266,9 @@ public final class TlsServerScanner extends TlsScanner {
                     SiteReport report
                             = (SiteReport) executor.execute(new SiteReport(config.getClientDelegate().getHost()));
                     return report;
-                } else {
-                    isConnectable = true;
                 }
+            } else {
+                isConnectable = false;
             }
             siteReport.setServerIsAlive(isConnectable);
             siteReport.setSpeaksProtocol(speaksProtocol);
