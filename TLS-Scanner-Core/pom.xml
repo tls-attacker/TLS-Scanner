@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tlsscanner</groupId>
         <artifactId>TLS-Scanner</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.1</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>TLS-Scanner-Core</artifactId>
