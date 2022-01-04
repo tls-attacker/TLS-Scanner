@@ -19,6 +19,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -74,6 +75,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private DtlsDelegate dtlsDelegate;
 
+    @ParametersDelegate
+    private CallbackDelegate callbackDelegate;
+
     private List<ProbeType> probes = null;
 
     private Config baseConfig = null;
@@ -84,11 +88,13 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.clientDelegate = new ClientDelegate();
         this.starttlsDelegate = new StarttlsDelegate();
         this.ccaDelegate = new CcaDelegate();
+        this.callbackDelegate = new CallbackDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
         addDelegate(dtlsDelegate);
+        addDelegate(callbackDelegate);
     }
 
     public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
@@ -97,11 +103,13 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.dtlsDelegate = new DtlsDelegate();
         this.starttlsDelegate = new StarttlsDelegate();
         this.ccaDelegate = new CcaDelegate();
+        this.callbackDelegate = new CallbackDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
         addDelegate(dtlsDelegate);
+        addDelegate(callbackDelegate);
     }
 
     public ApplicationProtocol getApplicationProtocol() {
@@ -142,6 +150,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public CcaDelegate getCcaDelegate() {
         return ccaDelegate;
+    }
+
+    public CallbackDelegate getCallbackDelegate() {
+        return callbackDelegate;
     }
 
     public boolean isNoColor() {
