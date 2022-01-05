@@ -93,13 +93,25 @@ public class TlsScanner {
     }
 
     private void setCallbacks() {
-        parallelExecutor
-            .setDefaultBeforeTransportPreInitCallback(config.getCallbackDelegate().getBeforeTransportPreInitCommand());
-        parallelExecutor
-            .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCommand());
-        parallelExecutor
-            .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCommand());
-        parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCommand());
+        if (config.getCallbackDelegate().getBeforeTransportPreInitCommand() != null
+            && parallelExecutor.getDefaultBeforeTransportPreInitCallback() == null) {
+            parallelExecutor.setDefaultBeforeTransportPreInitCallback(
+                config.getCallbackDelegate().getBeforeTransportPreInitCommand());
+        }
+        if (config.getCallbackDelegate().getBeforeTransportInitCommand() != null
+            && parallelExecutor.getDefaultBeforeTransportInitCallback() == null) {
+            parallelExecutor
+                .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCommand());
+        }
+        if (config.getCallbackDelegate().getAfterTransportInitCommand() != null
+            && parallelExecutor.getDefaultAfterTransportInitCallback() == null) {
+            parallelExecutor
+                .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCommand());
+        }
+        if (config.getCallbackDelegate().getAfterExecutionCommand() != null
+            && parallelExecutor.getDefaultAfterExecutionCallback() == null) {
+            parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCommand());
+        }
     }
 
     private void fillDefaultProbeLists() {
