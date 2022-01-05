@@ -43,46 +43,29 @@ public class CallbackDelegate extends Delegate {
     }
 
     public Function<State, Integer> getBeforeTransportPreInitCommand() {
-        return (State state) -> {
-            try {
-                Runtime.getRuntime().exec(beforeTransportPreInitCommand.split(" "));
-                LOGGER.debug("Running command: {}", beforeTransportPreInitCommand);
-            } catch (IOException E) {
-                LOGGER.error("Error during command execution", E);
-            }
-            return 0;
-        };
+        return getCallback(beforeTransportPreInitCommand);
     }
 
     public Function<State, Integer> getBeforeTransportInitCommand() {
-        return (State state) -> {
-            try {
-                Runtime.getRuntime().exec(beforeTransportInitCommand.split(" "));
-                LOGGER.debug("Running command: {}", beforeTransportInitCommand);
-            } catch (IOException E) {
-                LOGGER.error("Error during command execution", E);
-            }
-            return 0;
-        };
+        return getCallback(beforeTransportInitCommand);
     }
 
     public Function<State, Integer> getAfterTransportInitCommand() {
-        return (State state) -> {
-            try {
-                Runtime.getRuntime().exec(afterTransportInitCommand.split(" "));
-                LOGGER.debug("Running command: {}", afterTransportInitCommand);
-            } catch (IOException E) {
-                LOGGER.error("Error during command execution", E);
-            }
-            return 0;
-        };
+        return getCallback(afterTransportInitCommand);
     }
 
     public Function<State, Integer> getAfterExecutionCommand() {
+        return getCallback(afterExecutionCommand);
+    }
+
+    private Function<State, Integer> getCallback(String command) {
+        if (command == null) {
+            return null;
+        }
         return (State state) -> {
             try {
-                Runtime.getRuntime().exec(afterExecutionCommand.split(" "));
-                LOGGER.debug("Running command: {}", afterExecutionCommand);
+                Runtime.getRuntime().exec(command.split(" "));
+                LOGGER.debug("Running command: {}", command);
             } catch (IOException E) {
                 LOGGER.error("Error during command execution", E);
             }
