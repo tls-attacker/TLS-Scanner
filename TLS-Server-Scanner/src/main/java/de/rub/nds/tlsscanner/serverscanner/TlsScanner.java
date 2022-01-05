@@ -59,7 +59,6 @@ public class TlsScanner {
     private final List<ProbeType> probesToExecute;
 
     public TlsScanner(ScannerConfig config) {
-
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
@@ -67,6 +66,7 @@ public class TlsScanner {
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
+        setCallbacks();
         fillDefaultProbeLists();
     }
 
@@ -77,6 +77,7 @@ public class TlsScanner {
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
+        setCallbacks();
         fillDefaultProbeLists();
     }
 
@@ -88,6 +89,29 @@ public class TlsScanner {
         this.afterList = afterList;
         this.probesToExecute = config.getProbes();
         closeAfterFinishParallel = true;
+        setCallbacks();
+    }
+
+    private void setCallbacks() {
+        if (config.getCallbackDelegate().getBeforeTransportPreInitCallback() != null
+            && parallelExecutor.getDefaultBeforeTransportPreInitCallback() == null) {
+            parallelExecutor.setDefaultBeforeTransportPreInitCallback(
+                config.getCallbackDelegate().getBeforeTransportPreInitCallback());
+        }
+        if (config.getCallbackDelegate().getBeforeTransportInitCallback() != null
+            && parallelExecutor.getDefaultBeforeTransportInitCallback() == null) {
+            parallelExecutor
+                .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCallback());
+        }
+        if (config.getCallbackDelegate().getAfterTransportInitCallback() != null
+            && parallelExecutor.getDefaultAfterTransportInitCallback() == null) {
+            parallelExecutor
+                .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCallback());
+        }
+        if (config.getCallbackDelegate().getAfterExecutionCallback() != null
+            && parallelExecutor.getDefaultAfterExecutionCallback() == null) {
+            parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCallback());
+        }
     }
 
     private void fillDefaultProbeLists() {
@@ -265,7 +289,7 @@ public class TlsScanner {
                 case TLS:
                     return checker.speaksTls(tlsConfig);
                 case DTLS:
-                    return checker.speaksDTls(tlsConfig);
+                    return checker.speaksDtls(tlsConfig);
                 case STARTTLS:
                     return checker.speaksStartTls(tlsConfig);
                 default:

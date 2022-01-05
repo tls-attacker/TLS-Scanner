@@ -40,8 +40,8 @@ public class DtlsMessageSequenceResult extends ProbeResult {
             acceptsSkippedMessageNumbersMultiple);
         report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
         if (acceptsSkippedMessageNumbersOnce == TestResult.FALSE
-            || acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
-            || acceptsRandomMessageNumbers == TestResult.FALSE) {
+            && acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
+            && acceptsRandomMessageNumbers == TestResult.FALSE) {
             report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
         } else {
             report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
