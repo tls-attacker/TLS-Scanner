@@ -38,23 +38,39 @@ public class CallbackDelegate extends Delegate {
     public CallbackDelegate() {
     }
 
+    public String getBeforeTransportPreInitCommand() {
+        return beforeTransportPreInitCommand;
+    }
+
+    public String getBeforeTransportInitCommand() {
+        return beforeTransportInitCommand;
+    }
+
+    public String getAfterTransportInitCommand() {
+        return afterTransportInitCommand;
+    }
+
+    public String getAfterExecutionCommand() {
+        return afterExecutionCommand;
+    }
+
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {
     }
 
-    public Function<State, Integer> getBeforeTransportPreInitCommand() {
+    public Function<State, Integer> getBeforeTransportPreInitCallback() {
         return getCallback(beforeTransportPreInitCommand);
     }
 
-    public Function<State, Integer> getBeforeTransportInitCommand() {
+    public Function<State, Integer> getBeforeTransportInitCallback() {
         return getCallback(beforeTransportInitCommand);
     }
 
-    public Function<State, Integer> getAfterTransportInitCommand() {
+    public Function<State, Integer> getAfterTransportInitCallback() {
         return getCallback(afterTransportInitCommand);
     }
 
-    public Function<State, Integer> getAfterExecutionCommand() {
+    public Function<State, Integer> getAfterExecutionCallback() {
         return getCallback(afterExecutionCommand);
     }
 

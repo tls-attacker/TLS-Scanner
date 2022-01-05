@@ -93,24 +93,24 @@ public class TlsScanner {
     }
 
     private void setCallbacks() {
-        if (config.getCallbackDelegate().getBeforeTransportPreInitCommand() != null
+        if (config.getCallbackDelegate().getBeforeTransportPreInitCallback() != null
             && parallelExecutor.getDefaultBeforeTransportPreInitCallback() == null) {
             parallelExecutor.setDefaultBeforeTransportPreInitCallback(
-                config.getCallbackDelegate().getBeforeTransportPreInitCommand());
+                config.getCallbackDelegate().getBeforeTransportPreInitCallback());
         }
-        if (config.getCallbackDelegate().getBeforeTransportInitCommand() != null
+        if (config.getCallbackDelegate().getBeforeTransportInitCallback() != null
             && parallelExecutor.getDefaultBeforeTransportInitCallback() == null) {
             parallelExecutor
-                .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCommand());
+                .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCallback());
         }
-        if (config.getCallbackDelegate().getAfterTransportInitCommand() != null
+        if (config.getCallbackDelegate().getAfterTransportInitCallback() != null
             && parallelExecutor.getDefaultAfterTransportInitCallback() == null) {
             parallelExecutor
-                .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCommand());
+                .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCallback());
         }
-        if (config.getCallbackDelegate().getAfterExecutionCommand() != null
+        if (config.getCallbackDelegate().getAfterExecutionCallback() != null
             && parallelExecutor.getDefaultAfterExecutionCallback() == null) {
-            parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCommand());
+            parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCallback());
         }
     }
 
