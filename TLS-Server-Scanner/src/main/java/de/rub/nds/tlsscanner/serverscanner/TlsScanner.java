@@ -277,7 +277,7 @@ public class TlsScanner {
                 case TLS:
                     return checker.speaksTls(tlsConfig);
                 case DTLS:
-                    return checker.speaksDTls(tlsConfig);
+                    return checker.speaksDtls(tlsConfig);
                 case STARTTLS:
                     return checker.speaksStartTls(tlsConfig);
                 default:
