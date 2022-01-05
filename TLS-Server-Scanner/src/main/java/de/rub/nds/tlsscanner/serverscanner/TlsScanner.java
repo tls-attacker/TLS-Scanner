@@ -78,7 +78,7 @@ public class TlsScanner {
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
         setCallbacks();
-        fillDefaultProbeLists();       
+        fillDefaultProbeLists();
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
@@ -99,9 +99,9 @@ public class TlsScanner {
             .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCommand());
         parallelExecutor
             .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCommand());
-        parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCommand()); 
+        parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCommand());
     }
-    
+
     private void fillDefaultProbeLists() {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
