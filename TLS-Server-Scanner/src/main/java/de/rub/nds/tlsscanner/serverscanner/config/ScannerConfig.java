@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import org.bouncycastle.util.IPAddress;
 
 import java.util.Arrays;
@@ -61,6 +62,10 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-additionalRandomCollection", required = false,
         description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
+
+    @Parameter(names = "-addCustomCA", required = false, variableArity = true,
+        description = "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
+    private List<String> customCAPathList = null;
 
     @Parameter(names = "-probeTimeout", required = false,
         description = "The timeout for each probe in ms (default 1800000)")
@@ -200,6 +205,10 @@ public class ScannerConfig extends TLSDelegateConfig {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);
+        }
+
+        if (this.customCAPathList != null) {
+            TrustAnchorManager.getInstance().addCustomCA(this.customCAPathList);
         }
 
         config.getDefaultClientConnection().setTimeout(timeout);
