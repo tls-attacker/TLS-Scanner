@@ -235,9 +235,7 @@ public class CertificateReportGenerator {
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
         String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-        if (ocspUrl != null) {
-            report.setOcspSupported(true);
-        }
+        report.setOcspSupported(ocspUrl != null);
     }
 
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
