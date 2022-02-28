@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.Objects;
 
 public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
@@ -26,7 +26,7 @@ public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        if (Objects.equals(TestResult.TRUE, getResult())) {
+        if (Objects.equals(TestResults.TRUE, getResult())) {
             return "Used Hash Algorithms are strong enough.";
         }
         return hashAlgorithm + " is too weak";

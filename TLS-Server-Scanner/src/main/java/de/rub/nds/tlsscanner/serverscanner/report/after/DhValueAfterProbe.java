@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhLoader;
@@ -36,33 +37,33 @@ public class DhValueAfterProbe extends AfterProbe {
 
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
-        onlyPrime = TestResult.TRUE;
-        onlySafePrime = TestResult.TRUE;
-        usesCommonDhPrimes = TestResult.NOT_TESTED_YET;
+        onlyPrime = TestResults.TRUE;
+        onlySafePrime = TestResults.TRUE;
+        usesCommonDhPrimes = TestResults.NOT_TESTED_YET;
 
         Integer shortestBitLength = Integer.MAX_VALUE;
         if (publicKeyContainer != null && publicKeyContainer.getExtractedValueList().size() > 2) {
             if (!publicKeyContainer.areAllValuesDifferent()) {
-                reuse = TestResult.TRUE;
+                reuse = TestResults.TRUE;
             } else {
-                reuse = TestResult.FALSE;
+                reuse = TestResults.FALSE;
             }
         } else {
-            if (report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
-                reuse = TestResult.ERROR_DURING_TEST;
+            if (report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResults.TRUE) {
+                reuse = TestResults.ERROR_DURING_TEST;
             } else {
-                reuse = TestResult.COULD_NOT_TEST;
+                reuse = TestResults.COULD_NOT_TEST;
             }
         }
 
         if (publicKeyContainer != null && !publicKeyContainer.getExtractedValueList().isEmpty()) {
             for (Object o : publicKeyContainer.getExtractedValueList()) {
                 CustomDhPublicKey publicKey = (CustomDhPublicKey) o;
-                if (onlyPrime == TestResult.TRUE && !publicKey.getModulus().isProbablePrime(30)) {
-                    onlyPrime = TestResult.FALSE;
+                if (onlyPrime == TestResults.TRUE && !publicKey.getModulus().isProbablePrime(30)) {
+                    onlyPrime = TestResults.FALSE;
                 }
-                if (onlySafePrime == TestResult.TRUE && !isSafePrime(publicKey.getModulus())) {
-                    onlySafePrime = TestResult.FALSE;
+                if (onlySafePrime == TestResults.TRUE && !isSafePrime(publicKey.getModulus())) {
+                    onlySafePrime = TestResults.FALSE;
                 }
 
                 for (CommonDhValues value : loadedCommonDhValues) {
@@ -77,20 +78,20 @@ public class DhValueAfterProbe extends AfterProbe {
                 }
             }
             if (usedCommonValues.size() > 0) {
-                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.TRUE);
             } else {
-                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.FALSE);
+                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.FALSE);
             }
             if (usedCommonValues.size() > 0) {
-                usesCommonDhPrimes = TestResult.TRUE;
+                usesCommonDhPrimes = TestResults.TRUE;
             } else {
-                usesCommonDhPrimes = TestResult.FALSE;
+                usesCommonDhPrimes = TestResults.FALSE;
             }
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.COULD_NOT_TEST);
-            onlyPrime = TestResult.COULD_NOT_TEST;
-            onlySafePrime = TestResult.COULD_NOT_TEST;
-            usesCommonDhPrimes = TestResult.COULD_NOT_TEST;
+            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.COULD_NOT_TEST);
+            onlyPrime = TestResults.COULD_NOT_TEST;
+            onlySafePrime = TestResults.COULD_NOT_TEST;
+            usesCommonDhPrimes = TestResults.COULD_NOT_TEST;
         }
 
         report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, usesCommonDhPrimes);

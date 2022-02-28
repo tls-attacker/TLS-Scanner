@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateVersionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 
 public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck {
 
@@ -47,7 +47,7 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         return new CertificateVersionGuidelineCheckResult(
-            TestResult.of(this.version == report.getCertificate().getVersionNumber()),
+            TestResults.of(this.version == report.getCertificate().getVersionNumber()),
             report.getCertificate().getVersionNumber());
     }
 

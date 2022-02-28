@@ -11,12 +11,11 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Collections;
 
 public class ExtensionGuidelineCheckTest {
 
@@ -27,7 +26,7 @@ public class ExtensionGuidelineCheckTest {
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResult.TRUE, result.getResult());
+        Assert.assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -37,6 +36,6 @@ public class ExtensionGuidelineCheckTest {
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResult.FALSE, result.getResult());
+        Assert.assertEquals(TestResults.FALSE, result.getResult());
     }
 }

@@ -37,9 +37,9 @@ public class SiteReportRaterTest {
     @Test
     public void testGetScoreReport() throws Exception {
         HashMap<String, TestResult> resultMap = new HashMap<>();
-        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResult.FALSE);
-        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResult.TRUE);
-        resultMap.put(AnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResult.TRUE);
+        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResults.FALSE);
+        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResults.TRUE);
+        resultMap.put(AnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResults.TRUE);
 
         SiteReportRater rater = SiteReportRater.getSiteReportRater();
         ScoreReport report = rater.getScoreReport(resultMap);

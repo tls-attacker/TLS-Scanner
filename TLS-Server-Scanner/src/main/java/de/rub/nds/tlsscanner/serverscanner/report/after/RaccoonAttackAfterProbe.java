@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
@@ -53,10 +54,10 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        supportsLegacyPrf = report.getResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
-        supportsSha256 = report.getResult(AnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
-        supportsSha384 = report.getResult(AnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
-        supportsSSLv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
+        supportsLegacyPrf = report.getResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResults.TRUE;
+        supportsSha256 = report.getResult(AnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResults.TRUE;
+        supportsSha384 = report.getResult(AnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResults.TRUE;
+        supportsSSLv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE;
         ExtractedValueContainer publicKeyContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
         List extractedValueList = publicKeyContainer.getExtractedValueList();
@@ -68,10 +69,10 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         report.setRaccoonAttackProbabilities(attackProbabilityList);
 
         TestResult reusesDhPublicKey = report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY);
-        if (reusesDhPublicKey == TestResult.TRUE) {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.TRUE);
+        if (reusesDhPublicKey == TestResults.TRUE) {
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResults.TRUE);
         } else {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResults.FALSE);
 
         }
     }

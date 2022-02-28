@@ -17,7 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupOrderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -48,8 +48,8 @@ public class NamedCurvesOrderProbe extends TlsProbe {
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
 
         return new NamedGroupOrderResult(
-            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResult.TRUE
-                : TestResult.FALSE);
+            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
+                : TestResults.FALSE);
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
@@ -81,7 +81,7 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupOrderResult(TestResult.COULD_NOT_TEST);
+        return new NamedGroupOrderResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

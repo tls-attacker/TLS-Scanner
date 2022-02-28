@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureHashAlgorithmOrderResult;
@@ -42,8 +42,8 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
             getSelectedSignatureAndHashAlgorithm(toTestList);
 
         return new SignatureHashAlgorithmOrderResult(
-            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResult.TRUE
-                : TestResult.FALSE);
+            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
+                : TestResults.FALSE);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureHashAlgorithmOrderResult(TestResult.COULD_NOT_TEST);
+        return new SignatureHashAlgorithmOrderResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

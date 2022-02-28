@@ -13,7 +13,7 @@ import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,7 +29,7 @@ public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResul
 
     @Override
     public String display() {
-        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
+        if (Objects.equals(TestResults.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
         if (notRecommendedAlgorithms.isEmpty()) {

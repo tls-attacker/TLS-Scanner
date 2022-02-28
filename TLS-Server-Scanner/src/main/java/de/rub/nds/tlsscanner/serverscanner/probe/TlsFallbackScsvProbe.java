@@ -24,11 +24,10 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsFallbackScsvResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,11 +65,11 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            return new TlsFallbackScsvResult(TestResult.TRUE);
+            return new TlsFallbackScsvResult(TestResults.TRUE);
         } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug("{}", state.getWorkflowTrace());
-            return new TlsFallbackScsvResult(TestResult.FALSE);
+            return new TlsFallbackScsvResult(TestResults.FALSE);
         }
     }
 
@@ -92,7 +91,7 @@ public class TlsFallbackScsvProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new TlsFallbackScsvResult(TestResult.COULD_NOT_TEST);
+        return new TlsFallbackScsvResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

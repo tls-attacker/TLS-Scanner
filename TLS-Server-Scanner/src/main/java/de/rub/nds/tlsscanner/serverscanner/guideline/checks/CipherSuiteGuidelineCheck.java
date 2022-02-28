@@ -16,10 +16,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CipherSuiteGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +53,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
-        return new CipherSuiteGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new CipherSuiteGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

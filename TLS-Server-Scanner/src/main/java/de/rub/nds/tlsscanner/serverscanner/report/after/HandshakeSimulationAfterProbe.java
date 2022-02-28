@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -188,12 +188,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkVulnerabilities(SiteReport report, SimulatedClientResult simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResults.TRUE
             && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
         }
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResults.TRUE
             && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
         }
@@ -201,7 +201,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
         }
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResults.TRUE) {
             if (cipherSuite.name().contains("3DES") || cipherSuite.name().contains("IDEA")
                 || cipherSuite.name().contains("GOST")) {
                 simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());

@@ -11,9 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.Objects;
 
 public abstract class CertificateGuidelineCheck extends GuidelineCheck {
@@ -52,22 +51,22 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck {
             CertificateChain chain = report.getCertificateChainList().get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
-            if (Objects.equals(TestResult.TRUE, currentResult.getResult())) {
+            if (Objects.equals(TestResults.TRUE, currentResult.getResult())) {
                 passFlag = true;
-            } else if (Objects.equals(TestResult.FALSE, currentResult.getResult())) {
+            } else if (Objects.equals(TestResults.FALSE, currentResult.getResult())) {
                 failFlag = true;
             } else {
                 uncertainFlag = true;
             }
         }
         if (this.atLeastOneCertificateShallPass && passFlag) {
-            result.setResult(TestResult.TRUE);
+            result.setResult(TestResults.TRUE);
         } else if (passFlag && !uncertainFlag && !failFlag) {
-            result.setResult(TestResult.TRUE);
+            result.setResult(TestResults.TRUE);
         } else if (failFlag) {
-            result.setResult(TestResult.FALSE);
+            result.setResult(TestResults.FALSE);
         } else {
-            result.setResult(TestResult.UNCERTAIN);
+            result.setResult(TestResults.UNCERTAIN);
         }
         return result;
     }

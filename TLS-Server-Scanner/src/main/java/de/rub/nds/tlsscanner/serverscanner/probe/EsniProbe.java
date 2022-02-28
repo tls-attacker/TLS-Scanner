@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -80,11 +80,11 @@ public class EsniProbe extends TlsProbe {
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(TestResult.ERROR_DURING_TEST);
+            return new SniResult(TestResults.ERROR_DURING_TEST);
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            return (new EsniResult(TestResult.TRUE));
+            return (new EsniResult(TestResults.TRUE));
         } else {
-            return (new EsniResult(TestResult.FALSE));
+            return (new EsniResult(TestResults.FALSE));
         }
     }
 
@@ -99,7 +99,7 @@ public class EsniProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SniResult(TestResult.COULD_NOT_TEST);
+        return new SniResult(TestResults.COULD_NOT_TEST);
     }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {

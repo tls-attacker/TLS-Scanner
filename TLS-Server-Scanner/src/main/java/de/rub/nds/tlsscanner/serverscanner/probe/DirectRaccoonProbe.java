@@ -24,7 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
@@ -161,18 +161,18 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2), TestResult.TRUE))) {
+        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2), TestResults.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {
             return false;
         }
-        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DH), TestResult.TRUE);
+        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DH), TestResults.TRUE);
     }
 
     @Override
@@ -182,6 +182,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DirectRaccoonResult(TestResult.COULD_NOT_TEST);
+        return new DirectRaccoonResult(TestResults.COULD_NOT_TEST);
     }
 }

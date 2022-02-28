@@ -23,12 +23,11 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -136,7 +135,7 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
+        this.supportsTls13 = TestResults.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override

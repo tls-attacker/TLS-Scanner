@@ -11,10 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.List;
 
 public class CompressionsResult extends ProbeResult {
@@ -31,15 +30,15 @@ public class CompressionsResult extends ProbeResult {
         if (compressions != null) {
             report.setSupportedCompressionMethods(compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
-                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
+                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
-                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE);
+                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
+                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
     }
 

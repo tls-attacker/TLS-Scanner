@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -41,7 +42,7 @@ public class AlpacaProbe extends TlsProbe {
         TestResult strictSni = isSupportingStrictSni();
         TestResult strictAlpn;
         if (!alpnSupported) {
-            strictAlpn = TestResult.FALSE;
+            strictAlpn = TestResults.FALSE;
         } else {
             strictAlpn = isSupportingStrictAlpn();
         }
@@ -81,9 +82,9 @@ public class AlpacaProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
@@ -96,9 +97,9 @@ public class AlpacaProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
@@ -109,7 +110,7 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new AlpacaResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new AlpacaResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

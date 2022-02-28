@@ -15,9 +15,8 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
         List<SignatureAndHashAlgorithm> algorithms = tls13 ? report.getSupportedSignatureAndHashAlgorithmsTls13()
             : report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms == null) {
-            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.UNCERTAIN, null);
+            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -58,7 +57,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(notRecommended.isEmpty()),
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
             notRecommended);
     }
 

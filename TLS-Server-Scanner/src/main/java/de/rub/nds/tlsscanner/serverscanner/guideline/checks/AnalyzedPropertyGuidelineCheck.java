@@ -15,6 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -42,7 +43,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         TestResult reportResult = report.getResult(this.property);
-        switch (reportResult) {
+        switch ((TestResults)reportResult) {
             case UNCERTAIN:
             case COULD_NOT_TEST:
             case CANNOT_BE_TESTED:
@@ -50,8 +51,10 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(reportResult, property, result, reportResult);
+		default:
+			break;
         }
-        return new AnalyzedPropertyGuidelineCheckResult(TestResult.of(reportResult.equals(this.result)), property,
+        return new AnalyzedPropertyGuidelineCheckResult(TestResults.of(reportResult.equals(this.result)), property,
             result, reportResult);
     }
 

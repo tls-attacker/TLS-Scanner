@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.LinkedList;
@@ -36,13 +36,13 @@ public class TokenbindingResult extends ProbeResult {
         report.setSupportedTokenBindingKeyParameters(supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(supportedTokenBindingVersion);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
-            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.TRUE);
+            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             if (report.getSupportedExtensions() == null) {
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());
             }
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.FALSE);
+            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
         }
     }
 }

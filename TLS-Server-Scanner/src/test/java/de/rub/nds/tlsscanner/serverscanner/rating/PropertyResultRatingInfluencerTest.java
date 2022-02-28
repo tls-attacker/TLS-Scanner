@@ -22,24 +22,24 @@ public class PropertyResultRatingInfluencerTest {
      */
     @Test
     public void testCompareTo() {
-        PropertyResultRatingInfluencer ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200);
-        PropertyResultRatingInfluencer ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200);
+        PropertyResultRatingInfluencer ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200);
+        PropertyResultRatingInfluencer ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, -200);
         assertEquals(1, ri1.compareTo(ri2));
         assertEquals(-1, ri2.compareTo(ri1));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, 300, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 200);
+        ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200, 200);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
+        ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 300, 100);
         assertEquals(0, ri1.compareTo(ri2));
     }
 

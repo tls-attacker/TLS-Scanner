@@ -12,15 +12,16 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
 
 public class ECPointFormatResult extends ProbeResult {
 
-    private TestResult supportsUncompressedPoint = TestResult.FALSE;
-    private TestResult supportsANSIX962CompressedPrime = TestResult.FALSE;
-    private TestResult supportsANSIX962CompressedChar2 = TestResult.FALSE;
+    private TestResult supportsUncompressedPoint = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
 
     private final List<ECPointFormat> supportedFormats;
     private final TestResult tls13SecpCompression;
@@ -37,22 +38,22 @@ public class ECPointFormatResult extends ProbeResult {
             for (ECPointFormat format : supportedFormats) {
                 switch (format) {
                     case UNCOMPRESSED:
-                        supportsUncompressedPoint = TestResult.TRUE;
+                        supportsUncompressedPoint = TestResults.TRUE;
                         break;
                     case ANSIX962_COMPRESSED_PRIME:
-                        supportsANSIX962CompressedPrime = TestResult.TRUE;
+                        supportsANSIX962CompressedPrime = TestResults.TRUE;
                         break;
                     case ANSIX962_COMPRESSED_CHAR2:
-                        supportsANSIX962CompressedChar2 = TestResult.TRUE;
+                        supportsANSIX962CompressedChar2 = TestResults.TRUE;
                         break;
                     default: // will never occur as all enum types are caught
                         ;
                 }
             }
         } else {
-            supportsUncompressedPoint = TestResult.COULD_NOT_TEST;
-            supportsANSIX962CompressedPrime = TestResult.COULD_NOT_TEST;
-            supportsANSIX962CompressedChar2 = TestResult.COULD_NOT_TEST;
+            supportsUncompressedPoint = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
         report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
@@ -60,7 +61,7 @@ public class ECPointFormatResult extends ProbeResult {
         if (tls13SecpCompression != null) {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
     }
 

@@ -27,8 +27,8 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAct
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsRetransmissionsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -65,9 +65,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -88,9 +88,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -125,7 +125,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsRetransmissionsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

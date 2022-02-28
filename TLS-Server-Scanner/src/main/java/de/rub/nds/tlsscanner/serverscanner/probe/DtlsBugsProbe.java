@@ -34,6 +34,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsBugsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -55,8 +56,8 @@ public class DtlsBugsProbe extends TlsProbe {
                 isEarlyFinished());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsBugsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST);
+            return new DtlsBugsResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
+                TestResults.ERROR_DURING_TEST);
         }
     }
 
@@ -75,9 +76,9 @@ public class DtlsBugsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -104,9 +105,9 @@ public class DtlsBugsProbe extends TlsProbe {
         ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
         if (receivedMessage != null && receivedMessageModified != null && receivedMessage.getCompleteResultingMessage()
             .equals(receivedMessageModified.getCompleteResultingMessage())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -120,9 +121,9 @@ public class DtlsBugsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -156,7 +157,7 @@ public class DtlsBugsProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

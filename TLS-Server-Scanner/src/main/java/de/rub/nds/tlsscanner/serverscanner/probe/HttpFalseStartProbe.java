@@ -14,10 +14,10 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -31,7 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
@@ -70,7 +70,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-                    return new HttpFalseStartResult(TestResult.TRUE);
+                    return new HttpFalseStartResult(TestResults.TRUE);
                 } else if (message instanceof FinishedMessage) {
                     receivedServerFinishedMessage = true;
                 }
@@ -79,11 +79,11 @@ public class HttpFalseStartProbe extends HttpsProbe {
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
             // handshake
-            return new HttpFalseStartResult(TestResult.FALSE);
+            return new HttpFalseStartResult(TestResults.FALSE);
         }
         // received no http response -> maybe server did not understand
         // request
-        return new HttpFalseStartResult(TestResult.UNCERTAIN);
+        return new HttpFalseStartResult(TestResults.UNCERTAIN);
     }
 
     private Config getConfig() {
@@ -115,7 +115,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
     }
 
     @Override
@@ -124,6 +124,6 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
+        return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
     }
 }

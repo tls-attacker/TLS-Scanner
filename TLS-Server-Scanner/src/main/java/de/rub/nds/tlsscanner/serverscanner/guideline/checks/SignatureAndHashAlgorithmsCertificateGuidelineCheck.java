@@ -15,9 +15,8 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends Guideli
                 nonRecommended.add(algorithm);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()),
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()),
             nonRecommended);
     }
 

@@ -47,7 +47,7 @@ public class RecommendationsSerializationTest {
         original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
         PropertyResultRecommendation r =
-            new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
+            new PropertyResultRecommendation(TestResults.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
 
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));

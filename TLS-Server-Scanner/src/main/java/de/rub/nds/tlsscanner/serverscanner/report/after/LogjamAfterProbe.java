@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -18,21 +19,21 @@ public class LogjamAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult vulnerable = TestResult.FALSE;
+        TestResult vulnerable = TestResults.FALSE;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
                     if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
                         || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
                         || suite.name().contains("DHE_RSA_EXPORT")) {
-                        vulnerable = TestResult.TRUE;
+                        vulnerable = TestResults.TRUE;
                     }
                 }
             } else {
-                vulnerable = TestResult.UNCERTAIN;
+                vulnerable = TestResults.UNCERTAIN;
             }
         } catch (Exception e) {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM, vulnerable);
     }

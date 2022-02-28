@@ -46,13 +46,13 @@ public class InfluencersSerializationTest {
         original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 500));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.FALSE, 50));
         influencers.add(i);
 
         i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, 100));
         influencers.add(i);
 
         original.setRatingInfluencers(influencers);

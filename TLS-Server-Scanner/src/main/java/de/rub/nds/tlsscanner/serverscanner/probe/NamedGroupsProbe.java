@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
-import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.EllipticCurveType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -31,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -57,7 +57,7 @@ public class NamedGroupsProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    private TestResult ignoresEcdsaGroupDisparity = TestResult.FALSE;
+    private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
     public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
@@ -181,11 +181,11 @@ public class NamedGroupsProbe extends TlsProbe {
                 // remove groups that are not required by the server even
                 // if they are used for the certificate or KEX signature
                 if (!toTestList.contains(certificateGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateGroup = null;
                 }
                 if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateSigGroup = null;
                 }
 
@@ -265,8 +265,8 @@ public class NamedGroupsProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {
@@ -278,7 +278,7 @@ public class NamedGroupsProbe extends TlsProbe {
         }
         List<CipherSuite> allEcCipherSuites = getAllEcCipherSuites();
         if (allEcCipherSuites.isEmpty()) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
 
         tlsConfig.setDefaultClientSupportedCipherSuites(allEcCipherSuites);
@@ -286,7 +286,7 @@ public class NamedGroupsProbe extends TlsProbe {
         executeState(state);
 
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
-            return TestResult.UNCERTAIN;
+            return TestResults.UNCERTAIN;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
             state.getWorkflowTrace())) {
             HandshakeMessage skeMsg = WorkflowTraceUtil
@@ -294,12 +294,12 @@ public class NamedGroupsProbe extends TlsProbe {
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
-                    return TestResult.TRUE;
+                    return TestResults.TRUE;
                 }
             }
 
         }
-        return TestResult.FALSE;
+        return TestResults.FALSE;
     }
 
     private Config getBasicConfig() {
@@ -353,12 +353,12 @@ public class NamedGroupsProbe extends TlsProbe {
                 certificateSigGroup = context.getEcCertificateSignatureCurve();
 
                 if (!toTestList.contains(certificateGroup) && certificateGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateGroup = null;
                 }
 
                 if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateSigGroup = null;
                 }
 
@@ -452,8 +452,8 @@ public class NamedGroupsProbe extends TlsProbe {
         });
 
         if (foundMismatch) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
-        return TestResult.FALSE;
+        return TestResults.FALSE;
     }
 }

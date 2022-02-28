@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CcaRequiredResult;
@@ -42,15 +42,15 @@ public class CcaRequiredProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return new CcaRequiredResult(TestResult.FALSE);
+            return new CcaRequiredResult(TestResults.FALSE);
         } else {
-            return new CcaRequiredResult(TestResult.TRUE);
+            return new CcaRequiredResult(TestResults.TRUE);
         }
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE);
+        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
+        return new CcaRequiredResult(TestResults.COULD_NOT_TEST);
     }
 
     private Config generateConfig() {

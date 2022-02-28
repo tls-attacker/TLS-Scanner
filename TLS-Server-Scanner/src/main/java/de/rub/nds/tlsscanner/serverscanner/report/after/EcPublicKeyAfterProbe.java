@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.after;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -25,15 +26,15 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
                 report.getExtractedValueContainerMap().get(TrackableValueType.ECDHE_PUBKEY);
             if (valueContainer.getNumberOfExtractedValues() >= 2) {
                 if (!valueContainer.areAllValuesDifferent()) {
-                    reuse = TestResult.TRUE;
+                    reuse = TestResults.TRUE;
                 } else {
-                    reuse = TestResult.FALSE;
+                    reuse = TestResults.FALSE;
                 }
             } else {
-                reuse = TestResult.COULD_NOT_TEST;
+                reuse = TestResults.COULD_NOT_TEST;
             }
         } catch (Exception e) {
-            reuse = TestResult.ERROR_DURING_TEST;
+            reuse = TestResults.ERROR_DURING_TEST;
         }
 
         report.putResult(AnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);

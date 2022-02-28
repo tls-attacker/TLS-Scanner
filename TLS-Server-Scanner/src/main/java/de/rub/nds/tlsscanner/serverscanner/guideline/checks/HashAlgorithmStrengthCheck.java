@@ -17,8 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmStrengthCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.Comparator;
 
 /**
@@ -61,10 +60,10 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             HashAlgorithm hashAlgorithm = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                return new HashAlgorithmStrengthCheckResult(TestResult.FALSE, hashAlgorithm);
+                return new HashAlgorithmStrengthCheckResult(TestResults.FALSE, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(TestResult.TRUE, null);
+        return new HashAlgorithmStrengthCheckResult(TestResults.TRUE, null);
     }
 
     @Override

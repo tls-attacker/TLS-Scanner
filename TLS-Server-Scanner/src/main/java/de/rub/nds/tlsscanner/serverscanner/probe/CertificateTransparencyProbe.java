@@ -9,20 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.asn1.model.*;
+import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
+import de.rub.nds.asn1.model.Asn1Field;
+import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
+import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
-
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.SignedCertificateTimestampExtensionMessage;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -30,13 +34,17 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import org.bouncycastle.crypto.tls.Certificate;
-
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe extends TlsProbe {
 
@@ -68,10 +76,10 @@ public class CertificateTransparencyProbe extends TlsProbe {
         getTlsHandshakeSCTs(tlsConfig);
         evaluateChromeCtPolicy();
 
-        TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
-        TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResult.TRUE : TestResult.FALSE);
-        TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResult.TRUE : TestResult.FALSE);
-        TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResult.TRUE : TestResult.FALSE);
+        TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
+        TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
+        TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
         return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
             supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
     }
@@ -226,8 +234,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CertificateTransparencyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-            TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
+        return new CertificateTransparencyResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
+            TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
             new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
     }
 

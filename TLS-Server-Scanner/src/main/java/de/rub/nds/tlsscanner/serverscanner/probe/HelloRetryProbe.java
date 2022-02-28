@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HelloRetryResult;
@@ -35,8 +36,8 @@ import java.util.LinkedList;
  */
 public class HelloRetryProbe extends TlsProbe {
 
-    private TestResult sendsHelloRetryRequest = TestResult.FALSE;
-    private TestResult issuesCookie = TestResult.FALSE;
+    private TestResult sendsHelloRetryRequest = TestResults.FALSE;
+    private TestResult issuesCookie = TestResults.FALSE;
 
     public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HELLO_RETRY, scannerConfig);
@@ -51,12 +52,12 @@ public class HelloRetryProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new HelloRetryResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
@@ -90,10 +91,10 @@ public class HelloRetryProbe extends TlsProbe {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
             && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
-            sendsHelloRetryRequest = TestResult.TRUE;
+            sendsHelloRetryRequest = TestResults.TRUE;
             if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
-                issuesCookie = TestResult.TRUE;
+                issuesCookie = TestResults.TRUE;
             }
         }
     }

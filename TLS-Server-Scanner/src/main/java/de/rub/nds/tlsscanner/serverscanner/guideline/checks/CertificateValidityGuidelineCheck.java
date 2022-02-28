@@ -16,8 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateValidityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -51,7 +50,7 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
         CertificateReport report = chain.getCertificateReportList().get(0);
         Duration validityPeriod = Duration.between(Instant.ofEpochMilli(report.getValidFrom().getTime()),
             Instant.ofEpochMilli(report.getValidTo().getTime()));
-        return new CertificateValidityGuidelineCheckResult(TestResult.of(validityPeriod.toDays() <= this.days), days,
+        return new CertificateValidityGuidelineCheckResult(TestResults.of(validityPeriod.toDays() <= this.days), days,
             validityPeriod.toDays());
     }
 

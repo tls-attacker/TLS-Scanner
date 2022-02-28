@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -39,12 +40,12 @@ public class DtlsMessageSequenceResult extends ProbeResult {
         report.putResult(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             acceptsSkippedMessageNumbersMultiple);
         report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
-        if (acceptsSkippedMessageNumbersOnce == TestResult.FALSE
-            && acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
-            && acceptsRandomMessageNumbers == TestResult.FALSE) {
-            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
+        if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
+            && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+            && acceptsRandomMessageNumbers == TestResults.FALSE) {
+            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
         } else {
-            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
+            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
         }
     }
 

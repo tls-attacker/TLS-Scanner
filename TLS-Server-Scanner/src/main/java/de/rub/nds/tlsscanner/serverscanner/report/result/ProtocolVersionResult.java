@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
@@ -36,66 +36,66 @@ public class ProtocolVersionResult extends ProbeResult {
 
             for (ProtocolVersion version : supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.DTLS12) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.SSL2) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.SSL3) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.TLS10) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.TLS11) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.TLS12) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.TLS13) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
                 }
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.DTLS12) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.SSL2) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.SSL3) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.TLS10) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.TLS11) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.TLS12) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
                 }
                 if (version == ProtocolVersion.TLS13) {
-                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
                 }
             }
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
         report.setVersions(supportedProtocolVersions);
     }

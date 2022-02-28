@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -22,7 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
@@ -56,7 +55,7 @@ public class SniProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(TestResult.FALSE);
+            return new SniResult(TestResults.FALSE);
         }
         // Test if we can get a hello with SNI
         config.setAddServerNameIndicationExtension(true);
@@ -65,11 +64,11 @@ public class SniProbe extends TlsProbe {
         state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(TestResult.TRUE);
+            return new SniResult(TestResults.TRUE);
         }
         // We cannot get a ServerHello from this Server...
         LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
-        return new SniResult(TestResult.UNCERTAIN);
+        return new SniResult(TestResults.UNCERTAIN);
     }
 
     @Override
@@ -83,6 +82,6 @@ public class SniProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SniResult(TestResult.COULD_NOT_TEST);
+        return new SniResult(TestResults.COULD_NOT_TEST);
     }
 }

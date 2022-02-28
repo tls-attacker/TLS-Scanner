@@ -9,22 +9,19 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import static org.junit.Assert.assertEquals;
+
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
-
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.LinkedList;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 /**
  * TestSet should check if DhValueAfterProbe detects insecure DH-Parameters as insecure ones and secure parameters as
@@ -69,10 +66,10 @@ public class DhValueAfterProbeTest {
 
         analyseDhParams();
 
-        assertEquals(TestResult.TRUE, test.getOnlyPrime());
-        assertEquals(TestResult.TRUE, test.getOnlySafePrime());
-        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
-        assertEquals(TestResult.COULD_NOT_TEST, test.getReuse());
+        assertEquals(TestResults.TRUE, test.getOnlyPrime());
+        assertEquals(TestResults.TRUE, test.getOnlySafePrime());
+        assertEquals(TestResults.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResults.COULD_NOT_TEST, test.getReuse());
 
     }
 
@@ -89,10 +86,10 @@ public class DhValueAfterProbeTest {
 
         analyseDhParams();
 
-        assertEquals(TestResult.FALSE, test.getOnlyPrime());
-        assertEquals(TestResult.FALSE, test.getOnlySafePrime());
-        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
-        assertEquals(TestResult.COULD_NOT_TEST, test.getReuse());
+        assertEquals(TestResults.FALSE, test.getOnlyPrime());
+        assertEquals(TestResults.FALSE, test.getOnlySafePrime());
+        assertEquals(TestResults.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResults.COULD_NOT_TEST, test.getReuse());
 
     }
 
@@ -118,10 +115,10 @@ public class DhValueAfterProbeTest {
 
         analyseDhParams();
 
-        assertEquals(TestResult.TRUE, test.getOnlyPrime());
-        assertEquals(TestResult.TRUE, test.getOnlySafePrime());
-        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
-        assertEquals(TestResult.TRUE, test.getReuse());
+        assertEquals(TestResults.TRUE, test.getOnlyPrime());
+        assertEquals(TestResults.TRUE, test.getOnlySafePrime());
+        assertEquals(TestResults.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResults.TRUE, test.getReuse());
 
     }
 

@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
 public class ExtensionResult extends ProbeResult {
 
     private List<ExtensionType> allSupportedExtensions;
-    private TestResult extendedMasterSecret = TestResult.FALSE;
-    private TestResult encryptThenMac = TestResult.FALSE;
-    private TestResult secureRenegotiation = TestResult.FALSE;
-    private TestResult sessionTickets = TestResult.FALSE;
-    private TestResult certStatusRequest = TestResult.FALSE;
-    private TestResult certStatusRequestV2 = TestResult.FALSE;
+    private TestResult extendedMasterSecret = TestResults.FALSE;
+    private TestResult encryptThenMac = TestResults.FALSE;
+    private TestResult secureRenegotiation = TestResults.FALSE;
+    private TestResult sessionTickets = TestResults.FALSE;
+    private TestResult certStatusRequest = TestResults.FALSE;
+    private TestResult certStatusRequestV2 = TestResults.FALSE;
 
     public ExtensionResult(List<ExtensionType> allSupportedExtensions) {
         super(ProbeType.EXTENSIONS);
@@ -41,31 +42,31 @@ public class ExtensionResult extends ProbeResult {
         if (allSupportedExtensions != null) {
             for (ExtensionType type : allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC) {
-                    encryptThenMac = TestResult.TRUE;
+                    encryptThenMac = TestResults.TRUE;
                 }
                 if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
-                    extendedMasterSecret = TestResult.TRUE;
+                    extendedMasterSecret = TestResults.TRUE;
                 }
                 if (type == ExtensionType.RENEGOTIATION_INFO) {
-                    secureRenegotiation = TestResult.TRUE;
+                    secureRenegotiation = TestResults.TRUE;
                 }
                 if (type == ExtensionType.SESSION_TICKET) {
-                    sessionTickets = TestResult.TRUE;
+                    sessionTickets = TestResults.TRUE;
                 }
                 if (type == ExtensionType.STATUS_REQUEST) {
-                    certStatusRequest = TestResult.TRUE;
+                    certStatusRequest = TestResults.TRUE;
                 }
                 if (type == ExtensionType.STATUS_REQUEST_V2) {
-                    certStatusRequestV2 = TestResult.TRUE;
+                    certStatusRequestV2 = TestResults.TRUE;
                 }
             }
         } else {
-            encryptThenMac = TestResult.COULD_NOT_TEST;
-            extendedMasterSecret = TestResult.COULD_NOT_TEST;
-            secureRenegotiation = TestResult.COULD_NOT_TEST;
-            sessionTickets = TestResult.COULD_NOT_TEST;
-            certStatusRequest = TestResult.COULD_NOT_TEST;
-            certStatusRequestV2 = TestResult.COULD_NOT_TEST;
+            encryptThenMac = TestResults.COULD_NOT_TEST;
+            extendedMasterSecret = TestResults.COULD_NOT_TEST;
+            secureRenegotiation = TestResults.COULD_NOT_TEST;
+            sessionTickets = TestResults.COULD_NOT_TEST;
+            certStatusRequest = TestResults.COULD_NOT_TEST;
+            certStatusRequestV2 = TestResults.COULD_NOT_TEST;
         }
         report.putResult(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
         report.putResult(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);

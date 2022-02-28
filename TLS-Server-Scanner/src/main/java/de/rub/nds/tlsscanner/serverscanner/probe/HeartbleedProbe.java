@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -57,7 +57,7 @@ public class HeartbleedProbe extends TlsProbe {
         }
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
-        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
+        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE);
     }
 
     @Override
@@ -85,6 +85,6 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HeartbleedResult(TestResult.COULD_NOT_TEST);
+        return new HeartbleedResult(TestResults.COULD_NOT_TEST);
     }
 }

@@ -15,10 +15,10 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -32,7 +32,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -100,7 +100,7 @@ public class HttpHeaderProbe extends HttpsProbe {
         } else {
             headerList = new LinkedList<>();
         }
-        return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
+        return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override
@@ -114,6 +114,6 @@ public class HttpHeaderProbe extends HttpsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
+        return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
     }
 }

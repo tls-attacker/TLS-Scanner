@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -30,13 +31,13 @@ public class HelloRetryResult extends ProbeResult {
         if (issuesCookie != null) {
             report.putResult(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
         } else {
-            report.putResult(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResult.ERROR_DURING_TEST);
+            report.putResult(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
         }
 
         if (sendsHelloRetryRequest != null) {
             report.putResult(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
         } else {
-            report.putResult(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResult.ERROR_DURING_TEST);
+            report.putResult(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
         }
     }
 }

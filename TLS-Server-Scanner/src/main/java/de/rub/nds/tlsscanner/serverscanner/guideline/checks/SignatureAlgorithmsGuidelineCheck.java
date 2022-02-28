@@ -16,9 +16,8 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            return new SignatureAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, null);
+            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
@@ -54,7 +53,7 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck {
                 notRecommended.add(alg.getSignatureAlgorithm());
             }
         }
-        return new SignatureAlgorithmsGuidelineCheckResult(TestResult.of(notRecommended.isEmpty()), notRecommended);
+        return new SignatureAlgorithmsGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override

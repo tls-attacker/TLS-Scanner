@@ -13,7 +13,7 @@ import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -45,10 +45,10 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
+        if (Objects.equals(TestResults.UNCERTAIN, getResult())) {
             return "Missing information.";
         }
-        if (Objects.equals(TestResult.TRUE, getResult())) {
+        if (Objects.equals(TestResults.TRUE, getResult())) {
             return "Server passed the named groups check.";
         }
         if (notRecommendedGroups != null && !notRecommendedGroups.isEmpty()) {

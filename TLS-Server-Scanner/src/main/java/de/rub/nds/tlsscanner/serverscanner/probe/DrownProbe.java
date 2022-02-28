@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -46,9 +47,9 @@ public class DrownProbe extends TlsProbe {
         GeneralDrownAttacker attacker = new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
         Boolean generalDrown = attacker.isVulnerable();
         if (Objects.equals(generalDrown, Boolean.TRUE)) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -67,9 +68,9 @@ public class DrownProbe extends TlsProbe {
                 new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
             if (Objects.equals(generalDrown, Boolean.TRUE)) {
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             } else {
-                return TestResult.FALSE;
+                return TestResults.FALSE;
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
@@ -78,7 +79,7 @@ public class DrownProbe extends TlsProbe {
             } else {
                 LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -93,6 +94,6 @@ public class DrownProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DrownResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DrownResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 }

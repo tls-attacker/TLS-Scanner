@@ -26,8 +26,8 @@ import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -40,6 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
@@ -47,9 +48,16 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Observable;
+import java.util.Set;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -243,7 +251,7 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
-        return (result == null) ? TestResult.NOT_TESTED_YET : result;
+        return (result == null) ? TestResults.NOT_TESTED_YET : result;
     }
 
     public synchronized void removeResult(AnalyzedProperty property) {
@@ -255,8 +263,8 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-            : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResults.TRUE
+            : Objects.equals(result, Boolean.FALSE) ? TestResults.FALSE : TestResults.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -267,10 +275,10 @@ public class SiteReport extends Observable implements Serializable {
                     putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, false);
                     break;
                 case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN.toString(), TestResult.UNCERTAIN);
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN.toString(), TestResults.UNCERTAIN);
                     break;
                 default:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, TestResult.TRUE);
+                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, TestResults.TRUE);
             }
         }
     }
@@ -284,13 +292,13 @@ public class SiteReport extends Observable implements Serializable {
                     putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
                     break;
                 case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResults.UNCERTAIN);
                     break;
                 default:
                     putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
             }
         } else {
-            resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.COULD_NOT_TEST);
+            resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResults.COULD_NOT_TEST);
         }
     }
 
@@ -660,11 +668,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized Boolean getCcaSupported() {
-        return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+        return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
     }
 
     public synchronized Boolean getCcaRequired() {
-        return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
+        return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {

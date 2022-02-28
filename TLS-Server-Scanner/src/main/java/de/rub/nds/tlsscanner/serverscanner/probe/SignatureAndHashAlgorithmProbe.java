@@ -26,6 +26,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureAndHashAlgorithmResult;
@@ -51,7 +52,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     public ProbeResult executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
-        this.respectsExtension = TestResult.TRUE;
+        this.respectsExtension = TestResults.TRUE;
         for (ProtocolVersion version : this.versions) {
             if (version.isTLS13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
@@ -93,7 +94,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
                 }
                 if (!testSet.contains(selected)) {
                     found.add(selected);
-                    respectsExtension = TestResult.FALSE;
+                    respectsExtension = TestResults.FALSE;
                     break;
                 }
                 // if any new algorithms were found
@@ -219,6 +220,6 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null, null, TestResult.COULD_NOT_TEST);
+        return new SignatureAndHashAlgorithmResult(null, null, TestResults.COULD_NOT_TEST);
     }
 }

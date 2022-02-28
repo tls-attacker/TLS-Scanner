@@ -56,7 +56,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.serverscanner.rating.Recommendations;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
@@ -73,17 +73,15 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
 import javax.xml.bind.JAXBException;
 import org.apache.commons.lang3.StringUtils;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -178,7 +176,7 @@ public class SiteReportPrinter {
     private void appendDtlsSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS Features");
         prettyAppend(builder, "Server changes port", AnalyzedProperty.CHANGES_PORT);
-        if (report.getResult(AnalyzedProperty.CHANGES_PORT) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.CHANGES_PORT) == TestResults.TRUE) {
             prettyAppend(builder, "-To random ports", AnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS);
         }
         prettyAppend(builder, "Supports fragmentation", AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
@@ -653,32 +651,32 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Supports OCSP ", AnalyzedProperty.SUPPORTS_OCSP);
         // In case extension probe & OCSP probe differ, report stapling as
         // unreliable.
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
-            && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResults.TRUE
+            && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.FALSE) {
             prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
             prettyAppend(builder, "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
                 AnsiColor.YELLOW);
             prettyAppend(builder, "The results are likely incomplete. Maybe rescan for more information? \n",
                 AnsiColor.RED);
-            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
-        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResults.FALSE
+            && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.TRUE) {
             prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
             prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.YELLOW);
-            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
         }
 
         // Print stapling support & 'must-staple'
-        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResults.TRUE) {
             prettyAppend(builder, "OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
-            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
                 prettyAppend(builder, "Must Staple", "true", AnsiColor.RED);
             } else {
                 prettyAppend(builder, "Must Staple", AnalyzedProperty.MUST_STAPLE);
             }
         } else {
-            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
-                if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
+                if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.TRUE) {
                     prettyAppend(builder, "OCSP Stapling", "true", AnsiColor.GREEN);
                 } else {
                     prettyAppend(builder, "OCSP Stapling", "false", AnsiColor.RED);
@@ -690,25 +688,25 @@ public class SiteReportPrinter {
             }
         }
 
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) != TestResult.COULD_NOT_TEST) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) != TestResults.COULD_NOT_TEST) {
             prettyAppend(builder, "OCSP Stapling (TLS 1.3)",
                 AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
             prettyAppend(builder, "Multi Stapling (TLS 1.3)", AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
         }
 
-        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE)) {
+        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
             prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
         }
 
         // Is stapling supported, but a CertificateStatus message is missing?
-        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.TRUE) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
             prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
         }
 
         // Are nonces used? If so, do they match?
         prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
-        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE)) {
+        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
             prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
         }
 
@@ -784,21 +782,21 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Supports OCSP Response SCTs", AnalyzedProperty.SUPPORTS_SCTS_OCSP);
         prettyAppend(builder, "Meets Chrome's CT Policy", AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
 
-        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE) == TestResults.TRUE) {
             prettyAppendSubheading(builder, "Precertificate SCTs");
             for (SignedCertificateTimestamp sct : report.getPrecertificateSctList().getCertificateTimestampList()) {
                 prettyAppend(builder, sct.toString() + "\n");
             }
         }
 
-        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResults.TRUE) {
             prettyAppendSubheading(builder, "TLS Handshake SCTs");
             for (SignedCertificateTimestamp sct : report.getHandshakeSctList().getCertificateTimestampList()) {
                 prettyAppend(builder, sct.toString() + "\n");
             }
         }
 
-        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResults.TRUE) {
             prettyAppendSubheading(builder, "OCSP Response SCTs");
             for (SignedCertificateTimestamp sct : report.getOcspSctList().getCertificateTimestampList()) {
                 prettyAppend(builder, sct.toString() + "\n");
@@ -941,7 +939,7 @@ public class SiteReportPrinter {
     public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
-        if ((report.getResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResult.TRUE
+        if ((report.getResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResults.TRUE
             || detail.isGreaterEqualTo(ScannerDetail.DETAILED)) && report.getRaccoonAttackProbabilities() != null) {
             prettyAppendHeading(builder, "Raccoon Attack Details");
             prettyAppend(builder,
@@ -956,7 +954,7 @@ public class SiteReportPrinter {
                             + "\t" + decimalFormat.format(probabilities.getChanceForEquation()) + "\n");
                 }
                 if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResult.TRUE) {
+                    || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResults.TRUE) {
                     prettyAppendSubheading(builder, "PSK Length Probabilities");
                     prettyAppend(builder, addIndentations("PSK Length") + addIndentations("BitLeak") + "Probability",
                         AnsiColor.BOLD);
@@ -1031,7 +1029,7 @@ public class SiteReportPrinter {
 
     public StringBuilder appendPaddingOracleResults(StringBuilder builder) {
         try {
-            if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
+            if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResults.TRUE)) {
                 prettyAppendHeading(builder, "PaddingOracle Details");
 
                 if (report.getKnownVulnerability() != null) {
@@ -1140,31 +1138,31 @@ public class SiteReportPrinter {
     public StringBuilder appendInvalidCurveResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Invalid Curve Details");
         boolean foundCouldNotTest = false;
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.NOT_TESTED_YET
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.NOT_TESTED_YET
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.NOT_TESTED_YET) {
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.NOT_TESTED_YET
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResults.NOT_TESTED_YET
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResults.NOT_TESTED_YET) {
             prettyAppend(builder, "Not Tested");
         } else if (report.getInvalidCurveResultList() == null) {
             prettyAppend(builder, "No test results");
-        } else if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.FALSE
+        } else if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.FALSE
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResults.FALSE
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResults.FALSE
             && detail != ScannerDetail.ALL) {
             prettyAppend(builder, "No Vulnerabilities found");
         } else {
             for (InvalidCurveResponse response : report.getInvalidCurveResultList()) {
-                if (response.getChosenGroupReusesKey() == TestResult.COULD_NOT_TEST
-                    || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST
-                    || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST) {
+                if (response.getChosenGroupReusesKey() == TestResults.COULD_NOT_TEST
+                    || response.getShowsVulnerability() == TestResults.COULD_NOT_TEST
+                    || response.getShowsVulnerability() == TestResults.COULD_NOT_TEST) {
                     foundCouldNotTest = true;
                 }
-                if ((response.getShowsVulnerability() == TestResult.TRUE
+                if ((response.getShowsVulnerability() == TestResults.TRUE
                     && detail.isGreaterEqualTo(ScannerDetail.NORMAL))
-                    || (response.getShowsPointsAreNotValidated() == TestResult.TRUE
+                    || (response.getShowsPointsAreNotValidated() == TestResults.TRUE
                         && detail.isGreaterEqualTo(ScannerDetail.DETAILED))
                     || detail == ScannerDetail.ALL) {
                     prettyAppend(builder, response.getVector().toString());
-                    switch (response.getShowsPointsAreNotValidated()) {
+                    switch ((TestResults)response.getShowsPointsAreNotValidated()) {
                         case TRUE:
                             prettyAppend(builder, "Server did not validate points", AnsiColor.YELLOW);
                             break;
@@ -1176,7 +1174,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test point validation", AnsiColor.YELLOW);
                             break;
                     }
-                    switch (response.getChosenGroupReusesKey()) {
+                    switch ((TestResults)response.getChosenGroupReusesKey()) {
                         case TRUE:
                             prettyAppend(builder, "Server did reuse key", AnsiColor.YELLOW);
                             break;
@@ -1187,7 +1185,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test key reuse", AnsiColor.YELLOW);
                             break;
                     }
-                    switch (response.getShowsVulnerability()) {
+                    switch ((TestResults)response.getShowsVulnerability()) {
                         case TRUE:
                             prettyAppend(builder, "Server is vulnerable", AnsiColor.RED);
                             break;
@@ -1198,7 +1196,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test for vulnerability", AnsiColor.YELLOW);
                             break;
                     }
-                    switch (response.getSideChannelSuspected()) {
+                    switch ((TestResults)response.getSideChannelSuspected()) {
                         case TRUE:
                             prettyAppend(builder, "Side Channel suspected", AnsiColor.RED);
                             break;
@@ -1285,7 +1283,7 @@ public class SiteReportPrinter {
                 for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                     prettyAppendHeading(builder,
                         "Supported in " + toHumanReadable(versionSuitePair.getVersion())
-                            + (report.getResult(AnalyzedProperty.ENFORCES_CS_ORDERING) == TestResult.TRUE
+                            + (report.getResult(AnalyzedProperty.ENFORCES_CS_ORDERING) == TestResults.TRUE
                                 ? "(server order)" : ""));
                     for (CipherSuite suite : versionSuitePair.getCipherSuiteList()) {
                         builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
@@ -1358,63 +1356,63 @@ public class SiteReportPrinter {
             prettyAppend(builder, "TLS 1.2", AnalyzedProperty.SUPPORTS_TLS_1_2);
             prettyAppend(builder, "TLS 1.3", AnalyzedProperty.SUPPORTS_TLS_1_3);
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 14", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 15", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 16", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 17", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 18", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 19", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 20", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 21", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 22", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 23", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 24", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 25", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 26", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 27", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28) == TestResult.TRUE) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28) == TestResults.TRUE) {
                 prettyAppend(builder, "TLS 1.3 Draft 28", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28);
             }
         }
@@ -1422,11 +1420,11 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendHttps(StringBuilder builder) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE) {
             prettyAppendHeading(builder, "HSTS");
             try {
 
-                if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS) == TestResults.TRUE) {
                     prettyAppend(builder, "HSTS", AnalyzedProperty.SUPPORTS_HSTS);
                     prettyAppend(builder, "HSTS Preloading", AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
                     prettyAppend(builder, "max-age (seconds)", (long) report.getHstsMaxAge());
@@ -1434,8 +1432,8 @@ public class SiteReportPrinter {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HPKP");
-                if (report.getResult(AnalyzedProperty.SUPPORTS_HPKP) == TestResult.TRUE
-                    || report.getResult(AnalyzedProperty.SUPPORTS_HPKP_REPORTING) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.SUPPORTS_HPKP) == TestResults.TRUE
+                    || report.getResult(AnalyzedProperty.SUPPORTS_HPKP_REPORTING) == TestResults.TRUE) {
                     prettyAppend(builder, "HPKP", AnalyzedProperty.SUPPORTS_HPKP);
                     prettyAppend(builder, "HPKP (report only)", AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
                     prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
@@ -1487,7 +1485,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Certificate Status Request v2", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
         prettyAppend(builder, "ESNI", AnalyzedProperty.SUPPORTS_ESNI);
 
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
             for (TokenBindingVersion version : report.getSupportedTokenBindingVersion()) {
                 builder.append(version.toString()).append("\n");
@@ -1815,10 +1813,10 @@ public class SiteReportPrinter {
                     }
                     builder.append("\n");
                 }
-                if (report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResults.TRUE) {
                     prettyAppend(builder, "Not all Groups are supported for all Cipher Suites");
                 }
-                if (report.getResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResults.TRUE) {
                     prettyAppend(builder, "Groups required for ECDSA validation are not enforced", AnsiColor.YELLOW);
                 }
                 prettyAppendHeading(builder, "NamedGroups General");
@@ -2193,7 +2191,7 @@ public class SiteReportPrinter {
 
     private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
 
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
             prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
         }

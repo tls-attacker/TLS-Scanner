@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -27,16 +28,16 @@ public class AlpacaResult extends ProbeResult {
 
     @Override
     protected void mergeData(SiteReport report) {
-        if ((strictSni == TestResult.TRUE || strictSni == TestResult.FALSE)
-            && (strictAlpn == TestResult.TRUE || strictAlpn == TestResult.FALSE)) {
+        if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
+            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
 
             TestResult alpacaMitigated;
-            if (strictAlpn == TestResult.TRUE && strictSni == TestResult.TRUE) {
-                alpacaMitigated = TestResult.TRUE;
-            } else if (strictAlpn == TestResult.TRUE || strictSni == TestResult.TRUE) {
-                alpacaMitigated = TestResult.PARTIALLY;
+            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
+                alpacaMitigated = TestResults.TRUE;
+            } else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
+                alpacaMitigated = TestResults.PARTIALLY;
             } else {
-                alpacaMitigated = TestResult.FALSE;
+                alpacaMitigated = TestResults.FALSE;
             }
             report.putResult(AnalyzedProperty.STRICT_SNI, strictSni);
             report.putResult(AnalyzedProperty.STRICT_ALPN, strictAlpn);
@@ -44,7 +45,7 @@ public class AlpacaResult extends ProbeResult {
         } else {
             report.putResult(AnalyzedProperty.STRICT_SNI, strictSni);
             report.putResult(AnalyzedProperty.STRICT_ALPN, strictAlpn);
-            report.putResult(AnalyzedProperty.ALPACA_MITIGATED, TestResult.UNCERTAIN);
+            report.putResult(AnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
         }
     }
 }

@@ -18,9 +18,8 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck {
     public GuidelineCheckResult evaluate(SiteReport report) {
         List<CertificateChain> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
+            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
@@ -58,15 +57,15 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck {
             CertificateChain chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
+                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
             }
             if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
                 if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
+                    return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
                 }
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
+        return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
     }
 
     @Override

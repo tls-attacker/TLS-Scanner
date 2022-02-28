@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -46,12 +46,12 @@ public class TlsPoodleProbe extends TlsProbe {
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
-        return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
+        return new TlsPoodleResult(vulnerable == true ? TestResults.TRUE : TestResults.FALSE);
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResults.TRUE;
     }
 
     @Override
@@ -60,6 +60,6 @@ public class TlsPoodleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new TlsPoodleResult(TestResult.COULD_NOT_TEST);
+        return new TlsPoodleResult(TestResults.COULD_NOT_TEST);
     }
 }

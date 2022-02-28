@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.HashSet;
@@ -26,46 +27,46 @@ public class CipherSuiteResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;
 
-    private TestResult supportsNullCiphers = TestResult.FALSE;
-    private TestResult supportsAnonCiphers = TestResult.FALSE;
-    private TestResult supportsExportCiphers = TestResult.FALSE;
-    private TestResult supportsDesCiphers = TestResult.FALSE;
-    private TestResult supportsSeedCiphers = TestResult.FALSE;
-    private TestResult supportsIdeaCiphers = TestResult.FALSE;
-    private TestResult supportsRc2Ciphers = TestResult.FALSE;
-    private TestResult supportsRc4Ciphers = TestResult.FALSE;
-    private TestResult supportsTripleDesCiphers = TestResult.FALSE;
-    private TestResult supportsPostQuantumCiphers = TestResult.FALSE;
-    private TestResult supportsAeadCiphers = TestResult.FALSE;
-    private TestResult supportsPfsCiphers = TestResult.FALSE;
-    private TestResult supportsOnlyPfsCiphers = TestResult.FALSE;
-    private TestResult supportsAes = TestResult.FALSE;
-    private TestResult supportsCamellia = TestResult.FALSE;
-    private TestResult supportsAria = TestResult.FALSE;
-    private TestResult supportsChacha = TestResult.FALSE;
-    private TestResult supportsRsa = TestResult.FALSE;
-    private TestResult supportsDh = TestResult.FALSE;
-    private TestResult supportsEcdh = TestResult.FALSE;
-    private TestResult supportsStaticEcdh = TestResult.FALSE;
-    private TestResult supportsEcdsa = TestResult.FALSE;
-    private TestResult supportsRsaCert = TestResult.FALSE;
-    private TestResult supportsDss = TestResult.FALSE;
-    private TestResult supportsGost = TestResult.FALSE;
-    private TestResult supportsSrp = TestResult.FALSE;
-    private TestResult supportsKerberos = TestResult.FALSE;
-    private TestResult supportsPskPlain = TestResult.FALSE;
-    private TestResult supportsPskRsa = TestResult.FALSE;
-    private TestResult supportsPskDhe = TestResult.FALSE;
-    private TestResult supportsPskEcdhe = TestResult.FALSE;
-    private TestResult supportsFortezza = TestResult.FALSE;
-    private TestResult supportsNewHope = TestResult.FALSE;
-    private TestResult supportsEcmqv = TestResult.FALSE;
-    private TestResult prefersPfsCiphers = TestResult.FALSE;
-    private TestResult supportsStreamCiphers = TestResult.FALSE;
-    private TestResult supportsBlockCiphers = TestResult.FALSE;
-    private TestResult supportsLegacyPrf = TestResult.FALSE;
-    private TestResult supportsSha256Prf = TestResult.FALSE;
-    private TestResult supportsSha384Prf = TestResult.FALSE;
+    private TestResult supportsNullCiphers = TestResults.FALSE;
+    private TestResult supportsAnonCiphers = TestResults.FALSE;
+    private TestResult supportsExportCiphers = TestResults.FALSE;
+    private TestResult supportsDesCiphers = TestResults.FALSE;
+    private TestResult supportsSeedCiphers = TestResults.FALSE;
+    private TestResult supportsIdeaCiphers = TestResults.FALSE;
+    private TestResult supportsRc2Ciphers = TestResults.FALSE;
+    private TestResult supportsRc4Ciphers = TestResults.FALSE;
+    private TestResult supportsTripleDesCiphers = TestResults.FALSE;
+    private TestResult supportsPostQuantumCiphers = TestResults.FALSE;
+    private TestResult supportsAeadCiphers = TestResults.FALSE;
+    private TestResult supportsPfsCiphers = TestResults.FALSE;
+    private TestResult supportsOnlyPfsCiphers = TestResults.FALSE;
+    private TestResult supportsAes = TestResults.FALSE;
+    private TestResult supportsCamellia = TestResults.FALSE;
+    private TestResult supportsAria = TestResults.FALSE;
+    private TestResult supportsChacha = TestResults.FALSE;
+    private TestResult supportsRsa = TestResults.FALSE;
+    private TestResult supportsDh = TestResults.FALSE;
+    private TestResult supportsEcdh = TestResults.FALSE;
+    private TestResult supportsStaticEcdh = TestResults.FALSE;
+    private TestResult supportsEcdsa = TestResults.FALSE;
+    private TestResult supportsRsaCert = TestResults.FALSE;
+    private TestResult supportsDss = TestResults.FALSE;
+    private TestResult supportsGost = TestResults.FALSE;
+    private TestResult supportsSrp = TestResults.FALSE;
+    private TestResult supportsKerberos = TestResults.FALSE;
+    private TestResult supportsPskPlain = TestResults.FALSE;
+    private TestResult supportsPskRsa = TestResults.FALSE;
+    private TestResult supportsPskDhe = TestResults.FALSE;
+    private TestResult supportsPskEcdhe = TestResults.FALSE;
+    private TestResult supportsFortezza = TestResults.FALSE;
+    private TestResult supportsNewHope = TestResults.FALSE;
+    private TestResult supportsEcmqv = TestResults.FALSE;
+    private TestResult prefersPfsCiphers = TestResults.FALSE;
+    private TestResult supportsStreamCiphers = TestResults.FALSE;
+    private TestResult supportsBlockCiphers = TestResults.FALSE;
+    private TestResult supportsLegacyPrf = TestResults.FALSE;
+    private TestResult supportsSha256Prf = TestResults.FALSE;
+    private TestResult supportsSha384Prf = TestResults.FALSE;
 
     public CipherSuiteResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHER_SUITE);
@@ -76,24 +77,24 @@ public class CipherSuiteResult extends ProbeResult {
     public void mergeData(SiteReport report) {
         if (pairLists != null) {
             Set<CipherSuite> allSupported = new HashSet<>();
-            supportsOnlyPfsCiphers = TestResult.TRUE;
-            prefersPfsCiphers = TestResult.TRUE;
+            supportsOnlyPfsCiphers = TestResults.TRUE;
+            prefersPfsCiphers = TestResults.TRUE;
             for (VersionSuiteListPair pair : pairLists) {
                 if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) {
-                    prefersPfsCiphers = TestResult.FALSE;
+                    prefersPfsCiphers = TestResults.FALSE;
                 }
                 allSupported.addAll(pair.getCipherSuiteList());
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
-                        supportsLegacyPrf = TestResult.TRUE;
+                        supportsLegacyPrf = TestResults.TRUE;
                     }
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
-                        supportsSha256Prf = TestResult.TRUE;
+                        supportsSha256Prf = TestResults.TRUE;
                     }
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
-                        supportsSha384Prf = TestResult.TRUE;
+                        supportsSha384Prf = TestResults.TRUE;
                     }
                 }
             }
@@ -105,47 +106,47 @@ public class CipherSuiteResult extends ProbeResult {
             }
             report.addCipherSuites(allSupported);
         } else {
-            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
-            prefersPfsCiphers = TestResult.COULD_NOT_TEST;
-            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
-            supportsAes = TestResult.COULD_NOT_TEST;
-            supportsAnonCiphers = TestResult.COULD_NOT_TEST;
-            supportsAria = TestResult.COULD_NOT_TEST;
-            supportsBlockCiphers = TestResult.COULD_NOT_TEST;
-            supportsCamellia = TestResult.COULD_NOT_TEST;
-            supportsChacha = TestResult.COULD_NOT_TEST;
-            supportsDesCiphers = TestResult.COULD_NOT_TEST;
-            supportsDh = TestResult.COULD_NOT_TEST;
-            supportsEcdh = TestResult.COULD_NOT_TEST;
-            supportsEcmqv = TestResult.COULD_NOT_TEST;
-            supportsExportCiphers = TestResult.COULD_NOT_TEST;
-            supportsFortezza = TestResult.COULD_NOT_TEST;
-            supportsGost = TestResult.COULD_NOT_TEST;
-            supportsIdeaCiphers = TestResult.COULD_NOT_TEST;
-            supportsKerberos = TestResult.COULD_NOT_TEST;
-            supportsNewHope = TestResult.COULD_NOT_TEST;
-            supportsNullCiphers = TestResult.COULD_NOT_TEST;
-            supportsOnlyPfsCiphers = TestResult.COULD_NOT_TEST;
-            supportsPfsCiphers = TestResult.COULD_NOT_TEST;
-            supportsPostQuantumCiphers = TestResult.COULD_NOT_TEST;
-            supportsPskDhe = TestResult.COULD_NOT_TEST;
-            supportsPskEcdhe = TestResult.COULD_NOT_TEST;
-            supportsPskPlain = TestResult.COULD_NOT_TEST;
-            supportsPskRsa = TestResult.COULD_NOT_TEST;
-            supportsRc2Ciphers = TestResult.COULD_NOT_TEST;
-            supportsRc4Ciphers = TestResult.COULD_NOT_TEST;
-            supportsRsa = TestResult.COULD_NOT_TEST;
-            supportsSeedCiphers = TestResult.COULD_NOT_TEST;
-            supportsSrp = TestResult.COULD_NOT_TEST;
-            supportsStaticEcdh = TestResult.COULD_NOT_TEST;
-            supportsEcdsa = TestResult.COULD_NOT_TEST;
-            supportsRsaCert = TestResult.COULD_NOT_TEST;
-            supportsDss = TestResult.COULD_NOT_TEST;
-            supportsStreamCiphers = TestResult.COULD_NOT_TEST;
-            supportsTripleDesCiphers = TestResult.COULD_NOT_TEST;
-            supportsLegacyPrf = TestResult.COULD_NOT_TEST;
-            supportsSha256Prf = TestResult.COULD_NOT_TEST;
-            supportsSha384Prf = TestResult.COULD_NOT_TEST;
+            supportsAeadCiphers = TestResults.COULD_NOT_TEST;
+            prefersPfsCiphers = TestResults.COULD_NOT_TEST;
+            supportsAeadCiphers = TestResults.COULD_NOT_TEST;
+            supportsAes = TestResults.COULD_NOT_TEST;
+            supportsAnonCiphers = TestResults.COULD_NOT_TEST;
+            supportsAria = TestResults.COULD_NOT_TEST;
+            supportsBlockCiphers = TestResults.COULD_NOT_TEST;
+            supportsCamellia = TestResults.COULD_NOT_TEST;
+            supportsChacha = TestResults.COULD_NOT_TEST;
+            supportsDesCiphers = TestResults.COULD_NOT_TEST;
+            supportsDh = TestResults.COULD_NOT_TEST;
+            supportsEcdh = TestResults.COULD_NOT_TEST;
+            supportsEcmqv = TestResults.COULD_NOT_TEST;
+            supportsExportCiphers = TestResults.COULD_NOT_TEST;
+            supportsFortezza = TestResults.COULD_NOT_TEST;
+            supportsGost = TestResults.COULD_NOT_TEST;
+            supportsIdeaCiphers = TestResults.COULD_NOT_TEST;
+            supportsKerberos = TestResults.COULD_NOT_TEST;
+            supportsNewHope = TestResults.COULD_NOT_TEST;
+            supportsNullCiphers = TestResults.COULD_NOT_TEST;
+            supportsOnlyPfsCiphers = TestResults.COULD_NOT_TEST;
+            supportsPfsCiphers = TestResults.COULD_NOT_TEST;
+            supportsPostQuantumCiphers = TestResults.COULD_NOT_TEST;
+            supportsPskDhe = TestResults.COULD_NOT_TEST;
+            supportsPskEcdhe = TestResults.COULD_NOT_TEST;
+            supportsPskPlain = TestResults.COULD_NOT_TEST;
+            supportsPskRsa = TestResults.COULD_NOT_TEST;
+            supportsRc2Ciphers = TestResults.COULD_NOT_TEST;
+            supportsRc4Ciphers = TestResults.COULD_NOT_TEST;
+            supportsRsa = TestResults.COULD_NOT_TEST;
+            supportsSeedCiphers = TestResults.COULD_NOT_TEST;
+            supportsSrp = TestResults.COULD_NOT_TEST;
+            supportsStaticEcdh = TestResults.COULD_NOT_TEST;
+            supportsEcdsa = TestResults.COULD_NOT_TEST;
+            supportsRsaCert = TestResults.COULD_NOT_TEST;
+            supportsDss = TestResults.COULD_NOT_TEST;
+            supportsStreamCiphers = TestResults.COULD_NOT_TEST;
+            supportsTripleDesCiphers = TestResults.COULD_NOT_TEST;
+            supportsLegacyPrf = TestResults.COULD_NOT_TEST;
+            supportsSha256Prf = TestResults.COULD_NOT_TEST;
+            supportsSha384Prf = TestResults.COULD_NOT_TEST;
         }
         writeToReport(report);
     }
@@ -154,13 +155,13 @@ public class CipherSuiteResult extends ProbeResult {
         CipherType cipherType = AlgorithmResolver.getCipherType(suite);
         switch (cipherType) {
             case AEAD:
-                supportsAeadCiphers = TestResult.TRUE;
+                supportsAeadCiphers = TestResults.TRUE;
                 break;
             case BLOCK:
-                supportsBlockCiphers = TestResult.TRUE;
+                supportsBlockCiphers = TestResults.TRUE;
                 break;
             case STREAM:
-                supportsStreamCiphers = TestResult.TRUE;
+                supportsStreamCiphers = TestResults.TRUE;
                 break;
             default:
                 ;
@@ -169,62 +170,62 @@ public class CipherSuiteResult extends ProbeResult {
 
     private void adjustKeyExchange(CipherSuite suite) {
         if (suite.name().contains("SRP")) {
-            supportsSrp = TestResult.TRUE;
+            supportsSrp = TestResults.TRUE;
         }
         if (suite.name().contains("_DH")) {
-            supportsDh = TestResult.TRUE;
+            supportsDh = TestResults.TRUE;
         }
         if (suite.name().contains("TLS_RSA")) {
-            supportsRsa = TestResult.TRUE;
+            supportsRsa = TestResults.TRUE;
         }
         if (suite.name().contains("ECDH_")) {
-            supportsStaticEcdh = TestResult.TRUE;
+            supportsStaticEcdh = TestResults.TRUE;
         }
         if (suite.name().contains("ECDH")) {
-            supportsEcdh = TestResult.TRUE;
+            supportsEcdh = TestResults.TRUE;
         }
         if (suite.name().contains("NULL")) {
-            supportsNullCiphers = TestResult.TRUE;
+            supportsNullCiphers = TestResults.TRUE;
         }
         if (suite.name().contains("GOST")) {
-            supportsGost = TestResult.TRUE;
+            supportsGost = TestResults.TRUE;
         }
         if (suite.name().contains("KRB5")) {
-            supportsKerberos = TestResult.TRUE;
+            supportsKerberos = TestResults.TRUE;
         }
         if (suite.name().contains("TLS_PSK_WITH")) {
-            supportsPskPlain = TestResult.TRUE;
+            supportsPskPlain = TestResults.TRUE;
         }
         if (suite.name().contains("_DHE_PSK")) {
-            supportsPskDhe = TestResult.TRUE;
+            supportsPskDhe = TestResults.TRUE;
         }
         if (suite.name().contains("ECDHE_PSK")) {
-            supportsPskEcdhe = TestResult.TRUE;
+            supportsPskEcdhe = TestResults.TRUE;
         }
         if (suite.name().contains("RSA_PSK")) {
-            supportsPskRsa = TestResult.TRUE;
+            supportsPskRsa = TestResults.TRUE;
         }
         if (suite.name().contains("FORTEZZA")) {
-            supportsFortezza = TestResult.TRUE;
+            supportsFortezza = TestResults.TRUE;
         }
         if (suite.name().contains("ECMQV")) {
-            supportsPostQuantumCiphers = TestResult.TRUE;
-            supportsEcmqv = TestResult.TRUE;
+            supportsPostQuantumCiphers = TestResults.TRUE;
+            supportsEcmqv = TestResults.TRUE;
         }
         if (suite.name().contains("CECPQ1")) {
-            supportsPostQuantumCiphers = TestResult.TRUE;
-            supportsNewHope = TestResult.TRUE;
+            supportsPostQuantumCiphers = TestResults.TRUE;
+            supportsNewHope = TestResults.TRUE;
         }
         if (suite.name().contains("anon")) {
-            supportsAnonCiphers = TestResult.TRUE;
+            supportsAnonCiphers = TestResults.TRUE;
         }
         if (suite.isEphemeral()) {
-            supportsPfsCiphers = TestResult.TRUE;
+            supportsPfsCiphers = TestResults.TRUE;
         } else {
-            supportsOnlyPfsCiphers = TestResult.FALSE;
+            supportsOnlyPfsCiphers = TestResults.FALSE;
         }
         if (suite.isExport()) {
-            supportsExportCiphers = TestResult.TRUE;
+            supportsExportCiphers = TestResults.TRUE;
         }
     }
 
@@ -232,44 +233,44 @@ public class CipherSuiteResult extends ProbeResult {
         BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
         switch (bulkCipherAlgorithm) {
             case AES:
-                supportsAes = TestResult.TRUE;
+                supportsAes = TestResults.TRUE;
                 break;
             case CAMELLIA:
-                supportsCamellia = TestResult.TRUE;
+                supportsCamellia = TestResults.TRUE;
                 break;
             case DES40:
-                supportsDesCiphers = TestResult.TRUE;
-                supportsExportCiphers = TestResult.TRUE;
+                supportsDesCiphers = TestResults.TRUE;
+                supportsExportCiphers = TestResults.TRUE;
                 break;
             case DES:
-                supportsDesCiphers = TestResult.TRUE;
+                supportsDesCiphers = TestResults.TRUE;
                 break;
             case ARIA:
-                supportsAria = TestResult.TRUE;
+                supportsAria = TestResults.TRUE;
                 break;
             case DESede:
-                supportsTripleDesCiphers = TestResult.TRUE;
+                supportsTripleDesCiphers = TestResults.TRUE;
                 break;
             case FORTEZZA:
-                supportsFortezza = TestResult.TRUE;
+                supportsFortezza = TestResults.TRUE;
                 break;
             case IDEA:
-                supportsIdeaCiphers = TestResult.TRUE;
+                supportsIdeaCiphers = TestResults.TRUE;
                 break;
             case NULL:
-                supportsNullCiphers = TestResult.TRUE;
+                supportsNullCiphers = TestResults.TRUE;
                 break;
             case RC2:
-                supportsRc2Ciphers = TestResult.TRUE;
+                supportsRc2Ciphers = TestResults.TRUE;
                 break;
             case RC4:
-                supportsRc4Ciphers = TestResult.TRUE;
+                supportsRc4Ciphers = TestResults.TRUE;
                 break;
             case SEED:
-                supportsSeedCiphers = TestResult.TRUE;
+                supportsSeedCiphers = TestResults.TRUE;
                 break;
             case CHACHA20_POLY1305:
-                supportsChacha = TestResult.TRUE;
+                supportsChacha = TestResults.TRUE;
                 break;
             default:
                 ;
@@ -278,13 +279,13 @@ public class CipherSuiteResult extends ProbeResult {
 
     private void adjustCertificate(CipherSuite suite) {
         if (suite.name().contains("ECDSA")) {
-            supportsEcdsa = TestResult.TRUE;
+            supportsEcdsa = TestResults.TRUE;
         }
         if (suite.name().contains("DSS")) {
-            supportsDss = TestResult.TRUE;
+            supportsDss = TestResults.TRUE;
         }
         if (suite.name().contains("RSA")) {
-            supportsRsaCert = TestResult.TRUE;
+            supportsRsaCert = TestResults.TRUE;
         }
     }
 

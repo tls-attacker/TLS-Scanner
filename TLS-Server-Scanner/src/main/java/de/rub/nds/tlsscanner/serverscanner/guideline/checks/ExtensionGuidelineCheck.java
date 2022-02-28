@@ -15,7 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 public class ExtensionGuidelineCheck extends GuidelineCheck {
@@ -40,7 +40,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResult.of(report.getSupportedExtensions().contains(requiredExtension)),
+            TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
             report.getSupportedExtensions().contains(requiredExtension), requiredExtension);
     }
 

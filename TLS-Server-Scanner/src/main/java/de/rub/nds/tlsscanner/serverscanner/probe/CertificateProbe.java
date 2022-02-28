@@ -24,7 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
@@ -103,19 +103,19 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
             scanForRsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
             scanForEcdsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DSS) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
             scanForDssCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
     }

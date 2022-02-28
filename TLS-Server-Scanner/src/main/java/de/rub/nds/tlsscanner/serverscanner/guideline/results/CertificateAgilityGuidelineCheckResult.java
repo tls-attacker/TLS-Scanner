@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.Objects;
 
 public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult {
@@ -22,7 +22,7 @@ public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult
 
     @Override
     public String display() {
-        return Objects.equals(TestResult.TRUE, getResult()) ? "Server passed the certificate agility check."
+        return Objects.equals(TestResults.TRUE, getResult()) ? "Server passed the certificate agility check."
             : "Server did not pass the certificate agility check.";
     }
 }

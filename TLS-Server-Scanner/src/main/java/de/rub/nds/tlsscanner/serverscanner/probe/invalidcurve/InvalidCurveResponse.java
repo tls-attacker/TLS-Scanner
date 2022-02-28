@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,15 +26,15 @@ public class InvalidCurveResponse {
     private List<FingerprintSecretPair> fingerprintSecretPairs;
     private List<Point> receivedEcPublicKeys;
     private List<Point> receivedFinishedEcKeys;
-    private TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
-    private TestResult showsVulnerability = TestResult.NOT_TESTED_YET;
-    private TestResult chosenGroupReusesKey = TestResult.NOT_TESTED_YET;
+    private TestResult showsPointsAreNotValidated = TestResults.NOT_TESTED_YET;
+    private TestResult showsVulnerability = TestResults.NOT_TESTED_YET;
+    private TestResult chosenGroupReusesKey = TestResults.NOT_TESTED_YET;
 
-    private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
-    private TestResult dirtyKeysWarning = TestResult.FALSE;
+    private TestResult finishedHandshakeHadReusedKey = TestResults.FALSE;
+    private TestResult dirtyKeysWarning = TestResults.FALSE;
 
-    private TestResult sideChannelSuspected = TestResult.FALSE;
-    private TestResult hadDistinctFps = TestResult.FALSE;
+    private TestResult sideChannelSuspected = TestResults.FALSE;
+    private TestResult hadDistinctFps = TestResults.FALSE;
     private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
 
     private InvalidCurveResponse() {
@@ -190,20 +191,20 @@ public class InvalidCurveResponse {
         receivedEcPublicKeys.addAll(toMerge.getReceivedEcPublicKeys());
         receivedFinishedEcKeys.addAll(toMerge.getReceivedFinishedEcKeys());
 
-        if (toMerge.getShowsPointsAreNotValidated() == TestResult.TRUE) {
-            showsPointsAreNotValidated = TestResult.TRUE;
+        if (toMerge.getShowsPointsAreNotValidated() == TestResults.TRUE) {
+            showsPointsAreNotValidated = TestResults.TRUE;
         }
-        if (toMerge.getShowsVulnerability() == TestResult.TRUE) {
-            showsVulnerability = TestResult.TRUE;
+        if (toMerge.getShowsVulnerability() == TestResults.TRUE) {
+            showsVulnerability = TestResults.TRUE;
         }
-        if (toMerge.getChosenGroupReusesKey() == TestResult.TRUE) {
-            chosenGroupReusesKey = TestResult.TRUE;
+        if (toMerge.getChosenGroupReusesKey() == TestResults.TRUE) {
+            chosenGroupReusesKey = TestResults.TRUE;
         }
-        if (toMerge.getFinishedHandshakeHadReusedKey() == TestResult.TRUE) {
-            finishedHandshakeHadReusedKey = TestResult.TRUE;
+        if (toMerge.getFinishedHandshakeHadReusedKey() == TestResults.TRUE) {
+            finishedHandshakeHadReusedKey = TestResults.TRUE;
         }
-        if (toMerge.getDirtyKeysWarning() == TestResult.TRUE) {
-            dirtyKeysWarning = TestResult.TRUE;
+        if (toMerge.getDirtyKeysWarning() == TestResults.TRUE) {
+            dirtyKeysWarning = TestResults.TRUE;
         }
 
         setScanType(toMerge.getScanType());

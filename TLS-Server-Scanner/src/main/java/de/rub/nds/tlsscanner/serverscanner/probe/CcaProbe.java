@@ -28,14 +28,13 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class CcaProbe extends TlsProbe {
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return new CcaResult(TestResult.COULD_NOT_TEST, null);
+            return new CcaResult(TestResults.COULD_NOT_TEST, null);
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -132,12 +131,12 @@ public class CcaProbe extends TlsProbe {
                     ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-        return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
+        return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE)
             && (report.getVersionSuitePairs() != null);
     }
 
@@ -148,7 +147,7 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CcaResult(TestResult.COULD_NOT_TEST, null);
+        return new CcaResult(TestResults.COULD_NOT_TEST, null);
     }
 
     private Config generateConfig() {

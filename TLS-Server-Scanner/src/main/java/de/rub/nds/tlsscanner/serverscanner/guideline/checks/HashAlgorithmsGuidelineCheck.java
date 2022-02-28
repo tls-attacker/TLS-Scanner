@@ -16,9 +16,8 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +46,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            return new HashAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, Collections.emptySet());
+            return new HashAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, Collections.emptySet());
         }
         Set<HashAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
@@ -55,7 +54,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
                 nonRecommended.add(alg.getHashAlgorithm());
             }
         }
-        return new HashAlgorithmsGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
