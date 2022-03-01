@@ -20,15 +20,15 @@ import java.security.cert.*;
 import java.util.*;
 import javax.security.auth.x500.X500Principal;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class TrustAnchorManager {
 
-    private static final Logger LOGGER = LogManager.getLogger("");
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private List<TrustPlatform> trustPlatformList;
 
@@ -214,24 +214,24 @@ public class TrustAnchorManager {
     public void addCustomCA(List<String> customCAPaths) {
         List<org.bouncycastle.crypto.tls.Certificate> customCAList = getCustomCA(customCAPaths);
         KeyStore keyStore = null;
-        int i = 0;
 
         // Initializes the keyStore
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException ex) {
-            LOGGER.error("Couldn't initialize keyStore", ex);
+            throw new RuntimeException("Couldn't initialize keyStore,", ex);
         }
 
-        for (org.bouncycastle.crypto.tls.Certificate cert : customCAList) {
+        for(int i = 0; i < customCAList.size(); i++){
+            org.bouncycastle.crypto.tls.Certificate cert = customCAList.get(i);
             // Converts each certificate in customCAList to a x.509 formatted certificate and adds it to the keystore.
             try {
                 CertificateFactory certFactory = CertificateFactory.getInstance("X509");
                 keyStore.setCertificateEntry("custom_" + i,
                     certFactory.generateCertificate(new ByteArrayInputStream(cert.getCertificateAt(0).getEncoded())));
             } catch (CertificateException | IOException | KeyStoreException ex) {
-                LOGGER.error("Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore", ex);
+                throw new RuntimeException("Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore", ex);
             }
 
             /*
@@ -250,7 +250,6 @@ public class TrustAnchorManager {
                 LOGGER.error(
                     "Couldn't add CA " + customCAList.get(i) + "to either trustAnchor or asn1CaCertificateSet.", ex);
             }
-            i++;
         }
 
         /*
