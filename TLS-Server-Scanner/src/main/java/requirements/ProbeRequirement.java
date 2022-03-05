@@ -27,29 +27,30 @@ public class ProbeRequirement {
 	}
 	
 	public ProbeRequirement requireProbeTypes(ProbeType ... probeTypes) {
-		
+		this.requiredProbeTypes=probeTypes;
 		return this;
 	}
 	
-	public ProbeRequirement requireAnalyzedProperties(AnalyzedProperty ... analyzedproperties) {
-		
+	public ProbeRequirement requireAnalyzedProperties(AnalyzedProperty ... analyzedProperties) {
+		this.requiredAnalyzedproperties=analyzedProperties;
 		return this;
 	}
 	
 	public ProbeRequirement requireExtensionTyes(ExtensionType ... extensionTypes) {
-		
+		this.requiredExtensionTypes=extensionTypes;
 		return this;		
 	}
 	
 	// Freie Funktion?
 	
 	public ProbeRequirement orRequirement(ProbeRequirement firstReq, ProbeRequirement secondReq) {
-		
+		this.first=firstReq;
+		this.second=secondReq;
 		return this;
 	}
 	
 	public ProbeRequirement notRequirement(ProbeRequirement req) {
-		
+		this.not=req;
 		return this;
 	}
 	
