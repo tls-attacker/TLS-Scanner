@@ -84,18 +84,29 @@ public class ProbeRequirement {
 	private boolean extensionTypesFulfilled() {
 		if (this.requiredExtensionTypes==null)
 			return true;
+		for (ExtensionType et : this.requiredExtensionTypes) {
+			if (!report.getSupportedExtensions().contains(et))
+				return false;
+		}
 		return true;
 	}	
 	
 	private boolean orFulfilled() {
 		if (this.first==null && this.second==null)
 			return true;
-		return true;
+		boolean evalFirst = this.first.evaluateRequirements();
+		boolean evalSecond = this.second.evaluateRequirements();
+		
+		if (this.first==null)
+			return evalSecond;
+		if (this.second==null)
+			return evalFirst;
+		return evalFirst || evalSecond;
 	}	
 	
 	private boolean notFulfilled() {
 		if (this.not==null)
-			return true;
-		return true;
+			return true;		
+		return !this.not.evaluateRequirements();
 	}
 }
