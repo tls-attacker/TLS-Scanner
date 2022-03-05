@@ -12,17 +12,17 @@ package requirements;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 public class ProbeRequirement {
+	private SiteReport report;
 	private ProbeType[] requiredProbeTypes;
 	private AnalyzedProperty[] requiredAnalyzedproperties;
 	private ExtensionType[] requiredExtensionTypes;	
 	private ProbeRequirement first, second, not;
 	
-	public ProbeRequirement() {
-		requiredProbeTypes=new ProbeType[0];
-		requiredAnalyzedproperties=new AnalyzedProperty[0];
-		requiredExtensionTypes=new ExtensionType[0];
+	public ProbeRequirement(SiteReport report) {
+		this.report=report;
 	}
 	
 	public ProbeRequirement requireProbeTypes(ProbeType ... probeTypes) {
@@ -52,24 +52,37 @@ public class ProbeRequirement {
 		return this;
 	}
 	
-	public boolean canBeExecuted() {
-		
-		return true;
+	public boolean evaluateRequirements() {		
+		return probeTypesFulfilled() && analyzedPropertiesFulfilled() && extensionTypesFulfilled() && orFulfilled() && notFulfilled();
 	}
 	
+	private boolean probeTypesFulfilled() {
+		if (this.requiredProbeTypes==null)
+			return true;
+		return true;
+	}	
+	
 	private boolean analyzedPropertiesFulfilled() {
+		if (this.requiredAnalyzedproperties==null)
+			return true;
 		return true;
 	}	
 	
 	private boolean extensionTypesFulfilled() {
+		if (this.requiredExtensionTypes==null)
+			return true;
 		return true;
 	}	
 	
 	private boolean orFulfilled() {
+		if (this.first==null && this.second==null)
+			return true;
 		return true;
 	}	
 	
 	private boolean notFulfilled() {
+		if (this.not==null)
+			return true;
 		return true;
 	}
 }
