@@ -58,7 +58,11 @@ public class ProbeRequirement {
 	
 	private boolean probeTypesFulfilled() {
 		if (this.requiredProbeTypes==null)
-			return true;
+			return true;		
+		for (ProbeType pt : this.requiredProbeTypes) {
+			if (report.isProbeAlreadyExecuted(pt)==false) 
+				return false;			
+		}
 		return true;
 	}	
 	
