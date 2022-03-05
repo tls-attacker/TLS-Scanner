@@ -14,8 +14,15 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 
 public class ProbeRequirement {
+	private ProbeType[] requiredProbeTypes;
+	private AnalyzedProperty[] requiredAnalyzedproperties;
+	private ExtensionType[] requiredExtensionTypes;	
+	private ProbeRequirement first, second, not;
+	
 	public ProbeRequirement() {
-		// TODO Auto-generated constructor stub
+		requiredProbeTypes=new ProbeType[0];
+		requiredAnalyzedproperties=new AnalyzedProperty[0];
+		requiredExtensionTypes=new ExtensionType[0];
 	}
 	
 	public ProbeRequirement requireProbeTypes(ProbeType ... probeTypes) {
@@ -47,6 +54,22 @@ public class ProbeRequirement {
 	
 	public boolean canBeExecuted() {
 		
+		return true;
+	}
+	
+	private boolean analyzedPropertiesFulfilled() {
+		return true;
+	}	
+	
+	private boolean extensionTypesFulfilled() {
+		return true;
+	}	
+	
+	private boolean orFulfilled() {
+		return true;
+	}	
+	
+	private boolean notFulfilled() {
 		return true;
 	}
 }
