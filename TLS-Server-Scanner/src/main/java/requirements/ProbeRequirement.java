@@ -11,6 +11,7 @@ package requirements;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
@@ -69,6 +70,14 @@ public class ProbeRequirement {
 	private boolean analyzedPropertiesFulfilled() {
 		if (this.requiredAnalyzedproperties==null)
 			return true;
+		for (AnalyzedProperty ap : this.requiredAnalyzedproperties) {
+			if (report.getResultMap().containsKey(ap.toString())) {
+				if (report.getResultMap().get(ap.toString())!= TestResults.TRUE)
+					return false;
+			}
+			else
+				return false;
+		}
 		return true;
 	}	
 	
