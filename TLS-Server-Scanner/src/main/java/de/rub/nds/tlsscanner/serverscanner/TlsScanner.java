@@ -1,7 +1,7 @@
 /**
  * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -58,7 +58,7 @@ public class TlsScanner {
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
-        fillDefaultProbeLists();
+        fillDefaultProbeLists(config.getVulns());
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -68,7 +68,7 @@ public class TlsScanner {
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
-        fillDefaultProbeLists();
+        fillDefaultProbeLists(config.getVulns());
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
@@ -81,52 +81,194 @@ public class TlsScanner {
         closeAfterFinishParallel = true;
     }
 
-    private void fillDefaultProbeLists() {
-
-        addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
-        addProbeToProbeList(new SniProbe(config, parallelExecutor));
-        addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
-        addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
-        addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
-        addProbeToProbeList(new OcspProbe(config, parallelExecutor));
-        addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
-        addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
-        addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
-        addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
-        addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
-        addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
-        addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
-        addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
-        addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
-        addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
-        addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
-        addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
-        addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
-        addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
-        addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
-        addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
-        addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
-        addProbeToProbeList(new DrownProbe(config, parallelExecutor));
-        addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
-        // addProbeToProbeList(new MacProbe(config, parallelExecutor));
-        addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
-        addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
-        addProbeToProbeList(new CcaProbe(config, parallelExecutor));
-        addProbeToProbeList(new EsniProbe(config, parallelExecutor));
-        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
-        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
-        addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new PoodleAfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterProbe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
-        afterList.add(new DhValueAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
-        afterList.add(new RaccoonAttackAfterProbe());
+    private void fillDefaultProbeLists(String vulns) {
+        if (vulns == "") {
+            addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
+            addProbeToProbeList(new SniProbe(config, parallelExecutor));
+            addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
+            addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
+            addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
+            addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
+            addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
+            addProbeToProbeList(new OcspProbe(config, parallelExecutor));
+            addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
+            addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
+            addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
+            addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
+            addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
+            addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
+            addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+            addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+            addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
+            addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
+            addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
+            addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
+            addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
+            addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
+            addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
+            addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
+            addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
+            addProbeToProbeList(new DrownProbe(config, parallelExecutor));
+            addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+            // addProbeToProbeList(new MacProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaProbe(config, parallelExecutor));
+            addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+            addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
+            addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
+            addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
+            afterList.add(new Sweet32AfterProbe());
+            afterList.add(new PoodleAfterProbe());
+            afterList.add(new FreakAfterProbe());
+            afterList.add(new LogjamAfterProbe());
+            afterList.add(new EvaluateRandomnessAfterProbe());
+            afterList.add(new EcPublicKeyAfterProbe());
+            afterList.add(new DhValueAfterProbe());
+            afterList.add(new PaddingOracleIdentificationAfterProbe());
+            afterList.add(new RaccoonAttackAfterProbe());
+        } else {
+            String[] vulnsList = vulns.split(",");
+            for (String v : vulnsList) {
+                // System.out.println(v);
+                switch (v) {
+                    case "CommonBugProbe":
+                        addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
+                        break;
+                    case "SniProbe":
+                        addProbeToProbeList(new SniProbe(config, parallelExecutor));
+                        break;
+                    case "CompressionsProbe":
+                        addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
+                        break;
+                    case "NamedCurvesProbe":
+                        addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
+                        break;
+                    case "AlpnProbe":
+                        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
+                        break;
+                    case "AlpacaProbe":
+                        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
+                        break;
+                    case "CertificateProbe":
+                        addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
+                        break;
+                    case "OcspProbe":
+                        addProbeToProbeList(new OcspProbe(config, parallelExecutor));
+                        break;
+                    case "ProtocolVersionProbe":
+                        addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
+                        break;
+                    case "CipherSuiteProbe":
+                        addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
+                        break;
+                    case "DirectRaccoonProbe":
+                        addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
+                        break;
+                    case "CipherSuiteOrderProbe":
+                        addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
+                        break;
+                    case "ExtensionProbe":
+                        addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
+                        break;
+                    case "TokenbindingProbe":
+                        addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
+                        break;
+                    case "HttpHeaderProbe":
+                        addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+                        break;
+                    case "HttpFalseStartProbe":
+                        addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+                        break;
+                    case "ECPointFormatProbe":
+                        addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
+                        break;
+                    case "ResumptionProbe":
+                        addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
+                        break;
+                    case "RenegotiationProbe":
+                        addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
+                        break;
+                    case "SessionTicketZeroKeyProbe":
+                        addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
+                        break;
+                    case "HeartbleedProbe":
+                        addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
+                        break;
+                    case "PaddingOracleProbe":
+                        addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
+                        break;
+                    case "BleichenbacherProbe":
+                        addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
+                        break;
+                    case "TlsPoodleProbe":
+                        addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
+                        break;
+                    case "InvalidCurveProbe":
+                        addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
+                        break;
+                    case "DrownProbe":
+                        addProbeToProbeList(new DrownProbe(config, parallelExecutor));
+                        break;
+                    case "EarlyCcsProbe":
+                        addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+                        break;
+                    case "MacProbe":
+                        addProbeToProbeList(new MacProbe(config, parallelExecutor));
+                        break;
+                    case "CcaSupportProbe":
+                        addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
+                        break;
+                    case "CcaRequiredProbe":
+                        addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
+                        break;
+                    case "CcaProbe":
+                        addProbeToProbeList(new CcaProbe(config, parallelExecutor));
+                        break;
+                    case "EsniProbe":
+                        addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+                        break;
+                    case "CertificateTransparencyProbe":
+                        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
+                        break;
+                    case "RecordFragmentationProbe":
+                        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
+                        break;
+                    case "HelloRetryProbe":
+                        addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
+                        break;
+                    case "Sweet32AfterProbe":
+                        afterList.add(new Sweet32AfterProbe());
+                        break;
+                    case "PoodleAfterProbe":
+                        afterList.add(new PoodleAfterProbe());
+                        break;
+                    case "FreakAfterProbe":
+                        afterList.add(new FreakAfterProbe());
+                        break;
+                    case "LogjamAfterProbe":
+                        afterList.add(new LogjamAfterProbe());
+                        break;
+                    case "EvaluateRandomnessAfterProbe":
+                        afterList.add(new EvaluateRandomnessAfterProbe());
+                        break;
+                    case "EcPublicKeyAfterProbe":
+                        afterList.add(new EcPublicKeyAfterProbe());
+                        break;
+                    case "DhValueAfterProbe":
+                        afterList.add(new DhValueAfterProbe());
+                        break;
+                    case "PaddingOracleIdentificationAfterProbe":
+                        afterList.add(new PaddingOracleIdentificationAfterProbe());
+                        break;
+                    case "RaccoonAttackAfterProbe":
+                        afterList.add(new RaccoonAttackAfterProbe());
+                        break;
+                    default:
+                        LOGGER.warn("Unkown vuln type: " + v);
+                }
+            }
+        }
     }
 
     private void addProbeToProbeList(TlsProbe probe) {

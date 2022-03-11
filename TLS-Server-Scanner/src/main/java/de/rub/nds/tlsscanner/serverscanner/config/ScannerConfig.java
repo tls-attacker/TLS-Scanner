@@ -1,7 +1,7 @@
 /**
  * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -50,6 +50,9 @@ public class ScannerConfig extends TLSDelegateConfig {
         description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
     private int overallThreads = 1;
 
+    @Parameter(names = "-vulns", required = false, description = "Vulnerabilities to look for")
+    private String vulns = "";
+
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
@@ -82,6 +85,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+    }
+
+    public String getVulns() {
+        return vulns;
+    }
+
+    public void setVulns(String vulns) {
+        this.vulns = vulns;
     }
 
     public int getOverallThreads() {
