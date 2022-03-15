@@ -76,7 +76,7 @@ public class PaddingOracleProbe extends TlsProbe {
                         LOGGER.debug("Found a candidate for the non-determinism eval:"
                             + fingerprint.getTestInfo().getCipherSuite() + " - "
                             + fingerprint.getTestInfo().getCipherSuite());
-                        extendFingerPrint(fingerprint, 7);
+                        extendFingerPrint(fingerprint, 3);
                     }
                 }
                 LOGGER.debug("Finished non-determinism evaluation");
