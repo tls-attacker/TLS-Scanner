@@ -36,9 +36,11 @@ public class PaddingOracleResult extends ProbeResult {
         this.resultList = resultList;
         if (this.resultList != null) {
             vulnerable = TestResult.FALSE;
+            System.out.println(resultList.size());
             for (InformationLeakTest informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {
                     vulnerable = TestResult.TRUE;
+                    return;
                 }
             }
         } else {
