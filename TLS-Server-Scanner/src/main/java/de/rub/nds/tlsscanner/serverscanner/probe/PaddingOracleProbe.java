@@ -48,6 +48,7 @@ public class PaddingOracleProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
+            long st = System.currentTimeMillis();
             List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
             List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
             for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
@@ -65,6 +66,9 @@ public class PaddingOracleProbe extends TlsProbe {
                     }
                 }
             }
+            long et = System.currentTimeMillis();
+            LOGGER.info("Preliminary scan took: " + (et-st));
+            st = System.currentTimeMillis();
             // If we found some difference in the server behavior we need to
             if (isPotentiallyVulnerable(testResultList)
                 || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
@@ -81,6 +85,8 @@ public class PaddingOracleProbe extends TlsProbe {
                 }
                 LOGGER.debug("Finished non-determinism evaluation");
             }
+            et = System.currentTimeMillis();
+            LOGGER.info("Evaluation took: " + (et-st));
             return new PaddingOracleResult(testResultList);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
