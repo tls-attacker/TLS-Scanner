@@ -14,12 +14,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
 
 
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
-@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
+//@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 

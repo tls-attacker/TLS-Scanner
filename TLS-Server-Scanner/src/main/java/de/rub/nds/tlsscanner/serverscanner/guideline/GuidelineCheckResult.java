@@ -19,7 +19,6 @@ public abstract class GuidelineCheckResult {
     private String id;
     private String name;
     
-    // Funktioniert das unmarshalling nur noch, weil ich das hinzugefügt habe? Oder ist das vernachlässigbar, wenn man frisch startet? TODO
     @XmlAnyElement(lax = true)
     private TestResult result;
     private GuidelineCheckCondition condition;
