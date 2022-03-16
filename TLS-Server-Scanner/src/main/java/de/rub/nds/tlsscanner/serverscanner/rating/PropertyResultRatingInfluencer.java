@@ -10,12 +10,20 @@
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement
+@XmlSeeAlso({TestResults.class})
 @XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
-
+	
+	@XmlAnyElement(lax = true)
     private TestResult result;
 
     private Integer influence;
@@ -24,6 +32,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
 
     private AnalyzedProperty referencedProperty;
 
+    @XmlAnyElement(lax = true)
     private TestResult referencedPropertyResult;
 
     public PropertyResultRatingInfluencer() {
@@ -76,7 +85,6 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.scoreCap = scoreCap;
     }
 
-    @XmlElement(required = false)
     public AnalyzedProperty getReferencedProperty() {
         return referencedProperty;
     }
@@ -85,7 +93,6 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.referencedProperty = referencedProperty;
     }
 
-    @XmlElement(required = false)
     public TestResult getReferencedPropertyResult() {
         return referencedPropertyResult;
     }
