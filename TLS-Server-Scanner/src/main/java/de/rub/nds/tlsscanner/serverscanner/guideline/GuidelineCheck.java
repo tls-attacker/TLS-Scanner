@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 

@@ -15,11 +15,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
-@XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
+//@XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 	

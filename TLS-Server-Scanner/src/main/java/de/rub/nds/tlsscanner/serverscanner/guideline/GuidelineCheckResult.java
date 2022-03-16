@@ -11,12 +11,16 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import javax.xml.bind.annotation.XmlAnyElement;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class GuidelineCheckResult {
 
     private String id;
     private String name;
+    
+    // Funktioniert das unmarshalling nur noch, weil ich das hinzugefügt habe? Oder ist das vernachlässigbar, wenn man frisch startet? TODO
+    @XmlAnyElement(lax = true)
     private TestResult result;
     private GuidelineCheckCondition condition;
 
