@@ -18,10 +18,21 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
+@XmlRootElement
+@XmlSeeAlso({TestResults.class})
+//@XmlType(propOrder = { "result", "property" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
     private AnalyzedProperty property;
+    
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private AnalyzedPropertyGuidelineCheck() {

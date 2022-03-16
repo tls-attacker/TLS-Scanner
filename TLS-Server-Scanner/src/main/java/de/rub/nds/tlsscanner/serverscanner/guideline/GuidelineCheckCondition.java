@@ -12,18 +12,28 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {
-
+	
+	@XmlTransient
     private List<GuidelineCheckCondition> and;
+	@XmlTransient
     private List<GuidelineCheckCondition> or;
 
     private AnalyzedProperty analyzedProperty;
+    
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private GuidelineCheckCondition() {
@@ -51,7 +61,7 @@ public class GuidelineCheckCondition {
         return analyzedProperty;
     }
 
-    @XmlElement(name = "analyzedProperty")
+    //@XmlElement(name = "analyzedProperty")
     public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
@@ -60,7 +70,7 @@ public class GuidelineCheckCondition {
         return result;
     }
 
-    @XmlElement(name = "result")
+    //@XmlElement(name = "result")
     public void setResult(TestResult result) {
         this.result = result;
     }

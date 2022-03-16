@@ -14,10 +14,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "ratingInfluencers")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RatingInfluencers implements Serializable {
 
     /**
@@ -50,7 +53,7 @@ public class RatingInfluencers implements Serializable {
         // https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
     }
 
-    @XmlElement(name = "ratingInfluencer")
+    //@XmlElement(name = "ratingInfluencer")
     public LinkedList<RatingInfluencer> getRatingInfluencers() {
         return ratingInfluencers;
     }

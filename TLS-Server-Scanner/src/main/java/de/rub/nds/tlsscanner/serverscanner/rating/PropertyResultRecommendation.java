@@ -9,11 +9,20 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
+
+@XmlRootElement
+@XmlSeeAlso({TestResults.class})
+//@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 
+	@XmlAnyElement(lax = true)
     private TestResult result;
 
     private String shortDescription;
