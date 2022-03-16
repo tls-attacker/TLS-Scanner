@@ -29,7 +29,8 @@ public class LogjamAfterProbe extends AfterProbe {
                     if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
                         || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
                         || suite.name().contains("DHE_RSA_EXPORT")) {
-                        vulnerable = TestResult.TRUE;
+                        report.putResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM, TestResult.TRUE);
+                        return;
                     }
                 }
                 vulnerable = TestResult.FALSE;
