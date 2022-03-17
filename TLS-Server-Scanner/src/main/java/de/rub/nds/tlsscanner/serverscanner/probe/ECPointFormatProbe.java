@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ECPointFormatResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -166,10 +167,10 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResults.TRUE
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+    	ProbeRequirement preq_ecdh = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_ECDH);
+    	ProbeRequirement preq_tls13 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3);
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION).orRequirement(preq_ecdh, preq_tls13);
     }
 
     @Override
