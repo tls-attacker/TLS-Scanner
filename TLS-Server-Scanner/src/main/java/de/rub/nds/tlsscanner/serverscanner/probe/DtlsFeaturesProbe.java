@@ -142,11 +142,6 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
-
-    @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new DtlsFeaturesResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
