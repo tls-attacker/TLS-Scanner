@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -129,8 +130,8 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
