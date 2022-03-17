@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ProbeRequirementTest {
-	private ProbeType probe = ProbeType.ALPN;
 	private ProbeType pType = ProbeType.PROTOCOL_VERSION;
 	private ExtensionType eType = ExtensionType.TOKEN_BINDING;
 	private AnalyzedProperty aProp = AnalyzedProperty.SUPPORTS_DES;
