@@ -230,11 +230,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
-
-    @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new DtlsHelloVerifyRequestResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, -1,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
