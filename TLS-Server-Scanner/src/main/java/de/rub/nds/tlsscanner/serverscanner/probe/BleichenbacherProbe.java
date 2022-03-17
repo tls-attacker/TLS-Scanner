@@ -30,10 +30,10 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.BleichenbacherResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class BleichenbacherProbe extends TlsProbe {
 
@@ -135,13 +135,8 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_RSA), TestResults.TRUE);
-        } else {
-            return false;
-        }
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE, ProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_RSA);
     }
 
     @Override
