@@ -44,11 +44,6 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
-
-    @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new RecordFragmentationResult(null);
     }
