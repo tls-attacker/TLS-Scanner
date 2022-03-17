@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -93,12 +94,8 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return true;
-        }
-        return false;
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE, ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
