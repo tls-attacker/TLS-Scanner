@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureHashAlgorithmOrderResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -47,8 +48,9 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return !report.isProbeAlreadyExecuted(ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+    	ProbeRequirement preq = new ProbeRequirement(report).requireProbeTypes(ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
+        return new ProbeRequirement(report).notRequirement(preq);
     }
 
     @Override
