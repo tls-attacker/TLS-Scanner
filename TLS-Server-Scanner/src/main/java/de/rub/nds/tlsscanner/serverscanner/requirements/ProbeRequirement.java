@@ -85,8 +85,10 @@ public class ProbeRequirement {
 	private boolean extensionTypesFulfilled() {
 		if (this.requiredExtensionTypes==null)
 			return true;
+		if (report.getSupportedExtensions() == null) 
+			return false;
 		for (ExtensionType et : this.requiredExtensionTypes) {
-			if (!report.getSupportedExtensions().contains(et))
+			if(!report.getSupportedExtensions().contains(et)) 
 				return false;
 		}
 		return true;
