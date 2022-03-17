@@ -21,7 +21,7 @@ public class ProbeRequirement {
 	private AnalyzedProperty[] requiredAnalyzedproperties;
 	private ExtensionType[] requiredExtensionTypes;	
 	private ProbeRequirement first, second, not;
-	
+
 	public ProbeRequirement(SiteReport report) {
 		this.report=report;
 	}
@@ -109,5 +109,47 @@ public class ProbeRequirement {
 		if (this.not==null)
 			return true;		
 		return !this.not.evaluateRequirements();
+	}
+	
+	/**
+	 * @return the requiredProbeTypes
+	 */
+	public ProbeType[] getRequiredProbeTypes() {
+		return requiredProbeTypes;
+	}
+
+	/**
+	 * @return the requiredAnalyzedproperties
+	 */
+	public AnalyzedProperty[] getRequiredAnalyzedproperties() {
+		return this.requiredAnalyzedproperties;
+	}
+	
+	/**
+	 * @return the requiredExtensionTypes
+	 */
+	public ExtensionType[] getRequiredExtensionTypes() {
+		return this.requiredExtensionTypes;
+	}
+
+	/**
+	 * @return the first ProbeRequirement
+	 */
+	public ProbeRequirement getFirst() {
+		return this.first;
+	}
+
+	/**
+	 * @return the second ProbeRequirement
+	 */
+	public ProbeRequirement getSecond() {
+		return this.second;
+	}
+
+	/**
+	 * @return the inverted ProbeRequirement
+	 */
+	public ProbeRequirement getNot() {
+		return this.not;
 	}
 }
