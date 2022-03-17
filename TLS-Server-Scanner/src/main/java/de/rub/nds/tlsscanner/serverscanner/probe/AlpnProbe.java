@@ -25,6 +25,7 @@ import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,10 +105,8 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)
-            && report.getSupportedExtensions().contains(ExtensionType.ALPN);
-
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.EXTENSIONS).requireExtensionTyes(ExtensionType.ALPN);
     }
 
     @Override
