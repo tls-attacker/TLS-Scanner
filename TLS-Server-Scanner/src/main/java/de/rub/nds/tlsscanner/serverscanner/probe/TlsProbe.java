@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,7 +114,18 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         result.merge(report);
     }
 
-    public abstract boolean canBeExecuted(SiteReport report);
+    /**
+     * Override for individual requirements.
+     * @param report
+     * @return ProbeRequirement object without requirements (default)
+     */
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report);
+    }
+
+    public boolean canBeExecuted(SiteReport report) {
+        return getRequirements(report).evaluateRequirements();
+    }
 
     public abstract ProbeResult getCouldNotExecuteResult();
 
