@@ -19,7 +19,6 @@ public abstract class GuidelineCheckResult {
     private String id;
     private String name;
     
-    @XmlAnyElement(lax = true)
     private TestResult result;
     private GuidelineCheckCondition condition;
 
