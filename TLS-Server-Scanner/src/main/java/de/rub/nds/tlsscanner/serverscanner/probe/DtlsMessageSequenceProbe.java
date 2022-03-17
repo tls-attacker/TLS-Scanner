@@ -164,11 +164,6 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
-
-    @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new DtlsMessageSequenceResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
