@@ -43,11 +43,6 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
-
-    @Override
     public void adjustConfig(SiteReport report) {
     }
 
