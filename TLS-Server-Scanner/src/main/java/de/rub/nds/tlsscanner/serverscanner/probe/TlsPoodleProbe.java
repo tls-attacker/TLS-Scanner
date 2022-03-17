@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
 public class TlsPoodleProbe extends TlsProbe {
 
@@ -50,8 +51,8 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResults.TRUE;
+    protected ProbeRequirement getRequirements(SiteReport report) {
+    	return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);		
     }
 
     @Override
