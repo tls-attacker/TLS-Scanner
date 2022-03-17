@@ -33,7 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RandomnessResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,14 +57,8 @@ public class RandomnessProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)) {
-            return true;
-        } else {
-            return false;
-        }
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE, ProbeType.PROTOCOL_VERSION, ProbeType.EXTENSIONS);
     }
 
     @Override
