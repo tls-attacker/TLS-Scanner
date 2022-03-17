@@ -26,6 +26,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CcaRequiredResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
 public class CcaRequiredProbe extends TlsProbe {
 
@@ -49,10 +50,10 @@ public class CcaRequiredProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_CCA);
     }
-
+    
     @Override
     public void adjustConfig(SiteReport report) {
     }
