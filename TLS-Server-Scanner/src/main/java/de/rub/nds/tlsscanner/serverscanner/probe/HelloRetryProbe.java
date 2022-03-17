@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HelloRetryResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.LinkedList;
 
 /**
@@ -50,9 +51,8 @@ public class HelloRetryProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
