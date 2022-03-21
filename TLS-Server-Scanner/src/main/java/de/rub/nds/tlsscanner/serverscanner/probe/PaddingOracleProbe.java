@@ -66,9 +66,6 @@ public class PaddingOracleProbe extends TlsProbe {
                     }
                 }
             }
-            long et = System.currentTimeMillis();
-            LOGGER.info("Preliminary scan took: " + (et-st));
-            st = System.currentTimeMillis();
             // If we found some difference in the server behavior we need to
             if (isPotentiallyVulnerable(testResultList)
                 || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
@@ -80,13 +77,13 @@ public class PaddingOracleProbe extends TlsProbe {
                         LOGGER.debug("Found a candidate for the non-determinism eval:"
                             + fingerprint.getTestInfo().getCipherSuite() + " - "
                             + fingerprint.getTestInfo().getCipherSuite());
-                        extendFingerPrint(fingerprint, 3);
+                        extendFingerPrint(fingerprint, scannerConfig.getNumexe());
                     }
                 }
                 LOGGER.debug("Finished non-determinism evaluation");
             }
-            et = System.currentTimeMillis();
-            LOGGER.info("Evaluation took: " + (et-st));
+            long et = System.currentTimeMillis();
+            LOGGER.info("Padding Oracle took: " + (et-st));
             return new PaddingOracleResult(testResultList);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);

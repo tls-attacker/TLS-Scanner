@@ -53,6 +53,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-vulns", required = false, description = "Vulnerabilities to look for")
     private String vulns = "";
 
+    @Parameter(names = "-numexe", required = false, description = "Number of rexecutions")
+    private int numexe = 3;
+
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
@@ -85,6 +88,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+    }
+
+    public int getNumexe() {
+        return numexe;
+    }
+
+    public void setNumexe(int numexe) {
+        this.numexe = numexe;
     }
 
     public String getVulns() {
