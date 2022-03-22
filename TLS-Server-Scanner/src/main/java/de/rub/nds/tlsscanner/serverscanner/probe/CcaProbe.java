@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -135,9 +136,8 @@ public class CcaProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE)
-            && (report.getVersionSuitePairs() != null);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.REQUIRES_CCA).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
