@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,17 +62,8 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.getSupportedExtensions() != null) {
-            for (ExtensionType type : report.getSupportedExtensions()) {
-                if (type == ExtensionType.HEARTBEAT) {
-                    return true;
-                }
-            }
-        } else {
-            return true;
-        }
-        return false;
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.EXTENSIONS).requireExtensionTyes(ExtensionType.HEARTBEAT);
     }
 
     @Override
