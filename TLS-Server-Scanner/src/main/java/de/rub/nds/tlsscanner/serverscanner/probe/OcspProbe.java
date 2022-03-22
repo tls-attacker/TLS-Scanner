@@ -46,6 +46,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -228,10 +229,8 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        // We also need the tls13 groups to perform a tls13 handshake
-        return report.getCertificateChainList() != null && !report.getCertificateChainList().isEmpty()
-            && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CERTIFICATE);
     }
 
     @Override
