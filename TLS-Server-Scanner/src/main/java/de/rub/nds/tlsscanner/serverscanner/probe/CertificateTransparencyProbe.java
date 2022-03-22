@@ -38,6 +38,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -228,8 +229,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(ProbeType.OCSP);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.OCSP, ProbeType.CERTIFICATE);
     }
 
     @Override
