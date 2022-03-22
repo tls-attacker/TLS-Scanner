@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.DistributionTest;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -120,23 +121,9 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
-            == TestResults.NOT_TESTED_YET
-            || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION)
-                == TestResults.NOT_TESTED_YET
-            || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            || !report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            || !report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS)
-            || !report.isProbeAlreadyExecuted(ProbeType.RESUMPTION)) {
-            return false; // dependency is missing
-        } else if (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResults.TRUE
-            && report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResults.TRUE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
-            return false; // can actually not be executed
-        } else {
-            return true;
-        }
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3, AnalyzedProperty.SUPPORTS_STATIC_ECDH, AnalyzedProperty.SUPPORTS_ECDH, AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
+        		.requireProbeTypes(ProbeType.PROTOCOL_VERSION, ProbeType.CIPHER_SUITE, ProbeType.NAMED_GROUPS, ProbeType.RESUMPTION);
     }
 
     @Override
