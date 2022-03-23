@@ -12,10 +12,12 @@ package de.rub.nds.tlsscanner.serverscanner.requirements;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
+import java.util.Map;
 
 public class ProbeRequirement {
 	private SiteReport report;
@@ -82,9 +84,10 @@ public class ProbeRequirement {
 	private boolean analyzedPropertiesFulfilled() {
 		if (this.requiredAnalyzedproperties==null)
 			return true;
+		Map<String, TestResult> apList = report.getResultMap();
 		for (AnalyzedProperty ap : this.requiredAnalyzedproperties) {
-			if (report.getResultMap().containsKey(ap.toString())) {
-				if (report.getResultMap().get(ap.toString())!= TestResults.TRUE)
+			if (apList.containsKey(ap.toString())) {
+				if (apList.get(ap.toString())!= TestResults.TRUE)
 					return false;
 			}
 			else
@@ -109,9 +112,10 @@ public class ProbeRequirement {
 	private boolean analyzedPropertiesNotFulfilled() {
 		if (this.requiredAnalyzedpropertiesNot==null)
 			return true;
+		Map<String, TestResult> apList = report.getResultMap();
 		for (AnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
-			if (report.getResultMap().containsKey(ap.toString())) {
-				if (report.getResultMap().get(ap.toString())!= TestResults.FALSE)
+			if (apList.containsKey(ap.toString())) {
+				if (apList.get(ap.toString())!= TestResults.FALSE)
 					return false;
 			}
 			else
@@ -123,10 +127,11 @@ public class ProbeRequirement {
 	private boolean extensionTypesFulfilled() {
 		if (this.requiredExtensionTypes==null)
 			return true;
-		if (report.getSupportedExtensions() == null) 
+		List<ExtensionType> etList = report.getSupportedExtensions();
+		if (etList == null) 
 			return false;
 		for (ExtensionType et : this.requiredExtensionTypes) {
-			if(!report.getSupportedExtensions().contains(et)) 
+			if(!etList.contains(et)) 
 				return false;
 		}
 		return true;
