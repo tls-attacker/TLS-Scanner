@@ -19,6 +19,7 @@ public class ProbeRequirement {
 	private SiteReport report;
 	private ProbeType[] requiredProbeTypes;
 	private AnalyzedProperty[] requiredAnalyzedproperties;
+	private AnalyzedProperty[] requiredAnalyzedpropertiesNot;
 	private ExtensionType[] requiredExtensionTypes;	
 	private ProbeRequirement not;
 	private ProbeRequirement[] requiredOR;
@@ -34,6 +35,11 @@ public class ProbeRequirement {
 	
 	public ProbeRequirement requireAnalyzedProperties(AnalyzedProperty ... analyzedProperties) {
 		this.requiredAnalyzedproperties=analyzedProperties;
+		return this;
+	}
+	
+	public ProbeRequirement requireAnalyzedPropertiesNot(AnalyzedProperty ... analyzedPropertiesNot) {
+		this.requiredAnalyzedpropertiesNot=analyzedPropertiesNot;
 		return this;
 	}
 	
@@ -53,7 +59,7 @@ public class ProbeRequirement {
 	}
 	
 	public boolean evaluateRequirements() {		
-		return probeTypesFulfilled() && analyzedPropertiesFulfilled() && extensionTypesFulfilled() && orFulfilled() && notFulfilled();
+		return probeTypesFulfilled() && analyzedPropertiesFulfilled() && extensionTypesFulfilled() && orFulfilled() && notFulfilled() && analyzedPropertiesNotFulfilled();
 	}
 	
 	private boolean probeTypesFulfilled() {
@@ -72,6 +78,20 @@ public class ProbeRequirement {
 		for (AnalyzedProperty ap : this.requiredAnalyzedproperties) {
 			if (report.getResultMap().containsKey(ap.toString())) {
 				if (report.getResultMap().get(ap.toString())!= TestResults.TRUE)
+					return false;
+			}
+			else
+				return false;
+		}
+		return true;
+	}	
+	
+	private boolean analyzedPropertiesNotFulfilled() {
+		if (this.requiredAnalyzedpropertiesNot==null)
+			return true;
+		for (AnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
+			if (report.getResultMap().containsKey(ap.toString())) {
+				if (report.getResultMap().get(ap.toString())!= TestResults.FALSE)
 					return false;
 			}
 			else
@@ -120,6 +140,13 @@ public class ProbeRequirement {
 	 */
 	public AnalyzedProperty[] getRequiredAnalyzedproperties() {
 		return this.requiredAnalyzedproperties;
+	}
+
+	/**
+	 * @return the requiredAnalyzedpropertiesNot
+	 */
+	public AnalyzedProperty[] getRequiredAnalyzedpropertiesNot() {
+		return this.requiredAnalyzedpropertiesNot;
 	}
 	
 	/**
