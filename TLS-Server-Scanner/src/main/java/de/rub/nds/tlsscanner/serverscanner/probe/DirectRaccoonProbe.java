@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -160,19 +161,14 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResults.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResults.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResults.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResults.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0), TestResults.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2), TestResults.TRUE))) {
-            return false;
-        }
-        if (report.getCipherSuites() == null) {
-            return false;
-        }
-        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DH), TestResults.TRUE);
+    protected ProbeRequirement getRequirements(SiteReport report) {
+    	ProbeRequirement pReqSsl3 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_SSL_3);
+    	ProbeRequirement pReqTls10 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_0);
+    	ProbeRequirement pReqTls11 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_1);
+    	ProbeRequirement pReqTls12 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_2);
+    	ProbeRequirement pReqDtls10 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DTLS_1_0);
+    	ProbeRequirement pReqDtls12 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DH).orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
     }
 
     @Override
