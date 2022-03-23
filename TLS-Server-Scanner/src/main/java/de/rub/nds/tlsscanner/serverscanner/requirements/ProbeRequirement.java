@@ -20,7 +20,8 @@ public class ProbeRequirement {
 	private ProbeType[] requiredProbeTypes;
 	private AnalyzedProperty[] requiredAnalyzedproperties;
 	private ExtensionType[] requiredExtensionTypes;	
-	private ProbeRequirement first, second, not;
+	private ProbeRequirement not;
+	private ProbeRequirement[] requiredOR;
 
 	public ProbeRequirement(SiteReport report) {
 		this.report=report;
@@ -41,11 +42,8 @@ public class ProbeRequirement {
 		return this;		
 	}
 	
-	// Freie Funktion?
-	
-	public ProbeRequirement orRequirement(ProbeRequirement firstReq, ProbeRequirement secondReq) {
-		this.first=firstReq;
-		this.second=secondReq;
+	public ProbeRequirement orRequirement(ProbeRequirement ...firstReq ) {
+		this.requiredOR=firstReq;
 		return this;
 	}
 	
@@ -95,16 +93,13 @@ public class ProbeRequirement {
 	}	
 	
 	private boolean orFulfilled() {
-		if (this.first==null && this.second==null)
+		if (this.requiredOR==null)
 			return true;
-		boolean evalFirst = this.first.evaluateRequirements();
-		boolean evalSecond = this.second.evaluateRequirements();
-		
-		if (this.first==null)
-			return evalSecond;
-		if (this.second==null)
-			return evalFirst;
-		return evalFirst || evalSecond;
+		for (ProbeRequirement pReq : this.requiredOR) {
+			if(pReq.evaluateRequirements())
+				return true;
+		}
+		return false;
 	}	
 	
 	private boolean notFulfilled() {
@@ -135,17 +130,10 @@ public class ProbeRequirement {
 	}
 
 	/**
-	 * @return the first ProbeRequirement
+	 * @return the or ProbeRequirements
 	 */
-	public ProbeRequirement getFirst() {
-		return this.first;
-	}
-
-	/**
-	 * @return the second ProbeRequirement
-	 */
-	public ProbeRequirement getSecond() {
-		return this.second;
+	public ProbeRequirement[] getORRequirements() {
+		return this.requiredOR;
 	}
 
 	/**
