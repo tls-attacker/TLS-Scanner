@@ -10,7 +10,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.ArrayList;
 import java.util.List;
-import javassist.tools.web.BadHttpRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,12 +48,8 @@ public class ProbeRequirementTest {
 		
 		ProbeRequirement pReq1 = new ProbeRequirement(report);
 		ProbeRequirement pReq2 = new ProbeRequirement(report);
-		ProbeRequirement[] pReqOR = new ProbeRequirement[]{pReq1, pReq2};
-		pReq.orRequirement(pReq1, pReq2);
-		System.out.println(pReq.getORRequirements().equals(pReqOR));
-		System.out.println(pReq.getORRequirements());
-		System.out.println(pReqOR);
-		assertTrue(pReq.getORRequirements().equals(pReqOR) && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
+
+		assertTrue((pReq.getORRequirements()[0].equals(pReq1) && pReq.getORRequirements()[1].equals(pReq2) || pReq.getORRequirements()[1].equals(pReq1) && pReq.getORRequirements()[0].equals(pReq2)) && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
 		
 		pReq1.notRequirement(pReq2);
 		assertTrue(pReq1.getORRequirements()==null && pReq1.getNot().equals(pReq2) && pReq1.getRequiredAnalyzedproperties()==null && pReq1.getRequiredExtensionTypes()==null && pReq1.getRequiredProbeTypes()==null);

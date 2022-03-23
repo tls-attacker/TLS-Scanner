@@ -42,8 +42,8 @@ public class ProbeRequirement {
 		return this;		
 	}
 	
-	public ProbeRequirement orRequirement(ProbeRequirement ...firstReq ) {
-		this.requiredOR=firstReq;
+	public ProbeRequirement orRequirement(ProbeRequirement ... orReq ) {
+		this.requiredOR=orReq;
 		return this;
 	}
 	
