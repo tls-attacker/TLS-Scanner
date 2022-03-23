@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureAndHashAlgorithmResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -201,11 +202,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getVersions().contains(ProtocolVersion.TLS12)
-                || report.getVersions().contains(ProtocolVersion.TLS13)
-                || report.getVersions().contains(ProtocolVersion.DTLS12));
+    protected ProbeRequirement getRequirements(SiteReport report) {
+    	ProbeRequirement pReqTls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS12);
+    	ProbeRequirement pReqTls13 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS13);
+    	ProbeRequirement pReqDtls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.DTLS12);
+    	return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION).orRequirement(pReqDtls12, pReqTls12, pReqTls13);
     }
 
     @Override
