@@ -37,6 +37,9 @@ public class ProbeRequirementTest {
 		ProbeRequirement pReq = new ProbeRequirement(report);
 		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()==null && pReq.getRequiredExtensionTypes()==null && pReq.getRequiredProbeTypes()==null);
 		
+		pReq.requireAnalyzedPropertiesNot(aProp);
+		assertTrue(pReq.getRequiredAnalyzedpropertiesNot()[0].equals(aProp));
+		
 		pReq.requireAnalyzedProperties(aProp);
 		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()==null && pReq.getRequiredProbeTypes()==null);
 		
@@ -53,7 +56,8 @@ public class ProbeRequirementTest {
 		
 		pReq1.notRequirement(pReq2);
 		assertTrue(pReq1.getORRequirements()==null && pReq1.getNot().equals(pReq2) && pReq1.getRequiredAnalyzedproperties()==null && pReq1.getRequiredExtensionTypes()==null && pReq1.getRequiredProbeTypes()==null);
-}
+
+	}
 
 	/**
 	 * Test evaluation of the probe requirements
@@ -65,6 +69,10 @@ public class ProbeRequirementTest {
 		
 		ProbeRequirement pReq1 = new ProbeRequirement(report);
 		ProbeRequirement pReq2 = new ProbeRequirement(report);
+		
+		ProbeRequirement pReqNot = new ProbeRequirement(report).requireAnalyzedPropertiesNot(aProp);
+		report.putResult(aProp, TestResults.FALSE);
+		assertTrue(pReqNot.evaluateRequirements());
 		
 		pReq2.notRequirement(pReq1);
 		assertFalse(pReq2.evaluateRequirements()==true);
@@ -78,11 +86,12 @@ public class ProbeRequirementTest {
 		
 		pReq2.requireAnalyzedProperties(aProp);
 		assertFalse(pReq.evaluateRequirements()==true);
-
+		
 		pReq.requireAnalyzedProperties(aProp);
-		assertFalse(pReq.evaluateRequirements()==true);
+		assertFalse(pReq.evaluateRequirements());
 		report.putResult(aProp, TestResults.TRUE);
-		assertTrue(pReq.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
+		assertFalse(pReqNot.evaluateRequirements());
 		
 		pReq.requireProbeTypes(pType);
 		assertFalse(pReq.evaluateRequirements()==true);
@@ -98,5 +107,6 @@ public class ProbeRequirementTest {
 			System.out.println(et);
 		}
 		assertTrue(pReq.evaluateRequirements()==true);
+		
 	}
 }
