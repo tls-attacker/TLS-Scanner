@@ -70,7 +70,7 @@ public class ProbeRequirementTest {
 	@Test
 	public void evaluateProbeRequirementsTest() {
 		ProbeRequirement pReq = new ProbeRequirement(report);
-		assertTrue(pReq.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
 		
 		ProbeRequirement pReq1 = new ProbeRequirement(report);
 		ProbeRequirement pReq2 = new ProbeRequirement(report);
