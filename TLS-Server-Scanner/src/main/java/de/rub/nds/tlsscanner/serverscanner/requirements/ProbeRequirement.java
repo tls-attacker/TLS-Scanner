@@ -10,17 +10,19 @@
 package de.rub.nds.tlsscanner.serverscanner.requirements;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.util.List;
 
 public class ProbeRequirement {
 	private SiteReport report;
 	private ProbeType[] requiredProbeTypes;
-	private AnalyzedProperty[] requiredAnalyzedproperties;
-	private AnalyzedProperty[] requiredAnalyzedpropertiesNot;
+	private AnalyzedProperty[] requiredAnalyzedproperties, requiredAnalyzedpropertiesNot;
 	private ExtensionType[] requiredExtensionTypes;	
+	private ProtocolVersion[] requiredProtocolVersions;
 	private ProbeRequirement not;
 	private ProbeRequirement[] requiredOR;
 
@@ -30,6 +32,11 @@ public class ProbeRequirement {
 	
 	public ProbeRequirement requireProbeTypes(ProbeType ... probeTypes) {
 		this.requiredProbeTypes=probeTypes;
+		return this;
+	}
+	
+	public ProbeRequirement requireProtocolVersions(ProtocolVersion ... protocolVersions) {
+		this.requiredProtocolVersions=protocolVersions;
 		return this;
 	}
 	
@@ -59,7 +66,7 @@ public class ProbeRequirement {
 	}
 	
 	public boolean evaluateRequirements() {		
-		return probeTypesFulfilled() && analyzedPropertiesFulfilled() && extensionTypesFulfilled() && orFulfilled() && notFulfilled() && analyzedPropertiesNotFulfilled();
+		return probeTypesFulfilled() && analyzedProtocolVersionsFulfilled() && analyzedPropertiesFulfilled() && extensionTypesFulfilled() && orFulfilled() && notFulfilled() && analyzedPropertiesNotFulfilled();
 	}
 	
 	private boolean probeTypesFulfilled() {
@@ -84,7 +91,20 @@ public class ProbeRequirement {
 				return false;
 		}
 		return true;
-	}	
+	}
+	
+	private boolean analyzedProtocolVersionsFulfilled() {
+		if (this.requiredProtocolVersions==null)
+			return true;
+		List<ProtocolVersion> pvList = report.getVersions();
+		if (pvList==null)
+			return false;
+		for (ProtocolVersion pv : this.requiredProtocolVersions) {
+			if (!pvList.contains(pv))
+				return false;
+		}
+		return true;
+	}
 	
 	private boolean analyzedPropertiesNotFulfilled() {
 		if (this.requiredAnalyzedpropertiesNot==null)
@@ -154,6 +174,13 @@ public class ProbeRequirement {
 	 */
 	public ExtensionType[] getRequiredExtensionTypes() {
 		return this.requiredExtensionTypes;
+	}
+	
+	/**
+	 * @return the requiredProtocolVersions
+	 */
+	public ProtocolVersion[] getRequiredProtocolVersions() {
+		return this.requiredProtocolVersions;
 	}
 
 	/**
