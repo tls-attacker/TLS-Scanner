@@ -37,6 +37,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -202,8 +203,8 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getCipherSuites() != null && (report.getCipherSuites().size() > 0 || supportsOnlyTls13(report)));
+    protected ProbeRequirement getRequirements(SiteReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedPropertiesNot(AnalyzedProperty.SUPPORTS_TLS_1_0, AnalyzedProperty.SUPPORTS_TLS_1_1, AnalyzedProperty.SUPPORTS_TLS_1_2, AnalyzedProperty.SUPPORTS_DTLS_1_0, AnalyzedProperty.SUPPORTS_DTLS_1_2);
     }
 
     @Override
@@ -218,18 +219,6 @@ public class RenegotiationProbe extends TlsProbe {
         return new RenegotiationResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
             TestResults.COULD_NOT_TEST);
-    }
-
-    /**
-     * Used to run the probe with empty CS list if we already know versions before TLS 1.3 are not supported, to avoid
-     * stalling of probes that depend on this one
-     */
-    private boolean supportsOnlyTls13(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.FALSE;
     }
 
     private Config getBaseConfig() {
