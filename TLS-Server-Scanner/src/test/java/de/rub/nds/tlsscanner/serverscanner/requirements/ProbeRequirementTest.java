@@ -48,7 +48,7 @@ public class ProbeRequirementTest {
 		
 		ProbeRequirement pReq1 = new ProbeRequirement(report);
 		ProbeRequirement pReq2 = new ProbeRequirement(report);
-
+		pReq.orRequirement(pReq1, pReq2);
 		assertTrue((pReq.getORRequirements()[0].equals(pReq1) && pReq.getORRequirements()[1].equals(pReq2) || pReq.getORRequirements()[1].equals(pReq1) && pReq.getORRequirements()[0].equals(pReq2)) && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
 		
 		pReq1.notRequirement(pReq2);
