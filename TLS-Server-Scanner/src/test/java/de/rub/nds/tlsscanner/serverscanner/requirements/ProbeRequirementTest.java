@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -17,6 +18,7 @@ public class ProbeRequirementTest {
 	private ProbeType pType = ProbeType.PROTOCOL_VERSION;
 	private ExtensionType eType = ExtensionType.TOKEN_BINDING;
 	private AnalyzedProperty aProp = AnalyzedProperty.SUPPORTS_DES;
+	private ProtocolVersion pVer = ProtocolVersion.DTLS10;
     private SiteReport report;
     
 	/**
@@ -57,6 +59,9 @@ public class ProbeRequirementTest {
 		pReq1.notRequirement(pReq2);
 		assertTrue(pReq1.getORRequirements()==null && pReq1.getNot().equals(pReq2) && pReq1.getRequiredAnalyzedproperties()==null && pReq1.getRequiredExtensionTypes()==null && pReq1.getRequiredProbeTypes()==null);
 
+		assertTrue(pReq.getRequiredProtocolVersions()==null);
+		pReq.requireProtocolVersions(pVer);
+		assertTrue(pReq.getRequiredProtocolVersions()[0].equals(pVer));
 	}
 
 	/**
@@ -96,6 +101,13 @@ public class ProbeRequirementTest {
 		pReq.requireProbeTypes(pType);
 		assertFalse(pReq.evaluateRequirements());
 		report.markProbeAsExecuted(pType);
+		assertTrue(pReq.evaluateRequirements());
+		
+		pReq.requireProtocolVersions(pVer);
+		assertFalse(pReq.evaluateRequirements());
+		List<ProtocolVersion> pList = new ArrayList<ProtocolVersion>();
+		pList.add(pVer);
+		report.setVersions(pList);;
 		assertTrue(pReq.evaluateRequirements());
 		
 		pReq.requireExtensionTyes(eType);
