@@ -75,17 +75,17 @@ public class ProbeRequirementTest {
 		assertTrue(pReqNot.evaluateRequirements());
 		
 		pReq2.notRequirement(pReq1);
-		assertFalse(pReq2.evaluateRequirements()==true);
+		assertFalse(pReq2.evaluateRequirements());
 		
 		pReq.orRequirement(pReq1, pReq2);
-		assertTrue(pReq.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
 		
 		pReq1.requireAnalyzedProperties(aProp);
-		assertTrue(pReq.evaluateRequirements()==true);
-		assertTrue(pReq2.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
+		assertTrue(pReq2.evaluateRequirements());
 		
 		pReq2.requireAnalyzedProperties(aProp);
-		assertFalse(pReq.evaluateRequirements()==true);
+		assertFalse(pReq.evaluateRequirements());
 		
 		pReq.requireAnalyzedProperties(aProp);
 		assertFalse(pReq.evaluateRequirements());
@@ -94,19 +94,19 @@ public class ProbeRequirementTest {
 		assertFalse(pReqNot.evaluateRequirements());
 		
 		pReq.requireProbeTypes(pType);
-		assertFalse(pReq.evaluateRequirements()==true);
+		assertFalse(pReq.evaluateRequirements());
 		report.markProbeAsExecuted(pType);
-		assertTrue(pReq.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
 		
 		pReq.requireExtensionTyes(eType);
-		assertFalse(pReq.evaluateRequirements()==true);
+		assertFalse(pReq.evaluateRequirements());
 		List<ExtensionType> etList = new ArrayList<ExtensionType>();
 		etList.add(eType);
 		report.setSupportedExtensions(etList);
 		for (ExtensionType et : report.getSupportedExtensions()) {
 			System.out.println(et);
 		}
-		assertTrue(pReq.evaluateRequirements()==true);
+		assertTrue(pReq.evaluateRequirements());
 		
 	}
 }
