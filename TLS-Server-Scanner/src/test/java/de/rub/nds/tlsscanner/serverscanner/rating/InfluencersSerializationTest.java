@@ -55,7 +55,7 @@ public class InfluencersSerializationTest {
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, 100));
         influencers.add(i);
 
-        original.setRatingInfluencers(influencers);
+        original.setRatingInfluencer(influencers);
 
         writer = new StringWriter();
         context = JAXBContext.newInstance(RatingInfluencers.class);
@@ -74,11 +74,11 @@ public class InfluencersSerializationTest {
         um = context.createUnmarshaller();
         result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
 
-        assertEquals("Influencer length check.", original.getRatingInfluencers().size(),
-            result.getRatingInfluencers().size());
+        assertEquals("Influencer length check.", original.getRatingInfluencer().size(),
+            result.getRatingInfluencer().size());
 
-        RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
-        RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);
+        RatingInfluencer oInfluencer = original.getRatingInfluencer().get(0);
+        RatingInfluencer rInfluencer = result.getRatingInfluencer().get(0);
         assertEquals(oInfluencer.getAnalyzedProperty(), rInfluencer.getAnalyzedProperty());
 
         PropertyResultRatingInfluencer ori = oInfluencer.getPropertyRatingInfluencers().get(0);

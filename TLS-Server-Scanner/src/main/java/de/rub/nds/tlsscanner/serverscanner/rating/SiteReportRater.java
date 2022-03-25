@@ -104,7 +104,7 @@ public class SiteReportRater {
     public ScoreReport getScoreReport(HashMap<String, TestResult> resultMap) {
         LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers = new LinkedHashMap<>();
 
-        for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencers()) {
+        for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencer()) {
             TestResult result = resultMap.get(ratingInfluencer.getAnalyzedProperty().toString());
             if (result != null) {
                 PropertyResultRatingInfluencer propertyRatingInfluencer =

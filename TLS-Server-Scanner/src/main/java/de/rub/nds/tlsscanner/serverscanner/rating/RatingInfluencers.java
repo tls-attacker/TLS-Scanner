@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "ratingInfluencers")
@@ -28,14 +27,14 @@ public class RatingInfluencers implements Serializable {
      */
     static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
 
-    private LinkedList<RatingInfluencer> ratingInfluencers;
+    private LinkedList<RatingInfluencer> ratingInfluencer;
 
     private RatingInfluencers() {
 
     }
 
     public RatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
-        this.ratingInfluencers = ratingInfluencers;
+        this.ratingInfluencer = ratingInfluencers;
     }
 
     public static RatingInfluencers createRatingInfluencers() {
@@ -53,17 +52,16 @@ public class RatingInfluencers implements Serializable {
         // https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
     }
 
-    //@XmlElement(name = "ratingInfluencer")
-    public LinkedList<RatingInfluencer> getRatingInfluencers() {
-        return ratingInfluencers;
+    public LinkedList<RatingInfluencer> getRatingInfluencer() {
+        return ratingInfluencer;
     }
 
-    public void setRatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
-        this.ratingInfluencers = ratingInfluencers;
+    public void setRatingInfluencer(LinkedList<RatingInfluencer> ratingInfluencers) {
+        this.ratingInfluencer = ratingInfluencers;
     }
 
     public PropertyResultRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
-        for (RatingInfluencer ri : ratingInfluencers) {
+        for (RatingInfluencer ri : ratingInfluencer) {
             if (ri.getAnalyzedProperty() == property) {
                 return ri.getPropertyRatingInfluencer(result);
             }
