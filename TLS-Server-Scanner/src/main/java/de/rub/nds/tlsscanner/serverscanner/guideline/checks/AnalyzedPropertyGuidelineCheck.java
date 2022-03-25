@@ -53,7 +53,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         TestResult reportResult = report.getResult(this.property);
-        switch ((TestResults)reportResult) {
+        switch (reportResult.getResultStatus()) {
             case UNCERTAIN:
             case COULD_NOT_TEST:
             case CANNOT_BE_TESTED:

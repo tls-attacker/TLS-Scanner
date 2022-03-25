@@ -1162,7 +1162,7 @@ public class SiteReportPrinter {
                         && detail.isGreaterEqualTo(ScannerDetail.DETAILED))
                     || detail == ScannerDetail.ALL) {
                     prettyAppend(builder, response.getVector().toString());
-                    switch ((TestResults)response.getShowsPointsAreNotValidated()) {
+                    switch (response.getShowsPointsAreNotValidated().getResultStatus()) {
                         case TRUE:
                             prettyAppend(builder, "Server did not validate points", AnsiColor.YELLOW);
                             break;
@@ -1174,7 +1174,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test point validation", AnsiColor.YELLOW);
                             break;
                     }
-                    switch ((TestResults)response.getChosenGroupReusesKey()) {
+                    switch (response.getChosenGroupReusesKey().getResultStatus()) {
                         case TRUE:
                             prettyAppend(builder, "Server did reuse key", AnsiColor.YELLOW);
                             break;
@@ -1185,7 +1185,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test key reuse", AnsiColor.YELLOW);
                             break;
                     }
-                    switch ((TestResults)response.getShowsVulnerability()) {
+                    switch (response.getShowsVulnerability().getResultStatus()) {
                         case TRUE:
                             prettyAppend(builder, "Server is vulnerable", AnsiColor.RED);
                             break;
@@ -1196,7 +1196,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test for vulnerability", AnsiColor.YELLOW);
                             break;
                     }
-                    switch ((TestResults)response.getSideChannelSuspected()) {
+                    switch (response.getSideChannelSuspected().getResultStatus()) {
                         case TRUE:
                             prettyAppend(builder, "Side Channel suspected", AnsiColor.RED);
                             break;
