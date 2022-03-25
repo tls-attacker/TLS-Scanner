@@ -40,13 +40,14 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     private AtomicBoolean readyForExecution = new AtomicBoolean(false);
     
-    private List<AnalyzedProperty> properties;
+    protected List<AnalyzedProperty> properties;
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.parallelExecutor = parallelExecutor;
         this.writer = new StatsWriter();
+        this.properties=new ArrayList<>();
     }
 
     public final ScannerConfig getScannerConfig() {
