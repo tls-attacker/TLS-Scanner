@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
-//@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 

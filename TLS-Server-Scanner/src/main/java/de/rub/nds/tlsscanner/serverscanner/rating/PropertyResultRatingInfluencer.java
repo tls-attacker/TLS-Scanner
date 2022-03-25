@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
-//@XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 	
