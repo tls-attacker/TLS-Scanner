@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -36,6 +37,9 @@ public class AlpacaProbe extends TlsProbe {
 
     public AlpacaProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
+        properties.add(AnalyzedProperty.STRICT_SNI);
+        properties.add(AnalyzedProperty.STRICT_ALPN);
+        properties.add(AnalyzedProperty.ALPACA_MITIGATED);
     }
 
     @Override
