@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
-//@XmlType(propOrder = { "result", "property" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
