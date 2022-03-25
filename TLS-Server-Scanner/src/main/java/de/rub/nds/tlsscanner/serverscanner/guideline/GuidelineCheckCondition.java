@@ -19,16 +19,18 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {
 	
-	@XmlTransient
+    @XmlElement(name = "condition")
+    @XmlElementWrapper(name = "and")
     private List<GuidelineCheckCondition> and;
-	@XmlTransient
+
+    @XmlElement(name = "condition")
+    @XmlElementWrapper(name = "or")
     private List<GuidelineCheckCondition> or;
 
     private AnalyzedProperty analyzedProperty;
@@ -61,7 +63,6 @@ public class GuidelineCheckCondition {
         return analyzedProperty;
     }
 
-    //@XmlElement(name = "analyzedProperty")
     public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
@@ -70,7 +71,6 @@ public class GuidelineCheckCondition {
         return result;
     }
 
-    //@XmlElement(name = "result")
     public void setResult(TestResult result) {
         this.result = result;
     }
@@ -79,8 +79,6 @@ public class GuidelineCheckCondition {
         return and;
     }
 
-    @XmlElement(name = "condition")
-    @XmlElementWrapper(name = "and")
     public void setAnd(List<GuidelineCheckCondition> and) {
         this.and = and;
     }
@@ -89,8 +87,6 @@ public class GuidelineCheckCondition {
         return or;
     }
 
-    @XmlElement(name = "condition")
-    @XmlElementWrapper(name = "or")
     public void setOr(List<GuidelineCheckCondition> or) {
         this.or = or;
     }
