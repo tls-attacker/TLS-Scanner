@@ -11,4 +11,5 @@ package de.rub.nds.tlsscanner.serverscanner.rating;
 
 public interface TestResult {
     public abstract String name();
+    public TestResults getResultStatus();
 }
