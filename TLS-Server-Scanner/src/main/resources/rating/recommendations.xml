@@ -10,7 +10,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>SSL 2.0 is enabled</shortDescription>
                 <handlingRecommendation>Disable SSL 2.0</handlingRecommendation>
                 <detailedDescription></detailedDescription>
@@ -27,7 +27,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>SSL 3.0 is enabled</shortDescription>
                 <handlingRecommendation>Disable SSL 3.0</handlingRecommendation>
             </resultingRecommendation>
@@ -42,7 +42,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>TLS 1.0 is enabled</shortDescription>
                 <handlingRecommendation>Consider disabling TLS 1.0</handlingRecommendation>
                 <detailedDescription></detailedDescription>
@@ -58,7 +58,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>TLS 1.1 is enabled</shortDescription>
                 <handlingRecommendation>Consider disabling TLS 1.1</handlingRecommendation>
                 <detailedDescription></detailedDescription>
@@ -74,7 +74,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>TLS 1.2 is disabled</shortDescription>
                 <handlingRecommendation>Enable TLS 1.2</handlingRecommendation>
             </resultingRecommendation>
@@ -89,7 +89,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>TLS 1.3 is disabled</shortDescription>
                 <handlingRecommendation>Enable TLS 1.3</handlingRecommendation>
             </resultingRecommendation>
@@ -104,7 +104,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>TLS 1.3 draft version is enabled</shortDescription>
                 <handlingRecommendation>Update your server and enable the TLS 1.3 final version</handlingRecommendation>
             </resultingRecommendation>
@@ -119,7 +119,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>DTLS 1.0 is enabled</shortDescription>
                 <handlingRecommendation>Consider disabling DTLS 1.0</handlingRecommendation>
             </resultingRecommendation>
@@ -134,7 +134,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>DTLS 1.2 is disabled</shortDescription>
                 <handlingRecommendation>Enable DTLS 1.2</handlingRecommendation>
             </resultingRecommendation>
@@ -149,7 +149,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>DTLS 1.3 is disabled</shortDescription>
                 <handlingRecommendation>Enable DTLS 1.3</handlingRecommendation>
             </resultingRecommendation>
@@ -164,7 +164,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>Null ciphers are supported</shortDescription>
                 <handlingRecommendation>Disable insecure null ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -179,7 +179,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>Fortezza ciphers are supported</shortDescription>
                 <handlingRecommendation>Disable Fortezza cipher suites</handlingRecommendation>
                 <detailedDescription>Fortezza cipher suites were developed by NSA in the 90s. You should better get rid of Fortezza algorithms.</detailedDescription>
@@ -195,7 +195,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>Export ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable export ciphers</handlingRecommendation>
                 <detailedDescription></detailedDescription>
@@ -211,7 +211,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>Anonymous ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable anonymous ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -226,7 +226,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>DES ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable DES ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -241,7 +241,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>3DES ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable 3DES ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -267,7 +267,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>IDEA ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable IDEA ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -283,7 +283,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>RC2 ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable RC2 ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -300,7 +300,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>RC4 ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable RC4 ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -315,7 +315,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>AEAD cipher suites are disabled</shortDescription>
                 <handlingRecommendation>Enable AEAD cipher suites, e.g., AES-GCM</handlingRecommendation>
             </resultingRecommendation>
@@ -330,7 +330,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>PFS is not supported</shortDescription>
                 <handlingRecommendation>Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
             </resultingRecommendation>
@@ -345,7 +345,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Not all cipher suites are perfect forward secure</shortDescription>
                 <handlingRecommendation>Consider disabling cipher suites which are not perfect forward secure. Enable only perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
             </resultingRecommendation>
@@ -360,7 +360,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>PFS cipher suites are not preferred</shortDescription>
                 <handlingRecommendation>Enable cipher suite ordering and prefer PFS cipher suites</handlingRecommendation>
             </resultingRecommendation>
@@ -375,7 +375,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>PFS cipher suites are not enforced</shortDescription>
                 <handlingRecommendation>Enable cipher suite ordering and enforce PFS cipher suites</handlingRecommendation>
             </resultingRecommendation>
@@ -390,7 +390,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>AES cipher suites are disabled</shortDescription>
                 <handlingRecommendation>Enable AES cipher suites</handlingRecommendation>
             </resultingRecommendation>
@@ -425,7 +425,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>ChaCha cipher is disabled</shortDescription>
                 <handlingRecommendation>Enable ChaCha cipher</handlingRecommendation>
             </resultingRecommendation>
@@ -440,7 +440,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>RSA key exchange is enabled</shortDescription>
                 <handlingRecommendation>Disable RSA key exchange</handlingRecommendation>
             </resultingRecommendation>
@@ -463,7 +463,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Elliptic Curve Diffie-Hellman (ECDH) key exchange is disabled</shortDescription>
                 <handlingRecommendation>Enable Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
             </resultingRecommendation>
@@ -479,7 +479,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange is enabled</shortDescription>
                 <handlingRecommendation>Disable static Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
             </resultingRecommendation>
@@ -495,7 +495,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>GOST ciphers are enabled</shortDescription>
                 <handlingRecommendation>Disable GOST ciphers</handlingRecommendation>
             </resultingRecommendation>
@@ -598,7 +598,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Extended master secret extension is not supported</shortDescription>
                 <handlingRecommendation>Enable support for the extended master secret</handlingRecommendation>
             </resultingRecommendation>
@@ -613,7 +613,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Encrypt-then-MAC extension is not supported</shortDescription>
                 <handlingRecommendation>Enable support for the Encrypt-then-MAC</handlingRecommendation>
             </resultingRecommendation>
@@ -644,7 +644,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Session tickets are disabled</shortDescription>
                 <handlingRecommendation>Enable session resumption with session tickets</handlingRecommendation>
             </resultingRecommendation>
@@ -668,7 +668,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Session resumption with rotating session tickets is disabled</shortDescription>
                 <handlingRecommendation>Frequently changing session ticket keys improves the security, enable rotated session tickets.</handlingRecommendation>
             </resultingRecommendation>
@@ -683,7 +683,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Secure renegotiation extension is disabled</shortDescription>
                 <handlingRecommendation>Consider to enable secure renegotiation extension.</handlingRecommendation>
             </resultingRecommendation>
@@ -719,7 +719,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>TLS SCSV is disabled</shortDescription>
                 <handlingRecommendation> Enable TLS Fallback Signaling Cipher Suite Value (SCSV)</handlingRecommendation>
             </resultingRecommendation>
@@ -734,7 +734,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>TLS compression is supported</shortDescription>
                 <handlingRecommendation>Disable TLS compression</handlingRecommendation>
             </resultingRecommendation>
@@ -749,7 +749,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>DH group moduli are not prime</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -774,7 +774,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>DH group moduli are not safe primes</shortDescription>
                 <handlingRecommendation>There is a vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -797,7 +797,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>HSTS is disabled</shortDescription>
                 <handlingRecommendation>Enable HSTS</handlingRecommendation>
             </resultingRecommendation>
@@ -812,7 +812,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>HSTS is disabled</shortDescription>
                 <handlingRecommendation>Enable HSTS</handlingRecommendation>
             </resultingRecommendation>
@@ -843,7 +843,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>HTTP compression is enabled</shortDescription>
                 <handlingRecommendation>Disable HTTP compression</handlingRecommendation>
             </resultingRecommendation>
@@ -858,7 +858,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Cipher suite ordering is disabled</shortDescription>
                 <handlingRecommendation>Enable cipher suite ordering</handlingRecommendation>
             </resultingRecommendation>
@@ -871,7 +871,7 @@
         <links/>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Server does not enforce client's group order</shortDescription>
                 <handlingRecommendation>Enforce client's group order</handlingRecommendation>
             </resultingRecommendation>
@@ -886,7 +886,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>Signature hash ordering is not enforced</shortDescription>
                 <handlingRecommendation>Enforce signature hash algorithm ordering</handlingRecommendation>
             </resultingRecommendation>
@@ -901,7 +901,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is TLS version intolerant</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -916,7 +916,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is cipher suite intolerant</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -931,7 +931,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is TLS extension intolerant</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -946,7 +946,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has TLS cipher suite length intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -961,7 +961,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is TLS compression intolerant</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -976,7 +976,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is ALPN intolerant</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -991,7 +991,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has ClientHello length intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1006,7 +1006,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has ClientHello last extension intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1021,7 +1021,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has TLS signature and hash algorithm intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1036,7 +1036,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has big ClientHello intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1051,7 +1051,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server has elliptic curve named group intolerance</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1066,7 +1066,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server always evaluates only the second cipher suite byte</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1081,7 +1081,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server reflects offered cipher suites</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1096,7 +1096,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server ignores offered cipher suites</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1111,7 +1111,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server ignores offered named groups</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1126,7 +1126,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server ignores offered signature and hash algorithms</shortDescription>
                 <handlingRecommendation>There is a bug in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1141,7 +1141,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to a Bleichenbacher attack</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1156,7 +1156,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to a CBC padding oracle attack</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1171,7 +1171,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to an invalid curve attack</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1186,7 +1186,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to an invalid curve attack on ephemeral cipher suites</shortDescription>
                 <handlingRecommendation>There is a vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1201,7 +1201,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1216,7 +1216,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to POODLE</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1231,7 +1231,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to POODLE with TLS</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1246,7 +1246,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to Sweet32</shortDescription>
                 <handlingRecommendation>Disable 64 bit block ciphers like 3DES.</handlingRecommendation>
             </resultingRecommendation>
@@ -1261,7 +1261,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to DROWN</shortDescription>
                 <handlingRecommendation>Disable SSL 2.0</handlingRecommendation>
             </resultingRecommendation>
@@ -1276,7 +1276,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to Heartbleed</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1291,7 +1291,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to Ticketbleed</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1306,7 +1306,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to CCS injection / Early CCS</shortDescription>
                 <handlingRecommendation>There is a vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1322,7 +1322,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to CRIME</shortDescription>
                 <handlingRecommendation>Disable TLS compression</handlingRecommendation>
             </resultingRecommendation>
@@ -1337,7 +1337,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to BREACH</shortDescription>
                 <handlingRecommendation>Disable HTTP compression</handlingRecommendation>
             </resultingRecommendation>
@@ -1352,7 +1352,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to Logjam</shortDescription>
                 <handlingRecommendation>Disable export cipher suites and short Diffie-Hellman groups. Use at least 2048-bit Diffie-Hellman keys.</handlingRecommendation>
             </resultingRecommendation>
@@ -1367,7 +1367,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to FREAK</shortDescription>
                 <handlingRecommendation>Disable export cipher suites.</handlingRecommendation>
             </resultingRecommendation>
@@ -1382,7 +1382,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to the renegotiation attack (cs)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
@@ -1397,7 +1397,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to the renegotiation attack (cs)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
@@ -1412,7 +1412,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to the renegotiation attack (ext)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
@@ -1427,7 +1427,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server is vulnerable to the renegotiation attack (ext)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
@@ -1442,7 +1442,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server does not verify MACs in Application messages</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1457,7 +1457,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server does not verify the Finished message MAC</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1472,7 +1472,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server does not correctly process verify data in the Finished messages</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1487,7 +1487,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server does not verify the AES-GCM authentication tags</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1502,7 +1502,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server uses weak random values</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1517,7 +1517,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server reuses ephemeral elliptic curve keys</shortDescription>
                 <handlingRecommendation>Configure your server to always use fresh elliptic curve keys</handlingRecommendation>
             </resultingRecommendation>
@@ -1532,7 +1532,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server reuses ephemeral Diffie-Hellman keys</shortDescription>
                 <handlingRecommendation>Configure your server to always use fresh Diffie-Hellman keys</handlingRecommendation>
             </resultingRecommendation>
@@ -1547,7 +1547,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server reuses GCM nonces and is vulnerable to nonce-reuse attacks</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
@@ -1570,7 +1570,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription></shortDescription>
                 <handlingRecommendation></handlingRecommendation>
             </resultingRecommendation>
@@ -1585,7 +1585,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not reject unsupported ALPN Strings</shortDescription>
                 <handlingRecommendation>If possible configure your server to use strict ALPN verification</handlingRecommendation>
             </resultingRecommendation>
@@ -1600,7 +1600,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not reject invalid SNI names.</shortDescription>
                 <handlingRecommendation>If possible configure your server to use strict SNI verification</handlingRecommendation>
             </resultingRecommendation>
@@ -1615,7 +1615,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not reject invalid SNI names.</shortDescription>
                 <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
             </resultingRecommendation>
@@ -1630,7 +1630,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not process fragmented handshake messages</shortDescription>
                 <handlingRecommendation>Configure your server to always process fragmented handshake messages</handlingRecommendation>
             </resultingRecommendation>
@@ -1645,7 +1645,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not process message reordering</shortDescription>
                 <handlingRecommendation>Configure your server to always process message reordering</handlingRecommendation>
             </resultingRecommendation>
@@ -1660,7 +1660,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not process retransmissions</shortDescription>
                 <handlingRecommendation>Configure your server to always process retransmissions</handlingRecommendation>
             </resultingRecommendation>
@@ -1675,7 +1675,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>FALSE</testResults>
+                <result>FALSE</result>
                 <shortDescription>The server does not reject invalid cookie values</shortDescription>
                 <handlingRecommendation>Configure your server to always verify the cookie values</handlingRecommendation>
             </resultingRecommendation>
@@ -1690,7 +1690,7 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <testResults>TRUE</testResults>
+                <result>TRUE</result>
                 <shortDescription>The server does not verify the message sequence numbers</shortDescription>
                 <handlingRecommendation>Configure your server to always verify the message sequence numbers</handlingRecommendation>
             </resultingRecommendation>
