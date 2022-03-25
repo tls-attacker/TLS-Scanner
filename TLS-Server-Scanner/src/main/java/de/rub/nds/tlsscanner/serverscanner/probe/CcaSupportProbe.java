@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -26,6 +27,7 @@ public class CcaSupportProbe extends TlsProbe {
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
+        properties.add(AnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override
