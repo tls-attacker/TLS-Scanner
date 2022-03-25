@@ -57,6 +57,11 @@ public class CertificateProbe extends TlsProbe {
 
     public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CERTIFICATE, config);
+        properties.add(AnalyzedProperty.SUPPORTS_RSA_CERT);
+        properties.add(AnalyzedProperty.SUPPORTS_ECDSA);
+        properties.add(AnalyzedProperty.SUPPORTS_DSS);
+        properties.add(AnalyzedProperty.SUPPORTS_GOST);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override
