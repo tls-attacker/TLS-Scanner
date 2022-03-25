@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -62,6 +63,10 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     public CertificateTransparencyProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CERTIFICATE_TRANSPARENCY, config);
+        properties.add(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
+        properties.add(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
+        properties.add(AnalyzedProperty.SUPPORTS_SCTS_OCSP);
+        properties.add(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
     }
 
     @Override
