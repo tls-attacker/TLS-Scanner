@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteOrderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -30,6 +31,7 @@ public class CipherSuiteOrderProbe extends TlsProbe {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CIPHER_SUITE_ORDER, config);
+        properties.add(AnalyzedProperty.ENFORCES_CS_ORDERING);
     }
 
     @Override
