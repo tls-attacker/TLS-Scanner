@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
@@ -38,6 +39,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     private final StatsWriter writer;
 
     private AtomicBoolean readyForExecution = new AtomicBoolean(false);
+    
+    private List<AnalyzedProperty> properties;
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
