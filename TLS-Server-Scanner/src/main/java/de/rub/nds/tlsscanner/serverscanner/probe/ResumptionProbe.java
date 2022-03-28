@@ -45,6 +45,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
@@ -64,6 +65,15 @@ public class ResumptionProbe extends TlsProbe {
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
+        properties.add(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        properties.add(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK);
+        properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override
