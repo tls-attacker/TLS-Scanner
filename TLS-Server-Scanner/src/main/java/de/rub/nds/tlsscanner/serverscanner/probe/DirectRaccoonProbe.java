@@ -36,7 +36,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +51,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
     }
 
     @Override
