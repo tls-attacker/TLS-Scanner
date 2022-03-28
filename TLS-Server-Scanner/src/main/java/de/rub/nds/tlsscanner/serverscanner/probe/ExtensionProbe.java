@@ -43,6 +43,12 @@ public class ExtensionProbe extends TlsProbe {
 
     public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EXTENSIONS, config);
+        properties.add(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
+        properties.add(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
+        properties.add(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
+        properties.add(AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
     }
 
     @Override
