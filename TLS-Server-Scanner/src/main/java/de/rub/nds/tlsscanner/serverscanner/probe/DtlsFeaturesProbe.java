@@ -34,6 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsFeaturesResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -46,6 +47,8 @@ public class DtlsFeaturesProbe extends TlsProbe {
 
     public DtlsFeaturesProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_FEATURES, scannerConfig);
+        properties.add(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        properties.add(AnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override
