@@ -104,6 +104,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+        properties.add(AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
     }
 
     @Override
