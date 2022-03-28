@@ -14,13 +14,17 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +45,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     private AtomicBoolean readyForExecution = new AtomicBoolean(false);
     
     protected List<AnalyzedProperty> properties;
+    private Map<AnalyzedProperty, TestResult> propertiesMap;
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
@@ -144,5 +149,33 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public AtomicBoolean getReadyForExecution() {
         return readyForExecution;
     }
-
+    
+    protected void setPropertyReportValue(AnalyzedProperty aProp, TestResult result) {
+    	if (this.propertiesMap!=null) {
+    		if (this.propertiesMap.containsKey(aProp))
+    			this.propertiesMap.replace(aProp, result);
+    		else // avoid unregistered properties are set
+    			System.out.println("FORBIDDEN PROPERTY!!!"); //TODO exception? logging error? 
+    	}
+    	else {
+    		this.propertiesMap = new HashMap<>();
+    		for (AnalyzedProperty property : this.properties)
+    			this.propertiesMap.put(property, null);    		
+    	}
+    }
+    
+    protected void evaluatePropertyResults() {
+    	// catch case that no properties are set
+    	if(this.propertiesMap==null) {
+    		this.propertiesMap = new HashMap<>();
+    		for (AnalyzedProperty property : this.properties)
+    			this.propertiesMap.put(property, null);    
+    	}
+    	
+    	// check whether every property has been set
+    	for (AnalyzedProperty aProp : this.properties) {
+    		if (this.propertiesMap.get(aProp) == null)
+    			System.out.println("UNSET PROPERTY!!!"); //TODO was nu?
+    	}
+    }
 }
