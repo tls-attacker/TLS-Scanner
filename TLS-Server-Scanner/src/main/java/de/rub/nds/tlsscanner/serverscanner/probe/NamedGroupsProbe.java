@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -62,6 +63,10 @@ public class NamedGroupsProbe extends TlsProbe {
 
     public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
+        properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
+        properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
+        properties.add(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
+        properties.add(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
     }
 
     @Override
