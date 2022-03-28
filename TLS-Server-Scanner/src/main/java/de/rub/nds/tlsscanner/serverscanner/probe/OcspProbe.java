@@ -42,6 +42,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -69,6 +70,15 @@ public class OcspProbe extends TlsProbe {
 
     public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.OCSP, config);
+        properties.add(AnalyzedProperty.SUPPORTS_OCSP);
+        properties.add(AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+        properties.add(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
+        properties.add(AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
+        properties.add(AnalyzedProperty.MUST_STAPLE);
+        properties.add(AnalyzedProperty.SUPPORTS_NONCE);
+        properties.add(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
+        properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+        properties.add(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
     }
 
     @Override
