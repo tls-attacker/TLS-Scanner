@@ -22,6 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
@@ -33,6 +34,7 @@ public class SniProbe extends TlsProbe {
 
     public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SNI, scannerConfig);
+        properties.add(AnalyzedProperty.REQUIRES_SNI);
     }
 
     @Override
