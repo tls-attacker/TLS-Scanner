@@ -33,6 +33,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -44,6 +45,11 @@ public class HttpHeaderProbe extends HttpsProbe {
 
     public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
+        properties.add(AnalyzedProperty.SUPPORTS_HSTS);
+        properties.add(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
+        properties.add(AnalyzedProperty.SUPPORTS_HPKP);
+        properties.add(AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_BREACH);
     }
 
     @Override
