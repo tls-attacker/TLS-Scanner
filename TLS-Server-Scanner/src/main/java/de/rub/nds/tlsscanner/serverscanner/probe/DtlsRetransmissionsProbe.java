@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsRetransmissionsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -41,6 +42,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
 
     public DtlsRetransmissionsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+        properties.add(AnalyzedProperty.SENDS_RETRANSMISSIONS);
+        properties.add(AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
     @Override
