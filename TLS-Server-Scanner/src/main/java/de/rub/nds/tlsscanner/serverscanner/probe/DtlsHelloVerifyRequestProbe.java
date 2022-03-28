@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsHelloVerifyRequestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -50,6 +51,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
+        properties.add(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
+        properties.add(AnalyzedProperty.HAS_COOKIE_CHECKS);
+        properties.add(AnalyzedProperty.USES_VERSION_FOR_COOKIE);
+        properties.add(AnalyzedProperty.USES_RANDOM_FOR_COOKIE);
+        properties.add(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
+        properties.add(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
+        properties.add(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override
