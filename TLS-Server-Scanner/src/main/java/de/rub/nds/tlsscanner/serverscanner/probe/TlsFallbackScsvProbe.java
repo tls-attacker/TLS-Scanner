@@ -25,6 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsFallbackScsvResult;
@@ -40,6 +41,7 @@ public class TlsFallbackScsvProbe extends TlsProbe {
 
     public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
         super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, scannerConfig);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
     }
 
     @Override
