@@ -53,7 +53,7 @@ public class CcaProbe extends TlsProbe {
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config);
         versionSuiteListPairsList = new LinkedList<>();
-    	properties.add(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
+    	super.properties.add(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
     }
 
     @Override

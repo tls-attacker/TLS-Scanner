@@ -45,7 +45,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HTTP_FALSE_START, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
+        super.properties.add(AnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
     }
 
     @Override

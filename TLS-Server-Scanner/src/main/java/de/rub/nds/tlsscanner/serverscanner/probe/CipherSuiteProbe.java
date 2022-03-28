@@ -44,6 +44,46 @@ public class CipherSuiteProbe extends TlsProbe {
     public CipherSuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CIPHER_SUITE, config);
         protocolVersions = new LinkedList<>();
+        super.properties.add(AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ANON);
+        super.properties.add(AnalyzedProperty.SUPPORTS_EXPORT);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DES);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SEED);
+        super.properties.add(AnalyzedProperty.SUPPORTS_IDEA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_RC2);
+        super.properties.add(AnalyzedProperty.SUPPORTS_RC4);
+        super.properties.add(AnalyzedProperty.SUPPORTS_3DES);
+        super.properties.add(AnalyzedProperty.SUPPORTS_POST_QUANTUM);
+        super.properties.add(AnalyzedProperty.SUPPORTS_AEAD);
+        super.properties.add(AnalyzedProperty.SUPPORTS_PFS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ONLY_PFS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_AES);
+        super.properties.add(AnalyzedProperty.SUPPORTS_CAMELLIA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ARIA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_CHACHA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_RSA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DH);
+        super.properties.add(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ECDSA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_RSA_CERT);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DSS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ECDH);
+        super.properties.add(AnalyzedProperty.SUPPORTS_GOST);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SRP);
+        super.properties.add(AnalyzedProperty.SUPPORTS_KERBEROS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_PLAIN);
+        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_RSA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_DHE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_ECDHE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_FORTEZZA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_NEWHOPE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ECMQV);
+        super.properties.add(AnalyzedProperty.PREFERS_PFS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_LEGACY_PRF);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SHA256_PRF);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SHA384_PRF);
     }
 
     @Override

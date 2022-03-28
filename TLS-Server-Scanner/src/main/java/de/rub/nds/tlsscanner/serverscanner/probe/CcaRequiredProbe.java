@@ -32,7 +32,7 @@ public class CcaRequiredProbe extends TlsProbe {
 
     public CcaRequiredProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
-        properties.add(AnalyzedProperty.REQUIRES_CCA);
+        super.properties.add(AnalyzedProperty.REQUIRES_CCA);
     }
 
     @Override

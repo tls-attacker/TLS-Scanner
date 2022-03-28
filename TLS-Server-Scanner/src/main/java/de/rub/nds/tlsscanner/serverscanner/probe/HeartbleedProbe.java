@@ -37,7 +37,7 @@ public class HeartbleedProbe extends TlsProbe {
 
     public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HEARTBLEED, config);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
     }
 
     @Override

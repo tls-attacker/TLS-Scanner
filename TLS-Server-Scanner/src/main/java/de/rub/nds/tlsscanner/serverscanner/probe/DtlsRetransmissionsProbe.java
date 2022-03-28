@@ -42,8 +42,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
 
     public DtlsRetransmissionsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
-        properties.add(AnalyzedProperty.SENDS_RETRANSMISSIONS);
-        properties.add(AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+        super.properties.add(AnalyzedProperty.SENDS_RETRANSMISSIONS);
+        super.properties.add(AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
     @Override

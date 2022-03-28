@@ -41,7 +41,7 @@ public class TlsFallbackScsvProbe extends TlsProbe {
 
     public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
         super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
     }
 
     @Override

@@ -65,15 +65,15 @@ public class ResumptionProbe extends TlsProbe {
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
-        properties.add(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
-        properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
-        properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override

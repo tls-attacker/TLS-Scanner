@@ -95,9 +95,9 @@ public class InvalidCurveProbe extends TlsProbe {
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
     }
 
     @Override

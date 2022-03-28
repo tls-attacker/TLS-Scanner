@@ -51,7 +51,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
     }
 
     @Override

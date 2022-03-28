@@ -37,7 +37,7 @@ public class TokenbindingProbe extends TlsProbe {
 
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.TOKENBINDING, config);
-        properties.add(AnalyzedProperty.SUPPORTS_TOKENBINDING);
+        super.properties.add(AnalyzedProperty.SUPPORTS_TOKENBINDING);
     }
 
     @Override

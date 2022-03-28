@@ -93,25 +93,25 @@ public class CommonBugProbe extends TlsProbe {
 
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMMON_BUGS, config);
-        properties.add(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_VERSION_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_ALPN_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
-        properties.add(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
-        properties.add(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
-        properties.add(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
-        properties.add(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
-        properties.add(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
-        properties.add(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
-        properties.add(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_VERSION_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_ALPN_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
+        super.properties.add(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
+        super.properties.add(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
+        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
+        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
+        super.properties.add(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
+        super.properties.add(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override

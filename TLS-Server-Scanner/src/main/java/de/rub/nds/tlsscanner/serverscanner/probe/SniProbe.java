@@ -34,7 +34,7 @@ public class SniProbe extends TlsProbe {
 
     public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SNI, scannerConfig);
-        properties.add(AnalyzedProperty.REQUIRES_SNI);
+        super.properties.add(AnalyzedProperty.REQUIRES_SNI);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class BleichenbacherProbe extends TlsProbe {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
         this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
-        properties.add(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
     }
 
     @Override

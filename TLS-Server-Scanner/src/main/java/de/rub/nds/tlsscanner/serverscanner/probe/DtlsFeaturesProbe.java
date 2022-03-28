@@ -47,8 +47,8 @@ public class DtlsFeaturesProbe extends TlsProbe {
 
     public DtlsFeaturesProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_FEATURES, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
-        properties.add(AnalyzedProperty.SUPPORTS_REORDERING);
+        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override

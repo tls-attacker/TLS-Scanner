@@ -45,11 +45,11 @@ public class HttpHeaderProbe extends HttpsProbe {
 
     public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_HSTS);
-        properties.add(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
-        properties.add(AnalyzedProperty.SUPPORTS_HPKP);
-        properties.add(AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
-        properties.add(AnalyzedProperty.VULNERABLE_TO_BREACH);
+        super.properties.add(AnalyzedProperty.SUPPORTS_HSTS);
+        super.properties.add(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
+        super.properties.add(AnalyzedProperty.SUPPORTS_HPKP);
+        super.properties.add(AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_BREACH);
     }
 
     @Override

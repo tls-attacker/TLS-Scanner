@@ -70,15 +70,15 @@ public class OcspProbe extends TlsProbe {
 
     public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.OCSP, config);
-        properties.add(AnalyzedProperty.SUPPORTS_OCSP);
-        properties.add(AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
-        properties.add(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
-        properties.add(AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
-        properties.add(AnalyzedProperty.MUST_STAPLE);
-        properties.add(AnalyzedProperty.SUPPORTS_NONCE);
-        properties.add(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
-        properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
-        properties.add(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
+        super.properties.add(AnalyzedProperty.SUPPORTS_OCSP);
+        super.properties.add(AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+        super.properties.add(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
+        super.properties.add(AnalyzedProperty.MUST_STAPLE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_NONCE);
+        super.properties.add(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
+        super.properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+        super.properties.add(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
     }
 
     @Override

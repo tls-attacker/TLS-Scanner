@@ -45,7 +45,7 @@ public class PaddingOracleProbe extends TlsProbe {
         super(parallelExecutor, ProbeType.PADDING_ORACLE, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
         this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
-        properties.add(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
+        super.properties.add(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
     }
 
     @Override

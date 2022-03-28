@@ -31,7 +31,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
 
     public SignatureHashAlgorithmOrderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, scannerConfig);
-        properties.add(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
+        super.properties.add(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
     }
 
     @Override

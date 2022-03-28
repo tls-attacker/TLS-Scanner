@@ -39,7 +39,7 @@ public class EsniProbe extends TlsProbe {
 
     public EsniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.ESNI, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_ESNI);
+        super.properties.add(AnalyzedProperty.SUPPORTS_ESNI);
     }
 
     @Override

@@ -48,7 +48,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SIGNATURE_AND_HASH, config);
-        properties.add(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION);
+        super.properties.add(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION);
     }
 
     @Override

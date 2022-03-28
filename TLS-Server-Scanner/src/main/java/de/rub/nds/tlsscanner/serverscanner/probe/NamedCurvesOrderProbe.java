@@ -40,7 +40,7 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     public NamedCurvesOrderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS_ORDER, scannerConfig);
-        properties.add(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
+        super.properties.add(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
     }
 
     @Override

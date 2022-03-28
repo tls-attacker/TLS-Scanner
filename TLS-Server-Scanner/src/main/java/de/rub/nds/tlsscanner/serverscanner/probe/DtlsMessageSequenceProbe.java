@@ -46,11 +46,11 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
-        properties.add(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
-        properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
-        properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
-        properties.add(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
-        properties.add(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        super.properties.add(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
+        super.properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
+        super.properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
+        super.properties.add(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
+        super.properties.add(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override

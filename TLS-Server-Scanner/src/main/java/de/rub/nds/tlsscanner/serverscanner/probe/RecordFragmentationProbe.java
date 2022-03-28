@@ -28,7 +28,7 @@ public class RecordFragmentationProbe extends TlsProbe {
 
     public RecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, scannerConfig);
-        properties.add(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        super.properties.add(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
     }
 
     @Override

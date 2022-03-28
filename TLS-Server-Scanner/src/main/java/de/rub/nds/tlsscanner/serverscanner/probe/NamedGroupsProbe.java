@@ -63,10 +63,10 @@ public class NamedGroupsProbe extends TlsProbe {
 
     public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
-        properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
-        properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
-        properties.add(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
-        properties.add(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
+        super.properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
+        super.properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
+        super.properties.add(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
+        super.properties.add(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
     }
 
     @Override

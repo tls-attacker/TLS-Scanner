@@ -27,7 +27,7 @@ public class CcaSupportProbe extends TlsProbe {
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
-        properties.add(AnalyzedProperty.SUPPORTS_CCA);
+        super.properties.add(AnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override

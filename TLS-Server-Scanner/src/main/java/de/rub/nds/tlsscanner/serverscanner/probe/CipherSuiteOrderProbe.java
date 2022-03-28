@@ -31,7 +31,7 @@ public class CipherSuiteOrderProbe extends TlsProbe {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CIPHER_SUITE_ORDER, config);
-        properties.add(AnalyzedProperty.ENFORCES_CS_ORDERING);
+        super.properties.add(AnalyzedProperty.ENFORCES_CS_ORDERING);
     }
 
     @Override
