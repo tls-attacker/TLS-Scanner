@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsBugsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -47,6 +48,9 @@ public class DtlsBugsProbe extends TlsProbe {
 
     public DtlsBugsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_COMMON_BUGS, scannerConfig);
+        properties.add(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
+        properties.add(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        properties.add(AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
