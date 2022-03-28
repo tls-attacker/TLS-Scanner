@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -29,6 +30,8 @@ public class DrownProbe extends TlsProbe {
 
     public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DROWN, scannerConfig);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
