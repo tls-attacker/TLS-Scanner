@@ -28,6 +28,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProtocolVersionResult;
@@ -52,6 +53,14 @@ public class ProtocolVersionProbe extends TlsProbe {
             toTestList.add(ProtocolVersion.TLS11);
             toTestList.add(ProtocolVersion.TLS12);
         }
+        properties.add(AnalyzedProperty.SUPPORTS_DTLS_1_0);
+        properties.add(AnalyzedProperty.SUPPORTS_DTLS_1_2);
+        properties.add(AnalyzedProperty.SUPPORTS_SSL_2);
+        properties.add(AnalyzedProperty.SUPPORTS_SSL_3);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_1_0);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_1_1);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_1_2);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override
