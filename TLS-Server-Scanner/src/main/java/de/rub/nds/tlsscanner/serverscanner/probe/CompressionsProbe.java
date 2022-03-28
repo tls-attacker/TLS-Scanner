@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CompressionsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -32,6 +33,8 @@ public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMPRESSIONS, config);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_CRIME);
+        properties.add(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
     }
 
     @Override
