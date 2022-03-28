@@ -29,6 +29,7 @@ public class TlsPoodleProbe extends TlsProbe {
 
     public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.TLS_POODLE, config);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE);
     }
 
     @Override
