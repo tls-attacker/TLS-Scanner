@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsMessageSequenceResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -45,6 +46,11 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
+        properties.add(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
+        properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
+        properties.add(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
+        properties.add(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
+        properties.add(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override
