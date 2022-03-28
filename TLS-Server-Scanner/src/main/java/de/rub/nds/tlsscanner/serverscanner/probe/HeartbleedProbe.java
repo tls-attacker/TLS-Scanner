@@ -22,6 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -36,6 +37,7 @@ public class HeartbleedProbe extends TlsProbe {
 
     public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HEARTBLEED, config);
+        properties.add(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
     }
 
     @Override
