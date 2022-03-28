@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureAndHashAlgorithmResult;
@@ -47,6 +48,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SIGNATURE_AND_HASH, config);
+        properties.add(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION);
     }
 
     @Override
