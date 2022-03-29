@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe.result;
 
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -16,7 +17,6 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.List;
 import java.util.Set;

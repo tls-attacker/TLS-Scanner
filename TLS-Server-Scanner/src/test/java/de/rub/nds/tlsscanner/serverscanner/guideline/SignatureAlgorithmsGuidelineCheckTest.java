@@ -9,15 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Collections;
 
 public class SignatureAlgorithmsGuidelineCheckTest {
 

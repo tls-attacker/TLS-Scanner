@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;

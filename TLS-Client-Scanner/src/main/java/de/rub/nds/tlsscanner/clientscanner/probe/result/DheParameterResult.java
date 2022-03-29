@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe.result;
 
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.List;
 

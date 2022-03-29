@@ -9,16 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;

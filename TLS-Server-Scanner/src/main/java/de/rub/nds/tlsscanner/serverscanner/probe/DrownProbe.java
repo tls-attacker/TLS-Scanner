@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.config.SpecialDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
@@ -18,10 +18,10 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Objects;
 
 public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport, DrownResult> {

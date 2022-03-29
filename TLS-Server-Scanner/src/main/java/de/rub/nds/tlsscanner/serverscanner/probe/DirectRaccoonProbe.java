@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -19,18 +20,17 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
-import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;

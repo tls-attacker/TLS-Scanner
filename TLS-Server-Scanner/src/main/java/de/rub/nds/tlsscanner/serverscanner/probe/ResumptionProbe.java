@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -26,8 +26,8 @@ import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
@@ -43,11 +43,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ResumptionResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

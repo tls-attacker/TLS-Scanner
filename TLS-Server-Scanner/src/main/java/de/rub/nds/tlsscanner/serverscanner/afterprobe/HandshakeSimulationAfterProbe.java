@@ -10,16 +10,16 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import java.util.LinkedList;

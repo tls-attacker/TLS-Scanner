@@ -9,9 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
-
 import de.rub.nds.asn1.Asn1Encodable;
 import de.rub.nds.asn1.encoder.Asn1Encoder;
 import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
@@ -23,6 +20,7 @@ import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseParser;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes;
+import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -41,12 +39,12 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.junit.Assert;

@@ -10,8 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 

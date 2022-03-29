@@ -9,7 +9,6 @@
 
 package de.rub.nds.scanner.core.passive;
 
-import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.state.State;
 
 public abstract class StatExtractor<T> {

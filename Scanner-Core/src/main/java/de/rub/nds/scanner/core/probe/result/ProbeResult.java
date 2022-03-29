@@ -10,8 +10,8 @@
 package de.rub.nds.scanner.core.probe.result;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.PerformanceData;
+import de.rub.nds.scanner.core.report.ScanReport;
 
 public abstract class ProbeResult<T extends ScanReport> {
 

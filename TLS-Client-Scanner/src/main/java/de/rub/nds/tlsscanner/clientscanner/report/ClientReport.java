@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.clientscanner.report;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -18,16 +21,12 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import de.rub.nds.scanner.core.report.ScanReport;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)

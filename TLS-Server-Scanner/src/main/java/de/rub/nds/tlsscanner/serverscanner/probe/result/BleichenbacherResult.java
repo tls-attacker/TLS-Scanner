@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;

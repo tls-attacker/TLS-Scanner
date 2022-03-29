@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -18,10 +19,10 @@ import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -34,11 +35,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpHeaderResult;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpHeaderResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

@@ -19,7 +19,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.Locale;
 
 public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {

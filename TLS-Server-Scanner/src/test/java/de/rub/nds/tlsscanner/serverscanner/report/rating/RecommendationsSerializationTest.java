@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
-import de.rub.nds.scanner.core.report.rating.Recommendations;
-import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;

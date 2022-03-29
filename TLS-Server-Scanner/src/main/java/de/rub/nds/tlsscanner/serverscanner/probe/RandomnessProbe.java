@@ -33,7 +33,6 @@ import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.RandomnessResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.LinkedList;
 import java.util.List;
 

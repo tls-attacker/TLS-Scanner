@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -18,11 +17,11 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
@@ -37,13 +36,12 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuideline
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
-import org.junit.Test;
-
-import javax.xml.bind.JAXBException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.xml.bind.JAXBException;
+import org.junit.Test;
 
 public class NistGuidelineSerialization {
 

@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.core.guideline;
 
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.TestResult;
 

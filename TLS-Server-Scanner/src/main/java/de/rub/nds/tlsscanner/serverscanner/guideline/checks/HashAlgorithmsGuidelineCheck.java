@@ -18,7 +18,6 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

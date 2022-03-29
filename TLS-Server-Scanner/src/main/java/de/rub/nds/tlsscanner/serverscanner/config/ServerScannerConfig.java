@@ -11,21 +11,20 @@ package de.rub.nds.tlsscanner.serverscanner.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import org.bouncycastle.util.IPAddress;
-
 import java.util.Arrays;
 import java.util.List;
+import org.bouncycastle.util.IPAddress;
 
 public class ServerScannerConfig extends ScannerConfig {
 

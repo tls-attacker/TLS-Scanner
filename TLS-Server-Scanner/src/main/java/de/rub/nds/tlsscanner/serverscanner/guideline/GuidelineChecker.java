@@ -9,17 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuidelineChecker {
 

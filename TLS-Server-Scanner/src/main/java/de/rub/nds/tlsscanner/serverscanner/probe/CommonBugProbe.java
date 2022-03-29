@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -37,10 +37,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CommonBugProbeResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CommonBugProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

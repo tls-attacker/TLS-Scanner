@@ -11,17 +11,15 @@ package de.rub.nds.tlsscanner.clientscanner.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
 
 public class ClientScannerConfig extends ScannerConfig {
 

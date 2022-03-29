@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -18,18 +19,17 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType;
 import static de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType.EVEN;
 import static de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType.MOD3;
 import de.rub.nds.tlsscanner.clientscanner.constants.SmallSubgroupType;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.DheParameterResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.DheParameterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.math.BigInteger;
 import java.util.LinkedList;

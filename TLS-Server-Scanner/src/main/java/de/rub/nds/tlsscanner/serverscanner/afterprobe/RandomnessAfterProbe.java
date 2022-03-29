@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.scanner.core.vectorstatistics.StatisticalTests;
@@ -21,14 +20,11 @@ import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.report.EntropyReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
-import java.util.*;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing statistical tests

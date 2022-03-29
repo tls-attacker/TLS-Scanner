@@ -18,11 +18,10 @@ import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeyUsageCertificateCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.bouncycastle.asn1.x509.Extensions;
-import org.bouncycastle.asn1.x509.KeyUsage;
-
 import java.util.Arrays;
 import java.util.List;
+import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.KeyUsage;
 
 /**
  * Checks the key usage extension in the certificate.

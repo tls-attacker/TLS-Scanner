@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.asn1.model.*;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
-
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
@@ -23,20 +23,18 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.SignedCertificateTimestampExtensionMessage;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import org.bouncycastle.crypto.tls.Certificate;
-
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.time.Duration;
 import java.util.*;
+import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe
     extends TlsProbe<ServerScannerConfig, ServerReport, CertificateTransparencyResult> {

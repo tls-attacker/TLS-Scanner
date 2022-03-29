@@ -9,25 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import static org.junit.Assert.fail;
-
-import java.math.BigDecimal;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.converter.Asn1CertificateSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.Asn1EncodableSerializer;
@@ -42,6 +30,13 @@ import de.rub.nds.tlsscanner.serverscanner.converter.PointSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
+import java.math.BigDecimal;
+import org.junit.After;
+import org.junit.AfterClass;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class SiteReportSerializationTest {
     private static ServerReport report;

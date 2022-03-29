@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.report.ReportCreator;
 import de.rub.nds.scanner.core.report.AnsiColor;
+import de.rub.nds.scanner.core.report.ReportCreator;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
 import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;

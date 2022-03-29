@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.core.probe;
 
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

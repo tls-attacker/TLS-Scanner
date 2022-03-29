@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -22,7 +23,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.List;
 
 public class SimulationRequest {

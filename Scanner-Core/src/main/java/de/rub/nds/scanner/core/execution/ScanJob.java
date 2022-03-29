@@ -18,8 +18,8 @@ package de.rub.nds.scanner.core.execution;
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import java.util.List;
 
 public class ScanJob {

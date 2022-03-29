@@ -17,7 +17,6 @@ import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.Objects;
 
 public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerReport> {

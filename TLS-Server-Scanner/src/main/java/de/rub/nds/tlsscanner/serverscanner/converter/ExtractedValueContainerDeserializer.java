@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-
 import java.io.IOException;
 
 public class ExtractedValueContainerDeserializer extends StdDeserializer<ExtractedValueContainer> {

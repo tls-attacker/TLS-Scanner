@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
@@ -20,12 +20,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaRequiredResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaRequiredResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRequiredResult> {
 

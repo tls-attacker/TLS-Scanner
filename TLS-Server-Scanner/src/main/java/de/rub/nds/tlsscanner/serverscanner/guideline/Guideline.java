@@ -10,12 +10,12 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import java.io.Serializable;
+import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
-import java.util.List;
 
 @XmlRootElement(name = "guideline")
 @XmlType(propOrder = { "name", "link", "checks" })

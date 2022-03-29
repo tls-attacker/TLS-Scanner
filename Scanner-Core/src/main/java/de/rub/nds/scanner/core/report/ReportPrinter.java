@@ -9,8 +9,8 @@
 
 package de.rub.nds.scanner.core.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 
 public abstract class ReportPrinter<Report extends ScanReport> {
 

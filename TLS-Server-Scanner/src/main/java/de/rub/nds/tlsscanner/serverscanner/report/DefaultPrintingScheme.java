@@ -11,10 +11,10 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.report.TestResultTextEncoder;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedPropertyCategory;

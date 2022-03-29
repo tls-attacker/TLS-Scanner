@@ -10,19 +10,17 @@
 package de.rub.nds.scanner.core.vectorstatistics;
 
 import de.rub.nds.scanner.core.constants.RandomnessConstants;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.distribution.NormalDistribution;
-import org.apache.commons.math3.special.Gamma;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import static java.lang.Math.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.lang.Math.*;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.distribution.NormalDistribution;
 import static org.apache.commons.math3.special.Erf.erfc;
+import org.apache.commons.math3.special.Gamma;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jtransforms.fft.DoubleFFT_1D;
 
 public class StatisticalTests {

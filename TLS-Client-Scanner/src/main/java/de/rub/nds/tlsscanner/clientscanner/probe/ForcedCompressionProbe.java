@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -23,7 +24,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ForcedCompressionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
 public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport, ForcedCompressionResult> {

@@ -15,7 +15,6 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-
 import java.util.Objects;
 
 public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck {

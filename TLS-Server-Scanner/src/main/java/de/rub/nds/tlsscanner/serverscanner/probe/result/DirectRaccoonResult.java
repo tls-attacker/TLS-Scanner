@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 

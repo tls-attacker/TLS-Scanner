@@ -10,14 +10,14 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;

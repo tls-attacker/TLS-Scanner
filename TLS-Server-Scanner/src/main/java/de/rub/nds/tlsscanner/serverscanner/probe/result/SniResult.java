@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class SniResult extends ProbeResult<ServerReport> {

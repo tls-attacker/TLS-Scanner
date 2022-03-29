@@ -12,14 +12,13 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CipherSuiteGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

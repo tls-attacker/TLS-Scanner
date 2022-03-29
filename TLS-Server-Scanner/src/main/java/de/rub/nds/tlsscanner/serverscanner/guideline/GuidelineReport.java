@@ -9,9 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.constants.TestResult;
-
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

@@ -10,9 +10,9 @@
 package de.rub.nds.scanner.core.probe;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.report.ScanReport;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

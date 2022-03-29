@@ -12,10 +12,9 @@ package de.rub.nds.tlsscanner.core.guideline;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-
+import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {

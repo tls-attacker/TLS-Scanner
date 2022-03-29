@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.attacks.config.EarlyCCSCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.impl.EarlyCCSAttacker;
@@ -17,9 +16,10 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport, EarlyCcsResult> {
 

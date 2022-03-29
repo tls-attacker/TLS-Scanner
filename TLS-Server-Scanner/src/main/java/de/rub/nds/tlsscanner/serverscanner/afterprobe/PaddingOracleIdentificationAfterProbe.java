@@ -10,10 +10,10 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttributor;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttributor;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Objects;
 

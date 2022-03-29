@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.clientscanner;
 
-import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -18,6 +17,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
