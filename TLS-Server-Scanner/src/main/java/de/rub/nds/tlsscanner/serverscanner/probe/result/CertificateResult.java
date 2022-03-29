@@ -18,10 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class CertificateResult extends ProbeResult<ServerReport> {
 
     private final Set<CertificateChain> certificates;

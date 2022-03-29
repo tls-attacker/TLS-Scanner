@@ -26,10 +26,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport, CipherSuiteOrderResult> {
 
     public CipherSuiteOrderProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {

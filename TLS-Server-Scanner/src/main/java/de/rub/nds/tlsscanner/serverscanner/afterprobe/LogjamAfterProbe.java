@@ -15,10 +15,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class LogjamAfterProbe extends AfterProbe<ServerReport> {
 
     @Override

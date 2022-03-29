@@ -15,10 +15,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-/**
- *
- * @author robert
- */
 public class CommonBugProbeResult extends ProbeResult<ServerReport> {
 
     // does it handle unknown extensions correctly?

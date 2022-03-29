@@ -17,10 +17,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttributor
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Objects;
 
-/**
- *
- * @author ic0ns
- */
 public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerReport> {
 
     private PaddingOracleAttributor attributor;

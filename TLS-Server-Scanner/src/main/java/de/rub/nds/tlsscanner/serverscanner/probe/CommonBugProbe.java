@@ -48,10 +48,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, CommonBugProbeResult> {
 
     // does it handle unknown extensions correctly?

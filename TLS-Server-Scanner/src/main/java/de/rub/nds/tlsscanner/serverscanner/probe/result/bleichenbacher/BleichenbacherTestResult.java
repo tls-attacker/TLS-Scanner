@@ -15,10 +15,6 @@ import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import java.util.List;
 
-/**
- *
- * @author robert
- */
 public class BleichenbacherTestResult {
 
     private final Boolean vulnerable;
