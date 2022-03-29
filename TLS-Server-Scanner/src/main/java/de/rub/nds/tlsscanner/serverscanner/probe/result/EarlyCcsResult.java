@@ -27,16 +27,20 @@ public class EarlyCcsResult extends ProbeResult<ServerReport> {
 
     @Override
     public void mergeData(ServerReport report) {
-        switch (earlyCcsVulnerabilityType) {
-            case VULN_EXPLOITABLE:
-            case VULN_NOT_EXPLOITABLE:
-                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.TRUE);
-                break;
-            case NOT_VULNERABLE:
-                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.FALSE);
-                break;
-            case UNKNOWN:
-                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.COULD_NOT_TEST);
+        if (earlyCcsVulnerabilityType == null) {
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.COULD_NOT_TEST);
+        } else {
+            switch (earlyCcsVulnerabilityType) {
+                case VULN_EXPLOITABLE:
+                case VULN_NOT_EXPLOITABLE:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.TRUE);
+                    break;
+                case NOT_VULNERABLE:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.FALSE);
+                    break;
+                case UNKNOWN:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.COULD_NOT_TEST);
+            }
         }
     }
 
