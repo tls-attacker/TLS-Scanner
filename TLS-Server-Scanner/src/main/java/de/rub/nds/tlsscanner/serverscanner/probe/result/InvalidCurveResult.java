@@ -17,10 +17,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class InvalidCurveResult extends ProbeResult<ServerReport> {
 
     private final TestResult vulnerableClassic;

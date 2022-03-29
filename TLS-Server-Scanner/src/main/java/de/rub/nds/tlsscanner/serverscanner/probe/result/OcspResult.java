@@ -18,10 +18,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResu
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-/**
- *
- * @author Nils Hanke {@literal <nils.hanke@rub.de>}
- */
 public class OcspResult extends ProbeResult<ServerReport> {
 
     private final List<OcspCertificateResult> certResults;

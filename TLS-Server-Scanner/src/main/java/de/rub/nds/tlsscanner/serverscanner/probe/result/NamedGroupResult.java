@@ -19,10 +19,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.Map;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class NamedGroupResult extends ProbeResult<ServerReport> {
 
     private final Map<NamedGroup, NamedGroupWitness> namedGroupsMap;

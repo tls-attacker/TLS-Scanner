@@ -17,10 +17,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class ExtensionResult extends ProbeResult<ServerReport> {
 
     private final List<ExtensionType> allSupportedExtensions;

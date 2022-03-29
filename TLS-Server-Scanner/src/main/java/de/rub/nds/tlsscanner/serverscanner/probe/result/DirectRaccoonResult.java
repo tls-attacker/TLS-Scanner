@@ -19,10 +19,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DirectRaccoonResult extends ProbeResult<ServerReport> {
 
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList;
