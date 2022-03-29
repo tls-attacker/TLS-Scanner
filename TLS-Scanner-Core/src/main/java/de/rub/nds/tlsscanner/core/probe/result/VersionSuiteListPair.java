@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.probe.result;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -19,6 +18,11 @@ public class VersionSuiteListPair implements Serializable {
     private final ProtocolVersion version;
 
     private final List<CipherSuite> cipherSuiteList;
+
+    private VersionSuiteListPair() {
+        version = null;
+        cipherSuiteList = null;
+    }
 
     public VersionSuiteListPair(ProtocolVersion version, List<CipherSuite> cipherSuiteList) {
         this.version = version;
