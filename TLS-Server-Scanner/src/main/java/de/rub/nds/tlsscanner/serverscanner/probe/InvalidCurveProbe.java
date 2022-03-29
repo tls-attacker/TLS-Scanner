@@ -262,8 +262,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,
         List<CipherSuite> cipherSuites, NamedGroup group, List<NamedGroup> ecdsaRequiredGroups) {
         ClientDelegate delegate = (ClientDelegate) attackConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(((ServerScannerConfig) scannerConfig).getClientDelegate().getHost());
-        delegate.setSniHostname(((ServerScannerConfig) scannerConfig).getClientDelegate().getSniHostname());
+        delegate.setHost(scannerConfig.getClientDelegate().getHost());
+        delegate.setSniHostname(scannerConfig.getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         ProtocolVersionDelegate protocolVersionDelegate =
