@@ -16,6 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
@@ -36,6 +37,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
+    protected long startTime;
+    protected long stopTime;
 
     private final ParallelExecutor parallelExecutor;
 
@@ -163,7 +166,10 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     	}
     }
     
-    protected void evaluatePropertyResults() {
+    // can be overwritten if some data must be set manually
+    //protected abstract void mergeData(SiteReport report);
+    
+    protected void merge(SiteReport report) {
     	// catch case that no properties are set
     	if(this.propertiesMap==null) {
     		this.propertiesMap = new HashMap<>();
@@ -176,5 +182,13 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     		if (this.propertiesMap.get(aProp) == null)
     			System.out.println("UNSET PROPERTY!!!"); //TODO was nu?
     	}
+    	// merge data
+    	if (this.startTime != 0 && this.stopTime != 0) {
+            report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));
+        }
+    	for (AnalyzedProperty aProp : this.properties) // TODO wäre es ok, aprops zu setzen, auch wenn nicht alle props gesetzt wurden vorher?
+        	report.putResult(aProp, this.propertiesMap.get(aProp)); 
+   		//this.mergeData(report);
+    	report.markAsChangedAndNotify(); // was macht die???
     }
 }
