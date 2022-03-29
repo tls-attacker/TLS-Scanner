@@ -29,6 +29,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.util.JAXBSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -64,17 +65,12 @@ public class RecommendationsIO {
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         try (ByteArrayOutputStream tempStream = new ByteArrayOutputStream()) {
-
-            StringWriter stringWriter = new StringWriter();
-
-            m.marshal(recommendations, stringWriter);
             // circumvent the max indentation of 8 of the JAXB marshaller
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty("omit-xml-declaration", "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.transform(new StreamSource(new StringReader(stringWriter.toString())),
-                new StreamResult(tempStream));
+            transformer.transform(new JAXBSource(context, recommendations), new StreamResult(tempStream));
 
             String xml_text = new String(tempStream.toByteArray());
             // and we modify all line separators to the system dependant line separator
