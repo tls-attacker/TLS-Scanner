@@ -128,8 +128,6 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedGroupsProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedCurvesOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
@@ -153,11 +151,6 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
-        addProbeToProbeList(new CcaProbe(config, parallelExecutor));
-        addProbeToProbeList(new EsniProbe(config, parallelExecutor));
-        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
-        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
-        addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         // Init StatsWriter
 
         for (ScannerProbe probe : probeList) {
