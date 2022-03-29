@@ -82,7 +82,7 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport,
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new SendAction(this.getHttpsRequest()));
+        trace.addTlsAction(new SendAction(new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
         State state = new State(tlsConfig, trace);
         executeState(state);
@@ -104,25 +104,6 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport,
             headerList = new LinkedList<>();
         }
         return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-    }
-
-    // TODO OUTSOURCE
-    protected HttpsRequestMessage getHttpsRequest() {
-        HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
-        httpsRequestMessage.setRequestPath("/");
-
-        httpsRequestMessage.getHeader().add(new HostHeader());
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
-        httpsRequestMessage.getHeader()
-            .add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
-        httpsRequestMessage.getHeader()
-            .add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("User-Agent",
-            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
-        return httpsRequestMessage;
     }
 
     @Override
