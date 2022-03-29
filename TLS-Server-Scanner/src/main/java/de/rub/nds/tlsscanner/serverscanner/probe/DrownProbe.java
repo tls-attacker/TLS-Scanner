@@ -62,8 +62,7 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport, Drow
             delegate.setSniHostname(scannerConfig.getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate =
                 (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate
-                .setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
             SpecialDrownAttacker attacker =
                 new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
