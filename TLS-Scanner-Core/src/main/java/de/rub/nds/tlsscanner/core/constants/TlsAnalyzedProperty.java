@@ -305,7 +305,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
     private final TlsAnalyzedPropertyCategory category;
 
-    TlsAnalyzedProperty(TlsAnalyzedPropertyCategory category) {
+    private TlsAnalyzedProperty(TlsAnalyzedPropertyCategory category) {
         this.category = category;
     }
 
