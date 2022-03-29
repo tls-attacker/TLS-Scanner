@@ -7,24 +7,25 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class TlsFallbackScsvResult extends ProbeResult {
+public class TlsFallbackScsvResult extends ProbeResult<ServerReport> {
 
     private final TestResult result;
 
     public TlsFallbackScsvResult(TestResult result) {
-        super(ProbeType.TLS_FALLBACK_SCSV);
+        super(TlsProbeType.TLS_FALLBACK_SCSV);
         this.result = result;
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
     }
 }

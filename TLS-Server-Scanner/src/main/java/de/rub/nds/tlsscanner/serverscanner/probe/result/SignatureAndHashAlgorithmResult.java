@@ -9,13 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
@@ -32,17 +30,17 @@ public class SignatureAndHashAlgorithmResult extends ProbeResult<ServerReport> {
 
     public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke,
         List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13, TestResult respectsExtension) {
-        super(ProbeType.SIGNATURE_AND_HASH);
+        super(TlsProbeType.SIGNATURE_AND_HASH);
         this.signatureAndHashAlgorithmListSke = signatureAndHashAlgorithmListSke;
         this.respectsExtension = respectsExtension;
         this.signatureAndHashAlgorithmListTls13 = signatureAndHashAlgorithmListTls13;
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setSupportedSignatureAndHashAlgorithmsSke(signatureAndHashAlgorithmListSke);
         report.setSupportedSignatureAndHashAlgorithmsTls13(signatureAndHashAlgorithmListTls13);
-        report.putResult(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, respectsExtension);
+        report.putResult(TlsAnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, respectsExtension);
     }
 
 }

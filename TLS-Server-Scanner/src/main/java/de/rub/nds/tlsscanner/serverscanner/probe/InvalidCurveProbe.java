@@ -40,9 +40,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -58,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class InvalidCurveProbe extends TlsProbe<ServerReport, InvalidCurveResult> {
+public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerReport, InvalidCurveResult> {
 
     /**
      * Defines the error probability for each test vector
@@ -95,12 +92,12 @@ public class InvalidCurveProbe extends TlsProbe<ServerReport, InvalidCurveResult
 
     private Map<NamedGroup, NamedGroupWitness> namedCurveWitnessesTls13;
 
-    public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public InvalidCurveProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public InvalidCurveResult executeTest() {
         List<InvalidCurveVector> vectors = prepareVectors();
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for (InvalidCurveVector vector : vectors) {
@@ -203,10 +200,10 @@ public class InvalidCurveProbe extends TlsProbe<ServerReport, InvalidCurveResult
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS10);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS12);
         }
         supportedTls13FpGroups = new LinkedList();

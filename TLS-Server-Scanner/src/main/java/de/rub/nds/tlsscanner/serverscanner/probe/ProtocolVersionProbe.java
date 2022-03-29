@@ -29,18 +29,17 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ProtocolVersionResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProtocolVersionProbe extends TlsProbe<ServerReport, ProtocolVersionResult> {
+public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ProtocolVersionResult> {
 
     private List<ProtocolVersion> toTestList;
 
-    public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public ProtocolVersionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
@@ -56,7 +55,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerReport, ProtocolVersion
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ProtocolVersionResult executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {

@@ -7,25 +7,26 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class SignatureHashAlgorithmOrderResult extends ProbeResult {
+public class SignatureHashAlgorithmOrderResult extends ProbeResult<ServerReport> {
 
     private TestResult enforced;
 
     public SignatureHashAlgorithmOrderResult(TestResult enforced) {
-        super(ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
+        super(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
         this.enforced = enforced;
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
     }
 
 }

@@ -14,8 +14,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
@@ -36,7 +34,7 @@ public class PaddingOracleResult extends ProbeResult<ServerReport> {
     private TestResult vulnerable;
 
     public PaddingOracleResult(TestResult result) {
-        super(ProbeType.PADDING_ORACLE);
+        super(TlsProbeType.PADDING_ORACLE);
         this.vulnerable = result;
         resultList = new LinkedList<>();
     }

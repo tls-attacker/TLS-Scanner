@@ -7,21 +7,22 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.after;
+package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.util.ComparableByteArray;
+import de.rub.nds.scanner.core.vectorstatistics.StatisticalTests;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.EntropyReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 import java.util.*;
-
-import de.rub.nds.tlsscanner.serverscanner.util.StatisticalTests;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ import java.io.IOException;
  * scan procedure.
  *
  */
-public class RandomnessAfterProbe extends AfterProbe {
+public class RandomnessAfterProbe extends AfterProbe<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -89,7 +90,7 @@ public class RandomnessAfterProbe extends AfterProbe {
     }
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
@@ -112,7 +113,7 @@ public class RandomnessAfterProbe extends AfterProbe {
         entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
-        report.putResult(AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
+        report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
         report.setEntropyReportList(entropyReport);
     }
 

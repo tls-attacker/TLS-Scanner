@@ -37,20 +37,20 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpHeaderResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpHeaderProbe extends TlsProbe<ServerReport, HttpHeaderResult> {
+public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport, HttpHeaderResult> {
 
-    public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public HttpHeaderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HttpHeaderResult executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));

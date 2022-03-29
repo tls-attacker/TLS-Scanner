@@ -34,7 +34,7 @@ public class RenegotiationResult extends ProbeResult<ServerReport> {
         TestResult insecureRenegotiation, TestResult vulnerableRenegotiationAttackExtensionV1,
         TestResult vulnerableRenegotiationAttackExtensionV2, TestResult vulnerableRenegotiationAttackCipherSuiteV1,
         TestResult vulnerableRenegotiationAttackCipherSuiteV2, TestResult supportsDtlsCookieExchangeInRenegotiation) {
-        super(ProbeType.RENEGOTIATION);
+        super(TlsProbeType.RENEGOTIATION);
         this.secureRenegotiationExtension = secureRenegotiationExtension;
         this.secureRenegotiationCipherSuite = secureRenegotiationCipherSuite;
         this.insecureRenegotiation = insecureRenegotiation;
@@ -51,16 +51,16 @@ public class RenegotiationResult extends ProbeResult<ServerReport> {
             secureRenegotiationExtension);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             secureRenegotiationCipherSuite);
-        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
             vulnerableRenegotiationAttackExtensionV1);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
             vulnerableRenegotiationAttackExtensionV2);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
             vulnerableRenegotiationAttackCipherSuiteV1);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
             vulnerableRenegotiationAttackCipherSuiteV2);
-        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
             supportsDtlsCookieExchangeInRenegotiation);
     }
 

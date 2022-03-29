@@ -22,22 +22,22 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsProbe<Report extends ScanReport, Result extends ProbeResult<Report>>
-    extends ScannerProbe<Report, Result> {
+public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends ScanReport,
+    Result extends ProbeResult<Report>> extends ScannerProbe<Report, Result> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
-    protected final ScannerConfig scannerConfig;
+    protected final ScanConfig scannerConfig;
 
     private final ParallelExecutor parallelExecutor;
 
-    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScannerConfig scannerConfig) {
+    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScanConfig scannerConfig) {
         super(type);
         this.scannerConfig = scannerConfig;
         this.parallelExecutor = parallelExecutor;
     }
 
-    public final ScannerConfig getScannerConfig() {
+    public final ScanConfig getScannerConfig() {
         return scannerConfig;
     }
 

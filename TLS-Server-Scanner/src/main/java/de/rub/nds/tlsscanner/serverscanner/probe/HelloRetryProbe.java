@@ -24,41 +24,40 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HelloRetryResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.LinkedList;
 
 /**
  * Test the servers Hello Retry Request
  */
-public class HelloRetryProbe extends TlsProbe<ServerReport, HelloRetryResult> {
+public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResult.FALSE;
     private TestResult issuesCookie = TestResult.FALSE;
-    private NamedGroup serversChosenGroup;
+    private NamedGroup serversChosenGroup = null;
 
-    public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public HelloRetryProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HelloRetryResult executeTest() {
         testHelloRetry();
-        return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
+        return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie, serversChosenGroup);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public HelloRetryResult getCouldNotExecuteResult() {
+        return new HelloRetryResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, serversChosenGroup);
     }
 
     @Override

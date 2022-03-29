@@ -24,20 +24,20 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.VersionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
+public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport, VersionResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private List<CipherSuite> clientAdvertisedCipherSuites = null;
 
-    public VersionProbe(ParallelExecutor executor, ScannerConfig scannerConfig) {
+    public VersionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
     }
 
@@ -82,7 +82,7 @@ public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
             WorkflowTrace trace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
             trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
-                                                                     // confirm success
+            // confirm success
             State state = new State(config, trace);
             executeState(state);
             if (state.getWorkflowTrace().executedAsPlanned()) {

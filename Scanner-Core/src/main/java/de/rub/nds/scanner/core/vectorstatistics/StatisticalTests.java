@@ -7,9 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.util;
+package de.rub.nds.scanner.core.vectorstatistics;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.RandomnessConstants;
+import de.rub.nds.scanner.core.constants.RandomnessConstants;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.distribution.NormalDistribution;

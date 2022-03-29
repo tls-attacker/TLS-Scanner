@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class Version13RandomProbe extends TlsProbe<ClientReport, Version13RandomResult> {
+public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientReport, Version13RandomResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 

@@ -177,7 +177,7 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_IDS,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));

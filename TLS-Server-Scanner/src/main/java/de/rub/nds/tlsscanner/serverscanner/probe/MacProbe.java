@@ -50,18 +50,18 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.MacResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MacProbe extends TlsProbe<ServerReport, MacResult> {
+public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport, MacResult> {
 
     private List<CipherSuite> suiteList;
 
     private ResponseFingerprint correctFingerprint;
 
-    public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public MacProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, scannerConfig);
     }
 

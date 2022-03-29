@@ -35,22 +35,22 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpFalseStartProbe extends TlsProbe<ServerReport, HttpFalseStartResult> {
+public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerReport, HttpFalseStartResult> {
 
-    public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public HttpFalseStartProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HttpFalseStartResult executeTest() {
         Config tlsConfig = getConfig();
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);

@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationR
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HandshakeSimulationResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -39,13 +39,13 @@ import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-public class HandshakeSimulationProbe extends TlsProbe<ServerReport, HandshakeSimulationResult> {
+public class HandshakeSimulationProbe extends TlsProbe<ServerScannerConfig, ServerReport, HandshakeSimulationResult> {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulationRequest> simulationRequestList;
 
-    public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public HandshakeSimulationProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, config);
         simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
@@ -70,7 +70,7 @@ public class HandshakeSimulationProbe extends TlsProbe<ServerReport, HandshakeSi
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HandshakeSimulationResult executeTest() {
         List<State> clientStateList = new LinkedList<>();
         List<SimulatedClientResult> resultList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {

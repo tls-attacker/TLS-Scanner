@@ -29,19 +29,17 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import static de.rub.nds.tlsscanner.serverscanner.scan.ScanJobExecutorType.CompositeModulusType.java;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe<ServerReport, CcaResult> {
+public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaResult> {
+
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
     private final boolean increasingTimeout = false;
@@ -52,7 +50,7 @@ public class CcaProbe extends TlsProbe<ServerReport, CcaResult> {
 
     private final int reexecutions = 3;
 
-    public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, config);
         versionSuiteListPairsList = new LinkedList<>();
     }
@@ -139,8 +137,8 @@ public class CcaProbe extends TlsProbe<ServerReport, CcaResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+    public boolean canBeExecuted(ServerReport report) {
+        return (report.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
             && (report.getVersionSuitePairs() != null);
     }
 

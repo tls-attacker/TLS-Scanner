@@ -7,8 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.stats;
+package de.rub.nds.tlsscanner.serverscanner.passive;
 
+import de.rub.nds.scanner.core.passive.StatExtractor;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -16,6 +17,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import java.util.List;
 
 public class DtlsRetransmissionsExtractor extends StatExtractor<HandshakeMessageType> {

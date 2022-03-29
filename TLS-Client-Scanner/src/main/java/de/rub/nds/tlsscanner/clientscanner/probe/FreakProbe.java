@@ -42,14 +42,14 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.FreakResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.LinkedList;
 
 // see https://www.smacktls.com/smack.pdf section V-D
-public class FreakProbe extends TlsProbe<ClientReport, FreakResult> {
+public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, FreakResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -61,7 +61,7 @@ public class FreakProbe extends TlsProbe<ClientReport, FreakResult> {
 
     private Random random = new Random(0); // Fixed random to be deterministic
 
-    public FreakProbe(ParallelExecutor executor, ScannerConfig scannerConfig) {
+    public FreakProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FREAK, scannerConfig);
     }
 

@@ -13,7 +13,6 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -30,14 +29,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SniProbe extends TlsProbe<ServerReport, SniResult> {
+public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport, SniResult> {
 
     public SniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SNI, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SniResult executeTest() {
         Config config = scannerConfig.createConfig();
         config.setAddRenegotiationInfoExtension(true);
         config.setAddServerNameIndicationExtension(false);

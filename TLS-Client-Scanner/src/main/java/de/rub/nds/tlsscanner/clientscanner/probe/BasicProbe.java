@@ -25,18 +25,18 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsscanner.clientscanner.probe.result.BasicProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BasicProbe extends TlsProbe<ClientReport, BasicProbeResult> {
+public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport, BasicProbeResult> {
 
-    public BasicProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+    public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
     }
 

@@ -7,14 +7,15 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsMessageSequenceResult extends ProbeResult {
+public class DtlsMessageSequenceResult extends ProbeResult<ServerReport> {
 
     private TestResult acceptsStartedWithInvalidMessageNumber;
     private TestResult acceptsSkippedMessageNumbersOnce;
@@ -24,7 +25,7 @@ public class DtlsMessageSequenceResult extends ProbeResult {
     public DtlsMessageSequenceResult(TestResult acceptsStartedWithInvalidMessageNumber,
         TestResult acceptsSkippedMessageNumbersOnce, TestResult acceptsSkippedMessageNumbersMultiple,
         TestResult acceptsRandomMessageNumbers) {
-        super(ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER);
+        super(TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER);
         this.acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber;
         this.acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce;
         this.acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple;
@@ -32,19 +33,19 @@ public class DtlsMessageSequenceResult extends ProbeResult {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             acceptsStartedWithInvalidMessageNumber);
-        report.putResult(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
-        report.putResult(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             acceptsSkippedMessageNumbersMultiple);
-        report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
         if (acceptsSkippedMessageNumbersOnce == TestResult.FALSE
             && acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
             && acceptsRandomMessageNumbers == TestResult.FALSE) {
-            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
+            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
         } else {
-            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
+            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
         }
     }
 

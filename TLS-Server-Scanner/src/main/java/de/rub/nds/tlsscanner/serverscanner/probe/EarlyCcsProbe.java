@@ -19,17 +19,16 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 
-public class EarlyCcsProbe extends TlsProbe<ServerReport, EarlyCcsResult> {
+public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport, EarlyCcsResult> {
 
-    public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public EarlyCcsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public EarlyCcsResult executeTest() {
         EarlyCCSCommandConfig earlyCcsCommandConfig =
             new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);

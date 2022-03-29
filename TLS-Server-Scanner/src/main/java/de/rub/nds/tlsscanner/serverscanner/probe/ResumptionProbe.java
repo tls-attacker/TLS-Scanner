@@ -44,13 +44,9 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
-
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ResumptionResult;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -58,19 +54,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ResumptionProbe extends TlsProbe<ServerReport, ResumptionResult> {
+public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ResumptionResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInResumption;
     private TestResult supportsDtlsCookieExchangeInTicketResumption;
     private TestResult respectsPskModes;
 
-    public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public ResumptionProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ResumptionResult executeTest() {
         this.respectsPskModes = TestResult.TRUE;
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
@@ -357,11 +353,11 @@ public class ResumptionProbe extends TlsProbe<ServerReport, ResumptionResult> {
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0);
+        return report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty());
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);

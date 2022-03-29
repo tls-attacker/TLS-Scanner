@@ -45,6 +45,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsProbe<ServerReport, OcspResult> {
+public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport, OcspResult> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -66,7 +67,7 @@ public class OcspProbe extends TlsProbe<ServerReport, OcspResult> {
     private static final long STAPLED_NONCE_RANDOM_SEED = 42;
     private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
-    public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public OcspProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.OCSP, config);
     }
 

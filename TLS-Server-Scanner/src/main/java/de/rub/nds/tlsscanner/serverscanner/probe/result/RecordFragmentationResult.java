@@ -10,8 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class RecordFragmentationResult extends ProbeResult<ServerReport> {
@@ -24,8 +24,8 @@ public class RecordFragmentationResult extends ProbeResult<ServerReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supported);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supported);
     }
 
     public Boolean getSupported() {

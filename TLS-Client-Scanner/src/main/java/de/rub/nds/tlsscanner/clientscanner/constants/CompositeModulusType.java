@@ -7,17 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ScanJobExecutorType.java
-package de.rub.nds.tlsscanner.serverscanner.scan;
-
-public enum ScanJobExecutorType {
-    SINGLE,
-    MULTI
-========
 package de.rub.nds.tlsscanner.clientscanner.constants;
 
 public enum CompositeModulusType {
     EVEN,
     MOD3
->>>>>>>> dae7150d1 (reworked client scanner):TLS-Client-Scanner/src/main/java/de/rub/nds/tlsscanner/clientscanner/constants/CompositeModulusType.java
 }

@@ -27,30 +27,26 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteProbeResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteResult;
-import static de.rub.nds.tlsscanner.serverscanner.scan.ScanJobExecutorType.CompositeModulusType.java;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CipherSuiteProbe extends TlsProbe<ServerReport, CipherSuiteProbeResult> {
+public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport, CipherSuiteResult> {
 
     private final List<ProtocolVersion> protocolVersions;
 
-    public CipherSuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
         protocolVersions = new LinkedList<>();
     }
 
     @Override
-    public CipherSuiteProbeResult executeTest() {
+    public CipherSuiteResult executeTest() {
         List<VersionSuiteListPair> pairLists = new LinkedList<>();
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
@@ -245,6 +241,7 @@ public class CipherSuiteProbe extends TlsProbe<ServerReport, CipherSuiteProbeRes
     }
 
     @Override
-    public CipherSuiteProbeResult getCouldNotExecuteResult() {
-        return new CipherSuiteProbeResult(null);
+    public CipherSuiteResult getCouldNotExecuteResult() {
+        return new CipherSuiteResult(null);
     }
+}

@@ -179,15 +179,15 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
@@ -197,9 +197,9 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -209,7 +209,7 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.SUPPORTS_HTTPS,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_HTTPS,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_HSTS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
@@ -221,15 +221,17 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_HTTP_COMPRESSION,
             getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.PREFERS_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ENFORCES_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ENFORCES_CS_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING,
+        colorMap.put(TlsAnalyzedProperty.PREFERS_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.ENFORCES_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
+        colorMap.put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.HAS_VERSION_INTOLERANCE, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
+        colorMap.put(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -290,44 +292,47 @@ public class DefaultPrintingScheme {
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
 
-        colorMap.put(AnalyzedProperty.HAS_COOKIE_CHECKS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.USES_VERSION_FOR_COOKIE,
-            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.USES_RANDOM_FOR_COOKIE,
-            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
-            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
-            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
-            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+        colorMap.put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+        colorMap.put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+        colorMap.put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.SUPPORTS_REORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.SENDS_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
+        colorMap.put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+        colorMap.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
 
-        colorMap.put(AnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+        colorMap.put(TlsAnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

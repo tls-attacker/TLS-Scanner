@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.report.PrintingScheme;
+import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -24,10 +24,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
@@ -38,30 +35,19 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
-
-import java.io.Serializable;
 import java.util.*;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -188,22 +174,18 @@ public class ServerReport extends ScanReport {
     private long scanStartTime;
     private long scanEndTime;
 
-    public SiteReport() {
     public ServerReport() {
         host = null;
         port = null;
     }
 
-    public ServerReport(String host) {
+    public ServerReport(String host, int port) {
         super();
         this.host = host;
         this.port = port;
-        performanceList = new LinkedList<>();
         extractedValueContainerMap = new HashMap<>();
-        resultMap = new HashMap<>();
         cipherSuites = new HashSet<>();
         versionSuitePairs = new LinkedList<>();
-        executedProbes = new HashSet<>();
     }
 
     public synchronized ProtocolType getProtocolType() {
@@ -228,12 +210,6 @@ public class ServerReport extends ScanReport {
 
     public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
         this.supportedAlpns = supportedAlpns;
-    public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {
-        return (executedProbes.contains(type));
-    }
-
-    public synchronized void markProbeAsExecuted(ProbeType type) {
-        executedProbes.add(type);
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -556,15 +532,6 @@ public class ServerReport extends ScanReport {
         this.reportOnlyHpkpPins = reportOnlyHpkpPins;
     }
 
-    public synchronized Map<TrackableValueType, ExtractedValueContainer> getExtractedValueContainerMap() {
-        return extractedValueContainerMap;
-    }
-
-    public synchronized void
-        setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
-        this.extractedValueContainerMap = extractedValueContainerMap;
-    }
-
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
@@ -761,14 +728,6 @@ public class ServerReport extends ScanReport {
         this.scoreReport = scoreReport;
     }
 
-    public synchronized Boolean getSupportsRecordFragmentation() {
-        return supportsRecordFragmentation;
-    }
-
-    public synchronized void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
-        this.supportsRecordFragmentation = supportsRecordFragmentation;
-    }
-
     public synchronized int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
@@ -785,25 +744,27 @@ public class ServerReport extends ScanReport {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
     }
 
-    public synchronized List<GuidelineReport> getGuidelineReports() {
-        return guidelineReports;
-    }
-
-    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
-        this.guidelineReports = guidelineReports;
-    }
-
     public synchronized List<EntropyReport> getEntropyReportList() {
         return entropyReportList;
     }
 
     public synchronized void setEntropyReportList(List<EntropyReport> entropyReportList) {
         this.entropyReportList = entropyReportList;
+    }
+
     public synchronized NamedGroup getHelloRetryRequestSelectedNamedGroup() {
         return helloRetryRequestSelectedNamedGroup;
     }
 
     public synchronized void setHelloRetryRequestSelectedNamedGroup(NamedGroup helloRetryRequestSelectedNamedGroup) {
         this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
+    }
+
+    public synchronized List<GuidelineReport> getGuidelineReports() {
+        return guidelineReports;
+    }
+
+    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
+        this.guidelineReports = guidelineReports;
     }
 }

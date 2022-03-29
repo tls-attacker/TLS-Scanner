@@ -28,8 +28,8 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.DheParameterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DheParameterProbe extends TlsProbe<ClientReport, DheParameterResult> {
+public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientReport, DheParameterResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -52,7 +52,7 @@ public class DheParameterProbe extends TlsProbe<ClientReport, DheParameterResult
     private List<CipherSuite> supportedDheCipherSuites;
     private int lowestDheModulusLength;
 
-    public DheParameterProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+    public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
         random = new Random(0);
     }

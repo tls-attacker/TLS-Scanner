@@ -20,11 +20,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaSupportResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 
-public class CcaSupportProbe extends TlsProbe<ServerReport, CcaSupportResult> {
+public class CcaSupportProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaSupportResult> {
 
-    public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CcaSupportProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
     }
 

@@ -28,9 +28,9 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe extends TlsProbe<ServerReport, DirectRaccoonResult> {
+public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerReport, DirectRaccoonResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -49,12 +49,12 @@ public class DirectRaccoonProbe extends TlsProbe<ServerReport, DirectRaccoonResu
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public DirectRaccoonProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DirectRaccoonResult executeTest() {
         List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
@@ -160,13 +160,13 @@ public class DirectRaccoonProbe extends TlsProbe<ServerReport, DirectRaccoonResu
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2), TestResult.TRUE))) {
+    public boolean canBeExecuted(ServerReport report) {
+        if (!(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2), TestResult.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {

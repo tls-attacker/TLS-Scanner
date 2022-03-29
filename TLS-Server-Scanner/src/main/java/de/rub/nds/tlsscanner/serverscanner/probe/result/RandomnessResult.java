@@ -7,19 +7,20 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class RandomnessResult extends ProbeResult {
+public class RandomnessResult extends ProbeResult<ServerReport> {
 
     public RandomnessResult() {
-        super(ProbeType.RANDOMNESS);
+        super(TlsProbeType.RANDOMNESS);
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         // Nothing to do here - all data analysis is done in the after probe
     }
 }

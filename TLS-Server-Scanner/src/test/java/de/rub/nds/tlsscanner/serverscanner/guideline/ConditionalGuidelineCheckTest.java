@@ -9,10 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,14 +23,14 @@ public class ConditionalGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test", 443);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, true);
+        ServerReport report = new ServerReport("test", 443);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, false);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
         GuidelineCheckCondition condition =
-            new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckResult result = null;
 
@@ -41,14 +44,14 @@ public class ConditionalGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test", 443);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, false);
+        ServerReport report = new ServerReport("test", 443);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, false);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, false);
 
         GuidelineCheckCondition condition =
-            new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckResult result = null;
 

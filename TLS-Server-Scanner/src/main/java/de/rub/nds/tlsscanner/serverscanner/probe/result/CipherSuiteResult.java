@@ -24,14 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/CipherSuiteResult.java
-public class CipherSuiteResult extends ProbeResult {
-========
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
-public class CipherSuiteProbeResult extends ProbeResult<ServerReport> {
+public class CipherSuiteResult extends ProbeResult<ServerReport> {
 
     private List<VersionSuiteListPair> pairLists;
 
@@ -77,13 +70,8 @@ public class CipherSuiteProbeResult extends ProbeResult<ServerReport> {
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/CipherSuiteResult.java
     public CipherSuiteResult(List<VersionSuiteListPair> pairLists) {
-        super(ProbeType.CIPHER_SUITE);
-========
-    public CipherSuiteProbeResult(List<VersionSuiteListPair> pairLists) {
         super(TlsProbeType.CIPHER_SUITE);
->>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/CipherSuiteProbeResult.java
         this.pairLists = pairLists;
     }
 

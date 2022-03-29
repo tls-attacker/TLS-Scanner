@@ -7,19 +7,21 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.after;
+package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe {
+public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<ServerReport> {
+
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
         if (report.getCertificateChainList() == null) {
             return;

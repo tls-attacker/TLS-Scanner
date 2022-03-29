@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.TokenbindingResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,14 +32,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe<ServerReport, TokenbindingResult> {
+public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerReport, TokenbindingResult> {
 
-    public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public TokenbindingResult executeTest() {
         List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();

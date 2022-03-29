@@ -7,31 +7,16 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ThreadedScanJobExecutor.java
-package de.rub.nds.tlsscanner.serverscanner.scan;
-
-import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
-import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-========
 package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.execution.ScanJobExecutor;
-import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.scanner.core.passive.TrackableValue;>>>>>>>>dae7150d1(reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java
+import de.rub.nds.scanner.core.passive.TrackableValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,19 +28,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
-public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
+public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobExecutor<Report> implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -76,7 +57,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
 
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
         long probeTimeout = config.getProbeTimeout();
-        executor = new ScannerThreadPoolExecutor(threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
+        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
+            new NamedThreadFactory(prefix));
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -88,14 +70,10 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
     }
 
-    public ScanReport execute(ScanReport report) {
+    @Override
+    public Report execute(Report report) {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ThreadedScanJobExecutor.java
-        SiteReport report =
-            new SiteReport(config.getClientDelegate().getHost(), config.getClientDelegate().getExtractedPort());
-========
->>>>>>>> dae7150d1 (reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java
         report.addObserver(this);
 
         checkForExecutableProbes(report);
@@ -119,16 +97,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         update(report, null);
     }
 
-    <<<<<<<<HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ThreadedScanJobExecutor.java
-
-    private void executeProbesTillNoneCanBeExecuted(SiteReport report) {
-        while (true) {
-            // handle all Finished Results
-========
-
     private void executeProbesTillNoneCanBeExecuted(ScanReport report) {
         do {
->>>>>>>> dae7150d1 (reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java
             long lastMerge = System.currentTimeMillis();
             List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
             for (Future<ProbeResult> result : futureResults) {
@@ -136,8 +106,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                     lastMerge = System.currentTimeMillis();
                     try {
                         ProbeResult probeResult = result.get();
-                        ConsoleLogger.CONSOLE
-                            .info("+++" + probeResult.getType().getHumanReadableName() + " probe executed");
+                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getProbeName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
                         if (probeResult != null) {
@@ -171,7 +140,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                     LOGGER.info("Interrupted while waiting for probe execution");
                 }
             }
-        }
+        } while (!futureResults.isEmpty());
     }
 
     private void reportAboutNotExecutedProbes() {

@@ -29,28 +29,27 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.PaddingOracleResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class PaddingOracleProbe extends TlsProbe<ServerReport, PaddingOracleResult> {
+public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerReport, PaddingOracleResult> {
 
-    private static int numberOfIterations;
-    private static int numberOfAddtionalIterations;
+    private final int numberOfIterations;
+    private final int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PADDING_ORACLE, config);
+    public PaddingOracleProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.PADDING_ORACLE, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
         this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public PaddingOracleResult executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
         List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
@@ -151,7 +150,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerReport, PaddingOracleResu
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public PaddingOracleResult getCouldNotExecuteResult() {
         return new PaddingOracleResult(TestResult.COULD_NOT_TEST);
     }
 

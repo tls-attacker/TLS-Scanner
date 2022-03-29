@@ -25,17 +25,16 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaRequiredResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 
-public class CcaRequiredProbe extends TlsProbe<ServerReport, CcaRequiredResult> {
+public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRequiredResult> {
 
-    public CcaRequiredProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CcaRequiredProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CcaRequiredResult executeTest() {
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(getScannerConfig().getCcaDelegate());
         Config tlsConfig = generateConfig();
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,

@@ -17,11 +17,9 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
-import de.rub.nds.tlsscanner.core.constants.ProbeType.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import org.bouncycastle.util.IPAddress;
@@ -53,10 +51,6 @@ public class ServerScannerConfig extends ScannerConfig {
     @Parameter(names = "-additionalRandomCollection", required = false,
         description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
-
-    @Parameter(names = "-probeTimeout", required = false,
-        description = "The timeout for each probe in ms (default 1800000)")
-    private int probeTimeout = 1800000;
 
     @ParametersDelegate
     private CcaDelegate ccaDelegate;
@@ -205,11 +199,4 @@ public class ServerScannerConfig extends ScannerConfig {
         this.probes = Arrays.asList(probes);
     }
 
-    public int getProbeTimeout() {
-        return probeTimeout;
-    }
-
-    public void setProbeTimeout(int probeTimeout) {
-        this.probeTimeout = probeTimeout;
-    }
 }

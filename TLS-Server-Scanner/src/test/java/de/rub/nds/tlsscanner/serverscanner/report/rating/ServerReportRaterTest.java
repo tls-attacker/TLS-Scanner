@@ -27,14 +27,10 @@ public class ServerReportRaterTest {
      */
     @Test
     public void testGetSiteReportRater() throws Exception {
-        SiteReportRater rater = SiteReportRater.getSiteReportRater();
+        SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
         assertNotNull(rater);
+        assertFalse(rater.getRecommendations().getRecommendations().isEmpty());
 
-    }
-
-    @Test
-    public void testGetRecommendations() throws Exception {
-        assertFalse(SiteReportRater.getRecommendations("en").getRecommendations().isEmpty());
     }
 
     @Test
@@ -44,7 +40,7 @@ public class ServerReportRaterTest {
         resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResult.TRUE);
         resultMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResult.TRUE);
 
-        SiteReportRater rater = SiteReportRater.getSiteReportRater();
+        SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
         ScoreReport report = rater.getScoreReport(resultMap);
 
         assertEquals(3, report.getInfluencers().size());

@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CompressionsResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,14 +32,14 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CompressionsProbe extends TlsProbe<ServerReport, CompressionsResult> {
+public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerReport, CompressionsResult> {
 
-    public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CompressionsResult executeTest() {
         List<CompressionMethod> compressions = getSupportedCompressionMethods();
         return new CompressionsResult(compressions);
     }

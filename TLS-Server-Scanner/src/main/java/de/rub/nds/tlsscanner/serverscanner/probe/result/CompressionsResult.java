@@ -35,15 +35,15 @@ public class CompressionsResult extends ProbeResult<ServerReport> {
         if (compressions != null) {
             report.setSupportedCompressionMethods(compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
-                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.TRUE);
+                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
+                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.TRUE);
             } else {
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
-                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE);
+                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
+                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE);
             }
         } else {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.COULD_NOT_TEST);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
+            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.COULD_NOT_TEST);
         }
     }
 

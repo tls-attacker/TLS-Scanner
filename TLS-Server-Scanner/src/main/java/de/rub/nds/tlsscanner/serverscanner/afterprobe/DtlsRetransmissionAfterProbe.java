@@ -7,19 +7,20 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.after;
+package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DtlsRetransmissionAfterProbe extends AfterProbe {
+public class DtlsRetransmissionAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         ExtractedValueContainer<HandshakeMessageType> container =
             report.getExtractedValueContainerMap().get(TrackableValueType.DTLS_RETRANSMISSIONS);
 

@@ -9,13 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
@@ -32,7 +30,7 @@ public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
         TestResult supportsOcspSCTs, TestResult meetsChromeCTPolicy,
         SignedCertificateTimestampList precertificateSctList, SignedCertificateTimestampList handshakeSctList,
         SignedCertificateTimestampList ocspSctList) {
-        super(ProbeType.CERTIFICATE_TRANSPARENCY);
+        super(TlsProbeType.CERTIFICATE_TRANSPARENCY);
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;
         this.supportsHandshakeSCTs = supportsHandshakeSCTs;
         this.supportsOcspSCTs = supportsOcspSCTs;

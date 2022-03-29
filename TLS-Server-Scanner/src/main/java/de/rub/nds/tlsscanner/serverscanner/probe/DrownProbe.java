@@ -21,13 +21,12 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Objects;
 
-public class DrownProbe extends TlsProbe<ServerReport, DrownResult> {
+public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport, DrownResult> {
 
-    public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public DrownProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
     }
 

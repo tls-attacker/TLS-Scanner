@@ -24,22 +24,21 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HeartbleedProbe extends TlsProbe<ServerReport, HeartbleedResult> {
+public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport, HeartbleedResult> {
 
     private List<CipherSuite> supportedCiphers;
 
-    public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public HeartbleedProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HeartbleedResult executeTest() {
         HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());

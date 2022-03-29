@@ -11,9 +11,9 @@ package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 
-public abstract class ScanJobExecutor {
+public abstract class ScanJobExecutor<Report extends ScanReport> {
 
-    public abstract ScanReport execute(ScanReport report);
+    public abstract Report execute(Report report);
 
     public abstract void shutdown();
 }

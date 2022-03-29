@@ -22,18 +22,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ExtensionResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,16 +36,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class ExtensionProbe extends TlsProbe<ServerReport, ExtensionResult> {
+public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ExtensionResult> {
 
     private boolean supportsTls13;
 
-    public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public ExtensionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ExtensionResult executeTest() {
         List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
         return new ExtensionResult(allSupportedExtensions);
     }
@@ -135,13 +129,13 @@ public class ExtensionProbe extends TlsProbe<ServerReport, ExtensionResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
+    public void adjustConfig(ServerReport report) {
+        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override

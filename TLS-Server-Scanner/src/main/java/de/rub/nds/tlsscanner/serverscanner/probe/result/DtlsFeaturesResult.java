@@ -7,28 +7,29 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsFeaturesResult extends ProbeResult {
+public class DtlsFeaturesResult extends ProbeResult<ServerReport> {
 
     private TestResult supportsFragmentation;
     private TestResult supportsReordering;
 
     public DtlsFeaturesResult(TestResult supportsFragmentation, TestResult supportsReordering) {
-        super(ProbeType.DTLS_FEATURES);
+        super(TlsProbeType.DTLS_FEATURES);
         this.supportsFragmentation = supportsFragmentation;
         this.supportsReordering = supportsReordering;
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, supportsFragmentation);
-        report.putResult(AnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, supportsFragmentation);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
     }
 
 }

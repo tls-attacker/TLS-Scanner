@@ -10,17 +10,15 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.bleichenbacher.BleichenbacherTestResult;
+import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class BleichenbacherResult extends ProbeResult<ServerReport> {
 
     private final List<InformationLeakTest<BleichenbacherOracleTestInfo>> resultList;
@@ -28,13 +26,13 @@ public class BleichenbacherResult extends ProbeResult<ServerReport> {
     private TestResult vulnerable;
 
     public BleichenbacherResult(TestResult result) {
-        super(ProbeType.BLEICHENBACHER);
+        super(TlsProbeType.BLEICHENBACHER);
         this.vulnerable = result;
         resultList = new LinkedList<>();
     }
 
     public BleichenbacherResult(List<InformationLeakTest<BleichenbacherOracleTestInfo>> resultList) {
-        super(ProbeType.BLEICHENBACHER);
+        super(TlsProbeType.BLEICHENBACHER);
         this.resultList = resultList;
         if (this.resultList != null) {
             vulnerable = TestResult.FALSE;

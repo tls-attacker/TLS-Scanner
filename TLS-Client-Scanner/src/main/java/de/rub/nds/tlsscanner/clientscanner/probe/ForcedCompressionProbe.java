@@ -26,7 +26,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class ForcedCompressionProbe extends TlsProbe<ClientReport, ForcedCompressionResult> {
+public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport, ForcedCompressionResult> {
 
     public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);

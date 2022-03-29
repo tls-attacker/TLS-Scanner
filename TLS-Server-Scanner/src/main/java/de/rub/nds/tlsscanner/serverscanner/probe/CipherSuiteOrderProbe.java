@@ -13,7 +13,6 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -21,7 +20,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteOrderResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -31,14 +30,14 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CipherSuiteOrderProbe extends TlsProbe<ServerReport, CipherSuiteOrderResult> {
+public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport, CipherSuiteOrderResult> {
 
-    public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CipherSuiteOrderProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CipherSuiteOrderResult executeTest() {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);

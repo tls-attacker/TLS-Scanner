@@ -20,10 +20,9 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpnProbeResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -31,16 +30,16 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AlpnProbe extends TlsProbe<ServerReport, AlpnProbeResult> {
+public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport, AlpnResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public AlpnProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public AlpnProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ALPN, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public AlpnResult executeTest() {
         List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
         return new AlpnResult(supportedAlpnProtocols);
 
@@ -115,7 +114,7 @@ public class AlpnProbe extends TlsProbe<ServerReport, AlpnProbeResult> {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public AlpnResult getCouldNotExecuteResult() {
         return new AlpnResult(new LinkedList<>());
     }
 

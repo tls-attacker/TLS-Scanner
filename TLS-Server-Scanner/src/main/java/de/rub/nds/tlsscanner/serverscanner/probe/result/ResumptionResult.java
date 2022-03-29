@@ -10,9 +10,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
@@ -35,7 +35,7 @@ public class ResumptionResult extends ProbeResult<ServerReport> {
         TestResult supportsTls13SessionTicket, TestResult supportsTls13PskDhe, TestResult supportsTls13Psk,
         TestResult supportsTls13_0rtt, TestResult supportsDtlsCookieExchangeInResumption,
         TestResult supportsDtlsCookieExchangeInTicketResumption, TestResult respectsPskModes) {
-        super(ProbeType.RESUMPTION);
+        super(TlsProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsSessionTicketResumption = supportsTicketResumption;
         this.supportsTls13SessionTicket = supportsTls13SessionTicket;
@@ -48,18 +48,18 @@ public class ResumptionResult extends ProbeResult<ServerReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
-        report.putResult(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
-        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+    public void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
             supportsDtlsCookieExchangeInResumption);
-        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
             supportsDtlsCookieExchangeInSessionTicketResumption);
-        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 
 }

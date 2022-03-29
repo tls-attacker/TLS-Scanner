@@ -28,8 +28,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateResult;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> {
+public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport, CertificateResult> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -55,12 +54,12 @@ public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> 
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CertificateProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CertificateResult executeTest() {
         ecdsaPkGroupsStatic = new LinkedList<>();
         ecdsaPkGroupsEphemeral = new LinkedList<>();
         ecdsaPkGroupsTls13 = new LinkedList<>();
@@ -116,7 +115,7 @@ public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> 
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
             scanForTls13 = false;
         }
     }
@@ -402,7 +401,7 @@ public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> 
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
@@ -432,7 +431,7 @@ public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> 
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {

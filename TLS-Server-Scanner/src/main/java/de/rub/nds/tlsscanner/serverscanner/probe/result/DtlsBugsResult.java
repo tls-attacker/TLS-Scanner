@@ -7,14 +7,15 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsBugsResult extends ProbeResult {
+public class DtlsBugsResult extends ProbeResult<ServerReport> {
 
     private TestResult isEarlyFinished;
     private TestResult isAcceptingUnencryptedAppData;
@@ -22,17 +23,17 @@ public class DtlsBugsResult extends ProbeResult {
 
     public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isAcceptingUnencryptedAppData,
         TestResult isEarlyFinished) {
-        super(ProbeType.DTLS_COMMON_BUGS);
+        super(TlsProbeType.DTLS_COMMON_BUGS);
         this.isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished;
         this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
-        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
-        report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        report.putResult(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
+        report.putResult(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 
 }

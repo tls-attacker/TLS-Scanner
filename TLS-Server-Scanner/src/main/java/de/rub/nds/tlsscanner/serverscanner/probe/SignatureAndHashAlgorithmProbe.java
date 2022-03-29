@@ -9,24 +9,48 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.SignatureAndHashAlgorithmResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Predicate;
 
-public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerReport, SignatureAndHashAlgorithmResult> {
+public class SignatureAndHashAlgorithmProbe
+    extends TlsProbe<ServerScannerConfig, ServerReport, SignatureAndHashAlgorithmResult> {
 
     private List<ProtocolVersion> versions;
     private TestResult respectsExtension;
 
-    public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public SignatureAndHashAlgorithmProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SignatureAndHashAlgorithmResult executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         this.respectsExtension = TestResult.TRUE;
@@ -178,15 +202,15 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerReport, Signa
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
             && (report.getVersions().contains(ProtocolVersion.TLS12)
                 || report.getVersions().contains(ProtocolVersion.TLS13)
                 || report.getVersions().contains(ProtocolVersion.DTLS12));
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         this.versions = new ArrayList<>();
         for (ProtocolVersion version : report.getVersions()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
@@ -196,7 +220,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerReport, Signa
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public SignatureAndHashAlgorithmResult getCouldNotExecuteResult() {
         return new SignatureAndHashAlgorithmResult(null, null, TestResult.COULD_NOT_TEST);
     }
 }

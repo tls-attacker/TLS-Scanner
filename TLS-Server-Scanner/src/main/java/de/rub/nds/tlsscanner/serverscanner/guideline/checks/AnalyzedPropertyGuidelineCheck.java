@@ -9,14 +9,20 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import static de.rub.nds.scanner.core.constants.TestResult.CANNOT_BE_TESTED;
+import static de.rub.nds.scanner.core.constants.TestResult.COULD_NOT_TEST;
+import static de.rub.nds.scanner.core.constants.TestResult.ERROR_DURING_TEST;
+import static de.rub.nds.scanner.core.constants.TestResult.NOT_TESTED_YET;
+import static de.rub.nds.scanner.core.constants.TestResult.TIMEOUT;
+import static de.rub.nds.scanner.core.constants.TestResult.UNCERTAIN;
+import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
@@ -40,7 +46,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ScanReport report) {
         TestResult reportResult = report.getResult(this.property);
         switch (reportResult) {
             case UNCERTAIN:

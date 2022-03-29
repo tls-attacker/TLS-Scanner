@@ -9,20 +9,21 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DestinationPortAfterProbe extends AfterProbe {
+public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         int intialPort = report.getPort();
         ExtractedValueContainer<Integer> container =
             report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
@@ -42,7 +43,7 @@ public class DestinationPortAfterProbe extends AfterProbe {
             LOGGER.error(e.toString());
             changesPort = TestResult.ERROR_DURING_TEST;
         }
-        report.putResult(AnalyzedProperty.CHANGES_PORT, changesPort);
+        report.putResult(TlsAnalyzedProperty.CHANGES_PORT, changesPort);
 
         TestResult changesPortToRandomPorts;
         try {
@@ -59,7 +60,7 @@ public class DestinationPortAfterProbe extends AfterProbe {
             LOGGER.error(e.toString());
             changesPortToRandomPorts = TestResult.ERROR_DURING_TEST;
         }
-        report.putResult(AnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
+        report.putResult(TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
     }
 
 }

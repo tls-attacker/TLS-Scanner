@@ -56,109 +56,114 @@ public class DefaultRecommendationsTest {
             "Evaluates whether a TLS 1.3 version draft is supported", new PropertyResultRecommendation(TestResult.TRUE,
                 "TLS 1.3 draft version is enabled", "Update your server and enable the TLS 1.3 final version"),
             "https://tools.ietf.org/html/rfc8446"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_0, "DTLS 1.0 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, "DTLS 1.0 support",
             "Evaluates whether the DTLS 1.0 protocol is supported",
             new PropertyResultRecommendation(TestResult.TRUE, "DTLS 1.0 is enabled", "Consider disabling DTLS 1.0"),
             "https://tools.ietf.org/html/rfc4347"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_2, "DTLS 1.2 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, "DTLS 1.2 support",
             "Evaluates whether the DTLS 1.2 protocol is supported",
             new PropertyResultRecommendation(TestResult.FALSE, "DTLS 1.2 is disabled", "Enable DTLS 1.2"),
             "https://tools.ietf.org/html/rfc6347"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_3, "DTLS 1.3 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3, "DTLS 1.3 support",
             "Evaluates whether the DTLS 1.3 protocol is supported",
             new PropertyResultRecommendation(TestResult.FALSE, "DTLS 1.3 is disabled", "Enable DTLS 1.3"), ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
             "Evaluates whether the server supports null ciphers", new PropertyResultRecommendation(TestResult.TRUE,
                 "Null ciphers are supported", "Disable insecure null ciphers"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_FORTEZZA, "Fortezza support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, "Fortezza support",
             "Evaluates whether the server supports Fortezza ciphers",
             new PropertyResultRecommendation(TestResult.TRUE, "Fortezza ciphers are supported",
                 "Disable Fortezza cipher suites",
                 "Fortezza cipher suites were developed by NSA in the 90s. You should better get rid of Fortezza algorithms."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
             "Evaluates whether the server supports export ciphers", new PropertyResultRecommendation(TestResult.TRUE,
                 "Export ciphers are enabled", "Disable export ciphers", ""),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ANON, "Anonymous cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ANON, "Anonymous cipher support",
             "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(TestResult.TRUE,
                 "Anonymous ciphers are enabled", "Disable anonymous ciphers"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DES, "DES support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DES, "DES support",
             "Evaluates whether the server supports DES ciphers",
             new PropertyResultRecommendation(TestResult.TRUE, "DES ciphers are enabled", "Disable DES ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_3DES, "3DES (Triple DES) support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_3DES, "3DES (Triple DES) support",
             "Evaluates whether the server supports 3DES (Triple DES) ciphers",
             new PropertyResultRecommendation(TestResult.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SEED, "SEED cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SEED, "SEED cipher support",
             "Evaluates whether the server supports SEED ciphers",
             "SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998",
             "https://tools.ietf.org/html/rfc4162"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_IDEA, "IDEA cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_IDEA, "IDEA cipher support",
             "Evaluates whether the server supports IDEA ciphers",
             "IDEA (International Data Encryption Algorithm) is a block cipher. It uses a 128 bit key and operates on 64 bit blocks.",
             new PropertyResultRecommendation(TestResult.TRUE, "IDEA ciphers are enabled", "Disable IDEA ciphers"),
             "https://tools.ietf.org/html/rfc5469"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RC2, "RC2 cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RC2, "RC2 cipher support",
             "Evaluates whether the server supports RC2 ciphers",
             "RC2 is a 64 bit block cipher designed by Ron Rivest in 1987",
             new PropertyResultRecommendation(TestResult.TRUE, "RC2 ciphers are enabled", "Disable RC2 ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RC4, "RC4 cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RC4, "RC4 cipher support",
             "Evaluates whether the server supports RC4 ciphers",
             "RC4 is a stream cipher designed by Ron Rivest in 1987",
             new PropertyResultRecommendation(TestResult.TRUE, "RC4 ciphers are enabled", "Disable RC4 ciphers"),
             "https://tools.ietf.org/html/rfc7465", "https://www.rc4nomore.com/"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_AEAD, "AEAD cipher suites support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_AEAD, "AEAD cipher suites support",
             "Evaluates whether the server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM",
             new PropertyResultRecommendation(TestResult.FALSE, "AEAD cipher suites are disabled",
                 "Enable AEAD cipher suites, e.g., AES-GCM"),
             ""));
 
         // PFS
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PFS, "Perfect Forward Secrecy (PFS) support",
-            "Evaluates whether the server supports Perfect Forward Secrecy (PFS)",
-            new PropertyResultRecommendation(TestResult.FALSE, "PFS is not supported",
-                "Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_PFS, "Support for only PFS cipher suites",
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PFS, "Perfect Forward Secrecy (PFS) support",
+                "Evaluates whether the server supports Perfect Forward Secrecy (PFS)",
+                new PropertyResultRecommendation(TestResult.FALSE, "PFS is not supported",
+                    "Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
+                ""));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
+            "Support for only PFS cipher suites",
             "Evaluates whether the server exclusively supports Perfect Forward Secrecy (PFS)",
             new PropertyResultRecommendation(TestResult.FALSE, "Not all cipher suites are perfect forward secure",
                 "Consider disabling cipher suites which are not perfect forward secure. Enable only perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.PREFERS_PFS, "Perfect Forward Secrecy (PFS) preference",
-            "Evaluates whether the server prefers Perfect Forward Secrecy (PFS) cipher suites",
-            new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not preferred",
-                "Enable cipher suite ordering and prefer PFS cipher suites"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_PFS, "Perfect Forward Secrecy (PFS) enforcing",
-            "Evaluates whether the server enforces Perfect Forward Secrecy (PFS) cipher suites",
-            new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not enforced",
-                "Enable cipher suite ordering and enforce PFS cipher suites"),
-            ""));
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.PREFERS_PFS, "Perfect Forward Secrecy (PFS) preference",
+                "Evaluates whether the server prefers Perfect Forward Secrecy (PFS) cipher suites",
+                new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not preferred",
+                    "Enable cipher suite ordering and prefer PFS cipher suites"),
+                ""));
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.ENFORCES_PFS, "Perfect Forward Secrecy (PFS) enforcing",
+                "Evaluates whether the server enforces Perfect Forward Secrecy (PFS) cipher suites",
+                new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not enforced",
+                    "Enable cipher suite ordering and enforce PFS cipher suites"),
+                ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_AES, "AES cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_AES, "AES cipher support",
             "Evaluates whether the server supports AES cipher", new PropertyResultRecommendation(TestResult.FALSE,
                 "AES cipher suites are disabled", "Enable AES cipher suites"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CAMELLIA, "Camellia cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, "Camellia cipher support",
             "Evaluates whether the server supports Camellia cipher",
             "Camellia is a 128 bit block cipher designed by Mitsubishi and NTT in 2000", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ARIA, "ARIA cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ARIA, "ARIA cipher support",
             "Evaluates whether the server supports ARIA cipher", "ARIA is a 128 bit block cipher designed in 2003",
             "https://tools.ietf.org/html/rfc5794"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CHACHA, "ChaCha cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_CHACHA, "ChaCha cipher support",
             "Evaluates whether the server supports ChaCha cipher",
             new PropertyResultRecommendation(TestResult.FALSE, "ChaCha cipher is disabled", "Enable ChaCha cipher"),
             "https://tools.ietf.org/html/rfc7905"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RSA, "RSA key exchange support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RSA, "RSA key exchange support",
             "Evaluates whether the server supports RSA key exchange", new PropertyResultRecommendation(TestResult.TRUE,
                 "RSA key exchange is enabled", "Disable RSA key exchange"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DH, "Diffie-Hellman (DH) key exchange support",
-            "Evaluates whether the server supports Diffie-Hellman (DH) key exchange", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ECDH,
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_STATIC_DH, "Diffie-Hellman (DH) key exchange support",
+                "Evaluates whether the server supports Diffie-Hellman (DH) key exchange", ""));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
             "Elliptic Curve Diffie-Hellman (ECDH) key exchange support",
             "Evaluates whether the server supports Elliptic Curve Diffie-Hellman (ECDH) key exchange",
             new PropertyResultRecommendation(TestResult.FALSE,
@@ -172,14 +177,14 @@ public class DefaultRecommendationsTest {
                 "Static Elliptic Curve Diffie-Hellman (ECDH) key exchange is enabled",
                 "Disable static Elliptic Curve Diffie-Hellman (ECDH)"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_GOST, "GOST cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_GOST, "GOST cipher support",
             "Evaluates whether the server supports GOST cipher",
             "GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. ",
             new PropertyResultRecommendation(TestResult.TRUE, "GOST ciphers are enabled", "Disable GOST ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SRP, "Secure Remote Password (SRP) support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SRP, "Secure Remote Password (SRP) support",
             "Evaluates whether the server supports Secure Remote Password (SRP) cipher suites",
             "https://tools.ietf.org/html/rfc5054"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_KERBEROS, "Kerberos cipher suites support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_KERBEROS, "Kerberos cipher suites support",
             "Evaluates whether the server supports Kerberos cipher suites", "https://tools.ietf.org/html/rfc2712"));
 
         // todo for now we do not consider in the
@@ -193,46 +198,47 @@ public class DefaultRecommendationsTest {
             "For now we do not consider in our scoring", ""));
 
         // post quantum
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_POST_QUANTUM,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
             "Post quantum algorithms support", "Evaluates whether the server supports post quantum algorithms", ""));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.SUPPORTS_NEWHOPE, "Post quantum new hope algorithm support",
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, "Post quantum new hope algorithm support",
                 "Evaluates whether the server supports the new hope post quantum algorithm", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ECMQV, "Post quantum ECMQV algorithm support",
-            "Evaluates whether the server supports the ECMQV post quantum algorithm", ""));
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ECMQV, "Post quantum ECMQV algorithm support",
+                "Evaluates whether the server supports the ECMQV post quantum algorithm", ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, "Stream cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, "Stream cipher support",
             "Evaluates whether the server supports stream ciphers", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, "Block cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, "Block cipher support",
             "Evaluates whether the server supports block ciphers", ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
             "Extended master secret support", "Evaluates whether the server supports extended master secret extension",
             new PropertyResultRecommendation(TestResult.FALSE, "Extended master secret extension is not supported",
                 "Enable support for the extended master secret"),
             "https://tools.ietf.org/html/rfc7627"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
             "Encrypt-then-MAC extension support", "Evaluates whether the server supports Encrypt-then-MAC extension",
             new PropertyResultRecommendation(TestResult.FALSE, "Encrypt-then-MAC extension is not supported",
                 "Enable support for the Encrypt-then-MAC"),
             "https://tools.ietf.org/html/rfc7366"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TOKENBINDING, "Token binding support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, "Token binding support",
             "Evaluates whether the server supports token binding", ""));
 
         recommendations.add(
             new Recommendation(TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES, "Montgomery curve support", "", ""));
 
         // session resumption
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             "Support for session resumption with session tickets",
             "Evaluates whether the server supports session resumption with session tickets",
             new PropertyResultRecommendation(TestResult.FALSE, "Session tickets are disabled",
                 "Enable session resumption with session tickets"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
             "Support for session resumption with session IDs",
             "Evaluates whether the server supports session resumption with session IDs", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             "Support for rotated session tickets",
             "Evaluates whether the server supports session resumption with session tickets whose keys are being rotated",
             "Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.",
@@ -242,7 +248,7 @@ public class DefaultRecommendationsTest {
             ""));
 
         // Renegotiation
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             "Support for secure renegotiation extension",
             "Evaluates whether the server supports secure renegotiation extension.",
             new PropertyResultRecommendation(TestResult.FALSE, "Secure renegotiation extension is disabled",
@@ -269,7 +275,7 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "TLS SCSV is disabled",
                 " Enable TLS Fallback Signaling Cipher Suite Value (SCSV)"),
             "https://tools.ietf.org/html/rfc7507"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, "TLS compression support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, "TLS compression support",
             "Evaluates whether the server supports TLS compression", new PropertyResultRecommendation(TestResult.TRUE,
                 "TLS compression is supported", "Disable TLS compression"),
             ""));
@@ -294,35 +300,38 @@ public class DefaultRecommendationsTest {
             "https://eprint.iacr.org/2016/995.pdf"));
 
         // HTTP
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HTTPS, "HTTPS support", "", ""));
-        recommendations
-            .add(new Recommendation(AnalyzedProperty.SUPPORTS_HSTS, "Support for HTTP Strict Transport Security (HSTS)",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HTTPS, "HTTPS support", "", ""));
+        recommendations.add(
+            new Recommendation(TlsAnalyzedProperty.SUPPORTS_HSTS, "Support for HTTP Strict Transport Security (HSTS)",
                 "Evaluates whether the server supports HTTP Strict Transport Security (HSTS)",
                 new PropertyResultRecommendation(TestResult.FALSE, "HSTS is disabled", "Enable HSTS"),
                 "https://tools.ietf.org/html/rfc6797"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING,
             "Support for HTTP Strict Transport Security (HSTS) preloading", "",
             new PropertyResultRecommendation(TestResult.FALSE, "HSTS is disabled", "Enable HSTS"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HPKP, "HTTP Public Key Pinning (HPKP) support",
-            "Evaluates whether the server supports Public Key Pinning Extension for HTTP",
-            "https://tools.ietf.org/html/rfc7469"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HPKP_REPORTING,
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HPKP, "HTTP Public Key Pinning (HPKP) support",
+                "Evaluates whether the server supports Public Key Pinning Extension for HTTP",
+                "https://tools.ietf.org/html/rfc7469"));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING,
             "HTTP Public Key Pinning (HPKP) report-only mode support",
             "Evaluates whether the server supports Public Key Pinning Extension for HTTP in a report-only mode",
             "https://tools.ietf.org/html/rfc7469"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HTTP_COMPRESSION, "HTTP compression support",
-            "Evaluates whether the server supports HTTP compression", new PropertyResultRecommendation(TestResult.TRUE,
-                "HTTP compression is enabled", "Disable HTTP compression"),
-            ""));
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HTTP_COMPRESSION, "HTTP compression support",
+                "Evaluates whether the server supports HTTP compression", new PropertyResultRecommendation(
+                    TestResult.TRUE, "HTTP compression is enabled", "Disable HTTP compression"),
+                ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_CS_ORDERING, "Cipher suite ordering support",
-            "Evaluates whether the server supports cipher suite ordering", new PropertyResultRecommendation(
-                TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, "Named group order",
+        recommendations
+            .add(new Recommendation(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, "Cipher suite ordering support",
+                "Evaluates whether the server supports cipher suite ordering", new PropertyResultRecommendation(
+                    TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
+                ""));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, "Named group order",
             "Evaluates whether the server enforces the client's named group ordering", new PropertyResultRecommendation(
                 TestResult.FALSE, "Server does not enforce client's group order", "Enforce client's group order")));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
             "Signature has algorithm ordering enforced",
             "Evaluates whether the server enforces signature hash algorithm ordering",
             new PropertyResultRecommendation(TestResult.FALSE, "Signature hash ordering is not enforced",
@@ -330,43 +339,43 @@ public class DefaultRecommendationsTest {
             ""));
 
         // intolerances
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_VERSION_INTOLERANCE, "TLS version intolerance",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, "TLS version intolerance",
             "Evaluates whether the server is TLS version intolerant",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is TLS version intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             "TLS cipher suite intolerance", "Evaluates whether the server is cipher suite intolerant",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is cipher suite intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, "TLS extension intolerance",
-            "Evaluates whether the server is TLS extension intolerant",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
+            "TLS extension intolerance", "Evaluates whether the server is TLS extension intolerant",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is TLS extension intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
             "TLS cipher suite length intolerance",
             "Evaluates whether the server has TLS cipher suite length intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has TLS cipher suite length intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
             "TLS compression intolerance", "Evaluates whether the server is TLS compression intolerant",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is TLS compression intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_ALPN_INTOLERANCE, "ALPN intolerance",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, "ALPN intolerance",
             "Evaluates whether the server has Application-Layer Protocol Negotiation (ALPN) intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is ALPN intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
             "ClientHello length intolerance", "Evaluates whether the server has ClientHello length intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has ClientHello length intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
             "ClientHello last extension intolerance",
             "Evaluates whether the server has ClientHello last extension intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has ClientHello last extension intolerance",
@@ -379,41 +388,40 @@ public class DefaultRecommendationsTest {
                 "The server has TLS signature and hash algorithm intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
             "Big ClientHello intolerance", "Evaluates whether the server has big ClientHello intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has big ClientHello intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(
-            new Recommendation(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, "Elliptic curve named group intolerance",
-                "Evaluates whether the server has elliptic curve named group intolerance",
-                new PropertyResultRecommendation(TestResult.TRUE,
-                    "The server has elliptic curve named group intolerance",
-                    "There is a bug in your implementation. Update your software or contact the developers."),
-                ""));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
+            "Elliptic curve named group intolerance",
+            "Evaluates whether the server has elliptic curve named group intolerance",
+            new PropertyResultRecommendation(TestResult.TRUE, "The server has elliptic curve named group intolerance",
+                "There is a bug in your implementation. Update your software or contact the developers."),
+            ""));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, "Second cipher suite bug",
+            .add(new Recommendation(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, "Second cipher suite bug",
                 "Evaluates whether the server always evaluates only the second cipher suite byte",
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The server always evaluates only the second cipher suite byte",
                     "There is a bug in your implementation. Update your software or contact the developers."),
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             "Cipher suite reflection", "Evaluates whether the server reflects offered cipher suites",
             new PropertyResultRecommendation(TestResult.TRUE, "The server reflects offered cipher suites",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
             "Ignoring offered cipher suites", "Evaluates whether the server ignores offered cipher suites",
             new PropertyResultRecommendation(TestResult.TRUE, "The server ignores offered cipher suites",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
             "Ignoring offered named groups", "Evaluates whether the server ignores offered named groups",
             new PropertyResultRecommendation(TestResult.TRUE, "The server ignores offered named groups",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
             "Ignoring offered signature and hash algorithms",
             "Evaluates whether the server ignores offered signature and hash algorithms",
             new PropertyResultRecommendation(TestResult.TRUE,
@@ -454,32 +462,27 @@ public class DefaultRecommendationsTest {
                 "The server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_POODLE, "Vulnerable to POODLE",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, "Vulnerable to POODLE",
             "Evaluates whether the server is vulnerable to POODLE (Padding Oracle On Downgraded Legacy Encryption)",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to POODLE",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://www.openssl.org/~bodo/ssl-poodle.pdf"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE, "Vulnerable to TLS POODLE",
-            "Evaluates whether the server is vulnerable to TLS POODLE (Padding Oracle On Downgraded Legacy Encryption)",
-            new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to POODLE with TLS",
-                "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_SWEET_32, "Vulnerable to Sweet32",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, "Vulnerable to Sweet32",
             "Evaluates whether the server is vulnerable to Sweet32", new PropertyResultRecommendation(TestResult.TRUE,
                 "The server is vulnerable to Sweet32", "Disable 64 bit block ciphers like 3DES."),
             "https://sweet32.info"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, "Vulnerable to DROWN",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, "Vulnerable to DROWN",
             "Evaluates whether the server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened "
                 + "encryption)",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to DROWN", "Disable SSL 2.0"),
             "https://drownattack.com"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED, "Vulnerable to Heartbleed",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, "Vulnerable to Heartbleed",
             "Evaluates whether the server is vulnerable to Heartbleed",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to Heartbleed",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "http://heartbleed.com"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_TICKETBLEED, "Vulnerable to Ticketbleed",
-            "Evaluates whether the server is vulnerable to Ticketbleed",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_TICKETBLEED,
+            "Vulnerable to Ticketbleed", "Evaluates whether the server is vulnerable to Ticketbleed",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to Ticketbleed",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://filippo.io/ticketbleed"));
@@ -489,48 +492,48 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to CCS injection / Early CCS",
                 "There is a vulnerability in your implementation. Update your software or contact the developers."),
             "http://ccsinjection.lepidum.co.jp/blog/2014-06-05/CCS-Injection-en/index.html"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_CRIME, "Vulnerable to CRIME",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, "Vulnerable to CRIME",
             "Evaluates whether the server is vulnerable to CRIME",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to CRIME",
                 "Disable TLS compression"),
             "https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf",
             "https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
             "Evaluates whether the server is vulnerable to BREACH", new PropertyResultRecommendation(TestResult.TRUE,
                 "The server is vulnerable to BREACH", "Disable HTTP compression"),
             "http://breachattack.com"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_LOGJAM, "Vulnerable to Logjam",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM, "Vulnerable to Logjam",
             "Evaluates whether the server is vulnerable to Logjam",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to Logjam",
                 "Disable export cipher suites and short Diffie-Hellman groups. Use at least 2048-bit Diffie-Hellman keys."),
             "https://weakdh.org"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_FREAK, "Vulnerable to FREAK",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, "Vulnerable to FREAK",
             "Evaluates whether the server is vulnerable to FREAK", new PropertyResultRecommendation(TestResult.TRUE,
                 "The server is vulnerable to FREAK", "Disable export cipher suites."),
             "https://www.smacktls.com/smack.pdf"));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+            .add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
                 "Vulnerable to the renegotiation attack (cs)",
                 "Evaluates whether the server is vulnerable to the renegotiation attack (cs)",
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The server is vulnerable to the renegotiation attack (cs)", "Disable insecure renegotiation."),
                 ""));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+            .add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
                 "Vulnerable to the renegotiation attack (cs)",
                 "Evaluates whether the server is vulnerable to the renegotiation attack (cs)",
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The server is vulnerable to the renegotiation attack (cs)", "Disable insecure renegotiation."),
                 ""));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+            .add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
                 "Vulnerable to the renegotiation attack (ext)",
                 "Evaluates whether the server is vulnerable to the renegotiation attack (ext)",
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The server is vulnerable to the renegotiation attack (ext)", "Disable insecure renegotiation."),
                 ""));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+            .add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
                 "Vulnerable to the renegotiation attack (ext)",
                 "Evaluates whether the server is vulnerable to the renegotiation attack (ext)",
                 new PropertyResultRecommendation(TestResult.TRUE,
@@ -563,7 +566,7 @@ public class DefaultRecommendationsTest {
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_WEAK_RANDOMNESS, "Uses weak randomness",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_WEAK_RANDOMNESS, "Uses weak randomness",
             "Evaluates whether the server uses weak random values",
             new PropertyResultRecommendation(TestResult.TRUE, "The server uses weak random values",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
@@ -580,7 +583,7 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "The server reuses ephemeral Diffie-Hellman keys",
                 "Configure your server to always use fresh Diffie-Hellman keys"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.REUSES_GCM_NONCES, "Reuses GCM nonces",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.REUSES_GCM_NONCES, "Reuses GCM nonces",
             "Evaluates whether the server reuses GCM nonces and is vulnerable to nonce-reuse attacks",
             new PropertyResultRecommendation(TestResult.TRUE,
                 "The server reuses GCM nonces and is vulnerable to nonce-reuse attacks",
@@ -588,7 +591,7 @@ public class DefaultRecommendationsTest {
             "https://eprint.iacr.org/2016/475"));
 
         // todo
-        recommendations.add(new Recommendation(AnalyzedProperty.REQUIRES_SNI, "SNI requirement",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.REQUIRES_SNI, "SNI requirement",
             "Evaluates whether the server requires the client to send a Server Name Indication (SNI) extension", ""));
 
         // certificate issues
@@ -609,36 +612,36 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject invalid SNI names.",
                 "If possible configure your server to use strict SNI and strict ALPN verification"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
             "Supports DTLS fragmentation", "Evaluates whether the server support the handshake message fragmentation",
             new PropertyResultRecommendation(TestResult.FALSE,
                 "The server does not process fragmented handshake messages",
                 "Configure your server to always process fragmented handshake messages"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_REORDERING, "Supports DTLS Reordering",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_REORDERING, "Supports DTLS Reordering",
             "Evaluates whether the server support message reordering",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not process message reordering",
                 "Configure your server to always process message reordering"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS,
             "Processes DTLS retransmissions", "Evaluates whether the server processes retransmissions",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not process retransmissions",
                 "Configure your server to always process retransmissions"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_COOKIE_CHECKS, "Has cookie checks",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, "Has cookie checks",
             "Evaluates whether the server verify the cookie values",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject invalid cookie values",
                 "Configure your server to always verify the cookie values"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
             "Misses message sequence number checks", "Evaluates whether the server verify the message sequence numbers",
             new PropertyResultRecommendation(TestResult.TRUE, "The server does not verify the message sequence numbers",
                 "Configure your server to always verify the message sequence numbers"),
             ""));
-        RatingIO.writeRecommendations(new Recommendations(recommendations),
-            new File("src/main/resources/" + Recommendations.DEFAULT_RECOMMENDATIONS_FILE));
-        RatingIO.writeRecommendations(new Recommendations(recommendations),
-            new File("src/main/resources/rating/recommendations_en.xml"));
+        RecommendationsIO.write(new File("src/main/resources/rating/recommendations.xml"),
+            new Recommendations(recommendations));
+        RecommendationsIO.write(new File("src/main/resources/rating/recommendations_en.xml"),
+            new Recommendations(recommendations));
 
     }
 }

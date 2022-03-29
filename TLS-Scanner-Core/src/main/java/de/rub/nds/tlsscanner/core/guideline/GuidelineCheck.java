@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,16 +7,15 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.guideline;
+package de.rub.nds.tlsscanner.core.guideline;
 
-import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.scanner.core.util.ConsoleLogger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class GuidelineCheck {
+public abstract class GuidelineCheck<Report extends ScanReport> {
 
     private String name;
     private RequirementLevel requirementLevel;
@@ -35,13 +34,13 @@ public abstract class GuidelineCheck {
         this.condition = condition;
     }
 
-    public abstract GuidelineCheckResult evaluate(SiteReport report);
+    public abstract GuidelineCheckResult evaluate(Report report);
 
-    public boolean passesCondition(SiteReport report) {
+    public boolean passesCondition(Report report) {
         return this.passesCondition(report, this.condition);
     }
 
-    private boolean passesCondition(SiteReport report, GuidelineCheckCondition condition) {
+    private boolean passesCondition(Report report, GuidelineCheckCondition condition) {
         if (condition == null) {
             return true;
         }

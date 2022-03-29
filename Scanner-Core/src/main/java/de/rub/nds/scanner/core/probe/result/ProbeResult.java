@@ -13,11 +13,6 @@ import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.PerformanceData;
 
-/**
- *
- * @author     Robert Merget - {@literal <robert.merget@rub.de>}
- * @param  <T>
- */
 public abstract class ProbeResult<T extends ScanReport> {
 
     private final ProbeType type;
@@ -56,7 +51,7 @@ public abstract class ProbeResult<T extends ScanReport> {
         this.stopTime = stopTime;
     }
 
-    public void merge(SiteReport report) {
+    public void merge(T report) {
         if (startTime != 0 && stopTime != 0) {
             report.getPerformanceList().add(getPerformanceData());
         }

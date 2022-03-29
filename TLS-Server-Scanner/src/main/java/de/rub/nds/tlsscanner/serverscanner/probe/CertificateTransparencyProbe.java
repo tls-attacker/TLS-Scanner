@@ -28,19 +28,18 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import org.bouncycastle.crypto.tls.Certificate;
 
 import java.time.Duration;
 import java.util.*;
 
-public class CertificateTransparencyProbe extends TlsProbe<ServerReport, CertificateTransparencyResult> {
+public class CertificateTransparencyProbe
+    extends TlsProbe<ServerScannerConfig, ServerReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
     private OCSPResponse stapledOcspResponse;
@@ -53,7 +52,7 @@ public class CertificateTransparencyProbe extends TlsProbe<ServerReport, Certifi
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CertificateTransparencyProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
     }
 
@@ -227,7 +226,7 @@ public class CertificateTransparencyProbe extends TlsProbe<ServerReport, Certifi
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CertificateTransparencyResult getCouldNotExecuteResult() {
         return new CertificateTransparencyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
             TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
             new SignedCertificateTimestampList(), new SignedCertificateTimestampList());

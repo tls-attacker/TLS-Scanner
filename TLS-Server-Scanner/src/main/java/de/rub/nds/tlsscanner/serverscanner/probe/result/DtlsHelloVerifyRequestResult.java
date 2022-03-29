@@ -7,14 +7,15 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsHelloVerifyRequestResult extends ProbeResult {
+public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
 
     private TestResult hasHvrRetransmissions;
     private TestResult checksCookie;
@@ -28,7 +29,7 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult {
     public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, Integer cookieLength,
         TestResult usesVersionInCookie, TestResult usesRandomInCookie, TestResult usesSessionIdInCookie,
         TestResult usesCiphersuitesInCookie, TestResult usesCompressionsInCookie) {
-        super(ProbeType.DTLS_HELLO_VERIFY_REQUEST);
+        super(TlsProbeType.DTLS_HELLO_VERIFY_REQUEST);
         this.hasHvrRetransmissions = hasHvrRetransmissions;
         this.checksCookie = checksCookie;
         this.cookieLength = cookieLength;
@@ -40,15 +41,15 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
-        report.putResult(AnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
+        report.putResult(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
         report.setCookieLength(cookieLength);
-        report.putResult(AnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
-        report.putResult(AnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
-        report.putResult(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
-        report.putResult(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
-        report.putResult(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
     }
 
 }

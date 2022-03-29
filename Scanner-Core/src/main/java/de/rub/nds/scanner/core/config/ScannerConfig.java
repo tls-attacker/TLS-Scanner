@@ -28,6 +28,10 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
+    @Parameter(names = "-probeTimeout", required = false,
+        description = "The timeout for each probe in ms (default 1800000)")
+    private int probeTimeout = 1800000;
+
     protected List<ProbeType> probes = null;
 
     public ScannerConfig(GeneralDelegate delegate) {
@@ -68,5 +72,13 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
 
     public void setProbes(ProbeType... probes) {
         this.probes = Arrays.asList(probes);
+    }
+
+    public int getProbeTimeout() {
+        return probeTimeout;
+    }
+
+    public void setProbeTimeout(int probeTimeout) {
+        this.probeTimeout = probeTimeout;
     }
 }

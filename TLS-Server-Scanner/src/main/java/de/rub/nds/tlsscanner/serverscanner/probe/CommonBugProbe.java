@@ -40,7 +40,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CommonBugProbeResult;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,7 +52,7 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CommonBugProbe extends TlsProbe<ServerReport, CommonBugProbeResult> {
+public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, CommonBugProbeResult> {
 
     // does it handle unknown extensions correctly?
     private TestResult extensionIntolerance;
@@ -93,7 +93,7 @@ public class CommonBugProbe extends TlsProbe<ServerReport, CommonBugProbeResult>
     // does it accept grease values in the signature and hash algorithms extension?
     private TestResult greaseSignatureAndHashAlgorithmIntolerance;
 
-    public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CommonBugProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMMON_BUGS, config);
     }
 

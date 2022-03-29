@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
@@ -25,12 +24,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsscanner.serverscanner.TlsScanner;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.core.execution.TlsScanner;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.converter.Asn1CertificateSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.Asn1EncodableSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.ByteArraySerializer;
@@ -43,21 +41,22 @@ import de.rub.nds.tlsscanner.serverscanner.converter.HttpsHeaderSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.PointSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.serverscanner.converter.VectorSerializer;
+import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 
 public class SiteReportSerializationTest {
-    private static SiteReport report;
-    private static ScannerConfig config;
+    private static ServerReport report;
+    private static ServerScannerConfig config;
 
     @BeforeClass
     public static void setUpClass() {
-        config = new ScannerConfig(new GeneralDelegate());
+        config = new ServerScannerConfig(new GeneralDelegate());
         config.getClientDelegate().setHost("tls-scanner.cs.uni-paderborn.de");
         config.setScanDetail(ScannerDetail.NORMAL);
         config.setReportDetail(ScannerDetail.ALL);
         config.setOverallThreads(100);
         config.setParallelProbes(100);
         config.setNoColor(true);
-        TlsScanner scanner = new TlsScanner(config);
+        TlsServerScanner scanner = new TlsServerScanner(config);
         report = scanner.scan();
     }
 

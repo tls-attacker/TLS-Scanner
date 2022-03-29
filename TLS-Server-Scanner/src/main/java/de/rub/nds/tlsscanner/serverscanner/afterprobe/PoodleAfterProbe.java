@@ -40,7 +40,7 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
                     }
                 }
             }
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
         } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }
