@@ -13,13 +13,13 @@ import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public abstract class HttpsProbe extends TlsProbe {
 
-    public HttpsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig) {
-        super(parallelExecutor, type, scannerConfig);
+    public HttpsProbe(ParallelExecutor parallelExecutor, ProbeType type, ConfigSelector configSelector) {
+        super(parallelExecutor, type, configSelector);
     }
 
     protected HttpsRequestMessage getHttpsRequest() {

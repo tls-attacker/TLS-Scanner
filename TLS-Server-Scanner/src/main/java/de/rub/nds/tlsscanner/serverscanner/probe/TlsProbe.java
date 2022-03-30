@@ -14,10 +14,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +30,11 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected static final Logger LOGGER = LogManager.getLogger(TlsProbe.class.getName());
 
-    protected final ScannerConfig scannerConfig;
-    protected final ProbeType type;
+    private final ScannerConfig scannerConfig;
+
+    private final ConfigSelector configSelector;
+
+    private final ProbeType type;
 
     private final ParallelExecutor parallelExecutor;
 
@@ -40,11 +42,16 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     private AtomicBoolean readyForExecution = new AtomicBoolean(false);
 
-    public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig) {
-        this.scannerConfig = scannerConfig;
+    public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ConfigSelector configSelector) {
+        this.configSelector = configSelector;
+        this.scannerConfig = configSelector.getScannerConfig();
         this.type = type;
         this.parallelExecutor = parallelExecutor;
         this.writer = new StatsWriter();
+    }
+
+    public final ConfigSelector getConfigSelector() {
+        return configSelector;
     }
 
     public final ScannerConfig getScannerConfig() {
@@ -61,10 +68,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     @Override
     public ProbeResult call() {
-        ThreadContext.put("host",
-            this.scannerConfig.getClientDelegate().getSniHostname() == null
-                ? this.scannerConfig.getClientDelegate().getHost()
-                : this.scannerConfig.getClientDelegate().getSniHostname());
+        ThreadContext.put("host", scannerConfig.getClientDelegate().getSniHostname() == null
+            ? scannerConfig.getClientDelegate().getHost() : scannerConfig.getClientDelegate().getSniHostname());
         LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
 
@@ -94,7 +99,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(State... states) {
-        this.executeState(new ArrayList<State>(Arrays.asList(states)));
+        this.executeState(new ArrayList<>(Arrays.asList(states)));
 
     }
 

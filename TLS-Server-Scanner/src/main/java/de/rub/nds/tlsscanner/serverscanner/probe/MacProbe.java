@@ -42,7 +42,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
@@ -51,6 +50,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.MacResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,8 +61,8 @@ public class MacProbe extends TlsProbe {
 
     private ResponseFingerprint correctFingerprint;
 
-    public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.MAC, scannerConfig);
+    public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.MAC, configSelector);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MacProbe extends TlsProbe {
     }
 
     private ResponseFingerprint getCorrectAppDataFingerprint() {
-        Config config = scannerConfig.createConfig();
+        Config config = getScannerConfig().createConfig();
         config.setStopActionsAfterIOException(true);
         config.setAddRenegotiationInfoExtension(true);
         config.setHttpsParsingEnabled(true);
@@ -244,7 +244,7 @@ public class MacProbe extends TlsProbe {
         CipherSuite suite = suiteList.get(0);
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[12];
         List<State> stateList = new LinkedList<>();
-        Config config = scannerConfig.createConfig();
+        Config config = getScannerConfig().createConfig();
         config.setAddRenegotiationInfoExtension(true);
         config.setQuickReceive(true);
         config.setDefaultClientSupportedCipherSuites(suite);
@@ -290,7 +290,7 @@ public class MacProbe extends TlsProbe {
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize(); // TODO
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();
-        Config config = scannerConfig.createConfig();
+        Config config = getScannerConfig().createConfig();
         config.setAddRenegotiationInfoExtension(true);
         config.setQuickReceive(true);
         config.setDefaultClientSupportedCipherSuites(suite);

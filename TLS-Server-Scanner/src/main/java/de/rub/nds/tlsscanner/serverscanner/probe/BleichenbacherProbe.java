@@ -20,7 +20,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
@@ -31,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.BleichenbacherResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,10 +43,11 @@ public class BleichenbacherProbe extends TlsProbe {
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+    public BleichenbacherProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.BLEICHENBACHER, configSelector);
+        this.numberOfIterations = getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        this.numberOfAddtionalIterations =
+            getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
     }
 
     @Override
@@ -72,11 +73,11 @@ public class BleichenbacherProbe extends TlsProbe {
         }
         LOGGER.debug("Finished evaluation");
         if (isPotentiallyVulnerable(testResultList)
-            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
             for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
                 if (fingerprint.isDistinctAnswers()
-                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                 }
             }
@@ -90,7 +91,7 @@ public class BleichenbacherProbe extends TlsProbe {
         vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS_FIN);
         vectorTypeList.add(BleichenbacherWorkflowType.CKE);
         vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS);
-        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+        if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
             vectorTypeList.add(BleichenbacherWorkflowType.CKE_FIN);
         }
         return vectorTypeList;
@@ -104,10 +105,10 @@ public class BleichenbacherProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         bleichenbacherConfig.setNumberOfIterations(numberOfIterations);
         BleichenbacherCommandConfig.Type recordGeneratorType = BleichenbacherCommandConfig.Type.FAST;
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.ALL)) {
+        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.ALL)) {
             recordGeneratorType = BleichenbacherCommandConfig.Type.FULL;
         }
         bleichenbacherConfig.setType(recordGeneratorType);
@@ -118,10 +119,10 @@ public class BleichenbacherProbe extends TlsProbe {
 
     private InformationLeakTest<BleichenbacherOracleTestInfo>
         getBleichenbacherOracleInformationLeakTest(BleichenbacherCommandConfig bleichenbacherConfig) {
-        Config config = scannerConfig.createConfig();
+        Config config = getScannerConfig().createConfig();
         BleichenbacherAttacker attacker =
             new BleichenbacherAttacker(bleichenbacherConfig, config, getParallelExecutor());
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
         } else {

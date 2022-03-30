@@ -32,7 +32,6 @@ import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
@@ -46,6 +45,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.DistributionTest;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +53,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class InvalidCurveProbe extends TlsProbe {
 
@@ -92,8 +91,8 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private Map<NamedGroup, NamedGroupWitness> namedCurveWitnessesTls13;
 
-    public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.INVALID_CURVE, config);
+    public InvalidCurveProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.INVALID_CURVE, configSelector);
     }
 
     @Override
@@ -264,7 +263,7 @@ public class InvalidCurveProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         ProtocolVersionDelegate protocolVersionDelegate =
             (ProtocolVersionDelegate) attackConfig.getDelegate(ProtocolVersionDelegate.class);
         protocolVersionDelegate.setProtocolVersion(protocolVersion);
@@ -325,7 +324,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         LOGGER.warn("Protocol Version " + protocolVersion
                             + " had no entry in CipherSuite map - omitting from InvalidCurve scan");
                     } else {
-                        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+                        if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
                             // individual scans for every cipher suite
                             for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
                                 if (legitInvalidCurveVector(group, format)
@@ -345,7 +344,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             HashMap<ProtocolVersion, List<CipherSuite>> filteredCipherSuites =
                                 filterCipherSuites(group);
                             if (pickedProtocolVersions.contains(protocolVersion)
-                                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                                || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                                 List<CipherSuite> versionSuiteList = filteredCipherSuites.get(protocolVersion);
                                 for (CipherSuite cipherSuite : versionSuiteList) {
                                     if (legitInvalidCurveVector(group, format)) {
@@ -368,10 +367,10 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         // repeat scans in renegotiation
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             ProtocolVersion renegotiationVersion = pickRenegotiationVersion();
             int vectorCount = vectors.size();
-            if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+            if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
                 // scan all possible combinations in renegotiation
                 for (int i = 0; i < vectorCount; i++) {
                     InvalidCurveVector vector = vectors.get(i);
@@ -613,7 +612,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             gotEphemeral = true;
                         }
 
-                        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                             if (cipherSuite.isGCM() && gotGCM == false) {
                                 addCandidate = true;
                                 gotGCM = true;
@@ -861,7 +860,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
                 if (initialTest.isSignificantDistinctAnswers() == false && initialResponse.getVectorResponses().size()
                     >= (initialResponse.getFingerprintSecretPairs().size() / 2)) {
-                    if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+                    if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
                         // perform second test immediately
                         InvalidCurveResponse redundantResponse =
                             executeSingleScan(vector, InvalidCurveScanType.REDUNDANT);

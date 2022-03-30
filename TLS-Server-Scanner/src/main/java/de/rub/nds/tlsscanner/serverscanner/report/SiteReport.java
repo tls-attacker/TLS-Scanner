@@ -65,6 +65,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
+    private Boolean isHandshaking = null;
     private ProtocolType protocolType = null;
 
     // Attacks
@@ -452,6 +453,14 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
         this.speaksProtocol = speaksProtocol;
+    }
+
+    public Boolean getIsHandshaking() {
+        return isHandshaking;
+    }
+
+    public void setIsHandshaking(Boolean isHandshaking) {
+        this.isHandshaking = isHandshaking;
     }
 
     public synchronized Integer getCookieLength() {

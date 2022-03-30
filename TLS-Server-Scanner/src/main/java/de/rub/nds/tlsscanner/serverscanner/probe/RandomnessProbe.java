@@ -26,13 +26,13 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RandomnessResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,13 +46,13 @@ public class RandomnessProbe extends TlsProbe {
     private CipherSuite bestCipherSuite;
     private boolean supportsExtendedRandom;
 
-    public RandomnessProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RANDOMNESS, config);
+    public RandomnessProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.RANDOMNESS, configSelector);
     }
 
     @Override
     public ProbeResult executeTest() {
-        collectData(scannerConfig.getAdditionalRandomnessHandshakes());
+        collectData(getScannerConfig().getAdditionalRandomnessHandshakes());
         return new RandomnessResult();
     }
 
@@ -171,7 +171,7 @@ public class RandomnessProbe extends TlsProbe {
             }
             WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (scannerConfig.getApplicationProtocol() == ApplicationProtocol.HTTP) {
+            if (getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
                 config.setHttpsParsingEnabled(true);
                 workflowTrace.addTlsAction(new SendAction(new HttpsRequestMessage(config)));
                 workflowTrace.addTlsAction(new ReceiveAction(new HttpsResponseMessage(config)));

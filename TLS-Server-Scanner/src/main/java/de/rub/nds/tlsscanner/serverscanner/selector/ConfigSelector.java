@@ -10,55 +10,95 @@
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ConfigSelector {
 
-    private ConfigSelector() {
+    private ScannerConfig scannerConfig;
+
+    public Config workingConfig;
+
+    public final String PATH = "/configs/";
+
+    public final List<String> CONFIGS = Arrays.asList("default.config", "nice.config");
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public ConfigSelector(ScannerConfig scannerConfig) {
+        this.scannerConfig = scannerConfig;
     }
 
-    public static Config getNiceConfig(ScannerConfig scannerConfig) {
-        Config config = scannerConfig.createConfig();
-        config.setAddECPointFormatExtension(Boolean.TRUE);
-        config.setAddEllipticCurveExtension(Boolean.TRUE);
-        config.setAddServerNameIndicationExtension(Boolean.TRUE);
-        config.setAddSignatureAndHashAlgorithmsExtension(Boolean.TRUE);
-        config.setAddRenegotiationInfoExtension(Boolean.TRUE);
-        List<CipherSuite> filteredCipherSuites =
-            Arrays.asList(CipherSuite.values()).stream()
-                .filter(cipherSuite -> !cipherSuite.isGrease()
-                    && cipherSuite != CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV
-                    && cipherSuite != CipherSuite.TLS_FALLBACK_SCSV)
-                .collect(Collectors.toList());
-        config.setDefaultClientSupportedCipherSuites(filteredCipherSuites);
-        config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-        List<SignatureAndHashAlgorithm> filteredSigHashList = Arrays.asList(SignatureAndHashAlgorithm.values()).stream()
-            .filter(signatureAndHashAlgorithm -> !signatureAndHashAlgorithm.isGrease()).collect(Collectors.toList());
-        config.setDefaultClientSupportedSignatureAndHashAlgorithms(filteredSigHashList);
-        config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
-            CompressionMethod.DEFLATE);
+    public boolean init() {
+        for (String resource : CONFIGS) {
+            Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
+            applyDelegates(config);
+            applyPerformanceParamters(config);
+            if (works(config)) {
+                workingConfig = config.createCopy();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean works(Config config) {
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        State state = new State(config, trace);
+        WorkflowExecutor executor =
+            WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
+        executor.executeWorkflow();
+        return trace.executedAsPlanned();
+    }
+
+    private void applyPerformanceParamters(Config config) {
         config.setQuickReceive(true);
         config.setEarlyStop(true);
+        config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
-        // cleanupConfig(config);
+        config.setStopActionsAfterIOException(true);
+        config.setStopTraceAfterUnexpected(true);
+        // TODO: discuss
+        config.setStopReceivingAfterWarning(true);
+        config.setStopActionsAfterWarning(true);
+        config.setEnforceSettings(false);
+    }
+
+    private void applyDelegates(Config config) throws ConfigurationException {
+        for (Delegate delegate : scannerConfig.getDelegateList()) {
+            delegate.applyDelegate(config);
+        }
+    }
+
+    public Config getBaseConfig() {
+        return workingConfig.createCopy();
+    }
+
+    public Config getTls13BaseConfig() {
+        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + "tls13Only.config"));
+        applyDelegates(config);
+        applyPerformanceParamters(config);
         return config;
     }
 
-    public static void cleanupConfig(Config config) {
-        boolean hasEcCipherSuite = false;
-        for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
-            if (suite.name().toUpperCase().contains("_EC")) {
-                hasEcCipherSuite = true;
-            }
-        }
-        config.setAddEllipticCurveExtension(hasEcCipherSuite);
-        config.setAddECPointFormatExtension(hasEcCipherSuite);
+    public ScannerConfig getScannerConfig() {
+        return scannerConfig;
+    }
+
+    public void setScannerConfig(ScannerConfig scannerConfig) {
+        this.scannerConfig = scannerConfig;
     }
 }

@@ -41,12 +41,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,8 +61,8 @@ public class ResumptionProbe extends TlsProbe {
     private TestResult supportsDtlsCookieExchangeInTicketResumption;
     private TestResult respectsPskModes;
 
-    public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
+    public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.RESUMPTION, configSelector);
     }
 
     @Override

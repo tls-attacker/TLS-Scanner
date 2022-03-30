@@ -16,18 +16,18 @@ import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class TlsPoodleProbe extends TlsProbe {
 
-    public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TLS_POODLE, config);
+    public TlsPoodleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.TLS_POODLE, configSelector);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TlsPoodleProbe extends TlsProbe {
             protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
         }
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);

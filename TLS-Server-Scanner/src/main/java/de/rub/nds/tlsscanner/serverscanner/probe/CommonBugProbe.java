@@ -35,7 +35,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -89,8 +88,8 @@ public class CommonBugProbe extends TlsProbe {
     // does it accept grease values in the signature and hash algorithms extension?
     private TestResult greaseSignatureAndHashAlgorithmIntolerance;
 
-    public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMMON_BUGS, config);
+    public CommonBugProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.COMMON_BUGS, configSelector);
     }
 
     @Override
@@ -123,7 +122,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     private Config getWorkingConfig() {
-        Config config = ConfigSelector.getNiceConfig(scannerConfig);
+        Config config = getConfigSelector().getBaseConfig();
         config.setStopActionsAfterIOException(true);
         config.setStopReceivingAfterFatal(true);
         return config;
@@ -555,7 +554,7 @@ public class CommonBugProbe extends TlsProbe {
 
     private TestResult hasClientHelloLengthIntolerance() {
         try {
-            Config config = ConfigSelector.getNiceConfig(scannerConfig);
+            Config config = getConfigSelector().getBaseConfig();
             config.setAddAlpnExtension(true);
             config.setAddPaddingExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);

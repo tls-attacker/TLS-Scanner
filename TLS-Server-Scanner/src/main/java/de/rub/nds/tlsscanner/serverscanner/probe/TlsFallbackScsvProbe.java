@@ -22,12 +22,12 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsFallbackScsvResult;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +38,8 @@ public class TlsFallbackScsvProbe extends TlsProbe {
 
     private ProtocolVersion secondHighestVersion;
 
-    public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
-        super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, scannerConfig);
+    public TlsFallbackScsvProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, configSelector);
     }
 
     @Override

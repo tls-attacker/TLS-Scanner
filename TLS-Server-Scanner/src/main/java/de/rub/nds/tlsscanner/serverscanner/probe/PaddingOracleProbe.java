@@ -18,7 +18,6 @@ import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
@@ -28,6 +27,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 import java.util.LinkedList;
@@ -41,10 +41,11 @@ public class PaddingOracleProbe extends TlsProbe {
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PADDING_ORACLE, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+    public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.PADDING_ORACLE, configSelector);
+        this.numberOfIterations = getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        this.numberOfAddtionalIterations =
+            getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
     }
 
     @Override
@@ -68,11 +69,11 @@ public class PaddingOracleProbe extends TlsProbe {
         }
         LOGGER.debug("Finished evaluation");
         if (isPotentiallyVulnerable(testResultList)
-            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
             for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
                 if (fingerprint.isDistinctAnswers()
-                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                 }
             }
@@ -84,7 +85,7 @@ public class PaddingOracleProbe extends TlsProbe {
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
         List<PaddingVectorGeneratorType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
-        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+        if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED);
             vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
@@ -100,10 +101,10 @@ public class PaddingOracleProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) paddingOracleConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         paddingOracleConfig.setNumberOfIterations(numberOfIterations);
         PaddingRecordGeneratorType recordGeneratorType;
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
         } else {
             recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
@@ -117,8 +118,8 @@ public class PaddingOracleProbe extends TlsProbe {
     private InformationLeakTest<PaddingOracleTestInfo>
         getPaddingOracleInformationLeakTest(PaddingOracleCommandConfig paddingOracleConfig) {
         PaddingOracleAttacker attacker =
-            new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            new PaddingOracleAttacker(paddingOracleConfig, getScannerConfig().createConfig(), getParallelExecutor());
+        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
         } else {

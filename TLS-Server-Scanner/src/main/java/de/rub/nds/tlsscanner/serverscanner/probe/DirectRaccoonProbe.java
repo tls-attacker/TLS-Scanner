@@ -18,7 +18,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
@@ -30,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -49,8 +49,8 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
+    public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.DIRECT_RACCOON, configSelector);
     }
 
     @Override
@@ -151,8 +151,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
-            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version=" + version + ", suite="
-                + suite + ", pmsWithNullByte=" + withNullByte + ";");
+            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + getType() + ", version=" + version
+                + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
