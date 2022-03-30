@@ -45,6 +45,9 @@ import java.util.List;
 
 public class DtlsFeaturesProbe extends TlsProbe {
 
+    private TestResult supportsFragmentation;
+    private TestResult supportsReordering;
+    
     public DtlsFeaturesProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_FEATURES, scannerConfig);
         super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
@@ -53,9 +56,8 @@ public class DtlsFeaturesProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-    	supportsFragmentation();
-    	supportsReordering();
-        return;// new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
+    	this.supportsFragmentation = supportsFragmentation();
+    	this.supportsReordering = supportsReordering();
     }
 
     private TestResult supportsFragmentation() {
@@ -154,5 +156,11 @@ public class DtlsFeaturesProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);		
+	}
 
 }
