@@ -43,5 +43,4 @@ public class EarlyCcsResult extends ProbeResult<ServerReport> {
             }
         }
     }
-
 }

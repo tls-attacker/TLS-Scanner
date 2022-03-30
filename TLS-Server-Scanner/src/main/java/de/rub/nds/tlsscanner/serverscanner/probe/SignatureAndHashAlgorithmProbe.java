@@ -42,7 +42,6 @@ public class SignatureAndHashAlgorithmProbe
     extends TlsProbe<ServerScannerConfig, ServerReport, SignatureAndHashAlgorithmResult> {
 
     private List<ProtocolVersion> versions;
-    private TestResult respectsExtension;
 
     public SignatureAndHashAlgorithmProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, config);
@@ -52,7 +51,6 @@ public class SignatureAndHashAlgorithmProbe
     public SignatureAndHashAlgorithmResult executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
-        this.respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
             if (version.isTLS13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
@@ -60,8 +58,7 @@ public class SignatureAndHashAlgorithmProbe
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
-        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13),
-            respectsExtension);
+        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13));
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
@@ -94,7 +91,6 @@ public class SignatureAndHashAlgorithmProbe
                 }
                 if (!testSet.contains(selected)) {
                     found.add(selected);
-                    respectsExtension = TestResult.FALSE;
                     break;
                 }
                 // if any new algorithms were found
@@ -220,6 +216,6 @@ public class SignatureAndHashAlgorithmProbe
 
     @Override
     public SignatureAndHashAlgorithmResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null, null, TestResult.COULD_NOT_TEST);
+        return new SignatureAndHashAlgorithmResult(null, null);
     }
 }

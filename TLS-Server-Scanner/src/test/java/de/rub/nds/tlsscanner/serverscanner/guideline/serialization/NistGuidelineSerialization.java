@@ -175,7 +175,7 @@ public class NistGuidelineSerialization {
             GuidelineCheckCondition
                 .or(Arrays.asList(new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.TRUE),
                     new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE))),
-            TlsAnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, TestResult.TRUE));
+            TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, TestResult.TRUE));
         checks.add(new AnalyzedPropertyGuidelineCheck("The Certificate Status Request extension shall be supported.",
             RequirementLevel.MUST, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, TestResult.TRUE));
         checks.add(new AnalyzedPropertyGuidelineCheck(

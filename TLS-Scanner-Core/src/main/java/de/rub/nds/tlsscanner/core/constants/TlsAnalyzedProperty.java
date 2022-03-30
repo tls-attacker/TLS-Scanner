@@ -141,7 +141,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(TlsAnalyzedPropertyCategory.SNI),
     STRICT_ALPN(TlsAnalyzedPropertyCategory.EXTENSIONS),
-    RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION(TlsAnalyzedPropertyCategory.EXTENSIONS), // TODO This is a duplicate
     /**
      * does it handle unknown versions correctly?
      */
