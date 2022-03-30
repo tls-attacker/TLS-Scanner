@@ -46,6 +46,10 @@ import java.util.List;
 
 public class DtlsBugsProbe extends TlsProbe {
 
+    private TestResult isEarlyFinished;
+    private TestResult isAcceptingUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedFinished;
+    
     public DtlsBugsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_COMMON_BUGS, scannerConfig);
         super.properties.add(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
@@ -56,16 +60,13 @@ public class DtlsBugsProbe extends TlsProbe {
     @Override
     public void executeTest() {
         try {
-        	isAcceptingUnencryptedFinished();
-        	isAcceptingUnencryptedAppData();
-            isEarlyFinished();
-            return;/* new DtlsBugsResult(isAcceptingUnencryptedFinished(), isAcceptingUnencryptedAppData(),
-                isEarlyFinished());*/
+        	this.isEarlyFinished = isAcceptingUnencryptedFinished();
+        	this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData();
+            this.isAcceptingUnencryptedFinished = isEarlyFinished();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            /*return new DtlsBugsResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST);
-        */}
+            this.isEarlyFinished = this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.ERROR_DURING_TEST;          
+        }
     }
 
     private TestResult isAcceptingUnencryptedFinished() {
@@ -166,4 +167,10 @@ public class DtlsBugsProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, this.isAcceptingUnencryptedFinished);
+	    super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, this.isAcceptingUnencryptedAppData);
+	    super.setPropertyReportValue(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);		
+	}
 }
