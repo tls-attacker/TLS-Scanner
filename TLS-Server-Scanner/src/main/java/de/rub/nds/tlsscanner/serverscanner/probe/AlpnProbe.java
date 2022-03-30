@@ -21,9 +21,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
@@ -32,15 +31,14 @@ import java.util.List;
 
 public class AlpnProbe extends TlsProbe {
 
+	private List<String> supportedAlpnProtocols;
     public AlpnProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.ALPN, scannerConfig);
     }
 
     @Override
     public void executeTest() {
-        List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
-        return;// new AlpnResult(supportedAlpnProtocols);
-
+        supportedAlpnProtocols = getSupportedAlpnProtocols();
     }
 
     private List<String> getSupportedAlpnProtocols() {
@@ -117,4 +115,9 @@ public class AlpnProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.setSupportedAlpns(this.supportedAlpnProtocols);		
+	}
 }

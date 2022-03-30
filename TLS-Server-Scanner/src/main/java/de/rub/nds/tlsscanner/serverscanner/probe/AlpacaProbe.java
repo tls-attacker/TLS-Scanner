@@ -126,22 +126,22 @@ public class AlpacaProbe extends TlsProbe {
 
 	@Override
 	protected void mergeData(SiteReport report) {
-		if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
-	            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
+		if ((this.strictSni == TestResults.TRUE || this.strictSni == TestResults.FALSE)
+	            && (this.strictAlpn == TestResults.TRUE || this.strictAlpn == TestResults.FALSE)) {
 	            TestResult alpacaMitigated;
-	            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE)
+	            if (this.strictAlpn == TestResults.TRUE && this.strictSni == TestResults.TRUE)
 	                alpacaMitigated = TestResults.TRUE;
-	            else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) 
+	            else if (this.strictAlpn == TestResults.TRUE || this.strictSni == TestResults.TRUE) 
 	                alpacaMitigated = TestResults.PARTIALLY;
 	            else 
 	                alpacaMitigated = TestResults.FALSE;
 	    
-	            super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, strictSni);
-	            super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+	            super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, this.strictSni);
+	            super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, this.strictAlpn);
 	            super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
 	        } else {
-	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, strictSni);
-	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, this.strictSni);
+	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, this.strictAlpn);
 	        	super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
 	        }		
 	}
