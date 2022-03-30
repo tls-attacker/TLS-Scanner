@@ -27,18 +27,15 @@ import java.util.Observer;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobExecutor<Report> implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    private static final int MERGE_TIMEOUT_MS = 1000 * 60 * 30;
 
     private final ScannerConfig config;
 
@@ -55,8 +52,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
         long probeTimeout = config.getProbeTimeout();
-        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-            new NamedThreadFactory(prefix));
+        executor = new ScannerThreadPoolExecutor(threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -82,21 +78,23 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         executeAfterProbes(report);
 
         LOGGER.info("Finished scan");
+        report.deleteObserver(this);
         return report;
     }
 
-    private void updateSiteReportWithNotExecutedProbes(ScanReport report) {
+    private void updateSiteReportWithNotExecutedProbes(Report report) {
         for (ScannerProbe probe : notScheduledTasks) {
             probe.getCouldNotExecuteResult().merge(report);
         }
     }
 
-    private void checkForExecutableProbes(ScanReport report) {
+    private void checkForExecutableProbes(Report report) {
         update(report, null);
     }
 
-    private void executeProbesTillNoneCanBeExecuted(ScanReport report) {
-        do {
+    private void executeProbesTillNoneCanBeExecuted(Report report) {
+        while (true) {
+            // handle all Finished Results
             long lastMerge = System.currentTimeMillis();
             List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
             for (Future<ProbeResult> result : futureResults) {
@@ -104,13 +102,10 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
                     lastMerge = System.currentTimeMillis();
                     try {
                         ProbeResult probeResult = result.get();
-                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getProbeName() + " probe executed");
+                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getType().getName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
-                        if (probeResult != null) {
-                            probeResult.merge(report);
-                        }
-
+                        probeResult.merge(report);
                     } catch (InterruptedException | ExecutionException ex) {
                         LOGGER.error("Encountered an exception before we could merge the result. Killing the task.",
                             ex);
@@ -127,7 +122,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
             int oldFutures = futureResults.size();
             // execute possible new probes
             update(report, this);
-            if (futureResults.size() == 0) {
+            if (futureResults.isEmpty()) {
                 // nothing can be executed anymore
                 return;
             } else {
@@ -138,7 +133,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
                     LOGGER.info("Interrupted while waiting for probe execution");
                 }
             }
-        } while (!futureResults.isEmpty());
+        }
     }
 
     private void reportAboutNotExecutedProbes() {
@@ -148,31 +143,29 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         }
     }
 
-    private void collectStatistics(ScanReport report) {
+    private void collectStatistics(Report report) {
         LOGGER.debug("Evaluating executed handshakes...");
         List<ScannerProbe> allProbes = scanJob.getProbeList();
         HashMap<TrackableValue, ExtractedValueContainer> containerMap = new HashMap<>();
         int stateCounter = 0;
         for (ScannerProbe probe : allProbes) {
-            if (probe.getWriter() != null) {
-                List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
-                for (ExtractedValueContainer tempContainer : tempContainerList) {
-                    if (containerMap.containsKey(tempContainer.getType())) {
-                        containerMap.get(tempContainer.getType()).getExtractedValueList()
-                            .addAll(tempContainer.getExtractedValueList());
-                    } else {
-                        containerMap.put(tempContainer.getType(), tempContainer);
-                    }
+            List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
+            for (ExtractedValueContainer tempContainer : tempContainerList) {
+                if (containerMap.containsKey(tempContainer.getType())) {
+                    containerMap.get(tempContainer.getType()).getExtractedValueList()
+                        .addAll(tempContainer.getExtractedValueList());
+                } else {
+                    containerMap.put(tempContainer.getType(), tempContainer);
                 }
-                stateCounter += probe.getWriter().getStateCounter();
             }
+            stateCounter += probe.getWriter().getStateCounter();
         }
         report.setPerformedTcpConnections(stateCounter);
         report.setExtractedValueContainerList(containerMap);
         LOGGER.debug("Finished evaluation");
     }
 
-    private void executeAfterProbes(ScanReport report) {
+    private void executeAfterProbes(Report report) {
         LOGGER.debug("Analyzing data...");
         for (AfterProbe afterProbe : scanJob.getAfterList()) {
             afterProbe.analyze(report);
