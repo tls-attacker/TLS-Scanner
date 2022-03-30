@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -24,6 +25,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 
 public class CcaSupportProbe extends TlsProbe {
+
+    private TestResult supportsCca;
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
@@ -36,11 +39,10 @@ public class CcaSupportProbe extends TlsProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return;// new CcaSupportResult(TestResults.TRUE);
-        } else {
-           // return new CcaSupportResult(TestResults.FALSE);
-        }
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace()))
+            this.supportsCca = TestResults.TRUE;
+        else 
+            this.supportsCca = TestResults.FALSE;
     }
 
     @Override
@@ -62,4 +64,9 @@ public class CcaSupportProbe extends TlsProbe {
         config.setStopActionsAfterIOException(true);
         return config;
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CCA, supportsCca);		
+	}
 }
