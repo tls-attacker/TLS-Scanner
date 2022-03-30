@@ -47,7 +47,15 @@ import java.util.List;
 
 public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
-    private Integer cookieLength;
+	private TestResult hasHvrRetransmissions;
+	private TestResult checksCookie;
+    private TestResult usesVersionInCookie;
+    private TestResult usesRandomInCookie;
+    private TestResult usesSessionIdInCookie;
+    private TestResult usesCiphersuitesInCookie;
+    private TestResult usesCompressionsInCookie;
+
+	private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
@@ -254,5 +262,17 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_COOKIE_CHECKS, this.checksCookie);
+        super.setPropertyReportValue(AnalyzedProperty.USES_VERSION_FOR_COOKIE, this.usesVersionInCookie);
+        super.setPropertyReportValue(AnalyzedProperty.USES_RANDOM_FOR_COOKIE, this.usesRandomInCookie);
+        super.setPropertyReportValue(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, this.usesSessionIdInCookie);
+        super.setPropertyReportValue(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
+        super.setPropertyReportValue(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);		
+        report.setCookieLength(this.cookieLength);
+}
 
 }
