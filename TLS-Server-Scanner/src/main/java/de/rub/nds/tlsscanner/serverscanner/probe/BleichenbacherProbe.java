@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -41,7 +42,8 @@ public class BleichenbacherProbe extends TlsProbe {
     private static int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
-
+    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList;
+    
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
@@ -54,7 +56,7 @@ public class BleichenbacherProbe extends TlsProbe {
 
         LOGGER.debug("Starting evaluation");
         List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
-        List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList = new LinkedList<>();
+        testResultList = new LinkedList<>();
         for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
@@ -170,4 +172,19 @@ public class BleichenbacherProbe extends TlsProbe {
         }
         return false;
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		TestResult vulnerable;
+		if (this.testResultList != null) {
+            vulnerable = TestResults.FALSE;
+            for (InformationLeakTest<?> informationLeakTest : this.testResultList) {
+                if (informationLeakTest.isSignificantDistinctAnswers()) {
+                    vulnerable = TestResults.TRUE;
+                }
+            }
+        } else 
+            vulnerable = TestResults.ERROR_DURING_TEST;
+		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
+	}
 }
