@@ -28,6 +28,7 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -49,6 +50,9 @@ public class CcaProbe extends TlsProbe {
     private final long additionalTcpTimeout = 1000;
 
     private final int reexecutions = 3;
+    
+    private TestResult vulnerable;
+    private List<CcaTestResult> resultList; 
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config);
@@ -73,7 +77,8 @@ public class CcaProbe extends TlsProbe {
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return;// new CcaResult(TestResults.COULD_NOT_TEST, null);
+            vulnerable=TestResults.COULD_NOT_TEST;
+            return;
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -112,7 +117,7 @@ public class CcaProbe extends TlsProbe {
             }
         }
 
-        List<CcaTestResult> resultList = new LinkedList<>();
+        resultList = new LinkedList<>();
         boolean handshakeSucceeded = false;
         parallelExecutor.bulkExecuteTasks(taskList);
         for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
@@ -133,7 +138,7 @@ public class CcaProbe extends TlsProbe {
                     ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-        //return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
+        vulnerable = handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -224,4 +229,9 @@ public class CcaProbe extends TlsProbe {
         return versionSuiteListPairList;
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
+        report.setCcaTestResultList(resultList);
+	}
 }
