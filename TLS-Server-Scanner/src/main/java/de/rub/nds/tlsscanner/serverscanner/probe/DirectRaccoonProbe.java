@@ -55,7 +55,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
@@ -70,7 +70,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
         }
-        return new DirectRaccoonResult(testResultList);
+        return;// new DirectRaccoonResult(testResultList);
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(

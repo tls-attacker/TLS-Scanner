@@ -41,14 +41,14 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!supportedTokenBindingVersion.isEmpty()) {
             supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
-        return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
+        //return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {

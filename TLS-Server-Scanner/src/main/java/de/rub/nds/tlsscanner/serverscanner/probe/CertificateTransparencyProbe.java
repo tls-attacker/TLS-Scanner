@@ -70,12 +70,13 @@ public class CertificateTransparencyProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = initTlsConfig();
 
         if (serverCertChain == null) {
             LOGGER.warn("Couldn't fetch certificate chain from server!");
-            return getCouldNotExecuteResult();
+            getCouldNotExecuteResult();
+            return;
         }
 
         getPrecertificateSCTs();
@@ -86,9 +87,9 @@ public class CertificateTransparencyProbe extends TlsProbe {
         TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
-        return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
+        /*return; new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
             supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
-    }
+   */ }
 
     private Config initTlsConfig() {
         Config tlsConfig = getScannerConfig().createConfig();

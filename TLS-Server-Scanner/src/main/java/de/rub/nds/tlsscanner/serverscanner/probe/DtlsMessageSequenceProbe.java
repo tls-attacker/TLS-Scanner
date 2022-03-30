@@ -54,10 +54,14 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
-        return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
+    public void executeTest() {
+    	acceptsStartedWithInvalidMessageNumber();
+        acceptsSkippedMessageNumbersOnce(); 
+        acceptsSkippedMessageNumbersMultiple(); 
+        acceptsRandomMessageNumbers();
+        /*return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
             acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(), acceptsRandomMessageNumbers());
-    }
+    */}
 
     private TestResult acceptsRandomMessageNumbers() {
         Config config = getConfig();

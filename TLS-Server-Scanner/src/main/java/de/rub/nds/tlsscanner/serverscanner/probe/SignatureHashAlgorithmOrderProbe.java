@@ -35,7 +35,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<SignatureAndHashAlgorithm> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         SignatureAndHashAlgorithm firstSelectedSignatureAndHashAlgorithm =
@@ -44,9 +44,9 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
             getSelectedSignatureAndHashAlgorithm(toTestList);
 
-        return new SignatureHashAlgorithmOrderResult(
+       /* return new SignatureHashAlgorithmOrderResult(
             firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
-                : TestResults.FALSE);
+                : TestResults.FALSE);*/
     }
 
     @Override

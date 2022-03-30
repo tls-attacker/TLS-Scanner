@@ -50,7 +50,7 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
 
         LOGGER.debug("Starting evaluation");
         List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
@@ -82,7 +82,7 @@ public class BleichenbacherProbe extends TlsProbe {
             }
             LOGGER.debug("Finished extended evaluation");
         }
-        return new BleichenbacherResult(testResultList);
+        //return new BleichenbacherResult(testResultList);
     }
 
     private List<BleichenbacherWorkflowType> createWorkflowTypeList() {

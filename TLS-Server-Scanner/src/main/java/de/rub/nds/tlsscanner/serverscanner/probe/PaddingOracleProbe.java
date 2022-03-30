@@ -49,7 +49,7 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
         List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
@@ -79,7 +79,7 @@ public class PaddingOracleProbe extends TlsProbe {
             }
             LOGGER.debug("Finished extended evaluation");
         }
-        return new PaddingOracleResult(testResultList);
+        //return new PaddingOracleResult(testResultList);
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {

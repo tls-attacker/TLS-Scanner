@@ -47,8 +47,10 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
-        return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
+    public void executeTest() {
+    	doesRetransmissions();
+    	processesRetransmissions();
+        //return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
     }
 
     private TestResult doesRetransmissions() {

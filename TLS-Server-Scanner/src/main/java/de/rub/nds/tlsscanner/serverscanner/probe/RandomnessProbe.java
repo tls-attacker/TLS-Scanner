@@ -51,9 +51,9 @@ public class RandomnessProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         collectData(scannerConfig.getAdditionalRandomnessHandshakes());
-        return new RandomnessResult();
+        //return new RandomnessResult();
     }
 
     @Override

@@ -101,7 +101,7 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<InvalidCurveVector> vectors = prepareVectors();
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for (InvalidCurveVector vector : vectors) {
@@ -120,7 +120,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 responses.add(scanResponse);
             }
         }
-        return evaluateResponses(responses);
+       // return evaluateResponses(responses);
     }
 
     @Override

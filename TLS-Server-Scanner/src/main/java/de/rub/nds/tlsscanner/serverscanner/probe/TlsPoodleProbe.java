@@ -33,7 +33,7 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         TLSPoodleCommandConfig poodleCommandConfig =
             new TLSPoodleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
@@ -48,7 +48,7 @@ public class TlsPoodleProbe extends TlsProbe {
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
-        return new TlsPoodleResult(vulnerable == true ? TestResults.TRUE : TestResults.FALSE);
+        //return new TlsPoodleResult(vulnerable == true ? TestResults.TRUE : TestResults.FALSE);
     }
 
     @Override

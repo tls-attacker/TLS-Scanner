@@ -68,10 +68,11 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
         if (correctFingerprint == null) {
-            return new MacResult(null, null, null);
+           // return new MacResult(null, null, null);
+        	return;
         }
         LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
         CheckPattern appPattern;
@@ -82,7 +83,7 @@ public class MacProbe extends TlsProbe {
         }
         CheckPattern finishedPattern = getCheckPattern(Check.FINISHED);
         CheckPattern verifyPattern = getCheckPattern(Check.VERIFY_DATA);
-        return new MacResult(appPattern, finishedPattern, verifyPattern);
+       // return new MacResult(appPattern, finishedPattern, verifyPattern);
     }
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {

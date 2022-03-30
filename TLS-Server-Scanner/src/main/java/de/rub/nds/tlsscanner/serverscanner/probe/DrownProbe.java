@@ -35,8 +35,10 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
-        return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
+    public void executeTest() {
+    	testForGeneralDrown();
+    	testForExtraClearDrown();
+        //return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
     }
 
     private TestResult testForGeneralDrown() {

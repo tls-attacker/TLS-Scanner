@@ -32,7 +32,7 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config config = getScannerConfig().createConfig();
         config.setDefaultMaxRecordData(50);
 
@@ -41,9 +41,9 @@ public class RecordFragmentationProbe extends TlsProbe {
 
         executeState(state);
 
-        return new RecordFragmentationResult(
+      /*  return new RecordFragmentationResult(
             WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
-    }
+    */}
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {

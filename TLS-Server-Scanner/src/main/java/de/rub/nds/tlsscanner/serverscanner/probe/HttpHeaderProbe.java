@@ -53,7 +53,7 @@ public class HttpHeaderProbe extends HttpsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
@@ -106,7 +106,7 @@ public class HttpHeaderProbe extends HttpsProbe {
         } else {
             headerList = new LinkedList<>();
         }
-        return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
+       // return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override

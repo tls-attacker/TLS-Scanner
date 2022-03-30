@@ -47,9 +47,9 @@ public class HelloRetryProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         testHelloRetry();
-        return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
+        //return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
     }
 
     @Override

@@ -109,7 +109,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         State state;
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
@@ -136,7 +136,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         executeState(state);
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+           // return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+        	return;
         }
 
         byte[] ticket = null;
@@ -166,7 +167,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
             | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             LOGGER.debug(e);
-            return new SessionTicketZeroKeyResult(TestResults.FALSE, TestResults.FALSE);
+            //return new SessionTicketZeroKeyResult(TestResults.FALSE, TestResults.FALSE);
+            return;
         }
         LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         TestResult hasDecryptableMasterSecret;
@@ -185,7 +187,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             hasGnuTlsMagicBytes = TestResults.FALSE;
         }
 
-        return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
+       // return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
     }
 
     @Override

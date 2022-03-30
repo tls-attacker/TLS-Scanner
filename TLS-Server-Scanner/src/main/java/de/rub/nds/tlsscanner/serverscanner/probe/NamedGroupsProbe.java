@@ -70,7 +70,7 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
 
         addGroupsFound(overallSupported,
@@ -105,10 +105,10 @@ public class NamedGroupsProbe extends TlsProbe {
 
         TestResult groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(overallSupported);
 
-        return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
+       /* return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
             groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
 
-    }
+*/    }
 
     private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,
         boolean useCurves) {

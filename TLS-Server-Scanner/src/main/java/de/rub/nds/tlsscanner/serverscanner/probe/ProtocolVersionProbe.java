@@ -64,7 +64,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
@@ -91,7 +91,7 @@ public class ProtocolVersionProbe extends TlsProbe {
                 unsupportedVersionList.add(ProtocolVersion.TLS13);
             }
         }
-        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
+        //return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {

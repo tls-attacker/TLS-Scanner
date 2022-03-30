@@ -36,7 +36,7 @@ public class CcaRequiredProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(getScannerConfig().getCcaDelegate());
         Config tlsConfig = generateConfig();
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
@@ -44,9 +44,9 @@ public class CcaRequiredProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return new CcaRequiredResult(TestResults.FALSE);
+            return;// new CcaRequiredResult(TestResults.FALSE);
         } else {
-            return new CcaRequiredResult(TestResults.TRUE);
+           // return new CcaRequiredResult(TestResults.TRUE);
         }
     }
 

@@ -54,15 +54,18 @@ public class DtlsBugsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         try {
-            return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isAcceptingUnencryptedAppData(),
-                isEarlyFinished());
+        	isAcceptingUnencryptedFinished();
+        	isAcceptingUnencryptedAppData();
+            isEarlyFinished();
+            return;/* new DtlsBugsResult(isAcceptingUnencryptedFinished(), isAcceptingUnencryptedAppData(),
+                isEarlyFinished());*/
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsBugsResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
+            /*return new DtlsBugsResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
                 TestResults.ERROR_DURING_TEST);
-        }
+        */}
     }
 
     private TestResult isAcceptingUnencryptedFinished() {

@@ -115,7 +115,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         extensionIntolerance = hasExtensionIntolerance();
         cipherSuiteIntolerance = hasCipherSuiteIntolerance();
         cipherSuiteLengthIntolerance512 = hasCipherSuiteLengthIntolerance512();
@@ -134,13 +134,13 @@ public class CommonBugProbe extends TlsProbe {
         greaseNamedGroupIntolerance = hasGreaseNamedGroupIntolerance();
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
         greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
-        return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
+       /* return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
             compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
             emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
             namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
             ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
             greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
-
+*/
     }
 
     private Config getWorkingConfig() {

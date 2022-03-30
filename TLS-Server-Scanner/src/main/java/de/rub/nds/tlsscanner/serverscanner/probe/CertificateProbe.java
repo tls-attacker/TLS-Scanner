@@ -65,7 +65,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         ecdsaPkGroupsStatic = new LinkedList<>();
         ecdsaPkGroupsEphemeral = new LinkedList<>();
         ecdsaPkGroupsTls13 = new LinkedList<>();
@@ -91,11 +91,12 @@ public class CertificateProbe extends TlsProbe {
         }
 
         if (certificates.isEmpty()) {
-            return getCouldNotExecuteResult();
+            getCouldNotExecuteResult();
+            return;
         } else {
-            return new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
+            return;/* new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
                 ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
-        }
+     */   }
     }
 
     @Override

@@ -52,8 +52,10 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
-        return new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
+    public void executeTest() {
+    	supportsFragmentation();
+    	supportsReordering();
+        return;// new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
     }
 
     private TestResult supportsFragmentation() {

@@ -59,18 +59,18 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
         } else {
             supportsDtlsCookieExchangeInRenegotiation = TestResults.NOT_TESTED_YET;
         }
-        return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
+       /* return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
             supportsSecureClientRenegotiationCipherSuite(), supportsInsecureClientRenegotiation(),
             vulnerableToRenegotiationAttackExtension(false, true),
             vulnerableToRenegotiationAttackExtension(true, false),
             vulnerableToRenegotiationAttackCipherSuite(false, true),
-            vulnerableToRenegotiationAttackCipherSuite(true, false), supportsDtlsCookieExchangeInRenegotiation);
+            vulnerableToRenegotiationAttackCipherSuite(true, false), supportsDtlsCookieExchangeInRenegotiation);*/
     }
 
     private TestResult vulnerableToRenegotiationAttackExtension(boolean addExtensionInFirstHandshake,

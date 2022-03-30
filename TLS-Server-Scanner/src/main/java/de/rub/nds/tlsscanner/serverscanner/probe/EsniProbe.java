@@ -43,7 +43,7 @@ public class EsniProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
@@ -82,11 +82,12 @@ public class EsniProbe extends TlsProbe {
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(TestResults.ERROR_DURING_TEST);
+           // return new SniResult(TestResults.ERROR_DURING_TEST);
+        	return;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            return (new EsniResult(TestResults.TRUE));
+            return; //return (new EsniResult(TestResults.TRUE));
         } else {
-            return (new EsniResult(TestResults.FALSE));
+            //return (new EsniResult(TestResults.FALSE));
         }
     }
 

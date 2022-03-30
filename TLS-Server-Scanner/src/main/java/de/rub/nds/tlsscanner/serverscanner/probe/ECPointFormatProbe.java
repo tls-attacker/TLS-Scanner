@@ -47,7 +47,7 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<ECPointFormat> pointFormats = null;
         if (shouldTestPointFormats) {
             pointFormats = getSupportedPointFormats();
@@ -59,11 +59,11 @@ public class ECPointFormatProbe extends TlsProbe {
             tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
         }
         if (pointFormats != null) {
-            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
+            return; //return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
 
         } else {
             LOGGER.debug("Unable to determine supported point formats");
-            return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
+            //return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
         }
     }
 

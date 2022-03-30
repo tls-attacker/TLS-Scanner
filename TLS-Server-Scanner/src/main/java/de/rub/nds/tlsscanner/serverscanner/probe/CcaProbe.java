@@ -57,7 +57,7 @@ public class CcaProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = getScannerConfig().getCcaDelegate();
@@ -73,7 +73,7 @@ public class CcaProbe extends TlsProbe {
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return new CcaResult(TestResults.COULD_NOT_TEST, null);
+            return;// new CcaResult(TestResults.COULD_NOT_TEST, null);
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -133,7 +133,7 @@ public class CcaProbe extends TlsProbe {
                     ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-        return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
+        //return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
     }
 
     @Override

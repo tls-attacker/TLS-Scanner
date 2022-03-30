@@ -82,13 +82,14 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = initTlsConfig();
         List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
 
         if (serverCertChains == null) {
             LOGGER.warn("Couldn't fetch certificate chains from server!");
-            return getCouldNotExecuteResult();
+            //return getCouldNotExecuteResult();
+            return;
         }
 
         for (CertificateChain serverCertChain : serverCertChains) {
@@ -104,7 +105,7 @@ public class OcspProbe extends TlsProbe {
         if (!tls13NamedGroups.isEmpty()) {
             tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
         }
-        return new OcspResult(ocspCertResults, tls13CertStatus);
+        //return new OcspResult(ocspCertResults, tls13CertStatus);
     }
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {

@@ -77,22 +77,22 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         this.respectsPskModes = TestResults.TRUE;
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
             supportsDtlsCookieExchangeInTicketResumption = getSupportsDtlsCookieExchangeInSessionTicketResumption();
-            return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
+            /*return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
                 TestResults.NOT_TESTED_YET, TestResults.NOT_TESTED_YET, TestResults.NOT_TESTED_YET,
                 TestResults.NOT_TESTED_YET, supportsDtlsCookieExchangeInResumption,
-                supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
+                supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);*/
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInTicketResumption = TestResults.NOT_TESTED_YET;
-            return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
+            /*return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
                 getIssuesSessionTicket(), getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
                 getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE), getSupports0rtt(),
-                supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
+                supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);*/
         }
     }
 

@@ -44,16 +44,16 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
 
-        return new NamedGroupOrderResult(
+       /* return new NamedGroupOrderResult(
             firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
                 : TestResults.FALSE);
-    }
+    */}
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();

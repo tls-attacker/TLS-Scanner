@@ -35,7 +35,7 @@ public class CipherSuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
@@ -43,9 +43,9 @@ public class CipherSuiteOrderProbe extends TlsProbe {
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        return new CipherSuiteOrderResult(
+        return;/* new CipherSuiteOrderResult(
             firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResults.TRUE : TestResults.FALSE);
-    }
+  */  }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();

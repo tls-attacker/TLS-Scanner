@@ -31,15 +31,15 @@ public class CcaSupportProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = generateConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return new CcaSupportResult(TestResults.TRUE);
+            return;// new CcaSupportResult(TestResults.TRUE);
         } else {
-            return new CcaSupportResult(TestResults.FALSE);
+           // return new CcaSupportResult(TestResults.FALSE);
         }
     }
 

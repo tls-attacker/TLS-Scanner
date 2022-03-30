@@ -41,7 +41,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
@@ -60,7 +60,7 @@ public class HeartbleedProbe extends TlsProbe {
         }
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
-        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE);
+       // return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE);
     }
 
     @Override

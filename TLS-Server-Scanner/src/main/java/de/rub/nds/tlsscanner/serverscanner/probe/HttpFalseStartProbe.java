@@ -49,7 +49,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = getConfig();
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
@@ -72,7 +72,8 @@ public class HttpFalseStartProbe extends HttpsProbe {
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-                    return new HttpFalseStartResult(TestResults.TRUE);
+                   // return new HttpFalseStartResult(TestResults.TRUE);
+                	return;
                 } else if (message instanceof FinishedMessage) {
                     receivedServerFinishedMessage = true;
                 }
@@ -81,11 +82,12 @@ public class HttpFalseStartProbe extends HttpsProbe {
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
             // handshake
-            return new HttpFalseStartResult(TestResults.FALSE);
+          //  return new HttpFalseStartResult(TestResults.FALSE);
+        	return;
         }
         // received no http response -> maybe server did not understand
         // request
-        return new HttpFalseStartResult(TestResults.UNCERTAIN);
+       // return new HttpFalseStartResult(TestResults.UNCERTAIN);
     }
 
     private Config getConfig() {

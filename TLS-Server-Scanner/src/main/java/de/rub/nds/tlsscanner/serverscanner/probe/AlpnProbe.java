@@ -37,9 +37,9 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
-        return new AlpnResult(supportedAlpnProtocols);
+        return;// new AlpnResult(supportedAlpnProtocols);
 
     }
 

@@ -87,7 +87,7 @@ public class CipherSuiteProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<VersionSuiteListPair> pairLists = new LinkedList<>();
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
@@ -113,7 +113,7 @@ public class CipherSuiteProbe extends TlsProbe {
                 }
             }
         }
-        return new CipherSuiteResult(pairLists);
+        return;// new CipherSuiteResult(pairLists);
     }
 
     private List<CipherSuite> getSupportedCipherSuites() {

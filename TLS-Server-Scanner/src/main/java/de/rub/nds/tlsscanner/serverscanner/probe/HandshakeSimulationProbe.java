@@ -68,7 +68,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         List<State> clientStateList = new LinkedList<>();
         List<SimulatedClientResult> resultList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {
@@ -80,7 +80,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             // evaluateClientConfig(result);
             // evaluateReceivedMessages(result);
         }
-        return new HandshakeSimulationResult(resultList);
+        //return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {

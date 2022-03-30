@@ -52,7 +52,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         this.respectsExtension = TestResults.TRUE;
@@ -63,8 +63,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
-        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13),
-            respectsExtension);
+        /*return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13),
+            respectsExtension);*/
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {

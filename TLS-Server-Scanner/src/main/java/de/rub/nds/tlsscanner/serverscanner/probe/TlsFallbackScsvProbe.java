@@ -45,7 +45,7 @@ public class TlsFallbackScsvProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new ArrayList<>(CipherSuite.getImplemented());
         cipherSuites.add(CipherSuite.TLS_FALLBACK_SCSV);
@@ -68,11 +68,11 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            return new TlsFallbackScsvResult(TestResults.TRUE);
+            //return new TlsFallbackScsvResult(TestResults.TRUE);
         } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug("{}", state.getWorkflowTrace());
-            return new TlsFallbackScsvResult(TestResults.FALSE);
+            //return new TlsFallbackScsvResult(TestResults.FALSE);
         }
     }
 

@@ -61,17 +61,24 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         try {
-            return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
+        	hasHvrRetransmissions(); 
+        	checksCookie(); 
+            usesVersionInCookie();
+            usesRandomInCookie();
+            usesSessionIdInCookie();
+            usesCiphersuitesInCookie();
+            usesCompressionsInCookie();
+            return;/* new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
                 usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(), usesCiphersuitesInCookie(),
                 usesCompressionsInCookie());
-        } catch (Exception E) {
+        */} catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsHelloVerifyRequestResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, -1,
+           /* return new DtlsHelloVerifyRequestResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, -1,
                 TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
                 TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST);
-        }
+      */  }
     }
 
     private TestResult hasHvrRetransmissions() {
