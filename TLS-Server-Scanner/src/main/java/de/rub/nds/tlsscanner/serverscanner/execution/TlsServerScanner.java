@@ -153,19 +153,6 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
         // Init StatsWriter
 
-        for (ScannerProbe probe : probeList) {
-            StatsWriter statsWriter = new StatsWriter();
-            statsWriter.addExtractor(new CookieExtractor());
-            statsWriter.addExtractor(new RandomExtractor());
-            statsWriter.addExtractor(new DhPublicKeyExtractor());
-            statsWriter.addExtractor(new EcPublicKeyExtractor());
-            statsWriter.addExtractor(new CbcIvExtractor());
-            statsWriter.addExtractor(new SessionIdExtractor());
-            statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
-            statsWriter.addExtractor(new DestinationPortExtractor());
-            probe.setWriter(statsWriter);
-        }
-
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
@@ -198,6 +185,19 @@ public final class TlsServerScanner extends TlsScanner {
             addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
             addProbeToProbeList(new DrownProbe(config, parallelExecutor));
             afterList.add(new PoodleAfterProbe());
+        }
+
+        for (ScannerProbe probe : probeList) {
+            StatsWriter statsWriter = new StatsWriter();
+            statsWriter.addExtractor(new CookieExtractor());
+            statsWriter.addExtractor(new RandomExtractor());
+            statsWriter.addExtractor(new DhPublicKeyExtractor());
+            statsWriter.addExtractor(new EcPublicKeyExtractor());
+            statsWriter.addExtractor(new CbcIvExtractor());
+            statsWriter.addExtractor(new SessionIdExtractor());
+            statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
+            statsWriter.addExtractor(new DestinationPortExtractor());
+            probe.setWriter(statsWriter);
         }
 
     }
