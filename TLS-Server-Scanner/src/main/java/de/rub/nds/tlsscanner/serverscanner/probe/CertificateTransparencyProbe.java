@@ -57,6 +57,12 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private boolean supportsHandshakeSCTs;
     private boolean supportsOcspSCTs;
     private boolean meetsChromeCTPolicy = false;
+    
+    private TestResult supportsPrecertificateSCTsResult;
+    private TestResult supportsHandshakeSCTsResult;
+    private TestResult supportsOcspSCTsResult;
+    private TestResult meetsChromeCTPolicyResult;
+    
     private SignedCertificateTimestampList precertificateSctList;
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
@@ -83,13 +89,11 @@ public class CertificateTransparencyProbe extends TlsProbe {
         getTlsHandshakeSCTs(tlsConfig);
         evaluateChromeCtPolicy();
 
-        TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
-        /*return; new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
-            supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
-   */ }
+        supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
+        supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
+        meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
+    }
 
     private Config initTlsConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
@@ -250,4 +254,17 @@ public class CertificateTransparencyProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		report.setPrecertificateSctList(this.precertificateSctList);
+        report.setHandshakeSctList(this.handshakeSctList);
+        report.setOcspSctList(this.ocspSctList);
+
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, this.supportsPrecertificateSCTsResult);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, this.supportsHandshakeSCTsResult);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_OCSP, this.supportsOcspSCTsResult);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, this.meetsChromeCTPolicyResult);
+		
+	}
 }
