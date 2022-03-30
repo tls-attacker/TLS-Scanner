@@ -187,6 +187,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 	@Override
 	protected void mergeData(SiteReport report) {
 		report.setDirectRaccoonResultList(this.testResultList);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
+		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
 	}
 }

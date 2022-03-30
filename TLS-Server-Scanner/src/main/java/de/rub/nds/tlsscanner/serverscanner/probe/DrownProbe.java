@@ -28,6 +28,9 @@ import java.util.Objects;
 
 public class DrownProbe extends TlsProbe {
 
+    private TestResult generalDrown;
+    private TestResult extraClear;
+    
     public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DROWN, scannerConfig);
         super.properties.add(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
@@ -36,9 +39,8 @@ public class DrownProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-    	testForGeneralDrown();
-    	testForExtraClearDrown();
-        //return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
+    	this.generalDrown = testForGeneralDrown();
+    	this.extraClear = testForExtraClearDrown();
     }
 
     private TestResult testForGeneralDrown() {
@@ -96,4 +98,10 @@ public class DrownProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new DrownResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, this.extraClear);
+		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, this.generalDrown);		
+	}
 }
