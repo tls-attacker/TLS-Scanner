@@ -163,7 +163,7 @@ public abstract class TlsProbe implements Runnable {
     }
     
     // can be overwritten if some data must be set manually
-    //protected abstract void mergeData(SiteReport report);
+    protected abstract void mergeData(SiteReport report);
     
     protected void merge(SiteReport report) {
     	// catch case that no properties are set
@@ -184,7 +184,7 @@ public abstract class TlsProbe implements Runnable {
         }
     	for (AnalyzedProperty aProp : this.properties) // TODO wäre es ok, aprops zu setzen, auch wenn nicht alle props gesetzt wurden vorher?
         	report.putResult(aProp, this.propertiesMap.get(aProp)); 
-   		//this.mergeData(report);
+   		this.mergeData(report);
     	report.markAsChangedAndNotify(); // was macht die???
     }
 }
