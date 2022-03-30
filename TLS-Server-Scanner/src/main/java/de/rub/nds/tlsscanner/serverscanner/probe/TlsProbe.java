@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
-public abstract class TlsProbe implements Callable<ProbeResult> {
+public abstract class TlsProbe implements Runnable {
 
     protected static final Logger LOGGER = LogManager.getLogger(TlsProbe.class.getName());
 
@@ -70,7 +70,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     @Override
-    public ProbeResult call() {
+    public void run() {
         ThreadContext.put("host",
             this.scannerConfig.getClientDelegate().getSniHostname() == null
                 ? this.scannerConfig.getClientDelegate().getHost()
@@ -100,7 +100,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
             LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
             ThreadContext.remove("host");
         }
-        return result;
+        return;
     }
 
     public final void executeState(State... states) {
@@ -119,8 +119,9 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public abstract ProbeResult executeTest();
 
     public void executeAndMerge(SiteReport report) {
-        ProbeResult result = this.call();
-        result.merge(report);
+        //ProbeResult result = this.call();
+        this.run();
+    	merge(report);
     }
 
     /**
