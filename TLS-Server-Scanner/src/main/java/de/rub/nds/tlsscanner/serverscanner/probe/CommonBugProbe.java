@@ -134,13 +134,6 @@ public class CommonBugProbe extends TlsProbe {
         greaseNamedGroupIntolerance = hasGreaseNamedGroupIntolerance();
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
         greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
-       /* return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
-            compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
-            emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
-            namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
-            ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
-            greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
-*/
     }
 
     private Config getWorkingConfig() {
@@ -646,4 +639,29 @@ public class CommonBugProbe extends TlsProbe {
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, this.cipherSuiteLengthIntolerance512);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, this.clientHelloLengthIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, this.emptyLastExtensionIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, this.onlySecondCipherSuiteByteEvaluated);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+        		this.namedSignatureAndHashAlgorithmIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, this.ignoresCipherSuiteOffering);
+        super.setPropertyReportValue(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, this.reflectsCipherSuiteOffering);
+        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
+        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, this.ignoresOfferedSignatureAndHashAlgorithms);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, this.maxLengthClientHelloIntolerant);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, this.greaseNamedGroupIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, this.greaseCipherSuiteIntolerance);
+        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+        		this.greaseSignatureAndHashAlgorithmIntolerance);		
+	}
 }
