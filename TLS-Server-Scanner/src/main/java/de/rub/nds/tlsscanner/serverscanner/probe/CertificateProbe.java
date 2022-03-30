@@ -55,6 +55,8 @@ public class CertificateProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
+    private Set<CertificateChain> certificates;
+
     public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CERTIFICATE, config);
         super.properties.add(AnalyzedProperty.SUPPORTS_RSA_CERT);
@@ -73,7 +75,7 @@ public class CertificateProbe extends TlsProbe {
         ecdsaCertSigGroupsEphemeral = new LinkedList<>();
         ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
-        Set<CertificateChain> certificates = new HashSet<>();
+        certificates = new HashSet<>();
         if (scanForRsaCert) {
             certificates.addAll(getRsaCerts());
         }
@@ -89,14 +91,8 @@ public class CertificateProbe extends TlsProbe {
         if (scanForTls13) {
             certificates.addAll(getTls13Certs());
         }
-
-        if (certificates.isEmpty()) {
+        if (certificates.isEmpty()) 
             getCouldNotExecuteResult();
-            return;
-        } else {
-            return;/* new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
-                ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
-     */   }
     }
 
     @Override
@@ -460,4 +456,12 @@ public class CertificateProbe extends TlsProbe {
 
         return algorithms;
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		if (this.certificates != null) 
+            report.setCertificateChainList(new LinkedList<>(this.certificates));
+        report.setEcdsaPkGroupsStatic(this.ecdsaPkGroupsStatic);
+        report.setEcdsaPkGroupsEphemeral(this.ecdsaPkGroupsEphemeral);		
+	}
 }
