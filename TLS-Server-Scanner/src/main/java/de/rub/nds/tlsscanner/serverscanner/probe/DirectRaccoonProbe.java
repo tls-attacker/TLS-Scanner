@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -48,6 +49,9 @@ public class DirectRaccoonProbe extends TlsProbe {
     private final int additionalIterationsPerHandshake = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList;
+    
+    private TestResult vulnerable;
 
     public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
@@ -56,7 +60,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
+        testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -70,7 +74,6 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
         }
-        return;// new DirectRaccoonResult(testResultList);
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
@@ -180,4 +183,10 @@ public class DirectRaccoonProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new DirectRaccoonResult(TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		report.setDirectRaccoonResultList(this.testResultList);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
+	}
 }
