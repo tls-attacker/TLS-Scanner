@@ -34,6 +34,8 @@ import java.util.List;
 public class AlpacaProbe extends TlsProbe {
 
     private boolean alpnSupported;
+    private TestResult strictSni;
+    private TestResult strictAlpn;
 
     public AlpacaProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
@@ -44,14 +46,13 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        TestResult strictSni = isSupportingStrictSni();
-        TestResult strictAlpn;
+        strictSni = isSupportingStrictSni();
         if (!alpnSupported) {
             strictAlpn = TestResults.FALSE;
         } else {
             strictAlpn = isSupportingStrictAlpn();
         }
-        return;// new AlpacaResult(strictAlpn, strictSni);
+        return;
     }
 
     private Config getBaseConfig() {
@@ -123,4 +124,25 @@ public class AlpacaProbe extends TlsProbe {
         alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+		if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
+	            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
+	            TestResult alpacaMitigated;
+	            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE)
+	                alpacaMitigated = TestResults.TRUE;
+	            else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) 
+	                alpacaMitigated = TestResults.PARTIALLY;
+	            else 
+	                alpacaMitigated = TestResults.FALSE;
+	    
+	            super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, strictSni);
+	            super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+	            super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
+	        } else {
+	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, strictSni);
+	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+	        	super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+	        }		
+	}
 }
