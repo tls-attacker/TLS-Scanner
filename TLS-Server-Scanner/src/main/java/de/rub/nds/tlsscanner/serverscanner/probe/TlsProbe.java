@@ -76,11 +76,10 @@ public abstract class TlsProbe implements Runnable {
                 ? this.scannerConfig.getClientDelegate().getHost()
                 : this.scannerConfig.getClientDelegate().getSniHostname());
         LOGGER.debug("Executing:" + getProbeName());
-        long startTime = System.currentTimeMillis();
+        this.startTime = System.currentTimeMillis();
 
-        ProbeResult result = null;
         try {
-            result = executeTest();
+            executeTest();
         } catch (Exception e) {
             // InterruptedException are wrapped in the ParallelExceutor of Tls-Attacker so we unwrap them here
             if (e.getCause() instanceof InterruptedException) {
@@ -88,16 +87,12 @@ public abstract class TlsProbe implements Runnable {
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            result = getCouldNotExecuteResult();
+            getCouldNotExecuteResult();
         } finally {
-            long stopTime = System.currentTimeMillis();
-            if (result != null) {
-                result.setStartTime(startTime);
-                result.setStopTime(stopTime);
-            } else {
-                LOGGER.warn("" + getProbeName() + " - is null result");
-            }
-            LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+            this.stopTime = System.currentTimeMillis();
+           // } else {
+             //   LOGGER.warn("" + getProbeName() + " - is null result");
+            LOGGER.debug("Finished " + getProbeName() + " -  Took " + (this.stopTime - this.startTime) / 1000 + "s");
             ThreadContext.remove("host");
         }
         return;
@@ -116,7 +111,7 @@ public abstract class TlsProbe implements Runnable {
 
     }
 
-    public abstract ProbeResult executeTest();
+    public abstract void executeTest();
 
     public void executeAndMerge(SiteReport report) {
         //ProbeResult result = this.call();
