@@ -9,13 +9,27 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.EarlyCCSCommandConfig;
-import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.attacks.impl.EarlyCCSAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.attacks.actions.EarlyCcsAction;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeMasterSecretAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EarlyCcsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -29,19 +43,47 @@ public class EarlyCcsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        EarlyCCSCommandConfig earlyCcsCommandConfig =
-            new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate =
-            (StarttlsDelegate) earlyCcsCommandConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
-        EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
-        return new EarlyCcsResult(earlyCcsVulnerabilityType);
+        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResult.TRUE) {
+            return new EarlyCcsResult(EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE);
+        }
+        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResult.TRUE) {
+            return new EarlyCcsResult(EarlyCcsVulnerabilityType.VULN_EXPLOITABLE);
+        }
+        return new EarlyCcsResult(EarlyCcsVulnerabilityType.NOT_VULNERABLE);
+    }
+    
+    private TestResult checkTargetVersion(TargetVersion targetVersion) {
+        Config tlsConfig = getConfigSelector().getBaseConfig();
+        tlsConfig.setFiltersKeepUserSettings(false);
+
+        State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
+            CONSOLE.info("Not vulnerable (definitely), Alert message found");
+            return TestResult.FALSE;
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            CONSOLE.warn("Vulnerable (definitely), Finished message found");
+            return TestResult.TRUE;
+        } else {
+            CONSOLE.info("Not vulnerable (probably), No Finished message found, yet also no alert");
+            return TestResult.FALSE;
+        }
     }
 
+    private WorkflowTrace getTrace(Config tlsConfig, TargetVersion targetVersion) {
+        WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        workflowTrace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
+        workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
+        workflowTrace.addTlsAction(new ActivateEncryptionAction());
+        workflowTrace.addTlsAction(new EarlyCcsAction(targetVersion == TargetVersion.OPENSSL_1_0_0));
+        if (targetVersion != TargetVersion.OPENSSL_1_0_0) {
+            workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
+        }
+        workflowTrace.addTlsAction(new SendAction(new FinishedMessage(tlsConfig)));
+        workflowTrace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        return workflowTrace;
+    }
+    
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return true;
@@ -54,5 +96,10 @@ public class EarlyCcsProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
+    }
+    
+    private enum TargetVersion {
+        OPENSSL_1_0_0,
+        OPENSSL_1_0_1
     }
 }

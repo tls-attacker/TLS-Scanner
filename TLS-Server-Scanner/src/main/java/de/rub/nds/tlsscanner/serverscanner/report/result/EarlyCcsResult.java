@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
-import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 public class EarlyCcsResult extends ProbeResult {
