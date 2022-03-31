@@ -42,6 +42,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulationRequest> simulationRequestList;
+    private List<SimulatedClientResult> simulatedClientList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
@@ -70,17 +71,16 @@ public class HandshakeSimulationProbe extends TlsProbe {
     @Override
     public void executeTest() {
         List<State> clientStateList = new LinkedList<>();
-        List<SimulatedClientResult> resultList = new LinkedList<>();
+        simulatedClientList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {
             State state = request.getExecutableState(scannerConfig);
             clientStateList.add(state);
         }
         executeState(clientStateList);
-        for (SimulatedClientResult result : resultList) {
+        for (SimulatedClientResult result : simulatedClientList) {
             // evaluateClientConfig(result);
             // evaluateReceivedMessages(result);
         }
-        //return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {
@@ -223,4 +223,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new HandshakeSimulationResult(null);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.setSimulatedClientList(this.simulatedClientList);		
+	}
 }

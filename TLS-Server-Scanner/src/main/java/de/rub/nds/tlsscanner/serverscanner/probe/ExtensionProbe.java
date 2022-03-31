@@ -165,7 +165,6 @@ public class ExtensionProbe extends TlsProbe {
             report.setSupportedExtensions(this.allSupportedExtensions);
         else
             report.getSupportedExtensions().addAll(this.allSupportedExtensions);
-        
         if (this.allSupportedExtensions != null) {
             for (ExtensionType type : this.allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC) 
