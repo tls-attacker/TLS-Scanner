@@ -38,6 +38,13 @@ public class ECPointFormatProbe extends TlsProbe {
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
 
+    private TestResult supportsUncompressedPoint = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
+
+    private List<ECPointFormat> supportedFormats;
+    private TestResult tls13SecpCompression;
+
     public ECPointFormatProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig);
         super.properties.add(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
@@ -48,23 +55,16 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        List<ECPointFormat> pointFormats = null;
-        if (shouldTestPointFormats) {
-            pointFormats = getSupportedPointFormats();
-        }
-        TestResult tls13SecpCompressionSupported;
-        if (shouldTestTls13) {
-            tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
-        } else {
-            tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
-        }
-        if (pointFormats != null) {
-            return; //return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
-
-        } else {
-            LOGGER.debug("Unable to determine supported point formats");
-            //return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
-        }
+        if (this.shouldTestPointFormats) 
+        	this.supportedFormats = getSupportedPointFormats();
+        if (this.shouldTestTls13) 
+        	this.tls13SecpCompression = getTls13SecpCompressionSupported();
+        else 
+        	this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
+        if (this.supportedFormats != null)
+            return;
+        else
+        	LOGGER.debug("Unable to determine supported point formats"); 
     }
 
     private List<ECPointFormat> getSupportedPointFormats() {
@@ -214,4 +214,35 @@ public class ECPointFormatProbe extends TlsProbe {
         return sectGroups;
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+		if (this.supportedFormats != null) {
+            for (ECPointFormat format : this.supportedFormats) {
+                switch (format) {
+                    case UNCOMPRESSED:
+                        this.supportsUncompressedPoint = TestResults.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_PRIME:
+                        this.supportsANSIX962CompressedPrime = TestResults.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_CHAR2:
+                        this.supportsANSIX962CompressedChar2 = TestResults.TRUE;
+                        break;
+                    default: // will never occur as all enum types are caught
+                        ;
+                }
+            }
+        } else {
+            this.supportsUncompressedPoint = TestResults.COULD_NOT_TEST;
+            this.supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
+            this.supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
+        }
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, this.supportsUncompressedPoint);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, this.supportsANSIX962CompressedPrime);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, this.supportsANSIX962CompressedChar2);
+        if (tls13SecpCompression != null) 
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, this.tls13SecpCompression);
+        else 
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);        		
+	}
 }
