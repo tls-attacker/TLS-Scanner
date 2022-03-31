@@ -26,6 +26,7 @@ public class EarlyCcsProbe extends TlsProbe {
     public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig);
     }
+    private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
     @Override
     public void executeTest() {
@@ -38,8 +39,7 @@ public class EarlyCcsProbe extends TlsProbe {
             (StarttlsDelegate) earlyCcsCommandConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
-        EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
-       // return new EarlyCcsResult(earlyCcsVulnerabilityType);
+        this.earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
     }
 
     @Override
@@ -50,4 +50,9 @@ public class EarlyCcsProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.putResult(this.earlyCcsVulnerabilityType);		
+	}
 }
