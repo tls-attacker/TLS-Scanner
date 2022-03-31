@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -26,6 +27,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
 public class TlsPoodleProbe extends TlsProbe {
+
+    private TestResult vulnerable;
 
     public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.TLS_POODLE, config);
@@ -47,8 +50,7 @@ public class TlsPoodleProbe extends TlsProbe {
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        //return new TlsPoodleResult(vulnerable == true ? TestResults.TRUE : TestResults.FALSE);
+        this.vulnerable = attacker.isVulnerable() == true ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -64,4 +66,9 @@ public class TlsPoodleProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new TlsPoodleResult(TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE, this.vulnerable);		
+	}
 }

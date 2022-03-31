@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -38,6 +39,7 @@ import java.util.List;
 public class TlsFallbackScsvProbe extends TlsProbe {
 
     private ProtocolVersion secondHighestVersion;
+    private TestResult result;
 
     public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
         super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, scannerConfig);
@@ -68,11 +70,11 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            //return new TlsFallbackScsvResult(TestResults.TRUE);
+            this.result = TestResults.TRUE;
         } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug("{}", state.getWorkflowTrace());
-            //return new TlsFallbackScsvResult(TestResults.FALSE);
+            this.result = TestResults.FALSE;
         }
     }
 
@@ -103,4 +105,9 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         Collections.sort(versions);
         this.secondHighestVersion = versions.get(versions.size() - 2);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, this.result);		
+	}
 }
