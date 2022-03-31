@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -46,20 +45,10 @@ public class CipherSuiteOrderProbe extends TlsProbe {
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setEnforceSettings(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
+        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         return state.getTlsContext().getSelectedCipherSuite();

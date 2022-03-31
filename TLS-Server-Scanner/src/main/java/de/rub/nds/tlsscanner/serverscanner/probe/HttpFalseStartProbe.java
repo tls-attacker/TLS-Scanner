@@ -10,9 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -28,7 +25,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -36,9 +32,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class HttpFalseStartProbe extends HttpsProbe {
 
@@ -48,7 +41,8 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = getConfig();
+        Config tlsConfig = getConfigSelector().getBaseConfig();
+        tlsConfig.setHttpsParsingEnabled(true);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
@@ -84,33 +78,6 @@ public class HttpFalseStartProbe extends HttpsProbe {
         // received no http response -> maybe server did not understand
         // request
         return new HttpFalseStartResult(TestResult.UNCERTAIN);
-    }
-
-    private Config getConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(this.getCipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setHttpsParsingEnabled(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        return tlsConfig;
-    }
-
-    private List<CipherSuite> getCipherSuites() {
-        List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        return cipherSuites;
     }
 
     @Override

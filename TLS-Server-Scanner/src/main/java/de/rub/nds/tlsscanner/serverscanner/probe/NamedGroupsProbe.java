@@ -209,6 +209,7 @@ public class NamedGroupsProbe extends TlsProbe {
 
     private TlsContext testGroups(List<NamedGroup> groupList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(groupList);
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -244,11 +245,8 @@ public class NamedGroupsProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
-            || report.getCertificateChainList() == null || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return false;
-        }
-        return true;
+        return !(report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
+            || report.getCertificateChainList() == null || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION));
     }
 
     @Override
@@ -302,19 +300,10 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     private Config getBasicConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-
         return tlsConfig;
     }
 
@@ -376,27 +365,11 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        Config tlsConfig = getConfigSelector().getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms());
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

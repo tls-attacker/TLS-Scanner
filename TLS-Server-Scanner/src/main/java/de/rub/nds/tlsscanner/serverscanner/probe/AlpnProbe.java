@@ -11,10 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -25,7 +23,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,39 +40,17 @@ public class AlpnProbe extends TlsProbe {
     }
 
     private List<String> getSupportedAlpnProtocols() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
         tlsConfig.setAddAlpnExtension(true);
-        List<String> alpnProtocols = new LinkedList<>();
-        for (AlpnProtocol protocol : AlpnProtocol.values()) {
-            if (!protocol.isGrease()) {
-                alpnProtocols.add(protocol.getConstant());
-            }
-        }
-        tlsConfig.setDefaultProposedAlpnProtocols(alpnProtocols);
 
         String selectedAlpnProtocol;
         List<String> supportedAlpnProtocols = new LinkedList<>();
         List<String> toTestList = new LinkedList<>();
         for (AlpnProtocol protocol : AlpnProtocol.values()) {
-            toTestList.add(protocol.getConstant());
+            if (!protocol.isGrease()) {
+                toTestList.add(protocol.getConstant());
+            }
         }
         do {
             selectedAlpnProtocol = testAlpns(toTestList, tlsConfig);
@@ -87,7 +62,7 @@ public class AlpnProbe extends TlsProbe {
                 supportedAlpnProtocols.add(selectedAlpnProtocol);
                 toTestList.remove(selectedAlpnProtocol);
             }
-        } while (selectedAlpnProtocol != null || toTestList.size() > 0);
+        } while (selectedAlpnProtocol != null || !toTestList.isEmpty());
         return supportedAlpnProtocols;
     }
 
@@ -112,7 +87,7 @@ public class AlpnProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new AlpnResult(new LinkedList<>());
+        return new AlpnResult(null);
     }
 
     @Override

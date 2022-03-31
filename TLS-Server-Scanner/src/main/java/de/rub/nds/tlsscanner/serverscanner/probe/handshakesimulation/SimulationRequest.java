@@ -40,6 +40,12 @@ public class SimulationRequest {
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopTraceAfterUnexpected(true);
+        // TODO: discuss
+        config.setStopReceivingAfterWarning(true);
+        config.setStopActionsAfterWarning(true);
+
         WorkflowTrace trace = new WorkflowTrace();
 
         if (tlsClientConfig.getIsSSL2CompatibleClientHello()) {

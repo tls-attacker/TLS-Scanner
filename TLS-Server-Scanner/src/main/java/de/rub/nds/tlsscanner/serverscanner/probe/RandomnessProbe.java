@@ -13,10 +13,8 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -58,13 +56,9 @@ public class RandomnessProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
+        return report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)) {
-            return true;
-        } else {
-            return false;
-        }
+            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS);
     }
 
     @Override
@@ -75,12 +69,7 @@ public class RandomnessProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
         chooseBestCipherAndVersion(report);
-        if (report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM)) {
-            supportsExtendedRandom = true;
-        } else {
-            supportsExtendedRandom = false;
-        }
-
+        supportsExtendedRandom = report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(SiteReport report) {
@@ -108,67 +97,21 @@ public class RandomnessProbe extends TlsProbe {
         }
     }
 
-    private Config generateTls13BaseConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(bestCipherSuite);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-
-        List<SignatureAndHashAlgorithm> algos = SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms();
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(algos);
-
-        return tlsConfig;
-    }
-
-    private Config generateBaseConfig() {
-
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(bestVersion);
-        config.setDefaultClientSupportedCipherSuites(bestCipherSuite);
-        config.setAddServerNameIndicationExtension(false);
-        if (bestCipherSuite.name().contains("ECDH")) {
-            config.setAddEllipticCurveExtension(true);
-            config.setAddECPointFormatExtension(true);
-        }
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setAddRenegotiationInfoExtension(false);
-        config.setUseFreshRandom(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setDefaultClientSessionId(new byte[0]);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterWarning(true);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        return config;
-    }
-
     private void collectData(int numberOfHandshakes) {
         List<State> stateList = new LinkedList<>();
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config config;
             if (bestVersion.isTLS13()) {
-                config = generateTls13BaseConfig();
+                config = getConfigSelector().getTls13BaseConfig();
             } else {
-                config = generateBaseConfig();
+                config = getConfigSelector().getBaseConfig();
             }
+            config.setHighestProtocolVersion(bestVersion);
+            config.setDefaultClientSupportedCipherSuites(bestCipherSuite);
             if (supportsExtendedRandom) {
                 config.setAddExtendedRandomExtension(true);
             }
+            getConfigSelector().repairConfig(config);
             WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             if (getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {

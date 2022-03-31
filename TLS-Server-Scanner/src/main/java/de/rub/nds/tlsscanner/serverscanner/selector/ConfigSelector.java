@@ -11,6 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -29,7 +32,7 @@ public class ConfigSelector {
 
     private ScannerConfig scannerConfig;
 
-    public Config workingConfig;
+    private Config workingConfig;
 
     public final String PATH = "/configs/";
 
@@ -46,6 +49,7 @@ public class ConfigSelector {
             Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
             applyDelegates(config);
             applyPerformanceParamters(config);
+            repairConfig(config);
             if (works(config)) {
                 workingConfig = config.createCopy();
                 return true;
@@ -83,8 +87,34 @@ public class ConfigSelector {
         }
     }
 
+    public Config repairConfig(Config config) {
+        // TODO: is that enough? tls 1.3?
+        boolean containsEc = false;
+        for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
+            KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
+            if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
+                containsEc = true;
+                break;
+            }
+        }
+        config.setAddEllipticCurveExtension(containsEc);
+        if (config.getHighestProtocolVersion().isTLS13()) {
+            config.setAddECPointFormatExtension(false);
+        } else {
+            config.setAddECPointFormatExtension(containsEc);
+        }
+        return config;
+    }
+
     public Config getBaseConfig() {
         return workingConfig.createCopy();
+    }
+
+    public Config getSSL2BaseConfig() {
+        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + "ssl2Only.config"));
+        applyDelegates(config);
+        applyPerformanceParamters(config);
+        return config;
     }
 
     public Config getTls13BaseConfig() {

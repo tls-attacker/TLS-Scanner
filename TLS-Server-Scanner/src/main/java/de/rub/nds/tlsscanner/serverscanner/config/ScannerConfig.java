@@ -98,6 +98,7 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(dtlsDelegate);
         addDelegate(callbackDelegate);
 
+        // TODO: remove
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
         Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.INFO);
     }
@@ -193,6 +194,7 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.additionalRandomnessHandshakes = additionalRandomnessHandshakes;
     }
 
+    // TODO: remove or use in config selector
     @Override
     public Config createConfig() {
         if (baseConfig != null) {

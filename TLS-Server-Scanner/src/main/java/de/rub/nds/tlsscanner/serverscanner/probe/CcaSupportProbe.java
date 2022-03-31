@@ -30,8 +30,9 @@ public class CcaSupportProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = generateConfig();
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        tlsConfig.setAutoSelectCertificate(false);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
@@ -53,16 +54,5 @@ public class CcaSupportProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CcaSupportResult(TestResult.COULD_NOT_TEST);
-    }
-
-    private Config generateConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setAutoSelectCertificate(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        return config;
     }
 }

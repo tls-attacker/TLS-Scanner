@@ -14,8 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -94,22 +92,13 @@ public class ECPointFormatProbe extends TlsProbe {
             default: // will never occur as all enum types are caught
                 ;
         }
-        Config config = getScannerConfig().createConfig();
+        Config config = getConfigSelector().getBaseConfig();
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
-        config.setEnforceSettings(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-        config.setQuickReceive(true);
-        config.setDefaultSelectedPointFormat(format);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
+        config.setEnforceSettings(true);
+        getConfigSelector().repairConfig(config);
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -123,29 +112,11 @@ public class ECPointFormatProbe extends TlsProbe {
             // implementations
             // might still accept compression
             List<NamedGroup> secpGroups = getSecpGroups();
-            Config tlsConfig = getScannerConfig().createConfig();
-            tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-            tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-            tlsConfig.setEnforceSettings(false);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(true);
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+            Config tlsConfig = getConfigSelector().getTls13BaseConfig();
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
             tlsConfig.setDefaultClientKeyShareNamedGroups(secpGroups);
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-            tlsConfig.setAddSupportedVersionsExtension(true);
-            tlsConfig.setAddKeyShareExtension(true);
-            tlsConfig.setAddCertificateStatusRequestExtension(true);
-            tlsConfig.setUseFreshRandom(true);
-            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
-            tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
 
             executeState(state);

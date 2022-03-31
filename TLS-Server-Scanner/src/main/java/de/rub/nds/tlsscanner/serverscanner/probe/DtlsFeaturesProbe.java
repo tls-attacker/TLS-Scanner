@@ -10,11 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.DtlsHandshakeMessageFragment;
@@ -36,10 +33,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsFeaturesResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class DtlsFeaturesProbe extends TlsProbe {
 
@@ -63,7 +56,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     private TestResult supportsFragmentationDirectly() {
-        Config config = getConfig();
+        Config config = getConfigSelector().getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(100);
 
@@ -77,7 +70,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     private TestResult supportsFragmentationWithExtension() {
-        Config config = getConfig();
+        Config config = getConfigSelector().getBaseConfig();
         config.setAddMaxFragmentLengthExtension(Boolean.TRUE);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -98,7 +91,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     private TestResult supportsReordering() {
-        Config config = getConfig();
+        Config config = getConfigSelector().getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -115,29 +108,6 @@ public class DtlsFeaturesProbe extends TlsProbe {
         } else {
             return TestResult.FALSE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        return config;
     }
 
     @Override

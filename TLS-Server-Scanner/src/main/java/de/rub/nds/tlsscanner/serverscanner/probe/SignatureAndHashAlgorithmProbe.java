@@ -13,7 +13,6 @@ import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
@@ -67,9 +66,13 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         Set<SignatureAndHashAlgorithm> found = new HashSet<>();
         Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
 
-        Config tlsConfig = version.isTLS13() ? getTls13Config() : this.getBasicConfig();
+        Config tlsConfig =
+            version.isTLS13() ? getConfigSelector().getTls13BaseConfig() : getConfigSelector().getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setHighestProtocolVersion(version);
         tlsConfig.getDefaultClientSupportedCipherSuites().removeIf(predicate.negate());
+        getConfigSelector().repairConfig(tlsConfig);
 
         Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
         testQueue.add(version.isTLS13() ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
@@ -156,47 +159,6 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
-    }
-
-    private Config getBasicConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
-
-        return tlsConfig;
-    }
-
-    private Config getTls13Config() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
-        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.values());
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        return tlsConfig;
     }
 
     @Override

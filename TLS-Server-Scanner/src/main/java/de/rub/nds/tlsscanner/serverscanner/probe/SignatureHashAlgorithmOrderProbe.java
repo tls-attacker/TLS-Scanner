@@ -61,19 +61,10 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
-        Config config = getScannerConfig().createConfig();
-
+        Config config = getConfigSelector().getBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setEnforceSettings(true);
-        config.setQuickReceive(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
-
         State state = new State(config);
         executeState(state);
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();

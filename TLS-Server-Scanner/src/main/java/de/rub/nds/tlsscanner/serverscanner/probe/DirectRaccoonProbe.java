@@ -105,23 +105,10 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
-            Config config = getScannerConfig().createConfig();
-            config.setHighestProtocolVersion(version);
-            config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCipherSuites(suite);
-            config.setDefaultSelectedCipherSuite(suite);
-            config.setAddECPointFormatExtension(false);
-            config.setAddEllipticCurveExtension(false);
-            config.setAddRenegotiationInfoExtension(true);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-
+            Config config = getConfigSelector().getBaseConfig();
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
-            config.setStopActionsAfterIOException(true);
-            config.setEarlyStop(true);
-            config.setQuickReceive(true);
-
             WorkflowTrace trace =
                 DirectRaccoonWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
             // Store

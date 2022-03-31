@@ -54,19 +54,13 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setEarlyStop(true);
         List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
             .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setEnforceSettings(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setDefaultClientNamedGroups(toTestList);
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         return state.getTlsContext().getSelectedGroup();

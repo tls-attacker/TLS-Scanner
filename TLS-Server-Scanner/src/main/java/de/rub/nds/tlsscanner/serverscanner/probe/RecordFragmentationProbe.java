@@ -11,11 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -31,14 +29,11 @@ public class RecordFragmentationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config config = getScannerConfig().createConfig();
+        Config config = getConfigSelector().getBaseConfig();
         config.setDefaultMaxRecordData(50);
-
-        State state = new State(config, new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
-
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        State state = new State(config);
         executeState(state);
-
         return new RecordFragmentationResult(
             WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
     }
@@ -55,6 +50,5 @@ public class RecordFragmentationProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-
     }
 }

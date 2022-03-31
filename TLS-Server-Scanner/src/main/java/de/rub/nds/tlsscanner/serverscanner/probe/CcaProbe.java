@@ -95,13 +95,12 @@ public class CcaProbe extends TlsProbe {
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
-
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
                             ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-
+                        getConfigSelector().repairConfig(tlsConfig);
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
                             increasingTimeout, reexecutions, additionalTcpTimeout);
                         taskList.add(ccaTask);
@@ -152,17 +151,10 @@ public class CcaProbe extends TlsProbe {
     }
 
     private Config generateConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setAutoSelectCertificate(false);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+        Config config = getConfigSelector().getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setAutoSelectCertificate(false);
         config.setClientAuthentication(true);
-
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-
         return config;
     }
 

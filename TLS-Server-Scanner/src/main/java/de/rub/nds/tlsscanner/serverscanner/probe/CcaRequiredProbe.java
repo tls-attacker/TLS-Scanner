@@ -35,8 +35,9 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        Config tlsConfig = getConfigSelector().getBaseConfig();
+        tlsConfig.setAutoSelectCertificate(false);
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(getScannerConfig().getCcaDelegate());
-        Config tlsConfig = generateConfig();
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
             CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
@@ -50,7 +51,7 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE);
+        return report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
     }
 
     @Override
@@ -60,16 +61,5 @@ public class CcaRequiredProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
-    }
-
-    private Config generateConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setAutoSelectCertificate(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        return config;
     }
 }

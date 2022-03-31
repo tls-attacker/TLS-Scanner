@@ -121,13 +121,6 @@ public class CommonBugProbe extends TlsProbe {
 
     }
 
-    private Config getWorkingConfig() {
-        Config config = getConfigSelector().getBaseConfig();
-        config.setStopActionsAfterIOException(true);
-        config.setStopReceivingAfterFatal(true);
-        return config;
-    }
-
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return true;
@@ -158,19 +151,17 @@ public class CommonBugProbe extends TlsProbe {
         return trace;
     }
 
-    private TestResult hasExtensionIntolerance() {
+    private TestResult getResult(Config config, WorkflowTrace trace, boolean checkForTrue) {
         try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            UnknownExtensionMessage extension = new UnknownExtensionMessage();
-            extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
-            extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
-            message.getExtensions().add(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            if (checkForTrue) {
+                return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                    ? TestResult.TRUE : TestResult.FALSE;
+            } else {
+                return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                    ? TestResult.FALSE : TestResult.TRUE;
+            }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -180,445 +171,249 @@ public class CommonBugProbe extends TlsProbe {
             }
             return TestResult.ERROR_DURING_TEST;
         }
+    }
+
+    private TestResult hasExtensionIntolerance() {
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        UnknownExtensionMessage extension = new UnknownExtensionMessage();
+        extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
+        extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
+        message.getExtensions().add(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasBigClientHelloIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddPaddingExtension(true);
-            config.setDefaultPaddingExtensionBytes(new byte[14000]);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        config.setAddPaddingExtension(true);
+        config.setDefaultPaddingExtensionBytes(new byte[14000]);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasIgnoresSigHashAlgoOfferingBug() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddSignatureAndHashAlgorithmsExtension(false);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral()) {
-                    suiteList.add(suite);
-                }
+        Config config = getConfigSelector().getBaseConfig();
+        config.setAddSignatureAndHashAlgorithmsExtension(false);
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral()) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(true);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
-            message.addExtension(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
-                : TestResult.FALSE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        getConfigSelector().repairConfig(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasIgnoresNamedGroupsOfferingBug() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral() && suite.name().contains("EC")) {
-                    suiteList.add(suite);
-                }
+        Config config = getConfigSelector().getBaseConfig();
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral() && suite.name().contains("EC")) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(false);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
-            message.addExtension(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
-                LOGGER.debug("Received a SH for invalid NamedGroup, server selected: "
-                    + state.getTlsContext().getSelectedGroup().name());
-                return TestResult.TRUE;
-            }
-            return TestResult.FALSE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        config.setAddECPointFormatExtension(true);
+        config.setAddEllipticCurveExtension(false);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
+        extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private void adjustCipherSuiteSelectionBugs() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        State state = new State(config, trace);
+        executeState(state);
+        TestResult receivedShd = getResult(config, trace, true);
+        if (receivedShd == TestResult.TRUE) {
             ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
                 .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
-            if (receivedShd) {
-                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
-                    new byte[] { (byte) 0xEE, (byte) 0xCC })) {
-                    reflectsCipherSuiteOffering = TestResult.TRUE;
-                    ignoresCipherSuiteOffering = TestResult.FALSE;
-                } else {
-                    reflectsCipherSuiteOffering = TestResult.FALSE;
-                    ignoresCipherSuiteOffering = TestResult.TRUE;
-                }
+            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
+                new byte[] { (byte) 0xEE, (byte) 0xCC })) {
+                reflectsCipherSuiteOffering = TestResult.TRUE;
+                ignoresCipherSuiteOffering = TestResult.FALSE;
             } else {
                 reflectsCipherSuiteOffering = TestResult.FALSE;
-                ignoresCipherSuiteOffering = TestResult.FALSE;
+                ignoresCipherSuiteOffering = TestResult.TRUE;
             }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
+        } else if (receivedShd == TestResult.FALSE) {
+            reflectsCipherSuiteOffering = TestResult.FALSE;
+            ignoresCipherSuiteOffering = TestResult.FALSE;
+        } else if (receivedShd == TestResult.ERROR_DURING_TEST) {
             reflectsCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
             ignoresCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
         }
     }
 
     private TestResult hasSignatureAndHashAlgorithmIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddSignatureAndHashAlgorithmsExtension(false);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral()) {
-                    suiteList.add(suite);
-                }
+        Config config = getConfigSelector().getBaseConfig();
+        config.setAddSignatureAndHashAlgorithmsExtension(false);
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral()) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(true);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
-            message.addExtension(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        getConfigSelector().repairConfig(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasNamedGroupIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral() && suite.name().contains("EC")) {
-                    suiteList.add(suite);
-                }
+        Config config = getConfigSelector().getBaseConfig();
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral() && suite.name().contains("EC")) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(false);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            message.addExtension(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            if (receivedShd) {
-                trace.reset();
-                extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
-                state = new State(config, trace);
-                executeState(state);
-                receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-                return !receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
-            } else {
-                return TestResult.FALSE;
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        config.setAddECPointFormatExtension(true);
+        config.setAddEllipticCurveExtension(false);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
+        extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasOnlySecondCipherSuiteByteEvaluatedBug() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            for (CipherSuite suite : CipherSuite.values()) {
-                if (suite.getByteValue()[0] == 0x00) {
-                    try {
-                        stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
-                    } catch (IOException ex) {
-                        LOGGER.debug(ex);
-                    }
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.getByteValue()[0] == 0x00) {
+                try {
+                    stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
+                } catch (IOException ex) {
+                    LOGGER.debug(ex);
                 }
             }
-            message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            return receivedShd ? TestResult.TRUE : TestResult.FALSE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
         }
+        message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, true);
     }
 
     private TestResult hasEmptyLastExtensionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
-            message.getExtensions().add(extension);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
+        message.getExtensions().add(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasVersionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasCompressionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasCipherSuiteLengthIntolerance512() {
-        try {
-            Config config = getWorkingConfig();
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            config.setDefaultClientSupportedCipherSuites(toTestList);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        config.setDefaultClientSupportedCipherSuites(toTestList);
+        getConfigSelector().repairConfig(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasCipherSuiteIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = getConfigSelector().getBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasAlpnIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddAlpnExtension(true);
-            List<String> alpnProtocols = new LinkedList<>();
-            for (AlpnProtocol protocol : AlpnProtocol.values()) {
-                alpnProtocols.add(protocol.getConstant());
-            }
-            alpnProtocols.add("This is not an ALPN Protocol");
-            config.setDefaultProposedAlpnProtocols(alpnProtocols);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
+        Config config = getConfigSelector().getBaseConfig();
+        config.setAddAlpnExtension(true);
+        List<String> alpnProtocols = new LinkedList<>();
+        for (AlpnProtocol protocol : AlpnProtocol.values()) {
+            alpnProtocols.add(protocol.getConstant());
         }
+        alpnProtocols.add("This is not an ALPN Protocol");
+        config.setDefaultProposedAlpnProtocols(alpnProtocols);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasClientHelloLengthIntolerance() {
-        try {
-            Config config = getConfigSelector().getBaseConfig();
-            config.setAddAlpnExtension(true);
-            config.setAddPaddingExtension(true);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            int newLength = 512 - 4 - getClientHelloLength(message, config);
-            if (newLength > 0) {
-                config.setDefaultPaddingExtensionBytes(new byte[newLength]);
-            } else {
-                // TODO this is currently not working as intended
-            }
-            message = new ClientHelloMessage(config);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
+        Config config = getConfigSelector().getBaseConfig();
+        config.setAddPaddingExtension(true);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        int newLength = 512 - 4 - getClientHelloLength(message, config);
+        if (newLength > 0) {
+            config.setDefaultPaddingExtensionBytes(new byte[newLength]);
+        } else {
+            // TODO this is currently not working as intended
         }
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseCipherSuiteIntolerance() {
-        Config config = getWorkingConfig();
+        Config config = getConfigSelector().getBaseConfig();
         Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
             .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
-        return hasGreaseIntolerance(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseNamedGroupIntolerance() {
-        Config config = getWorkingConfig();
+        Config config = getConfigSelector().getBaseConfig();
         Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
             .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
-        return hasGreaseIntolerance(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
-        Config config = getWorkingConfig();
+        Config config = getConfigSelector().getBaseConfig();
         Arrays.asList(SignatureAndHashAlgorithm.values()).stream().filter(algorithm -> algorithm.isGrease()).forEach(
             greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
-        return hasGreaseIntolerance(config);
-    }
-
-    private TestResult hasGreaseIntolerance(Config config) {
-        try {
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            WorkflowTrace trace = getWorkflowTrace(config, message);
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     @Override

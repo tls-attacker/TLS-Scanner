@@ -11,11 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -232,32 +229,10 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     private Config getBaseConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
-        tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
-        boolean containsEc = false;
-        for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
-            KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-            if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
-                containsEc = true;
-                break;
-            }
-        }
-        tlsConfig.setAddECPointFormatExtension(containsEc);
-        tlsConfig.setAddEllipticCurveExtension(containsEc);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopReceivingAfterWarning(true);
-        tlsConfig.setStopActionsAfterWarning(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setQuickReceive(true);
+        getConfigSelector().repairConfig(tlsConfig);
         return tlsConfig;
     }
 }

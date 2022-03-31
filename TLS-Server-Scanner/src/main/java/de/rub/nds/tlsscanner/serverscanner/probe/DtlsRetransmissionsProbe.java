@@ -10,9 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
@@ -31,10 +28,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsRetransmissionsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class DtlsRetransmissionsProbe extends TlsProbe {
 
@@ -48,7 +41,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
     }
 
     private TestResult doesRetransmissions() {
-        Config config = getConfig();
+        Config config = getConfigSelector().getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -71,7 +64,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
     }
 
     private TestResult processesRetransmissions() {
-        Config config = getConfig();
+        Config config = getConfigSelector().getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -91,30 +84,6 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         } else {
             return TestResult.FALSE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setDtlsMaximumFragmentLength(2000);
-        return config;
     }
 
     @Override

@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -30,7 +29,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.TlsFallbackScsvResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,24 +42,9 @@ public class TlsFallbackScsvProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new ArrayList<>(CipherSuite.getImplemented());
-        cipherSuites.add(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setDefaultSelectedProtocolVersion(this.secondHighestVersion);
-        tlsConfig.setDefaultHighestClientProtocolVersion(this.secondHighestVersion);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        Config tlsConfig = getConfigSelector().getBaseConfig();
+        tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
         tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
 
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);

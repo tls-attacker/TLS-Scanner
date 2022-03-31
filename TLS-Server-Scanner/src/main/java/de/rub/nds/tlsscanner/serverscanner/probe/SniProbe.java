@@ -10,14 +10,10 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -25,9 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class SniProbe extends TlsProbe {
 
@@ -37,33 +30,19 @@ public class SniProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config config = getScannerConfig().createConfig();
-        config.setAddRenegotiationInfoExtension(true);
+        Config config = getConfigSelector().getBaseConfig();
         config.setAddServerNameIndicationExtension(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-        List<CipherSuite> toTestList = new LinkedList<>();
-        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(toTestList);
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        State state = new State(config, trace);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new SniResult(TestResult.FALSE);
         }
         // Test if we can get a hello with SNI
         config.setAddServerNameIndicationExtension(true);
-        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO,
-            RunningModeType.CLIENT);
-        state = new State(config, trace);
+        state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new SniResult(TestResult.TRUE);
         }
         // We cannot get a ServerHello from this Server...
