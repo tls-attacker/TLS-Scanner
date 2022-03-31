@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -38,6 +39,8 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     private Collection<NamedGroup> supportedGroups;
 
+    private TestResult enforced;
+
     public NamedCurvesOrderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS_ORDER, scannerConfig);
         super.properties.add(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
@@ -45,15 +48,13 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
+        List<NamedGroup> toTestList = new LinkedList<>(this.supportedGroups);
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
-
-       /* return new NamedGroupOrderResult(
-            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
-                : TestResults.FALSE);
-    */}
+        this.enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
+                : TestResults.FALSE;
+}
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
@@ -89,4 +90,9 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         supportedGroups = report.getSupportedNamedGroups();
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, this.enforced);		
+	}
 }

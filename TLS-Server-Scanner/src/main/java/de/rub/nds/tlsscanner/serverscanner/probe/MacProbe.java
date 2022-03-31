@@ -63,27 +63,26 @@ public class MacProbe extends TlsProbe {
 
     private ResponseFingerprint correctFingerprint;
 
+    private CheckPattern appDataPattern;
+    private CheckPattern finishedPattern;
+    private CheckPattern verifyPattern;
+    
     public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.MAC, scannerConfig);
     }
 
     @Override
     public void executeTest() {
-        correctFingerprint = getCorrectAppDataFingerprint();
-        if (correctFingerprint == null) {
-           // return new MacResult(null, null, null);
-        	return;
-        }
-        LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
-        CheckPattern appPattern;
-        if (receivedAppdata(correctFingerprint)) {
-            appPattern = getCheckPattern(Check.APPDATA);
-        } else {
-            appPattern = null;
-        }
-        CheckPattern finishedPattern = getCheckPattern(Check.FINISHED);
-        CheckPattern verifyPattern = getCheckPattern(Check.VERIFY_DATA);
-       // return new MacResult(appPattern, finishedPattern, verifyPattern);
+        this.correctFingerprint = getCorrectAppDataFingerprint();
+        if (correctFingerprint == null) 
+        	return;        
+        LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
+        if (receivedAppdata(this.correctFingerprint)) 
+        	this.appDataPattern = getCheckPattern(Check.APPDATA);
+        else 
+        	this.appDataPattern = null;        
+        this.finishedPattern = getCheckPattern(Check.FINISHED);
+        this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
     }
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
@@ -385,4 +384,11 @@ public class MacProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new MacResult(null, null, null);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.setMacCheckPatternAppData(this.appDataPattern);
+        report.setMacCheckPatternFinished(this.finishedPattern);
+        report.setVerifyCheckPattern(this.verifyPattern);		
+	}
 }
