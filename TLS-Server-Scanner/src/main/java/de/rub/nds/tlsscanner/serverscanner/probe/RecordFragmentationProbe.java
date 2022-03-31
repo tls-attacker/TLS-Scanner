@@ -19,12 +19,16 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
 
 public class RecordFragmentationProbe extends TlsProbe {
+
+    private TestResult supported;
 
     public RecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, scannerConfig);
@@ -40,10 +44,8 @@ public class RecordFragmentationProbe extends TlsProbe {
             .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
         executeState(state);
-
-      /*  return new RecordFragmentationResult(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
-    */}
+        this.supported = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()) ? TestResults.TRUE : TestResults.FALSE;
+    }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
@@ -54,4 +56,9 @@ public class RecordFragmentationProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
 
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
+	}
 }

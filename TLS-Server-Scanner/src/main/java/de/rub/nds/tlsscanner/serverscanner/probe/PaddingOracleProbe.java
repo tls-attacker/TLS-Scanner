@@ -189,6 +189,6 @@ public class PaddingOracleProbe extends TlsProbe {
         } else 
             this.vulnerable = TestResults.ERROR_DURING_TEST;       
 		report.setPaddingOracleTestResultList(this.resultList);
-        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);		
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, this.vulnerable);		
 	}
 }
