@@ -22,6 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -35,6 +36,9 @@ import java.util.Set;
 
 public class TokenbindingProbe extends TlsProbe {
 
+    private List<TokenBindingVersion> supportedTokenBindingVersion;
+    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
+
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.TOKENBINDING, config);
         super.properties.add(AnalyzedProperty.SUPPORTS_TOKENBINDING);
@@ -42,13 +46,11 @@ public class TokenbindingProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
-        supportedTokenBindingVersion.addAll(getSupportedVersions());
-        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
-        if (!supportedTokenBindingVersion.isEmpty()) {
-            supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
-        }
-        //return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
+        this.supportedTokenBindingVersion = new LinkedList<>();
+        this.supportedTokenBindingVersion.addAll(getSupportedVersions());
+        this.supportedTokenBindingKeyParameters = new LinkedList<>();
+        if (!this.supportedTokenBindingVersion.isEmpty()) 
+            this.supportedTokenBindingKeyParameters.addAll(getKeyParameters(this.supportedTokenBindingVersion.get(0)));        
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
@@ -141,4 +143,18 @@ public class TokenbindingProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new TokenbindingResult(null, null);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.setSupportedTokenBindingKeyParameters(this.supportedTokenBindingKeyParameters);
+        report.setSupportedTokenBindingVersion(this.supportedTokenBindingVersion);
+        if (this.supportedTokenBindingVersion != null && !this.supportedTokenBindingVersion.isEmpty()) {
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
+            if (report.getSupportedExtensions() == null) 
+                report.setSupportedExtensions(new LinkedList<ExtensionType>());            
+            report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
+        } else 
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
+        		
+	}
 }
