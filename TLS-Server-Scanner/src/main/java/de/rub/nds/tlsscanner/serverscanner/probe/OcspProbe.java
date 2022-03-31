@@ -42,6 +42,8 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
@@ -62,6 +64,9 @@ public class OcspProbe extends TlsProbe {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
+
+    private List<OcspCertificateResult> certResults;
+    private List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
 
     public static final int NONCE_TEST_VALUE_1 = 42;
     public static final int NONCE_TEST_VALUE_2 = 1337;
@@ -84,28 +89,22 @@ public class OcspProbe extends TlsProbe {
     @Override
     public void executeTest() {
         Config tlsConfig = initTlsConfig();
-        List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
-
         if (serverCertChains == null) {
             LOGGER.warn("Couldn't fetch certificate chains from server!");
-            //return getCouldNotExecuteResult();
             return;
         }
-
-        for (CertificateChain serverCertChain : serverCertChains) {
+        this.certResults = new LinkedList<>();
+        for (CertificateChain serverCertChain : this.serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
             getMustStaple(serverCertChain.getCertificate(), certResult);
             getStapledResponse(tlsConfig, certResult);
             performRequest(serverCertChain.getCertificate(), certResult);
 
-            ocspCertResults.add(certResult);
+            this.certResults.add(certResult);
         }
-        List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-        if (!tls13NamedGroups.isEmpty()) {
-            tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
-        }
-        //return new OcspResult(ocspCertResults, tls13CertStatus);
+        if (!this.tls13NamedGroups.isEmpty()) 
+            this.tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
     }
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
@@ -301,5 +300,110 @@ public class OcspProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new OcspResult(null, null);
+    }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		report.setOcspResults(this.certResults);
+
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
+        super.setPropertyReportValue(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
+        super.setPropertyReportValue(AnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
+        super.setPropertyReportValue(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
+
+        if (this.tls13CertStatus != null) {
+            if (this.tls13CertStatus.size() == 1) {
+                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            } else if (tls13CertStatus.size() > 1) {
+                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
+            } else {
+                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
+                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            }
+        } else {
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
+        }		
+	}
+	
+
+    private TestResult getConclusiveSupportsOcsp() {
+        boolean foundFalse = false;
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (Boolean.TRUE.equals(result.getSupportsOcsp())) 
+                    return TestResults.TRUE;
+                else if (Boolean.FALSE.equals(result.getSupportsOcsp()))
+                    foundFalse = true;                
+            }
+            if (foundFalse)
+                return TestResults.FALSE;            
+        }
+        return TestResults.ERROR_DURING_TEST;
+    }
+    
+	private TestResult getConclusiveSupportsStapling() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.isSupportsStapling()) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveIncludesCertMessage() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.getStapledResponse() != null) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveSupportsStapledNonce() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveMustStaple() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.isMustStaple()) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveSupportsNonce() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.isSupportsNonce()) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveStapledResponseExpired() {
+        if (this.certResults != null) {
+            for (OcspCertificateResult result : this.certResults) {
+                if (result.isStapledResponseExpired()) 
+                    return TestResults.TRUE;                
+            }
+        }
+        return TestResults.FALSE;
     }
 }
