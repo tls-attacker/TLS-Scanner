@@ -40,6 +40,9 @@ import java.util.List;
 
 public class DtlsRetransmissionsProbe extends TlsProbe {
 
+    private TestResult sendsRetransmissions;
+    private TestResult processesRetransmissions;
+
     public DtlsRetransmissionsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
         super.properties.add(AnalyzedProperty.SENDS_RETRANSMISSIONS);
@@ -48,9 +51,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-    	doesRetransmissions();
-    	processesRetransmissions();
-        //return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
+    	this.sendsRetransmissions = doesRetransmissions();
+    	this.processesRetransmissions = processesRetransmissions();
     }
 
     private TestResult doesRetransmissions() {
@@ -132,4 +134,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
+        super.setPropertyReportValue(AnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);		
+	}
 }
