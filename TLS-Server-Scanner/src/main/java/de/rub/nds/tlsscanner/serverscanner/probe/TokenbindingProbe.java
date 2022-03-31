@@ -154,7 +154,6 @@ public class TokenbindingProbe extends TlsProbe {
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());            
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else 
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
-        		
+            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);        		
 	}
 }
