@@ -59,6 +59,12 @@ public class NamedGroupsProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
+    private Map<NamedGroup, NamedGroupWitness> namedGroupsMap;
+    private Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13;
+
+    private TestResult supportsExplicitPrime;
+    private TestResult supportsExplicitChar2;
+    private TestResult groupsDependOnCipherSuite;
     private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
     public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -71,44 +77,37 @@ public class NamedGroupsProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
-
-        addGroupsFound(overallSupported,
+        this.namedGroupsMap = new HashMap<>();
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
             KeyExchangeAlgorithm.DHE_RSA);
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
             KeyExchangeAlgorithm.DHE_DSS);
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
             KeyExchangeAlgorithm.DH_ANON);
 
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
             KeyExchangeAlgorithm.ECDH_ANON);
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(
                 getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
             KeyExchangeAlgorithm.ECDHE_RSA);
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
+                this.ecdsaPkGroupsEphemeral, this.ecdsaCertSigGroupsEphemeral),
             KeyExchangeAlgorithm.ECDHE_ECDSA);
-        addGroupsFound(overallSupported,
+        addGroupsFound(this.namedGroupsMap,
             getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                ecdsaCertSigGroupsStatic),
+                this.ecdsaCertSigGroupsStatic),
             KeyExchangeAlgorithm.ECDH_ECDSA);
-        TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-        TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
-
-        Map<NamedGroup, NamedGroupWitness> groupsTls13 = getTls13SupportedGroups();
-
-        TestResult groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(overallSupported);
-
-       /* return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
-            groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
-
-*/    }
+        this.supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+        this.supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+        this.namedGroupsMapTls13 = getTls13SupportedGroups();
+        this.groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(this.namedGroupsMap);
+    }
 
     private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,
         boolean useCurves) {
@@ -431,13 +430,16 @@ public class NamedGroupsProbe extends TlsProbe {
                 case ECDHE_ECDSA:
                     witness.setEcdsaPkGroupEphemeral(newlyFoundGroups.get(group).getEcdsaPkGroupEphemeral());
                     witness.setEcdsaSigGroupEphemeral(newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
+                    break;
+                default:
+				break;
             }
         }
     }
 
     private TestResult getGroupsDependOnCipherSuite(Map<NamedGroup, NamedGroupWitness> overallSupported) {
-        Set<CipherSuite> joinedCurveCipherSuites = new HashSet();
-        Set<CipherSuite> joinedFfdheCipherSuites = new HashSet();
+        Set<CipherSuite> joinedCurveCipherSuites = new HashSet<>();
+        Set<CipherSuite> joinedFfdheCipherSuites = new HashSet<>();
         overallSupported.keySet().forEach(group -> {
             if (group.isCurve()) {
                 joinedCurveCipherSuites.addAll(overallSupported.get(group).getCipherSuites());
@@ -458,4 +460,22 @@ public class NamedGroupsProbe extends TlsProbe {
         }
         return TestResults.FALSE;
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        LinkedList<NamedGroup> allGroups = new LinkedList<>();
+        if (this.namedGroupsMap != null) 
+            allGroups.addAll(this.namedGroupsMap.keySet());  
+        LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
+        if (this.namedGroupsMapTls13 != null) 
+            tls13Groups.addAll(this.namedGroupsMapTls13.keySet());
+        report.setSupportedNamedGroups(allGroups);
+        report.setSupportedTls13Groups(tls13Groups);
+        report.setSupportedNamedGroupsWitnesses(this.namedGroupsMap);
+        report.setSupportedNamedGroupsWitnessesTls13(this.namedGroupsMapTls13);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
+        super.setPropertyReportValue(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
+        super.setPropertyReportValue(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, this.ignoresEcdsaGroupDisparity);		
+	}
 }
