@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -31,6 +32,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SniProbe extends TlsProbe {
+
+    private TestResult requiresSni;
 
     public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SNI, scannerConfig);
@@ -57,7 +60,7 @@ public class SniProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            //return new SniResult(TestResults.FALSE);
+            this.requiresSni = TestResults.FALSE;
         	return;
         }
         // Test if we can get a hello with SNI
@@ -67,12 +70,12 @@ public class SniProbe extends TlsProbe {
         state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-           // return new SniResult(TestResults.TRUE);
+           	this.requiresSni = TestResults.TRUE;
         	return;
         }
         // We cannot get a ServerHello from this Server...
         LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
-        //return new SniResult(TestResults.UNCERTAIN);
+        this.requiresSni = TestResults.UNCERTAIN;
     }
 
     @Override
@@ -83,4 +86,9 @@ public class SniProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new SniResult(TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.putResult(AnalyzedProperty.REQUIRES_SNI, this.requiresSni);		
+	}
 }
