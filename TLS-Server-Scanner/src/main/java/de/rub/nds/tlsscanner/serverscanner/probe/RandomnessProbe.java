@@ -53,7 +53,6 @@ public class RandomnessProbe extends TlsProbe {
     @Override
     public void executeTest() {
         collectData(scannerConfig.getAdditionalRandomnessHandshakes());
-        //return new RandomnessResult();
     }
 
     @Override
@@ -177,4 +176,9 @@ public class RandomnessProbe extends TlsProbe {
         }
         executeState(stateList);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {	
+        // Nothing to do here - all data analysis is done in the after probe
+	}
 }
