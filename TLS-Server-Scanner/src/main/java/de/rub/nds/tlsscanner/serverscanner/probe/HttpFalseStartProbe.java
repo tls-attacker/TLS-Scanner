@@ -31,6 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -42,6 +43,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class HttpFalseStartProbe extends HttpsProbe {
+
+    private TestResult supportsFalseStart;
 
     public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HTTP_FALSE_START, scannerConfig);
@@ -72,22 +75,22 @@ public class HttpFalseStartProbe extends HttpsProbe {
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-                   // return new HttpFalseStartResult(TestResults.TRUE);
+            
+                	this.supportsFalseStart = TestResults.TRUE;
                 	return;
-                } else if (message instanceof FinishedMessage) {
-                    receivedServerFinishedMessage = true;
-                }
+                } else if (message instanceof FinishedMessage) 
+                    receivedServerFinishedMessage = true;                
             }
         }
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
-            // handshake
-          //  return new HttpFalseStartResult(TestResults.FALSE);
+            // handshake        	
+        	this.supportsFalseStart = TestResults.FALSE;
         	return;
         }
         // received no http response -> maybe server did not understand
         // request
-       // return new HttpFalseStartResult(TestResults.UNCERTAIN);
+        this.supportsFalseStart = TestResults.UNCERTAIN;
     }
 
     private Config getConfig() {
@@ -130,4 +133,9 @@ public class HttpFalseStartProbe extends HttpsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
+	}
 }
