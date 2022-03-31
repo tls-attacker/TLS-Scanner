@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -28,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
+
+    private TestResult enforced;
 
     public SignatureHashAlgorithmOrderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, scannerConfig);
@@ -43,10 +46,8 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
         Collections.reverse(toTestList);
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
             getSelectedSignatureAndHashAlgorithm(toTestList);
-
-       /* return new SignatureHashAlgorithmOrderResult(
-            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
-                : TestResults.FALSE);*/
+       	this.enforced = firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
+                : TestResults.FALSE;
     }
 
     @Override
@@ -83,4 +84,8 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, this.enforced);
+	}
 }
