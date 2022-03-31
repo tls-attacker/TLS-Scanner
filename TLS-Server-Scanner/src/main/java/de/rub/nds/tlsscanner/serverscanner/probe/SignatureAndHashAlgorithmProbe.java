@@ -44,6 +44,10 @@ import java.util.function.Predicate;
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     private List<ProtocolVersion> versions;
+    
+    private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
+    private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
+
     private TestResult respectsExtension;
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -57,14 +61,13 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         this.respectsExtension = TestResults.TRUE;
         for (ProtocolVersion version : this.versions) {
-            if (version.isTLS13()) {
+            if (version.isTLS13()) 
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
-            } else {
-                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
-            }
+            else 
+                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));            
         }
-        /*return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13),
-            respectsExtension);*/
+        this.signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
+        this.signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
@@ -225,4 +228,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new SignatureAndHashAlgorithmResult(null, null, TestResults.COULD_NOT_TEST);
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        report.setSupportedSignatureAndHashAlgorithmsSke(this.signatureAndHashAlgorithmListSke);
+        report.setSupportedSignatureAndHashAlgorithmsTls13(this.signatureAndHashAlgorithmListTls13);
+        super.setPropertyReportValue(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, this.respectsExtension);		
+	}
 }
