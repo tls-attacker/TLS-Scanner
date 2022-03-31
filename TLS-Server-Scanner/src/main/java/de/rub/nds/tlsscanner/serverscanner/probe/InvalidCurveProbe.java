@@ -62,35 +62,32 @@ public class InvalidCurveProbe extends TlsProbe {
      * Defines the error probability for each test vector
      */
     private static final double ERROR_PROBABILITY = 0.0001; // increase if needed
-
     private static final int LARGE_ORDER_ITERATIONS = 40;
-
     private static final int EXTENSION_FACTOR = 7;
-
     private static final int CURVE_TWIST_MAX_ORDER = 23;
 
     private boolean supportsRenegotiation;
 
     private TestResult supportsSecureRenegotiation;
-
     private TestResult issuesTls13SessionTickets;
-
     private TestResult supportsTls13PskDhe;
-
+    private TestResult vulnerableClassic = TestResults.FALSE;
+    private TestResult vulnerableEphemeral = TestResults.FALSE;
+    private TestResult vulnerableTwist = TestResults.FALSE;
+    
     private List<ProtocolVersion> supportedProtocolVersions;
 
-    private List<NamedGroup> supportedFpGroups;
+    private List<InvalidCurveResponse> responses;
 
+    private List<NamedGroup> supportedFpGroups;
     private List<NamedGroup> supportedTls13FpGroups;
 
     private HashMap<ProtocolVersion, List<CipherSuite>> supportedECDHCipherSuites;
 
     private List<ECPointFormat> fpPointFormatsToTest;
-
     private List<ECPointFormat> tls13FpPointFormatsToTest;
 
     private Map<NamedGroup, NamedGroupWitness> namedCurveWitnesses;
-
     private Map<NamedGroup, NamedGroupWitness> namedCurveWitnessesTls13;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -120,7 +117,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 responses.add(scanResponse);
             }
         }
-       // return evaluateResponses(responses);
+        evaluateResponses(responses);
     }
 
     @Override
@@ -435,11 +432,7 @@ public class InvalidCurveProbe extends TlsProbe {
         }
     }
 
-    private InvalidCurveResult evaluateResponses(List<InvalidCurveResponse> responses) {
-        TestResult vulnerableClassic = TestResults.FALSE;
-        TestResult vulnerableEphemeral = TestResults.FALSE;
-        TestResult vulnerableTwist = TestResults.FALSE;
-
+    private void evaluateResponses(List<InvalidCurveResponse> responses) {
         evaluateKeyBehavior(responses);
 
         for (InvalidCurveResponse response : responses) {
@@ -461,8 +454,6 @@ public class InvalidCurveProbe extends TlsProbe {
                 response.setShowsVulnerability(TestResults.FALSE);
             }
         }
-
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses);
     }
 
     private void evaluateKeyBehavior(List<InvalidCurveResponse> responses) {
@@ -871,4 +862,12 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, this.vulnerableEphemeral);
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
+        report.setInvalidCurveResultList(this.responses);		
+	}
 }
