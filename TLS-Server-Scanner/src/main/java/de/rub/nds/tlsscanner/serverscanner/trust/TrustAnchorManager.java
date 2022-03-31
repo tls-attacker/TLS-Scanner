@@ -34,6 +34,8 @@ public class TrustAnchorManager {
 
     private HashMap<String, CertificateEntry> trustAnchors;
 
+    private HashMap<String, CertificateEntry> customTrustAnchors;
+
     private static TrustAnchorManager INSTANCE = null;
 
     private Set<TrustAnchor> trustAnchorSet;
@@ -57,6 +59,7 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("apple.yaml"));
 
             trustAnchors = new HashMap<>();
+            customTrustAnchors = new HashMap<>();
             for (TrustPlatform platform : trustPlatformList) {
                 for (CertificateEntry entry : platform.getCertificateEntries()) {
                     if (!trustAnchors.containsKey(entry.getFingerprint())) {
@@ -223,7 +226,7 @@ public class TrustAnchorManager {
             throw new RuntimeException("Couldn't initialize keyStore,", ex);
         }
 
-        for(int i = 0; i < customCAList.size(); i++){
+        for (int i = 0; i < customCAList.size(); i++) {
             org.bouncycastle.crypto.tls.Certificate cert = customCAList.get(i);
             // Converts each certificate in customCAList to a x.509 formatted certificate and adds it to the keystore.
             try {
@@ -231,7 +234,8 @@ public class TrustAnchorManager {
                 keyStore.setCertificateEntry("custom_" + i,
                     certFactory.generateCertificate(new ByteArrayInputStream(cert.getCertificateAt(0).getEncoded())));
             } catch (CertificateException | IOException | KeyStoreException ex) {
-                throw new RuntimeException("Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore", ex);
+                throw new RuntimeException("Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore",
+                    ex);
             }
 
             /*
@@ -245,6 +249,7 @@ public class TrustAnchorManager {
                 CertificateEntry certEntry = new CertificateEntry(cert.getCertificateAt(0).getSubject().toString(),
                     sha256Fingerprint.toString());
                 this.trustAnchors.put(sha256Fingerprint.toString(), certEntry);
+                this.customTrustAnchors.put(sha256Fingerprint.toString(), certEntry);
                 this.asn1CaCertificateSet.add(cert.getCertificateAt(0));
             } catch (NoSuchAlgorithmException | IOException ex) {
                 LOGGER.error(
@@ -264,6 +269,21 @@ public class TrustAnchorManager {
             }
         } catch (InvalidAlgorithmParameterException | KeyStoreException ex) {
             LOGGER.error("The keyStore doesn't contain at least one trusted CA", ex);
+        }
+    }
+
+    public boolean isCustomTrustAnchor(CertificateReport report) {
+        if (customTrustAnchors.containsKey(report.getIssuer())) {
+            LOGGER.debug("Found a customTrustAnchor for Issuer report");
+            CertificateEntry entry = customTrustAnchors.get(report.getIssuer());
+            if (entry.getFingerprint().equals(report.getSHA256Fingerprint())) {
+                return true;
+            } else {
+                LOGGER.warn("CustomTrustAnchor hash does not match stored fingerprint");
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 }

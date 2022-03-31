@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
+import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
@@ -19,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import org.apache.commons.math3.analysis.function.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x500.RDN;
@@ -85,6 +87,7 @@ public class CertificateReportGenerator {
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
             report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+            report.setCustomTrustAnchor(anchorManger.isCustomTrustAnchor(report));
         } else {
             report.setTrustAnchor(null);
         }
@@ -234,9 +237,13 @@ public class CertificateReportGenerator {
 
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
-        String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-        if (ocspUrl != null) {
-            report.setOcspSupported(true);
+        try {
+            String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
+            if (ocspUrl != null) {
+                report.setOcspSupported(true);
+            }
+        } catch (ParserException ex) {
+            LOGGER.error(ex);
         }
     }
 
@@ -282,7 +289,7 @@ public class CertificateReportGenerator {
                         report.setRevoked(true);
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | ParserException e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }

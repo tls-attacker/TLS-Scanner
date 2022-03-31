@@ -471,6 +471,8 @@ public class SiteReportPrinter {
             chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
         prettyAppend(builder, "Generally Trusted", chain.getGenerallyTrusted(),
             chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
+        prettyAppend(builder, "Custom Trusted", chain.getContainsCustomTrustAnchor(),
+            chain.getContainsCustomTrustAnchor() ? AnsiColor.WHITE : AnsiColor.GREEN);
         if (chain.getCertificateIssues().size() > 0) {
             prettyAppendSubheading(builder, "Certificate Issues");
             for (CertificateIssue issue : chain.getCertificateIssues()) {
