@@ -44,6 +44,12 @@ import java.util.List;
 
 public class DtlsMessageSequenceProbe extends TlsProbe {
 
+	private TestResult acceptsStartedWithInvalidMessageNumber;
+    private TestResult acceptsSkippedMessageNumbersOnce;
+    private TestResult acceptsSkippedMessageNumbersMultiple;
+    private TestResult acceptsRandomMessageNumbers;
+
+	    
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
         super.properties.add(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
@@ -55,13 +61,11 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-    	acceptsStartedWithInvalidMessageNumber();
-        acceptsSkippedMessageNumbersOnce(); 
-        acceptsSkippedMessageNumbersMultiple(); 
-        acceptsRandomMessageNumbers();
-        /*return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
-            acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(), acceptsRandomMessageNumbers());
-    */}
+    	this.acceptsStartedWithInvalidMessageNumber  = acceptsStartedWithInvalidMessageNumber();
+        this.acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce(); 
+        this.acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple(); 
+        this.acceptsRandomMessageNumbers = acceptsRandomMessageNumbers();
+        }
 
     private TestResult acceptsRandomMessageNumbers() {
         Config config = getConfig();
@@ -183,4 +187,19 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+		super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+	            this.acceptsStartedWithInvalidMessageNumber);
+        super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
+        super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+            this.acceptsSkippedMessageNumbersMultiple);
+        super.setPropertyReportValue(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        if (this.acceptsSkippedMessageNumbersOnce == TestResults.FALSE
+            && this.acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+            && this.acceptsRandomMessageNumbers == TestResults.FALSE) {
+            super.setPropertyReportValue(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
+        } else 
+            super.setPropertyReportValue(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);		
+	}
 }
