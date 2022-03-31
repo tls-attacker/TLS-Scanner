@@ -49,7 +49,6 @@ public class HelloRetryProbe extends TlsProbe {
     @Override
     public void executeTest() {
         testHelloRetry();
-        //return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
     }
 
     @Override
@@ -101,4 +100,15 @@ public class HelloRetryProbe extends TlsProbe {
         }
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+        if (this.issuesCookie != null) 
+            super.setPropertyReportValue(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, this.issuesCookie);
+        else 
+            super.setPropertyReportValue(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
+        if (sendsHelloRetryRequest != null) 
+            super.setPropertyReportValue(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, this.sendsHelloRetryRequest);
+        else 
+            super.setPropertyReportValue(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);    	
+	}
 }
