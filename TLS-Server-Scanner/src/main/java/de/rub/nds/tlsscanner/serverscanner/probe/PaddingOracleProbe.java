@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -32,19 +33,25 @@ import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PaddingOracleProbe extends TlsProbe {
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private TestResult vulnerable;
 
     private static int numberOfIterations;
     private static int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
+    private List<InformationLeakTest<PaddingOracleTestInfo>> resultList;
 
     public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.PADDING_ORACLE, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+        PaddingOracleProbe.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        PaddingOracleProbe.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
         super.properties.add(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
     }
 
@@ -52,7 +59,7 @@ public class PaddingOracleProbe extends TlsProbe {
     public void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-        List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
+        this.resultList = new LinkedList<>();
         for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
@@ -61,17 +68,17 @@ public class PaddingOracleProbe extends TlsProbe {
                             PaddingOracleCommandConfig paddingOracleConfig =
                                 createPaddingOracleCommandConfig(pair.getVersion(), suite);
                             paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                            testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
+                            this.resultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
                         }
                     }
                 }
             }
         }
         LOGGER.debug("Finished evaluation");
-        if (isPotentiallyVulnerable(testResultList)
+        if (isPotentiallyVulnerable(this.resultList)
             || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
-            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : this.resultList) {
                 if (fingerprint.isDistinctAnswers()
                     || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
@@ -79,7 +86,6 @@ public class PaddingOracleProbe extends TlsProbe {
             }
             LOGGER.debug("Finished extended evaluation");
         }
-        //return new PaddingOracleResult(testResultList);
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
@@ -171,4 +177,18 @@ public class PaddingOracleProbe extends TlsProbe {
         }
         return false;
     }
+
+	@Override
+	protected void mergeData(SiteReport report) {
+		if (this.resultList != null) {
+            this.vulnerable = TestResults.FALSE;
+            for (InformationLeakTest informationLeakTest : this.resultList) {
+                if (informationLeakTest.isSignificantDistinctAnswers()) 
+                    this.vulnerable = TestResults.TRUE;                
+            }
+        } else 
+            this.vulnerable = TestResults.ERROR_DURING_TEST;       
+		report.setPaddingOracleTestResultList(this.resultList);
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);		
+	}
 }
