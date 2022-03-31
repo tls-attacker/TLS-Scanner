@@ -25,10 +25,10 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
 import java.util.Arrays;
@@ -36,6 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class EsniProbe extends TlsProbe {
+
+    private TestResult receivedCorrectNonce;
 
     public EsniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.ESNI, scannerConfig);
@@ -82,13 +84,13 @@ public class EsniProbe extends TlsProbe {
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-           // return new SniResult(TestResults.ERROR_DURING_TEST);
+        	this.receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
         	return;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            return; //return (new EsniResult(TestResults.TRUE));
-        } else {
-            //return (new EsniResult(TestResults.FALSE));
-        }
+        	this.receivedCorrectNonce = TestResults.TRUE;
+        	return;
+        } else 
+        	this.receivedCorrectNonce = TestResults.FALSE;
     }
 
     @Override
@@ -108,7 +110,7 @@ public class EsniProbe extends TlsProbe {
     }
 
     private List<NamedGroup> getImplementedGroups() {
-        List<NamedGroup> list = new LinkedList();
+        List<NamedGroup> list = new LinkedList<>();
         list.add(NamedGroup.ECDH_X25519);
         list.add(NamedGroup.ECDH_X448);
         list.add(NamedGroup.SECP160K1);
@@ -139,4 +141,8 @@ public class EsniProbe extends TlsProbe {
         return list;
     }
 
+	@Override
+	protected void mergeData(SiteReport report) {
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);		
+	}
 }
