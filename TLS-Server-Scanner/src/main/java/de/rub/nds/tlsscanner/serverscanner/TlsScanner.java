@@ -171,7 +171,6 @@ public class TlsScanner {
         } else {
             addProbeToProbeList(new HelloRetryProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new RecordFragmentationProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new TlsPoodleProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new EarlyCcsProbe(configSelector, parallelExecutor));
             // addProbeToProbeList(new MacProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new CcaProbe(configSelector, parallelExecutor));
