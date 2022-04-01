@@ -9,29 +9,31 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.CipherSuiteDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.HeartbeatMode;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.HeartbeatMessage;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class HeartbleedProbe extends TlsProbe {
-
-    private List<CipherSuite> supportedCiphers;
 
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HEARTBLEED, configSelector);
@@ -39,48 +41,48 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            ProtocolVersionDelegate protocolVersionDelegate =
-                (ProtocolVersionDelegate) heartbleedConfig.getDelegate(ProtocolVersionDelegate.class);
-            protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
+        return new TlsPoodleResult(isVulnerable());
+    }
+
+    private TestResult isVulnerable() {
+        Config tlsConfig = getConfigSelector().getBaseConfig();
+        tlsConfig.setAddHeartbeatExtension(true);
+        tlsConfig.setHeartbeatMode(HeartbeatMode.PEER_ALLOWED_TO_SEND);
+
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(getHeartbeatMessage()));
+        trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
+
+        State state = new State(tlsConfig, trace);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, trace)) {
+            LOGGER.info(
+                "Vulnerable. The server responds with a heartbeat message, although the client heartbeat message contains an invalid Length value");
+            return TestResult.TRUE;
+        } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)) {
+            return TestResult.FALSE;
+        } else {
+            LOGGER.info(
+                "(Most probably) Not vulnerable. The server does not respond with a heartbeat message, it is not vulnerable");
+            return TestResult.FALSE;
         }
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        if (supportedCiphers != null) {
-            CipherSuiteDelegate cipherSuiteDelegate =
-                (CipherSuiteDelegate) heartbleedConfig.getDelegate(CipherSuiteDelegate.class);
-            cipherSuiteDelegate.setCipherSuites(supportedCiphers);
-        }
-        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
+    }
+
+    private HeartbeatMessage getHeartbeatMessage() {
+        HeartbeatMessage message = new HeartbeatMessage();
+        message.getPayload().setModification(ByteArrayModificationFactory.explicitValue(new byte[] { 1, 3 }));
+        message.getPayloadLength().setModification(IntegerModificationFactory.explicitValue(20000));
+        return message;
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.getSupportedExtensions() != null) {
-            for (ExtensionType type : report.getSupportedExtensions()) {
-                if (type == ExtensionType.HEARTBEAT) {
-                    return true;
-                }
-            }
-        } else {
-            return true;
-        }
-        return false;
+        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS) && !report.getSupportedExtensions().isEmpty();
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
-            supportedCiphers = new ArrayList<>(report.getCipherSuites());
-        } else {
-            supportedCiphers = CipherSuite.getImplemented();
-        }
     }
 
     @Override
