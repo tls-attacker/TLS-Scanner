@@ -30,7 +30,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class HeartbleedProbe extends TlsProbe {
@@ -41,7 +40,7 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        return new TlsPoodleResult(isVulnerable());
+        return new HeartbleedResult(isVulnerable());
     }
 
     private TestResult isVulnerable() {
