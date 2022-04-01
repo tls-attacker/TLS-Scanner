@@ -283,10 +283,7 @@ public final class TlsServerScanner extends TlsScanner {
     private void closeParallelExecutorIfNeeded() {
 
         if (closeAfterFinishParallel) {
-            System.out.println("Shutting down parallel executor");
             parallelExecutor.shutdown();
-        } else {
-            System.out.println("NOT SHUTTING DOWN");
         }
     }
 

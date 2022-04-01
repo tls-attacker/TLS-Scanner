@@ -55,7 +55,6 @@ public class InfluencersSerializationTest {
     public void testSerializeDeserializeSimple() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         RatingInfluencersIO.write(stream, original);
-        System.out.println(new String(stream.toByteArray()));
         result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
         assertEquals("Influencer length check.", original.getRatingInfluencers().size(),

@@ -23,7 +23,6 @@ public class RecommendationsIOTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         RecommendationsIO.write(stream, recommendations);
         byte[] byteArray = stream.toByteArray();
-        System.out.println(new String(byteArray));
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         Recommendations read = RecommendationsIO.read(inputStream);
     }

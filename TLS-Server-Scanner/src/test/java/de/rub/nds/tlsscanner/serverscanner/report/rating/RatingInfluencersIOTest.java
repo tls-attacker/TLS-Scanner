@@ -49,7 +49,6 @@ public class RatingInfluencersIOTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         RatingInfluencersIO.write(stream, ratingInfluencers);
         byte[] byteArray = stream.toByteArray();
-        System.out.println(new String(byteArray));
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
         RatingInfluencers read = RatingInfluencersIO.read(inputStream);
     }

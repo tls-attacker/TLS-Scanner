@@ -149,12 +149,6 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         HashMap<TrackableValue, ExtractedValueContainer> containerMap = new HashMap<>();
         int stateCounter = 0;
         for (ScannerProbe probe : allProbes) {
-            if (probe == null) {
-                System.out.println("probe is null");
-            }
-            if (probe != null && probe.getWriter() == null) {
-                System.out.println("writer is null" + probe.getProbeName());
-            }
             List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
             for (ExtractedValueContainer tempContainer : tempContainerList) {
                 if (containerMap.containsKey(tempContainer.getType())) {
