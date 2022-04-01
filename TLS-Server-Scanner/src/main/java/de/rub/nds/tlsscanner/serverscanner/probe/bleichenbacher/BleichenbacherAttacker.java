@@ -9,8 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
-import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
-
 import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;
 import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
