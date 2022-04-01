@@ -9,20 +9,17 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
-import de.rub.nds.tlsattacker.attacks.config.SpecialDrownCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
-import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.GeneralDrownAttacker;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.SpecialDrownAttacker;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.constans.DrownOracleType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.Objects;
 
 public class DrownProbe extends TlsProbe {
 
@@ -36,55 +33,21 @@ public class DrownProbe extends TlsProbe {
     }
 
     private TestResult testForGeneralDrown() {
-        GeneralDrownCommandConfig drownCommandConfig =
-            new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        GeneralDrownAttacker attacker = new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
-        Boolean generalDrown = attacker.isVulnerable();
-        if (Objects.equals(generalDrown, Boolean.TRUE)) {
-            return TestResult.TRUE;
-        } else {
-            return TestResult.FALSE;
-        }
+        GeneralDrownAttacker attacker =
+            new GeneralDrownAttacker(getConfigSelector().getSSL2BaseConfig(), getParallelExecutor());
+        return attacker.isVulnerable();
     }
 
     private TestResult testForExtraClearDrown() {
-        try {
-            SpecialDrownCommandConfig drownCommandConfig =
-                new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-
-            ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate =
-                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-            SpecialDrownAttacker attacker =
-                new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
-            Boolean generalDrown = attacker.isVulnerable();
-            if (Objects.equals(generalDrown, Boolean.TRUE)) {
-                return TestResult.TRUE;
-            } else {
-                return TestResult.FALSE;
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
-        }
+        SpecialDrownAttacker attacker = new SpecialDrownAttacker(getConfigSelector().getSSL2BaseConfig(),
+            getParallelExecutor(), DrownOracleType.EXTRA_CLEAR);
+        return attacker.isVulnerable();
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+            && report.getResult(AnalyzedProperty.SUPPORTS_SSL_2) == TestResult.TRUE;
     }
 
     @Override
