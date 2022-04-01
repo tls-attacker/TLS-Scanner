@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.BleichenbacherScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
 
 public class BleichenbacherOracleTestInfo extends TestInfo {
 
