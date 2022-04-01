@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
@@ -25,22 +27,20 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
-
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe {
-    private final List<VersionSuiteListPair> versionSuiteListPairsList;
+public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaResult> {
+
+    private List<VersionSuiteListPair> versionSuiteListPairsList;
 
     private final boolean increasingTimeout = false;
 
@@ -50,13 +50,14 @@ public class CcaProbe extends TlsProbe {
 
     private final int reexecutions = 3;
 
-    public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config);
+    public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CCA, config);
         versionSuiteListPairsList = new LinkedList<>();
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CcaResult executeTest() {
+
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = getScannerConfig().getCcaDelegate();
@@ -136,18 +137,18 @@ public class CcaProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+    public boolean canBeExecuted(ServerReport report) {
+        return (report.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
             && (report.getVersionSuitePairs() != null);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CcaResult getCouldNotExecuteResult() {
         return new CcaResult(TestResult.COULD_NOT_TEST, null);
     }
 

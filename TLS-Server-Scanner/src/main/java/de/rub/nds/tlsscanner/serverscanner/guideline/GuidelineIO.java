@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
@@ -27,76 +29,103 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsC
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import de.rub.nds.tlsscanner.serverscanner.io.TlsAnalyzedPropertyFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.util.JAXBSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuidelineIO {
 
     private static final Logger LOGGER = LogManager.getLogger(GuidelineIO.class.getName());
-    public static final List<String> GUIDELINES = Arrays.asList("bsi.xml", "nist.xml");
 
-    private static final List<Class<? extends GuidelineCheck>> CHECKS =
-        Arrays.asList(AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
-            CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
-            CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class,
-            ExtendedKeyUsageCertificateCheck.class, ExtensionGuidelineCheck.class, HashAlgorithmsGuidelineCheck.class,
-            HashAlgorithmStrengthCheck.class, KeySizeCertGuidelineCheck.class, KeyUsageCertificateCheck.class,
-            NamedGroupsGuidelineCheck.class, SignatureAlgorithmsCertificateGuidelineCheck.class,
-            SignatureAlgorithmsGuidelineCheck.class, SignatureAndHashAlgorithmsGuidelineCheck.class,
-            SignatureAndHashAlgorithmsCertificateGuidelineCheck.class, CertificateSignatureCheck.class);
+    /**
+     * context initialization is expensive, we need to do that only once
+     */
+    private static JAXBContext context;
 
-    public static Guideline readGuideline(String resource) throws IOException, JAXBException, XMLStreamException {
-        List<Class<?>> classes = new ArrayList<>(CHECKS);
-        classes.add(Guideline.class);
-        JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class[0]));
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        try (InputStream is = GuidelineIO.class.getResourceAsStream("/guideline/" + resource)) {
-            if (is == null) {
-                throw new IOException("Resource not found. " + resource);
+    static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
+        if (context == null) {
+            context = JAXBContext.newInstance(TlsAnalyzedProperty.class, Guideline.class,
+                AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
+                CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
+                CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class,
+                ExtendedKeyUsageCertificateCheck.class, ExtensionGuidelineCheck.class,
+                HashAlgorithmsGuidelineCheck.class, HashAlgorithmStrengthCheck.class, KeySizeCertGuidelineCheck.class,
+                KeyUsageCertificateCheck.class, NamedGroupsGuidelineCheck.class,
+                SignatureAlgorithmsCertificateGuidelineCheck.class, SignatureAlgorithmsGuidelineCheck.class,
+                SignatureAndHashAlgorithmsGuidelineCheck.class,
+                SignatureAndHashAlgorithmsCertificateGuidelineCheck.class, CertificateSignatureCheck.class,
+                TlsAnalyzedPropertyFactory.class);
+        }
+        return context;
+    }
+
+    public static void write(OutputStream outputStream, Guideline guideline) throws JAXBException, IOException {
+        context = getJAXBContext();
+        Marshaller m = context.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        try (ByteArrayOutputStream tempStream = new ByteArrayOutputStream()) {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.transform(new JAXBSource(context, guideline), new StreamResult(tempStream));
+
+            String xml_text = new String(tempStream.toByteArray());
+            // and we modify all line separators to the system dependant line separator
+            xml_text = xml_text.replaceAll("\r?\n", System.lineSeparator());
+            outputStream.write(xml_text.getBytes());
+        } catch (TransformerException E) {
+            LOGGER.debug(E.getStackTrace());
+        }
+        outputStream.close();
+    }
+
+    public static void write(File f, Guideline guidline) throws IOException, JAXBException {
+        write(new FileOutputStream(f), guidline);
+    }
+
+    public static Guideline read(InputStream inputStream) throws JAXBException, IOException, XMLStreamException {
+        context = getJAXBContext();
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                // raise an Exception also on Warnings
+                return false;
             }
-            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
-            JAXBElement<Guideline> element = unmarshaller.unmarshal(reader, Guideline.class);
-            return element.getValue();
-        }
+        });
+        XMLInputFactory xif = XMLInputFactory.newFactory();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        XMLStreamReader xsr = xif.createXMLStreamReader(inputStream);
+        Guideline guideline = (Guideline) unmarshaller.unmarshal(xsr);
+        inputStream.close();
+        return guideline;
     }
 
-    public static void writeGuideline(Guideline guideline, Path path) throws JAXBException {
-        List<Class<?>> classes = new ArrayList<>(CHECKS);
-        classes.add(Guideline.class);
-        JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class[0]));
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(guideline, path.toFile());
-    }
-
-    private static Guideline readGuidelineUnchecked(String resource) {
-        try {
-            return readGuideline(resource);
-        } catch (IOException | XMLStreamException | JAXBException exc) {
-            LOGGER.warn("Failed reading Guideline.", exc);
-        }
-        return null;
-    }
-
-    public static List<Guideline> readGuidelines(List<String> guidelines) {
-        return guidelines.stream().map(GuidelineIO::readGuidelineUnchecked).filter(Objects::nonNull)
-            .collect(Collectors.toList());
+    public static Guideline read(File f) throws IOException, JAXBException, XMLStreamException {
+        return read(new FileInputStream(f));
     }
 }
