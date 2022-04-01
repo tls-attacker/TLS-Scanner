@@ -49,6 +49,8 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
         super(corePoolSize, threadFactory, defaultHandler);
         this.semaphore = semaphore;
         this.timeout = timeout;
+        this.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+        this.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
     }
 
     /**
