@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
+package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.tarce;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
