@@ -26,7 +26,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -43,13 +42,17 @@ public class EarlyCcsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        return new EarlyCcsResult(isVulnerable());
+    }
+
+    private EarlyCcsVulnerabilityType isVulnerable() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResult.TRUE) {
-            return new EarlyCcsResult(EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE);
+            return EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResult.TRUE) {
-            return new EarlyCcsResult(EarlyCcsVulnerabilityType.VULN_EXPLOITABLE);
+            return EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
         }
-        return new EarlyCcsResult(EarlyCcsVulnerabilityType.NOT_VULNERABLE);
+        return EarlyCcsVulnerabilityType.NOT_VULNERABLE;
     }
 
     private TestResult checkTargetVersion(TargetVersion targetVersion) {
@@ -59,13 +62,13 @@ public class EarlyCcsProbe extends TlsProbe {
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
-            CONSOLE.info("Not vulnerable (definitely), Alert message found");
+            LOGGER.debug("Not vulnerable (definitely), Alert message found");
             return TestResult.FALSE;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            CONSOLE.warn("Vulnerable (definitely), Finished message found");
+            LOGGER.debug("Vulnerable (definitely), Finished message found");
             return TestResult.TRUE;
         } else {
-            CONSOLE.info("Not vulnerable (probably), No Finished message found, yet also no alert");
+            LOGGER.debug("Not vulnerable (probably), No Finished message found, yet also no alert");
             return TestResult.FALSE;
         }
     }

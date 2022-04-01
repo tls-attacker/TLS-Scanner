@@ -13,7 +13,6 @@ import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HeartbeatMode;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.HeartbeatMessage;
@@ -46,29 +45,27 @@ public class HeartbleedProbe extends TlsProbe {
     private TestResult isVulnerable() {
         Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setAddHeartbeatExtension(true);
-        tlsConfig.setHeartbeatMode(HeartbeatMode.PEER_ALLOWED_TO_SEND);
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendAction(getHeartbeatMessage()));
-        trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
-
-        State state = new State(tlsConfig, trace);
+        State state = new State(tlsConfig, getTrace(tlsConfig));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, trace)) {
-            LOGGER.info(
-                "Vulnerable. The server responds with a heartbeat message, although the client heartbeat message contains an invalid Length value");
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
             return TestResult.TRUE;
-        } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)) {
-            return TestResult.FALSE;
+        } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResult.UNCERTAIN;
         } else {
-            LOGGER.info(
-                "(Most probably) Not vulnerable. The server does not respond with a heartbeat message, it is not vulnerable");
             return TestResult.FALSE;
         }
     }
 
-    private HeartbeatMessage getHeartbeatMessage() {
+    private WorkflowTrace getTrace(Config tlsConfig) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(getMalformedHeartbeatMessage()));
+        trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
+        return trace;
+    }
+
+    private HeartbeatMessage getMalformedHeartbeatMessage() {
         HeartbeatMessage message = new HeartbeatMessage();
         message.getPayload().setModification(ByteArrayModificationFactory.explicitValue(new byte[] { 1, 3 }));
         message.getPayloadLength().setModification(IntegerModificationFactory.explicitValue(20000));
