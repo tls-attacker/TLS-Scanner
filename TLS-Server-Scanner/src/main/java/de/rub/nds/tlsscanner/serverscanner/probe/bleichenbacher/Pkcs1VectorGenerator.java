@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.constants.Bits;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;

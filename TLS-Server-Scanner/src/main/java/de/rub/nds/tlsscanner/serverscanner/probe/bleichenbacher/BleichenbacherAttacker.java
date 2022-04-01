@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;
 import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
