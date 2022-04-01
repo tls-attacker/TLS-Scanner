@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.tarce.PaddingTraceGenerator;
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.tarce.PaddingTraceGeneratorFactory;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.trace.PaddingTraceGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.trace.PaddingTraceGeneratorFactory;
 import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;
 import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;

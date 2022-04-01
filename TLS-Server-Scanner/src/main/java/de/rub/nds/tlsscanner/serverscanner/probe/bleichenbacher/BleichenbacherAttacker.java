@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.tarce.BleichenbacherWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;

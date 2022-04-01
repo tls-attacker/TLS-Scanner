@@ -7,12 +7,11 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.padding.tarce;
+package de.rub.nds.tlsscanner.serverscanner.probe.padding.trace;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HeartbeatMessage;
+import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
@@ -23,14 +22,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingRecord
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.vector.PaddingVector;
 import java.util.LinkedList;
 
-public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
+public class FinishedResumptionPaddingTraceGenerator extends PaddingTraceGenerator {
 
     /**
      *
-     * @param recordGeneratorType
+     * @param type
      */
-    public HeartbeatPaddingTraceGenerator(PaddingRecordGeneratorType recordGeneratorType) {
-        super(recordGeneratorType);
+    public FinishedResumptionPaddingTraceGenerator(PaddingRecordGeneratorType type) {
+        super(type);
     }
 
     /**
@@ -41,15 +40,13 @@ public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.CLIENT);
-        ApplicationMessage applicationMessage = new ApplicationMessage(config);
-        HeartbeatMessage heartbeat = new HeartbeatMessage();
-        SendAction sendAction = new SendAction(applicationMessage, heartbeat);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
-        sendAction.getRecords().add(new Record(config));
-        trace.addTlsAction(sendAction);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.FULL_RESUMPTION, RunningModeType.CLIENT);
+        SendAction sendAction = (SendAction) trace.getLastSendingAction();
+        LinkedList<AbstractRecord> recordList = new LinkedList<>();
+        recordList.add(new Record(config));
+        recordList.add(vector.createRecord());
+        sendAction.setRecords(recordList);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
     }
