@@ -51,7 +51,7 @@ public class EarlyCcsProbe extends TlsProbe {
         }
         return new EarlyCcsResult(EarlyCcsVulnerabilityType.NOT_VULNERABLE);
     }
-    
+
     private TestResult checkTargetVersion(TargetVersion targetVersion) {
         Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setFiltersKeepUserSettings(false);
@@ -71,7 +71,8 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     private WorkflowTrace getTrace(Config tlsConfig, TargetVersion targetVersion) {
-        WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         workflowTrace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
         workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
         workflowTrace.addTlsAction(new ActivateEncryptionAction());
@@ -83,7 +84,7 @@ public class EarlyCcsProbe extends TlsProbe {
         workflowTrace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         return workflowTrace;
     }
-    
+
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return true;
@@ -97,7 +98,7 @@ public class EarlyCcsProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
     }
-    
+
     private enum TargetVersion {
         OPENSSL_1_0_0,
         OPENSSL_1_0_1
