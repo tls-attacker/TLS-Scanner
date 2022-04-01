@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
-import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
-import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.BleichenbacherScanType;
 
 public class BleichenbacherOracleTestInfo extends TestInfo {
 
@@ -22,10 +22,10 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
 
     private final BleichenbacherWorkflowType bleichenbacherWorkflowType;
 
-    private final BleichenbacherCommandConfig.Type bleichenbacherType;
+    private final BleichenbacherScanType bleichenbacherType;
 
     public BleichenbacherOracleTestInfo(ProtocolVersion version, CipherSuite cipherSuite,
-        BleichenbacherWorkflowType bleichenbacherWorkflowType, BleichenbacherCommandConfig.Type bleichenbacherType) {
+        BleichenbacherWorkflowType bleichenbacherWorkflowType, BleichenbacherScanType bleichenbacherType) {
         this.version = version;
         this.cipherSuite = cipherSuite;
         this.bleichenbacherWorkflowType = bleichenbacherWorkflowType;
@@ -83,7 +83,7 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
         return bleichenbacherWorkflowType;
     }
 
-    public BleichenbacherCommandConfig.Type getBleichenbacherType() {
+    public BleichenbacherScanType getBleichenbacherType() {
         return bleichenbacherType;
     }
 
