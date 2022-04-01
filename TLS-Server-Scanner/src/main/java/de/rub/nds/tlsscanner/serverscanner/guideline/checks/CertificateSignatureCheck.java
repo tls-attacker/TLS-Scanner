@@ -18,10 +18,15 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateSignatur
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import java.util.Locale;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Checks if the certificate is signed with an algorithm consistent with the public key.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateSignatureCheck extends CertificateGuidelineCheck {
 
     private CertificateSignatureCheck() {

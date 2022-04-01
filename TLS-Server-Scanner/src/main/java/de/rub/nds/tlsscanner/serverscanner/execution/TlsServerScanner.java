@@ -53,6 +53,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProb
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -82,7 +84,7 @@ public final class TlsServerScanner extends TlsScanner {
         super(config.getProbes());
         this.config = config;
         this.parallelExecutor = parallelExecutor;
-        closeAfterFinishParallel = true;
+        closeAfterFinishParallel = false;
         setCallbacks();
         fillDefaultProbeLists();
     }
@@ -92,7 +94,7 @@ public final class TlsServerScanner extends TlsScanner {
         super(config.getProbes());
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        closeAfterFinishParallel = true;
+        closeAfterFinishParallel = false;
         setCallbacks();
     }
 
@@ -212,6 +214,8 @@ public final class TlsServerScanner extends TlsScanner {
         ProtocolType protocolType = getProtocolType();
         ThreadedScanJobExecutor<ServerReport> executor = null;
         try {
+            // TODO Kind of hacky - this extracts the hosts from the client delegate - otherwise its not initialized
+            config.createConfig();
             ServerReport serverReport = new ServerReport(config.getClientDelegate().getExtractedHost(),
                 config.getClientDelegate().getExtractedPort());
             if (isConnectable()) {
@@ -261,10 +265,17 @@ public final class TlsServerScanner extends TlsScanner {
 
     private void executeGuidelineEvaluation(ServerReport report) {
         LOGGER.debug("Evaluating guidelines...");
-        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
-            LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
-            GuidelineChecker checker = new GuidelineChecker(guideline);
-            checker.fillReport(report);
+        List<String> guidelines = Arrays.asList("bsi.xml", "nist.xml");
+        for (String guidelineName : guidelines) {
+            try {
+                InputStream guideLineStream = GuidelineIO.class.getResourceAsStream("/guideline/" + guidelineName);
+                Guideline guideline = GuidelineIO.read(guideLineStream);
+                LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
+                GuidelineChecker checker = new GuidelineChecker(guideline);
+                checker.fillReport(report);
+            } catch (JAXBException | IOException | XMLStreamException ex) {
+                LOGGER.error("Could not read guideline", ex);
+            }
         }
         LOGGER.debug("Finished evaluating guidelines");
     }
@@ -272,7 +283,10 @@ public final class TlsServerScanner extends TlsScanner {
     private void closeParallelExecutorIfNeeded() {
 
         if (closeAfterFinishParallel) {
+            System.out.println("Shutting down parallel executor");
             parallelExecutor.shutdown();
+        } else {
+            System.out.println("NOT SHUTTING DOWN");
         }
     }
 

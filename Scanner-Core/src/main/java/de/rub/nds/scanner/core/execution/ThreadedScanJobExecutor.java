@@ -43,7 +43,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     private List<ScannerProbe> notScheduledTasks = new LinkedList<>();
 
-    List<Future<ProbeResult>> futureResults = new LinkedList<>();
+    private List<Future<ProbeResult>> futureResults = new LinkedList<>();
 
     private final ThreadPoolExecutor executor;
 

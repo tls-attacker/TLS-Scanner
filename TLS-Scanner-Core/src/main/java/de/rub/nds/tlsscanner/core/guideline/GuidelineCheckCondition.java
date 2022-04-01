@@ -13,16 +13,30 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class GuidelineCheckCondition {
 
+    @XmlElement(name = "condition")
+    @XmlElementWrapper(name = "or")
     private List<GuidelineCheckCondition> and;
+
+    @XmlElement(name = "condition")
+    @XmlElementWrapper(name = "and")
     private List<GuidelineCheckCondition> or;
 
+    @XmlAnyElement(lax = true)
     private AnalyzedProperty analyzedProperty;
+
+    @XmlElement(name = "result")
     private TestResult result;
 
     private GuidelineCheckCondition() {
@@ -50,7 +64,6 @@ public class GuidelineCheckCondition {
         return analyzedProperty;
     }
 
-    @XmlElement(name = "analyzedProperty")
     public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
@@ -59,7 +72,6 @@ public class GuidelineCheckCondition {
         return result;
     }
 
-    @XmlElement(name = "result")
     public void setResult(TestResult result) {
         this.result = result;
     }
@@ -68,8 +80,6 @@ public class GuidelineCheckCondition {
         return and;
     }
 
-    @XmlElement(name = "condition")
-    @XmlElementWrapper(name = "and")
     public void setAnd(List<GuidelineCheckCondition> and) {
         this.and = and;
     }
@@ -78,8 +88,6 @@ public class GuidelineCheckCondition {
         return or;
     }
 
-    @XmlElement(name = "condition")
-    @XmlElementWrapper(name = "or")
     public void setOr(List<GuidelineCheckCondition> or) {
         this.or = or;
     }

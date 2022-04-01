@@ -18,12 +18,17 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmStreng
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import java.util.Comparator;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Ordered according to NIST.SP.800-57pt1r5.
  *
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">NIST.SP.800-57pt1r5</a>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
 
     private HashAlgorithm minimumStrength;

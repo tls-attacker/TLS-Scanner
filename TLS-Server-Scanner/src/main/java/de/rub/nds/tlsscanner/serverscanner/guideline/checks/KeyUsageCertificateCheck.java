@@ -20,6 +20,9 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import java.util.Arrays;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
@@ -31,6 +34,8 @@ import org.bouncycastle.asn1.x509.KeyUsage;
  * <p>
  * ECDH certificates, DH certificates should have the keyAgreement key usage.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
     private final static List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST =

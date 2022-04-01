@@ -20,7 +20,12 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private List<SignatureAndHashAlgorithm> recommendedAlgorithms;

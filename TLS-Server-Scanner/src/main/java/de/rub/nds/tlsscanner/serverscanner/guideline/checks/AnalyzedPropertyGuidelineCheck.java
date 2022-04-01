@@ -18,28 +18,35 @@ import static de.rub.nds.scanner.core.constants.TestResult.NOT_TESTED_YET;
 import static de.rub.nds.scanner.core.constants.TestResult.TIMEOUT;
 import static de.rub.nds.scanner.core.constants.TestResult.UNCERTAIN;
 import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
-    private AnalyzedProperty property;
+    private TlsAnalyzedProperty property;
+
     private TestResult result;
 
     private AnalyzedPropertyGuidelineCheck() {
         super(null, null);
     }
 
-    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel, AnalyzedProperty property,
+    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel, TlsAnalyzedProperty property,
         TestResult result) {
         this(name, requirementLevel, null, property, result);
     }
 
     public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, AnalyzedProperty property, TestResult result) {
+        GuidelineCheckCondition condition, TlsAnalyzedProperty property, TestResult result) {
         super(name, requirementLevel, condition);
         this.property = property;
         this.result = result;

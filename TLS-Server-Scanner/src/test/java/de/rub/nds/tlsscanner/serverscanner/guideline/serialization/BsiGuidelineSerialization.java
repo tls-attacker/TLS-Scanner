@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuideline
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ import org.junit.Test;
 public class BsiGuidelineSerialization {
 
     @Test
-    public void serialize() throws JAXBException {
+    public void serialize() throws JAXBException, IOException {
         List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(new AnalyzedPropertyGuidelineCheck("Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.",
@@ -176,6 +177,6 @@ public class BsiGuidelineSerialization {
         Guideline guideline = new Guideline("BSI TR-02102-2",
             "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
             checks);
-        GuidelineIO.writeGuideline(guideline, Paths.get("src/main/resources/guideline/bsi.xml"));
+        GuidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
     }
 }

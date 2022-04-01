@@ -18,7 +18,12 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelin
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     /**
@@ -28,6 +33,10 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
      * with an RSA signature certificate or an ECDSA signature certificate.
      */
     private boolean atLeastOneCertificateShallPass;
+
+    private CertificateGuidelineCheck() {
+        super(null, null);
+    }
 
     public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel) {
         this(name, requirementLevel, false);

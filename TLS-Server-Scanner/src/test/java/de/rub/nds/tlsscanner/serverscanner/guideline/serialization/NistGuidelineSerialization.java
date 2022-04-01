@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuideline
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ import org.junit.Test;
 public class NistGuidelineSerialization {
 
     @Test
-    public void serialize() throws JAXBException {
+    public void serialize() throws JAXBException, IOException {
         List<GuidelineCheck> checks = new ArrayList<>();
         checks.add(new AnalyzedPropertyGuidelineCheck("Servers shall support TLS 1.2.", RequirementLevel.MUST,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.TRUE));
@@ -280,6 +281,6 @@ public class NistGuidelineSerialization {
             RequirementLevel.MUST, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE));
 
         Guideline guideline = new Guideline("NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
-        GuidelineIO.writeGuideline(guideline, Paths.get("src/main/resources/guideline/nist.xml"));
+        GuidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
     }
 }
