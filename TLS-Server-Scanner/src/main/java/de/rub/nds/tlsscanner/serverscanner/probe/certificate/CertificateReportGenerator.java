@@ -46,7 +46,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class CertificateReportGenerator {
 
-    private static final Logger LOGGER = LogManager.getLogger(CertificateReportGenerator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static List<CertificateReport> generateReports(Certificate certs) {
         List<CertificateReport> reportList = new LinkedList<>();
