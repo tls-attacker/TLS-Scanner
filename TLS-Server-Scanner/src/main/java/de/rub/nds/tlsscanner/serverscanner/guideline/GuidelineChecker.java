@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class GuidelineChecker {
 
-    protected static final Logger LOGGER = LogManager.getLogger(GuidelineChecker.class.getName());
+    protected static final Logger LOGGER = LogManager.getLogger();
 
     private final Guideline guideline;
 

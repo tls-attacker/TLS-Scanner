@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class InfluencersSerializationTest {
 
-    private static final Logger LOGGER = LogManager.getLogger(InfluencersSerializationTest.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private RatingInfluencers original;
 
