@@ -131,7 +131,7 @@ public abstract class TlsProbe implements Runnable {
         return getRequirements(report).evaluateRequirements();
     }
 
-    public abstract ProbeResult getCouldNotExecuteResult();
+    public abstract void getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);
 
