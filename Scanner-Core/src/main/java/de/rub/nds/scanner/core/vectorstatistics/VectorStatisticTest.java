@@ -12,7 +12,7 @@ package de.rub.nds.scanner.core.vectorstatistics;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -164,7 +164,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         Set<ResponseFingerprint> fingerPrintSet = getAllResponseFingerprints();
         for (ResponseFingerprint fingerprint1 : fingerPrintSet) {
             for (ResponseFingerprint fingerprint2 : fingerPrintSet) {
-                EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint1, fingerprint2);
+                EqualityError equalityError = FingerprintChecker.checkEquality(fingerprint1, fingerprint2);
                 if (equalityError != EqualityError.NONE) {
                     return equalityError;
                 }
