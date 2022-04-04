@@ -14,8 +14,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.trace.PaddingTraceGener
 import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;
 import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.padding.vector.FingerprintTaskVectorPair;
-import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityErrorTranslator;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
@@ -32,6 +30,8 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingRecord
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.vector.PaddingVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.vector.PaddingVectorGenerator;
+import de.rub.nds.tlsscanner.serverscanner.task.FingerPrintTask;
+import de.rub.nds.tlsscanner.serverscanner.task.FingerprintTaskVectorPair;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;

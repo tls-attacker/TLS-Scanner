@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.result.cca;
 
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 
 public class CcaTestResult {
 
