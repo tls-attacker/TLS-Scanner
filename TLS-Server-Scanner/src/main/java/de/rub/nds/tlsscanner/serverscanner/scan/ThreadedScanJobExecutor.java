@@ -17,7 +17,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -29,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +41,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
 
     private List<TlsProbe> notScheduledTasks = new LinkedList<>();
 
-    List<Future<ProbeResult>> futureResults = new LinkedList<>();
+    List<Future<TlsProbe>> futureResults = new LinkedList<>();
 
     private final ThreadPoolExecutor executor;
 
@@ -96,12 +94,12 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         while (true) {
             // handle all Finished Results
             long lastMerge = System.currentTimeMillis();
-            List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
-            for (Future<ProbeResult> result : futureResults) {
+            List<Future<TlsProbe>> finishedFutures = new LinkedList<>();
+            for (Future<TlsProbe> result : futureResults) {
                 if (result.isDone()) {
                     lastMerge = System.currentTimeMillis();
                     try {
-                        ProbeResult probeResult = result.get();
+                    	TlsProbe probeResult = result.get();
                         ConsoleLogger.CONSOLE
                             .info("+++" + probeResult.getType().getHumanReadableName() + " probe executed");
                         finishedFutures.add(result);
@@ -123,7 +121,6 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                 }
             }
             futureResults.removeAll(finishedFutures);
-            int oldFutures = futureResults.size();
             // execute possible new probes
             update(report, this);
             if (futureResults.size() == 0) {
