@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.task;
 
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseExtractor;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseExtractor;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
 import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;

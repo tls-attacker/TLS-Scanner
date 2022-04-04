@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
 
 public class ResponseCounter {
 

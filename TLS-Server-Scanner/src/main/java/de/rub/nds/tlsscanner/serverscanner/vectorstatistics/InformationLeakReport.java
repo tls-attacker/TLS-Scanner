@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -11,10 +11,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.util.response.FingerprintSecretPair;
+import de.rub.nds.tlsscanner.serverscanner.vector.VectorResponse;
 import java.util.LinkedList;
 import java.util.List;
 

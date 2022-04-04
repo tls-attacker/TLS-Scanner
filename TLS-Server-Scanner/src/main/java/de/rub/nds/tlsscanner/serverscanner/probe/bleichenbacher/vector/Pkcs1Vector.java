@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
 import java.util.Arrays;
 import java.util.Objects;
 

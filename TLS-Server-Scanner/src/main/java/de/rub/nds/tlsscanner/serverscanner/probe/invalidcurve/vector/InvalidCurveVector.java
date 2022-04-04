@@ -9,11 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.task;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
+import de.rub.nds.tlsscanner.serverscanner.vector.VectorResponse;
 
 public class FingerprintTaskVectorPair<T extends Vector> {
 

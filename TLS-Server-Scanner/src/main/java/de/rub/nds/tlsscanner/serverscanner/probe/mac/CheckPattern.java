@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
 import java.util.List;
 
 public class CheckPattern {

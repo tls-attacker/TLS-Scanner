@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.converter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
 
 import java.io.IOException;
 

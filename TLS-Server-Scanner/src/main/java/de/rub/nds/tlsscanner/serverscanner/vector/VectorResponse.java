@@ -7,26 +7,31 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.padding;
+package de.rub.nds.tlsscanner.serverscanner.vector;
 
 import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
 
-public class IdentifierResponse {
-
-    private final String identifier;
+public class VectorResponse {
 
     private final ResponseFingerprint fingerprint;
 
-    public IdentifierResponse(String identifier, ResponseFingerprint fingerprint) {
-        this.identifier = identifier;
+    private final Vector vector;
+
+    public VectorResponse(Vector vector, ResponseFingerprint fingerprint) {
+        this.vector = vector;
         this.fingerprint = fingerprint;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public Vector getVector() {
+        return vector;
     }
 
     public ResponseFingerprint getFingerprint() {
         return fingerprint;
+    }
+
+    @Override
+    public String toString() {
+        return "VectorResponse{" + "fingerprint=" + fingerprint + ", vector=" + vector + '}';
     }
 }

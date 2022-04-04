@@ -12,8 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.converter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
 
 import java.io.IOException;
 
