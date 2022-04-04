@@ -232,11 +232,12 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.secureRenegotiationExtension = this.secureRenegotiationCipherSuite = this.insecureRenegotiation 
     			= this.vulnerableRenegotiationAttackExtensionV1 = this.vulnerableRenegotiationAttackExtensionV2 
     			= this.vulnerableRenegotiationAttackCipherSuiteV1 = this.vulnerableRenegotiationAttackCipherSuiteV2 
     			= this.supportsDtlsCookieExchangeInRenegotiation = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     private Config getBaseConfig() {

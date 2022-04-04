@@ -128,8 +128,9 @@ public class HttpFalseStartProbe extends HttpsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.supportsFalseStart = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
 	@Override

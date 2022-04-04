@@ -96,8 +96,9 @@ public class EsniProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.receivedCorrectNonce = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {

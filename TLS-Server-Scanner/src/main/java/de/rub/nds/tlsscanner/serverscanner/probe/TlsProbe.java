@@ -130,7 +130,7 @@ public abstract class TlsProbe implements Runnable {
         return getRequirements(report).evaluateRequirements();
     }
 
-    public abstract void getCouldNotExecuteResult();
+    public abstract TlsProbe getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);
 
@@ -163,7 +163,7 @@ public abstract class TlsProbe implements Runnable {
     // can be overwritten if some data must be set manually
     protected abstract void mergeData(SiteReport report);
     
-    protected void merge(SiteReport report) {
+    public void merge(SiteReport report) {
     	// catch case that no properties are set
     	if(this.propertiesMap==null) {
     		this.propertiesMap = new HashMap<>();
@@ -174,7 +174,7 @@ public abstract class TlsProbe implements Runnable {
     	// check whether every property has been set
     	for (AnalyzedProperty aProp : this.properties) {
     		if (this.propertiesMap.get(aProp) == null)
-    			System.out.println("UNSET PROPERTY!!!"); //TODO was nu?
+    			System.out.println("UNSET PROPERTY " + aProp.name() + " in " + this.getClass()); //TODO was nu?
     	}
     	// merge data
     	if (this.startTime != 0 && this.stopTime != 0) {

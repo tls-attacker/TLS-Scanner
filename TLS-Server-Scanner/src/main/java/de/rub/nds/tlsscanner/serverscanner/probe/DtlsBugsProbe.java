@@ -157,8 +157,9 @@ public class DtlsBugsProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.isEarlyFinished = this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     @Override

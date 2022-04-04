@@ -81,9 +81,10 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.requiresSni = TestResults.COULD_NOT_TEST;
-    }
+        return this;
+}
 
 	@Override
 	protected void mergeData(SiteReport report) {

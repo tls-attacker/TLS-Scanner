@@ -107,8 +107,9 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.supportedAlpnProtocols = new LinkedList<>();
+        return this;
     }
 
     @Override

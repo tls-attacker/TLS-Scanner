@@ -324,8 +324,9 @@ public class CipherSuiteProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.pairLists = null;
+        return this;
     }
 
 	@Override

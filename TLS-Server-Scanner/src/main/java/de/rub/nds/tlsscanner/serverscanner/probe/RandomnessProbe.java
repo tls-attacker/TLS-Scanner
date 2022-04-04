@@ -59,7 +59,8 @@ public class RandomnessProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
+        return this;
     }
 
     @Override

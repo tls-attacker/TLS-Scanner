@@ -238,9 +238,10 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.vulnerableClassic = this.vulnerableEphemeral = this.vulnerableTwist = TestResults.COULD_NOT_TEST;
     	this.responses = null;
+        return this;
     }
 
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,

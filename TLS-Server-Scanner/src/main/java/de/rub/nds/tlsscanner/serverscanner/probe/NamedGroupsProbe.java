@@ -263,10 +263,11 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.namedGroupsMap = this.namedGroupsMapTls13 = new HashMap<>();
     	this.supportsExplicitPrime = this.supportsExplicitChar2 = this.groupsDependOnCipherSuite
     			= this.ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {

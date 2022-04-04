@@ -131,9 +131,10 @@ public class HttpHeaderProbe extends HttpsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.speaksHttps = TestResults.COULD_NOT_TEST;
         this.headerList = null;
+        return this;
     }
 
 	@Override

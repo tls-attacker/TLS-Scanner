@@ -630,7 +630,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.extensionIntolerance =  this.cipherSuiteIntolerance = this.cipherSuiteLengthIntolerance512 
     			= this.compressionIntolerance = this.versionIntolerance = this.alpnIntolerance 
     			= this.clientHelloLengthIntolerance = this.emptyLastExtensionIntolerance 
@@ -640,6 +640,7 @@ public class CommonBugProbe extends TlsProbe {
     			= this.ignoresOfferedSignatureAndHashAlgorithms = this.maxLengthClientHelloIntolerant 
     			= this.greaseNamedGroupIntolerance = this.greaseCipherSuiteIntolerance 
     			= this.greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
 	@Override

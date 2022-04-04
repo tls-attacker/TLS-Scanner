@@ -93,8 +93,9 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.generalDrown = this.extraClear = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
 	@Override

@@ -150,9 +150,10 @@ public class CcaProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
         this.resultList = null;
+        return this;
     }
 
     private Config generateConfig() {

@@ -138,9 +138,10 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.supportedTokenBindingVersion = null;
     	this.supportedTokenBindingKeyParameters = null;
+        return this;
     }
 
 	@Override

@@ -296,9 +296,10 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.certResults = null;
     	this.tls13CertStatus = null;
+        return this;
     }
 
 	@Override

@@ -81,8 +81,9 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.enforced = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     @Override

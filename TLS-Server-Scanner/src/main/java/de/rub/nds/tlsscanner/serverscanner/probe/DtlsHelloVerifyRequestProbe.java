@@ -251,11 +251,12 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.hasHvrRetransmissions = this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie 
     			= this.usesSessionIdInCookie = this.usesCiphersuitesInCookie = this.usesCompressionsInCookie 
     			= TestResults.COULD_NOT_TEST;
     	this.cookieLength = -1;
+        return this;
     }
 
     @Override

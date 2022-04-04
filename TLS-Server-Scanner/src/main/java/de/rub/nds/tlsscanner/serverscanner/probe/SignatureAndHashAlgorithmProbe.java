@@ -223,10 +223,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.respectsExtension = TestResults.COULD_NOT_TEST;
     	this.signatureAndHashAlgorithmListSke = null;
     	this.signatureAndHashAlgorithmListTls13 = null;
+        return this;
     }
 
 	@Override

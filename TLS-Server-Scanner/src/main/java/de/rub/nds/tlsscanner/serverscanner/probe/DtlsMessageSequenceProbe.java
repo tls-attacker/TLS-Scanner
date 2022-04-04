@@ -176,10 +176,11 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.acceptsStartedWithInvalidMessageNumber = this.acceptsSkippedMessageNumbersOnce
     			= this.acceptsSkippedMessageNumbersMultiple = this.acceptsRandomMessageNumbers
     			= TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     @Override

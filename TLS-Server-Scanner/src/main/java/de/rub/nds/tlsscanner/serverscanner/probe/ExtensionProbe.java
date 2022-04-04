@@ -153,8 +153,9 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.allSupportedExtensions = null;
+        return this;
     }
 
 	@Override

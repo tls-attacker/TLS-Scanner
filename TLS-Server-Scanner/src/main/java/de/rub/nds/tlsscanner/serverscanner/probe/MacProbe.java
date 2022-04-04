@@ -379,8 +379,9 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.appDataPattern = this.finishedPattern = this.verifyPattern = null;
+        return this;
     }
 
 	@Override

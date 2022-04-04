@@ -61,8 +61,9 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
 	@Override

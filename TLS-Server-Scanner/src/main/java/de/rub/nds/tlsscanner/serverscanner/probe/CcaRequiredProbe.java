@@ -60,8 +60,9 @@ public class CcaRequiredProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.requiresCca = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     private Config generateConfig() {

@@ -51,12 +51,14 @@ public class HelloRetryProbe extends TlsProbe {
 
     @Override
     protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
+        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3)
+        		.requireProbeTypes(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.sendsHelloRetryRequest = this.issuesCookie = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     @Override

@@ -218,8 +218,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.simulatedClientList = null;
+        return this;
     }
 
 	@Override

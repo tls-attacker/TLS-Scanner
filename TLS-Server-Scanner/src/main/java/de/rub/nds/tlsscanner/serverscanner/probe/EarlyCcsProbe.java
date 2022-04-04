@@ -46,8 +46,9 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.earlyCcsVulnerabilityType = null;
+        return this;
     }
 
 	@Override

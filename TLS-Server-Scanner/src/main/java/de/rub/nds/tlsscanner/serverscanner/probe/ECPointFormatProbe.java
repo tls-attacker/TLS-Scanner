@@ -176,9 +176,10 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
         this.supportedFormats = null;
+        return this;
     }
 
     @Override

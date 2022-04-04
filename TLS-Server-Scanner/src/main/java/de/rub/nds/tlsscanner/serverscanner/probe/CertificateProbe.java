@@ -118,9 +118,10 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.certificates = null;
         this.ecdsaPkGroupsStatic = this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
+        return this;
     }
 
     private List<CertificateChain> getRsaCerts() {

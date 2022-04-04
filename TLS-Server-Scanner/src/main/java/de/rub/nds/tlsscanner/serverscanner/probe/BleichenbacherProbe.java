@@ -148,8 +148,9 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,

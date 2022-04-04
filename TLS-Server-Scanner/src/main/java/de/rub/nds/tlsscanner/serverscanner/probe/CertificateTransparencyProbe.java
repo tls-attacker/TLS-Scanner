@@ -242,10 +242,11 @@ public class CertificateTransparencyProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.supportsPrecertificateSCTsResult = this.supportsHandshakeSCTsResult = this.supportsOcspSCTsResult 
     			= this.meetsChromeCTPolicyResult = TestResults.COULD_NOT_TEST;
         this.precertificateSctList = this.handshakeSctList = this.ocspSctList = new SignedCertificateTimestampList();        
+        return this;
     }
 
     @Override

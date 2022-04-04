@@ -157,9 +157,10 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.supportedProtocolVersions = null;
     	this.unsupportedProtocolVersions = null;
+        return this;
     }
 
     private boolean isTls13Supported() {

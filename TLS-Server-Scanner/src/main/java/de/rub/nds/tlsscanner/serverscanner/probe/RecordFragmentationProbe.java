@@ -46,8 +46,9 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.supported = TestResults.COULD_NOT_TEST; 
+        return this;
     }
 
     @Override

@@ -378,10 +378,11 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.supportsResumption = this.supportsSessionTicketResumption = this.supportsTls13SessionTicket = this.supportsTls13PskDhe 
     			= this.supportsTls13Psk = this.supportsTls13_0rtt = this.supportsDtlsCookieExchangeInResumption 
     			= this.supportsDtlsCookieExchangeInSessionTicketResumption = this.respectsPskModes = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
 	@Override

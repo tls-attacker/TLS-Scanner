@@ -97,8 +97,9 @@ public class CompressionsProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
         this.compressions = null;
+        return this;
     }
 
 	@Override

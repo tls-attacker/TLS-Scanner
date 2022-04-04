@@ -208,9 +208,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
+    public TlsProbe getCouldNotExecuteResult() {
     	this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
-    }
+        return this;
+}
 
     @Override
     public void adjustConfig(SiteReport report) {

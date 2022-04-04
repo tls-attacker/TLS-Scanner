@@ -147,8 +147,10 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     @Override
-    public void getCouldNotExecuteResult() {
-        this.supportsFragmentation = this.supportsReordering = TestResults.COULD_NOT_TEST;    }
+    public TlsProbe getCouldNotExecuteResult() {
+        this.supportsFragmentation = this.supportsReordering = TestResults.COULD_NOT_TEST;    
+        return this;
+    }
 
     @Override
     public void adjustConfig(SiteReport report) {
