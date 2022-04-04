@@ -107,7 +107,7 @@ public class PaddingOracleAttacker {
         return referenceError != EqualityError.NONE;
     }
 
-    public List<VectorResponse> createVectorResponseList() {
+    private List<VectorResponse> createVectorResponseList() {
         prepareConfig();
         PaddingTraceGenerator generator =
             PaddingTraceGeneratorFactory.getPaddingTraceGenerator(vectorGeneratorType, recordGeneratorType);
@@ -149,7 +149,7 @@ public class PaddingOracleAttacker {
      * @param  responseVectorList
      * @return
      */
-    public EqualityError getEqualityError(List<VectorResponse> responseVectorList) {
+    private EqualityError getEqualityError(List<VectorResponse> responseVectorList) {
 
         for (VectorResponse responseOne : responseVectorList) {
             for (VectorResponse responseTwo : responseVectorList) {
@@ -170,7 +170,7 @@ public class PaddingOracleAttacker {
         return EqualityError.NONE;
     }
 
-    public void prepareConfig() {
+    private void prepareConfig() {
         tlsConfig.setHighestProtocolVersion(testedVersion);
         tlsConfig.setDefaultClientSupportedCipherSuites(testedSuite);
         KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(testedSuite);

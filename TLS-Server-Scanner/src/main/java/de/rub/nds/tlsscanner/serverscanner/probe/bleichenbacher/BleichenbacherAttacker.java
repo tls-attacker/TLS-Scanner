@@ -107,7 +107,7 @@ public class BleichenbacherAttacker {
         return referenceError != EqualityError.NONE;
     }
 
-    public List<VectorResponse> createVectorResponseList() {
+    private List<VectorResponse> createVectorResponseList() {
         prepareConfig();
         RSAPublicKey publicKey = getServerPublicKey();
         if (publicKey == null) {
@@ -193,7 +193,7 @@ public class BleichenbacherAttacker {
         return publicKey;
     }
 
-    public void prepareConfig() {
+    private void prepareConfig() {
         tlsConfig.setHighestProtocolVersion(testedVersion);
         tlsConfig.setDefaultClientSupportedCipherSuites(testedSuite);
         tlsConfig.setAddECPointFormatExtension(false);
