@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class Sweet32AfterProbeTest {
 
@@ -71,6 +70,8 @@ public class Sweet32AfterProbeTest {
             Set<CipherSuite> ciphers = new HashSet<>();
             ciphers.add(vulnerable);
             ciphers.addAll(safeCipherSuites.subList(0, 5));
+
+            report.setCipherSuites(ciphers);
             probe.analyze(report);
             assertEquals(report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.TRUE);
         }
@@ -89,12 +90,22 @@ public class Sweet32AfterProbeTest {
     }
 
     /**
-     * Test if result is uncertain when there are no cipher suites given in the site report.
+     * Test if probe recognizes SiteReport without any ciphers as invulnerable to Sweet32.
      */
     @Test
     public void testNoCipherSuites() {
-        report.setCipherSuites(null);
         probe.analyze(report);
-        assertEquals(report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.UNCERTAIN);
+        assertEquals(report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.FALSE);
     }
+
+    /**
+     * Test if vulnerability to Sweet32 is uncertain when the SiteReport is empty without host and port.
+     */
+    @Test
+    public void testEmptySiteReport() {
+        SiteReport emptyReport = new SiteReport();
+        probe.analyze(emptyReport);
+        assertEquals(emptyReport.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.UNCERTAIN);
+    }
+
 }
