@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;

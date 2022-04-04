@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
 
 public class InvalidCurveTestInfo extends TestInfo {
 

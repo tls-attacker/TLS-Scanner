@@ -9,14 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
-import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
-import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
-import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -25,7 +18,6 @@ import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
 import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
@@ -35,9 +27,12 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.InvalidCurvePoint;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.TwistedCurvePoint;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -56,16 +51,9 @@ import java.util.Set;
 
 public class InvalidCurveProbe extends TlsProbe {
 
-    /**
-     * Defines the error probability for each test vector
-     */
-    private static final double ERROR_PROBABILITY = 0.0001; // increase if needed
-
-    private static final int LARGE_ORDER_ITERATIONS = 40;
-
-    private static final int EXTENSION_FACTOR = 7;
-
     private static final int CURVE_TWIST_MAX_ORDER = 23;
+
+    private final ScannerDetail scanDetail;
 
     private boolean supportsRenegotiation;
 
@@ -93,6 +81,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
     public InvalidCurveProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, configSelector);
+        scanDetail = getConfigSelector().getScannerConfig().getScanDetail();
     }
 
     @Override
@@ -102,7 +91,6 @@ public class InvalidCurveProbe extends TlsProbe {
         for (InvalidCurveVector vector : vectors) {
             if (benignHandshakeSuccessful(vector)) {
                 InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
-
                 if (scanResponse.getVectorResponses().size() > 0) {
                     DistributionTest distTest =
                         new DistributionTest(new InvalidCurveTestInfo(vector), scanResponse.getVectorResponses(),
@@ -183,7 +171,7 @@ public class InvalidCurveProbe extends TlsProbe {
             LOGGER.warn("Server did not list uncompressed points as supported");
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResult.TRUE
-            || getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
+            || scanDetail == ScannerDetail.ALL) {
             fpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
         }
 
@@ -257,52 +245,6 @@ public class InvalidCurveProbe extends TlsProbe {
             null);
     }
 
-    private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,
-        List<CipherSuite> cipherSuites, NamedGroup group, List<NamedGroup> ecdsaRequiredGroups) {
-        ClientDelegate delegate = (ClientDelegate) attackConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        ProtocolVersionDelegate protocolVersionDelegate =
-            (ProtocolVersionDelegate) attackConfig.getDelegate(ProtocolVersionDelegate.class);
-        protocolVersionDelegate.setProtocolVersion(protocolVersion);
-        InvalidCurveAttacker attacker =
-            new InvalidCurveAttacker(attackConfig, attackConfig.createConfig(), getParallelExecutor());
-
-        if (protocolVersion == ProtocolVersion.TLS13) {
-            attacker.getTlsConfig().setAddKeyShareExtension(true);
-            List<NamedGroup> keyShareGroups = new LinkedList<>();
-            keyShareGroups.add(group);
-            attacker.getTlsConfig().setDefaultClientKeyShareNamedGroups(keyShareGroups);
-            attacker.getTlsConfig().setAddECPointFormatExtension(false);
-            attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
-            attacker.getTlsConfig().setAddPSKKeyExchangeModesExtension(true);
-            List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-            pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
-            attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
-            attacker.getTlsConfig().setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-        }
-
-        attacker.getTlsConfig().setDefaultClientSupportedCipherSuites(cipherSuites);
-        attacker.getTlsConfig().setDefaultClientNamedGroups(group);
-        attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
-
-        // avoid cases where the server requires an additional group
-        // to sign a PK of our test group using ECDSA
-        if (!ecdsaRequiredGroups.isEmpty()) {
-            attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
-        }
-
-        if (supportsSecureRenegotiation == TestResult.FALSE && supportsRenegotiation) {
-            attacker.getTlsConfig().setAddRenegotiationInfoExtension(false);
-        } else {
-            attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
-        }
-        return attacker;
-    }
-
     private List<InvalidCurveVector> prepareVectors() {
         LinkedList<InvalidCurveVector> vectors = new LinkedList<>();
 
@@ -324,7 +266,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         LOGGER.warn("Protocol Version " + protocolVersion
                             + " had no entry in CipherSuite map - omitting from InvalidCurve scan");
                     } else {
-                        if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
+                        if (scanDetail == ScannerDetail.ALL) {
                             // individual scans for every cipher suite
                             for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
                                 if (legitInvalidCurveVector(group, format)
@@ -344,7 +286,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             HashMap<ProtocolVersion, List<CipherSuite>> filteredCipherSuites =
                                 filterCipherSuites(group);
                             if (pickedProtocolVersions.contains(protocolVersion)
-                                || getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                                || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                                 List<CipherSuite> versionSuiteList = filteredCipherSuites.get(protocolVersion);
                                 for (CipherSuite cipherSuite : versionSuiteList) {
                                     if (legitInvalidCurveVector(group, format)) {
@@ -367,10 +309,10 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         // repeat scans in renegotiation
-        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             ProtocolVersion renegotiationVersion = pickRenegotiationVersion();
             int vectorCount = vectors.size();
-            if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
+            if (scanDetail == ScannerDetail.ALL) {
                 // scan all possible combinations in renegotiation
                 for (int i = 0; i < vectorCount; i++) {
                     InvalidCurveVector vector = vectors.get(i);
@@ -401,22 +343,16 @@ public class InvalidCurveProbe extends TlsProbe {
     private InvalidCurveResponse executeSingleScan(InvalidCurveVector vector, InvalidCurveScanType scanType) {
         LOGGER.debug("Executing Invalid Curve scan for " + vector.toString());
         try {
-            TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
-
-            InvalidCurveAttackConfig invalidCurveAttackConfig =
-                new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-            invalidCurveAttackConfig.setNamedGroup(vector.getNamedGroup());
-            invalidCurveAttackConfig.setAttackInRenegotiation(vector.isAttackInRenegotiation());
-            setIterationFields(invalidCurveAttackConfig, vector, scanType);
-            setPublicPointFields(invalidCurveAttackConfig, vector, scanType);
-            if (vector.isTwistAttack()) {
-                invalidCurveAttackConfig.setCurveTwistAttack(true);
+            Config config;
+            if (vector.getProtocolVersion().isTLS13()) {
+                config = getConfigSelector().getTls13BaseConfig();
+            } else {
+                config = getConfigSelector().getBaseConfig();
             }
-
-            InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, vector.getProtocolVersion(),
-                vector.getCipherSuiteAsList(), vector.getNamedGroup(), vector.getEcdsaRequiredGroups());
+            InvalidCurveAttacker attacker = new InvalidCurveAttacker(config, getParallelExecutor(), vector, scanType,
+                getInfinityProbability(vector, scanType));
             Boolean foundCongruence = attacker.isVulnerable();
-
+            TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
             if (foundCongruence == null) {
                 LOGGER.warn("Was unable to determine if points are validated for " + vector.toString());
                 showsPointsAreNotValidated = TestResult.ERROR_DURING_TEST;
@@ -612,7 +548,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             gotEphemeral = true;
                         }
 
-                        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        if (scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                             if (cipherSuite.isGCM() && gotGCM == false) {
                                 addCandidate = true;
                                 gotGCM = true;
@@ -710,14 +646,31 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     private boolean benignHandshakeSuccessful(InvalidCurveVector vector) {
-        InvalidCurveAttackConfig dummyAttackConfig =
-            new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-        InvalidCurveAttacker configBearer = prepareAttacker(dummyAttackConfig, vector.getProtocolVersion(),
-            vector.getCipherSuiteAsList(), vector.getNamedGroup(), vector.getEcdsaRequiredGroups());
-        Config tlsConfig = configBearer.getTlsConfig();
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-        tlsConfig.setDefaultSelectedCipherSuite(vector.getCipherSuite());
-        tlsConfig.setDefaultSelectedNamedGroup(vector.getNamedGroup());
+        Config tlsConfig;
+        if (vector.getProtocolVersion().isTLS13()) {
+            tlsConfig = getConfigSelector().getTls13BaseConfig();
+            List<NamedGroup> keyShareGroups = new LinkedList<>();
+            keyShareGroups.add(vector.getNamedGroup());
+            tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroups);
+            tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+            List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+            pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+            tlsConfig.setPSKKeyExchangeModes(pskKex);
+        } else {
+            tlsConfig = getConfigSelector().getBaseConfig();
+        }
+        tlsConfig.setHighestProtocolVersion(vector.getProtocolVersion());
+        tlsConfig.setDefaultClientSupportedCipherSuites(vector.getCipherSuite());
+        tlsConfig.setDefaultClientNamedGroups(vector.getNamedGroup());
+        // avoid cases where the server requires an additional group
+        // to sign a PK of our test group using ECDSA
+        if (!vector.getEcdsaRequiredGroups().isEmpty()) {
+            tlsConfig.getDefaultClientNamedGroups().addAll(vector.getEcdsaRequiredGroups());
+        }
+        tlsConfig
+            .setAddRenegotiationInfoExtension(supportsSecureRenegotiation == TestResult.FALSE && supportsRenegotiation);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+
         State state = new State(tlsConfig);
         executeState(state);
 
@@ -731,92 +684,6 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         return true;
-    }
-
-    private void setIterationFields(InvalidCurveAttackConfig attackConfig, InvalidCurveVector vector,
-        InvalidCurveScanType scanType) {
-        if (vector.getNamedGroup() == NamedGroup.ECDH_X25519 || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
-            attackConfig.setProtocolFlows(1);
-        } else {
-            double errorAttempt = (double) (1 - 2 * getInfinityProbability(vector, scanType));
-            int attempts = (int) Math.ceil(Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt));
-
-            switch (scanType) {
-                case REGULAR:
-                    attackConfig.setKeyOffset(0);
-                    attackConfig.setProtocolFlows(attempts);
-                    break;
-                case EXTENDED:
-                    attackConfig.setKeyOffset(attempts);
-                    attackConfig.setProtocolFlows((attempts * EXTENSION_FACTOR) - attempts);
-                    break;
-                case REDUNDANT:
-                    attackConfig.setKeyOffset(0);
-                    attackConfig.setProtocolFlows(attempts * EXTENSION_FACTOR);
-                    break;
-                case LARGE_GROUP:
-                    attackConfig.setKeyOffset(0);
-                    attackConfig.setProtocolFlows(LARGE_ORDER_ITERATIONS);
-                    break;
-                default: // will never occur as all enum types are handled
-                    ;
-            }
-        }
-    }
-
-    public void setPublicPointFields(InvalidCurveAttackConfig attackConfig, InvalidCurveVector vector,
-        InvalidCurveScanType scanType) {
-        if (scanType == InvalidCurveScanType.REGULAR || scanType == InvalidCurveScanType.EXTENDED) {
-            if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPointD());
-                attackConfig
-                    .setPublicPointBaseX(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig
-                    .setPublicPointBaseY(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY());
-                attackConfig.setPointCompressionFormat(vector.getPointFormat());
-            } else {
-                attackConfig
-                    .setPublicPointBaseX(InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig
-                    .setPublicPointBaseY(InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY());
-
-                attackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
-            }
-        } else if (scanType == InvalidCurveScanType.REDUNDANT) {
-            // use second point of different order
-            if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPointD());
-                attackConfig.setPublicPointBaseX(
-                    TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig.setPublicPointBaseY(
-                    TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPublicPointBaseY());
-                attackConfig.setPointCompressionFormat(vector.getPointFormat());
-            } else {
-                attackConfig.setPublicPointBaseX(
-                    InvalidCurvePoint.alternativeOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig.setPublicPointBaseY(
-                    InvalidCurvePoint.alternativeOrder(vector.getNamedGroup()).getPublicPointBaseY());
-
-                attackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
-            }
-        } else if (scanType == InvalidCurveScanType.LARGE_GROUP) {
-            // point of large order
-            if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPointD());
-                attackConfig
-                    .setPublicPointBaseX(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig
-                    .setPublicPointBaseY(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY());
-                attackConfig.setPointCompressionFormat(vector.getPointFormat());
-            } else {
-                attackConfig
-                    .setPublicPointBaseX(InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX());
-                attackConfig
-                    .setPublicPointBaseY(InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY());
-
-                attackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
-            }
-        }
     }
 
     private double getInfinityProbability(InvalidCurveVector vector, InvalidCurveScanType scanType) {
@@ -860,7 +727,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
                 if (initialTest.isSignificantDistinctAnswers() == false && initialResponse.getVectorResponses().size()
                     >= (initialResponse.getFingerprintSecretPairs().size() / 2)) {
-                    if (getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
+                    if (scanDetail == ScannerDetail.ALL) {
                         // perform second test immediately
                         InvalidCurveResponse redundantResponse =
                             executeSingleScan(vector, InvalidCurveScanType.REDUNDANT);
