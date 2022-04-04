@@ -46,8 +46,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.math.BigInteger;
@@ -298,8 +296,9 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new OcspResult(null, null);
+    public void getCouldNotExecuteResult() {
+    	this.certResults = null;
+    	this.tls13CertStatus = null;
     }
 
 	@Override

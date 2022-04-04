@@ -27,8 +27,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
@@ -220,8 +218,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HandshakeSimulationResult(null);
+    public void getCouldNotExecuteResult() {
+    	this.simulatedClientList = null;
     }
 
 	@Override

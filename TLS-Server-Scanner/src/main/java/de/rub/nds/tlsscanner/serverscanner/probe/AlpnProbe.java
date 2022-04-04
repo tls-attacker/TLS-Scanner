@@ -22,8 +22,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,6 +30,7 @@ import java.util.List;
 public class AlpnProbe extends TlsProbe {
 
 	private List<String> supportedAlpnProtocols;
+	
     public AlpnProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.ALPN, scannerConfig);
     }
@@ -108,8 +107,8 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new AlpnResult(new LinkedList<>());
+    public void getCouldNotExecuteResult() {
+        this.supportedAlpnProtocols = new LinkedList<>();
     }
 
     @Override

@@ -47,8 +47,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -215,7 +213,7 @@ public class ResumptionProbe extends TlsProbe {
             return TestResults.COULD_NOT_TEST;
         }
         ServerHelloMessage second = hellos.get(1);
-        KeyShareExtensionMessage keyShareExtensionMessage = second.getExtension(KeyShareExtensionMessage.class);
+        second.getExtension(KeyShareExtensionMessage.class);
         return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResults.TRUE : TestResults.FALSE;
     }
 
@@ -380,10 +378,10 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new ResumptionResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.supportsResumption = this.supportsSessionTicketResumption = this.supportsTls13SessionTicket = this.supportsTls13PskDhe 
+    			= this.supportsTls13Psk = this.supportsTls13_0rtt = this.supportsDtlsCookieExchangeInResumption 
+    			= this.supportsDtlsCookieExchangeInSessionTicketResumption = this.respectsPskModes = TestResults.COULD_NOT_TEST;
     }
 
 	@Override

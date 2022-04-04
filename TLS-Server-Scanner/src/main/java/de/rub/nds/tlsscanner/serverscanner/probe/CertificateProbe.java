@@ -27,8 +27,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,8 +118,9 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CertificateResult(null, null, null, null, null, null, null);
+    public void getCouldNotExecuteResult() {
+    	this.certificates = null;
+        this.ecdsaPkGroupsStatic = this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
     }
 
     private List<CertificateChain> getRsaCerts() {

@@ -26,8 +26,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ECPointFormatResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -178,8 +176,9 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new ECPointFormatResult(null, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
+        this.supportedFormats = null;
     }
 
     @Override

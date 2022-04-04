@@ -37,8 +37,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsBugsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -159,8 +157,8 @@ public class DtlsBugsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.isEarlyFinished = this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
     }
 
     @Override

@@ -29,8 +29,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,8 +96,8 @@ public class EsniProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new SniResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.receivedCorrectNonce = TestResults.COULD_NOT_TEST;
     }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {

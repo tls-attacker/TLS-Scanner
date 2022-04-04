@@ -35,8 +35,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -130,8 +128,8 @@ public class HttpFalseStartProbe extends HttpsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.supportsFalseStart = TestResults.COULD_NOT_TEST;
     }
 
 	@Override

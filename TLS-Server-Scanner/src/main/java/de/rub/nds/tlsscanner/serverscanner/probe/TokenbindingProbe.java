@@ -25,8 +25,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TokenbindingResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -140,8 +138,9 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new TokenbindingResult(null, null);
+    public void getCouldNotExecuteResult() {
+    	this.supportedTokenBindingVersion = null;
+    	this.supportedTokenBindingKeyParameters = null;
     }
 
 	@Override

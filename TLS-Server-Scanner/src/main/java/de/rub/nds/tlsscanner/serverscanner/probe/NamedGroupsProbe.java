@@ -33,8 +33,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -265,9 +263,10 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.namedGroupsMap = this.namedGroupsMapTls13 = new HashMap<>();
+    	this.supportsExplicitPrime = this.supportsExplicitChar2 = this.groupsDependOnCipherSuite
+    			= this.ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {

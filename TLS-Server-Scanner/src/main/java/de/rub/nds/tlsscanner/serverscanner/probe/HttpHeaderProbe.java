@@ -36,8 +36,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import java.util.Arrays;
 import java.util.Base64;
@@ -133,8 +131,9 @@ public class HttpHeaderProbe extends HttpsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
+    public void getCouldNotExecuteResult() {
+        this.speaksHttps = TestResults.COULD_NOT_TEST;
+        this.headerList = null;
     }
 
 	@Override

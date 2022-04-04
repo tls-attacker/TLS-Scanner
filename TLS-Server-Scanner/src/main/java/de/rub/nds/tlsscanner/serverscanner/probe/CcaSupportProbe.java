@@ -21,8 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 
 public class CcaSupportProbe extends TlsProbe {
 
@@ -50,8 +48,8 @@ public class CcaSupportProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CcaSupportResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.supportsCca = TestResults.COULD_NOT_TEST;
     }
 
     private Config generateConfig() {

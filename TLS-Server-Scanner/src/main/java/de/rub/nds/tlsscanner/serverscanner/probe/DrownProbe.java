@@ -22,8 +22,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Objects;
 
 public class DrownProbe extends TlsProbe {
@@ -95,8 +93,8 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DrownResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.generalDrown = this.extraClear = TestResults.COULD_NOT_TEST;
     }
 
 	@Override

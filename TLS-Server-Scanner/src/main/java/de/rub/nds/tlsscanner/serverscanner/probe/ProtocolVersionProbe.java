@@ -31,8 +31,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProtocolVersionResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -159,8 +157,9 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new ProtocolVersionResult(null, null);
+    public void getCouldNotExecuteResult() {
+    	this.supportedProtocolVersions = null;
+    	this.unsupportedProtocolVersions = null;
     }
 
     private boolean isTls13Supported() {

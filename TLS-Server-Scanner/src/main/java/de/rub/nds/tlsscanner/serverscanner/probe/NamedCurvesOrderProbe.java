@@ -21,8 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupOrderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,12 +76,13 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     @Override
     protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CIPHER_SUITE).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_ECDH, AnalyzedProperty.SUPPORTS_ECDHE);
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CIPHER_SUITE)
+        		.requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_ECDH, AnalyzedProperty.SUPPORTS_ECDHE);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupOrderResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.enforced = TestResults.COULD_NOT_TEST;
     }
 
     @Override

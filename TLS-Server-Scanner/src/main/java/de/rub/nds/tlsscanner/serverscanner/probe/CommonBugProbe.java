@@ -41,8 +41,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CommonBugProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -632,12 +630,16 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.extensionIntolerance =  this.cipherSuiteIntolerance = this.cipherSuiteLengthIntolerance512 
+    			= this.compressionIntolerance = this.versionIntolerance = this.alpnIntolerance 
+    			= this.clientHelloLengthIntolerance = this.emptyLastExtensionIntolerance 
+    			= this.onlySecondCipherSuiteByteEvaluated = this.namedGroupIntolerant 
+    			= this.namedSignatureAndHashAlgorithmIntolerance = this.ignoresCipherSuiteOffering 
+    			= this.reflectsCipherSuiteOffering = this.ignoresOfferedNamedGroups 
+    			= this.ignoresOfferedSignatureAndHashAlgorithms = this.maxLengthClientHelloIntolerant 
+    			= this.greaseNamedGroupIntolerance = this.greaseCipherSuiteIntolerance 
+    			= this.greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
     }
 
 	@Override

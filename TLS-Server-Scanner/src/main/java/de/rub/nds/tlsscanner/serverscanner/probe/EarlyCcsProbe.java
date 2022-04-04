@@ -18,15 +18,14 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EarlyCcsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 
 public class EarlyCcsProbe extends TlsProbe {
+
+    private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
     public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig);
     }
-    private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
     @Override
     public void executeTest() {
@@ -47,8 +46,8 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new EarlyCcsResult(null);
+    public void getCouldNotExecuteResult() {
+    	this.earlyCcsVulnerabilityType = null;
     }
 
 	@Override

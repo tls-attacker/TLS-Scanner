@@ -38,8 +38,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsHelloVerifyRequestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -253,10 +251,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsHelloVerifyRequestResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, -1,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.hasHvrRetransmissions = this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie 
+    			= this.usesSessionIdInCookie = this.usesCiphersuitesInCookie = this.usesCompressionsInCookie 
+    			= TestResults.COULD_NOT_TEST;
+    	this.cookieLength = -1;
     }
 
     @Override

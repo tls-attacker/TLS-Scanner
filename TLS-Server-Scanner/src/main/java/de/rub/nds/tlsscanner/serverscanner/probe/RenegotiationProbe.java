@@ -35,8 +35,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Set;
@@ -220,7 +218,10 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedPropertiesNot(AnalyzedProperty.SUPPORTS_TLS_1_0, AnalyzedProperty.SUPPORTS_TLS_1_1, AnalyzedProperty.SUPPORTS_TLS_1_2, AnalyzedProperty.SUPPORTS_DTLS_1_0, AnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE)
+        		.requireAnalyzedPropertiesNot(AnalyzedProperty.SUPPORTS_TLS_1_0, 
+        				AnalyzedProperty.SUPPORTS_TLS_1_1, AnalyzedProperty.SUPPORTS_TLS_1_2, 
+        				AnalyzedProperty.SUPPORTS_DTLS_1_0, AnalyzedProperty.SUPPORTS_DTLS_1_2);
     }
 
     @Override
@@ -231,10 +232,11 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new RenegotiationResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+    	this.secureRenegotiationExtension = this.secureRenegotiationCipherSuite = this.insecureRenegotiation 
+    			= this.vulnerableRenegotiationAttackExtensionV1 = this.vulnerableRenegotiationAttackExtensionV2 
+    			= this.vulnerableRenegotiationAttackCipherSuiteV1 = this.vulnerableRenegotiationAttackCipherSuiteV2 
+    			= this.supportsDtlsCookieExchangeInRenegotiation = TestResults.COULD_NOT_TEST;
     }
 
     private Config getBaseConfig() {

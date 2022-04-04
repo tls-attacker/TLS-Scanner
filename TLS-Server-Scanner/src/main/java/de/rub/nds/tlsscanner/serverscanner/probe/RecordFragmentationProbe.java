@@ -23,8 +23,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
 
 public class RecordFragmentationProbe extends TlsProbe {
 
@@ -48,8 +46,8 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new RecordFragmentationResult(null);
+    public void getCouldNotExecuteResult() {
+    	this.supported = TestResults.COULD_NOT_TEST; 
     }
 
     @Override

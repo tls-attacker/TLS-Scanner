@@ -28,8 +28,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.BleichenbacherResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
@@ -44,10 +42,12 @@ public class BleichenbacherProbe extends TlsProbe {
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList;
     
+    private TestResult vulnerable;
+    
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+        BleichenbacherProbe.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        BleichenbacherProbe.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
         super.properties.add(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
     }
 
@@ -148,8 +148,8 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new BleichenbacherResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.vulnerable = TestResults.COULD_NOT_TEST;
     }
 
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,
@@ -175,7 +175,6 @@ public class BleichenbacherProbe extends TlsProbe {
 
 	@Override
 	protected void mergeData(SiteReport report) {
-		TestResult vulnerable;
 		if (this.testResultList != null) {
             vulnerable = TestResults.FALSE;
             for (InformationLeakTest<?> informationLeakTest : this.testResultList) {

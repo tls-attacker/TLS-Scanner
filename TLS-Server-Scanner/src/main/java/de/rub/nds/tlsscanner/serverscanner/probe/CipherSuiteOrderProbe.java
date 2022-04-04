@@ -21,8 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteOrderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -74,8 +72,8 @@ public class CipherSuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CipherSuiteOrderResult(TestResults.COULD_NOT_TEST);
+    public void getCouldNotExecuteResult() {
+        this.enforced = TestResults.COULD_NOT_TEST;
     }
 
 	@Override
