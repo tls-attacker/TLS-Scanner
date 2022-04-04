@@ -84,10 +84,10 @@ public class PaddingOracleProbe extends TlsProbe {
             }
             long et = System.currentTimeMillis();
             LOGGER.info("Padding Oracle took: " + (et-st));
-            return new PaddingOracleResult(testResultList);
+            return new PaddingOracleResult(testResultList, TestResult.TRUE);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new PaddingOracleResult(null);
+            return new PaddingOracleResult(null,TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -166,7 +166,7 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(null);
+        return new PaddingOracleResult(null, TestResult.COULD_NOT_TEST);
     }
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,

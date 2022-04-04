@@ -16,6 +16,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.List;
+import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +33,7 @@ public class PaddingOracleResult extends ProbeResult {
 
     private TestResult vulnerable;
 
-    public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList) {
+    public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList, TestResult result) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
         if (this.resultList != null) {
@@ -43,7 +45,12 @@ public class PaddingOracleResult extends ProbeResult {
                 }
             }
         } else {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            /*Check if it had failed because it could not execute the task, eg: no block ciphers supported*/
+            if (result == TestResult.COULD_NOT_TEST)
+                vulnerable = TestResult.COULD_NOT_TEST;
+            else
+                vulnerable = TestResult.ERROR_DURING_TEST;
+
         }
     }
 
