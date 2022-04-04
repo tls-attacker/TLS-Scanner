@@ -31,18 +31,23 @@ public class PaddingOracleResult extends ProbeResult {
 
     private TestResult vulnerable;
 
-    public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList) {
+    public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList, TestResult vulnerable) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
         if (this.resultList != null) {
-            vulnerable = TestResult.FALSE;
+            this.vulnerable = TestResult.FALSE;
             for (InformationLeakTest informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResult.TRUE;
+                    this.vulnerable = TestResult.TRUE;
                 }
             }
         } else {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            /*Check if it had failed because it could not execute the task, eg: no block ciphers supported*/
+            if (vulnerable == TestResult.COULD_NOT_TEST)
+                this.vulnerable = TestResult.COULD_NOT_TEST;
+            else
+                this.vulnerable = TestResult.ERROR_DURING_TEST;
+
         }
     }
 
