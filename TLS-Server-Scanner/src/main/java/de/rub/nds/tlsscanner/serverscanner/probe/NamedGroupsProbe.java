@@ -258,7 +258,6 @@ public class NamedGroupsProbe extends TlsProbe {
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
         ecdsaCertSigGroupsEphemeral = report.getEcdsaSigGroupsStatic();
         ecdsaCertSigGroupsTls13 = report.getEcdsaSigGroupsTls13();
-
         supportedCipherSuites = report.getCipherSuites();
     }
 
@@ -298,7 +297,6 @@ public class NamedGroupsProbe extends TlsProbe {
                     return TestResults.TRUE;
                 }
             }
-
         }
         return TestResults.FALSE;
     }
@@ -327,7 +325,6 @@ public class NamedGroupsProbe extends TlsProbe {
                 i--;
             }
         }
-
         groupList.addAll(sigGroups);
     }
 

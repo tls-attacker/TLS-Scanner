@@ -14,7 +14,6 @@ import de.rub.nds.asn1.model.Asn1Field;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
@@ -48,8 +47,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe extends TlsProbe {
 
-    private Certificate serverCertChain;
-    private OCSPResponse stapledOcspResponse;
+	private Certificate serverCertChain;
 
     private boolean supportsPrecertificateSCTs;
     private boolean supportsHandshakeSCTs;
@@ -76,21 +74,19 @@ public class CertificateTransparencyProbe extends TlsProbe {
     @Override
     public void executeTest() {
         Config tlsConfig = initTlsConfig();
-
         if (serverCertChain == null) {
             LOGGER.warn("Couldn't fetch certificate chain from server!");
-            getCouldNotExecuteResult();
-            return;
+            getCouldNotExecuteResult();            
+        } else {
+	        getPrecertificateSCTs();
+	        getTlsHandshakeSCTs(tlsConfig);
+	        evaluateChromeCtPolicy();
+	
+	        supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+	        supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
+	        supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
+	        meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
         }
-
-        getPrecertificateSCTs();
-        getTlsHandshakeSCTs(tlsConfig);
-        evaluateChromeCtPolicy();
-
-        supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
-        supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
-        supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
-        meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
     }
 
     private Config initTlsConfig() {
@@ -230,9 +226,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
                     hasNonGoogleSct = true;
                 }
             }
-
         }
-
         return hasGoogleSct && hasNonGoogleSct;
     }
 
@@ -263,7 +257,6 @@ public class CertificateTransparencyProbe extends TlsProbe {
         super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, this.supportsPrecertificateSCTsResult);
         super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, this.supportsHandshakeSCTsResult);
         super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SCTS_OCSP, this.supportsOcspSCTsResult);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, this.meetsChromeCTPolicyResult);
-		
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, this.meetsChromeCTPolicyResult);	
 	}
 }

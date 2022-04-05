@@ -256,6 +256,5 @@ public class HttpHeaderProbe extends HttpsProbe {
         report.setNormalHpkpPins(pinList);
         report.setReportOnlyHpkpPins(reportOnlyPinList);
         super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_BREACH, this.vulnerableBreach);
-	 		
 	}
 }

@@ -101,10 +101,10 @@ public class PaddingOracleProbe extends TlsProbe {
         CipherSuite cipherSuite) {
         PaddingOracleCommandConfig paddingOracleConfig =
             new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
+        ClientDelegate delegate = paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) paddingOracleConfig.getDelegate(StarttlsDelegate.class);
+        StarttlsDelegate starttlsDelegate = paddingOracleConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         paddingOracleConfig.setNumberOfIterations(numberOfIterations);
         PaddingRecordGeneratorType recordGeneratorType;
@@ -169,7 +169,7 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     private boolean isPotentiallyVulnerable(List<InformationLeakTest<PaddingOracleTestInfo>> testResultList) {
-        for (InformationLeakTest fingerprint : testResultList) {
+        for (InformationLeakTest<?> fingerprint : testResultList) {
             if (fingerprint.isDistinctAnswers()) {
                 return true;
             }
@@ -181,7 +181,7 @@ public class PaddingOracleProbe extends TlsProbe {
 	protected void mergeData(SiteReport report) {
 		if (this.resultList != null) {
             this.vulnerable = TestResults.FALSE;
-            for (InformationLeakTest informationLeakTest : this.resultList) {
+            for (InformationLeakTest<?> informationLeakTest : this.resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) 
                     this.vulnerable = TestResults.TRUE;                
             }

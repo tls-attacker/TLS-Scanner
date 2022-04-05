@@ -54,7 +54,7 @@ public class CcaProbe extends TlsProbe {
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config);
-        versionSuiteListPairsList = new LinkedList<>();
+        this.versionSuiteListPairsList = new LinkedList<>();
     	super.properties.add(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
     }
 
@@ -186,7 +186,6 @@ public class CcaProbe extends TlsProbe {
         if (versionSuiteListPairList.isEmpty()) {
             versionSuiteListPairList = getDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
         }
-
         return versionSuiteListPairList;
     }
 
@@ -231,7 +230,7 @@ public class CcaProbe extends TlsProbe {
 
 	@Override
 	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
-        report.setCcaTestResultList(resultList);
+        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
+        report.setCcaTestResultList(this.resultList);
 	}
 }

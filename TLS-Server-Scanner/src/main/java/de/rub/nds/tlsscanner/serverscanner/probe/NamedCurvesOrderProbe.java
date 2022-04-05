@@ -52,7 +52,7 @@ public class NamedCurvesOrderProbe extends TlsProbe {
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         this.enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
                 : TestResults.FALSE;
-}
+    }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();

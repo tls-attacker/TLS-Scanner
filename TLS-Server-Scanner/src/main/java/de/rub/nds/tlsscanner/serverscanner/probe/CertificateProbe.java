@@ -351,7 +351,6 @@ public class CertificateProbe extends TlsProbe {
                 curves.add(group);
             }
         }
-
         return curves;
     }
 
@@ -362,7 +361,6 @@ public class CertificateProbe extends TlsProbe {
                 curves.add(group);
             }
         }
-
         return curves;
     }
 
@@ -441,7 +439,6 @@ public class CertificateProbe extends TlsProbe {
                 algorithms.add(algorithm);
             }
         }
-
         return algorithms;
     }
 
@@ -453,7 +450,6 @@ public class CertificateProbe extends TlsProbe {
                 algorithms.add(algorithm);
             }
         }
-
         return algorithms;
     }
 

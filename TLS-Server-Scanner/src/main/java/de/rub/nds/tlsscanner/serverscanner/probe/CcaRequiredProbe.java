@@ -78,6 +78,6 @@ public class CcaRequiredProbe extends TlsProbe {
 
 	@Override
 	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.REQUIRES_CCA, requiresCca);		
+		super.setPropertyReportValue(AnalyzedProperty.REQUIRES_CCA, this.requiresCca);		
 	}
 }

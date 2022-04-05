@@ -58,16 +58,15 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        testResultList = new LinkedList<>();
-        for (VersionSuiteListPair pair : serverSupportedSuites) {
+        this.testResultList = new LinkedList<>();
+        for (VersionSuiteListPair pair : this.serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                             createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
                                 DirectRaccoonWorkflowType.CKE_CCS_FIN);
-                        testResultList.add(informationLeakTest);
-
+                        this.testResultList.add(informationLeakTest);
                     }
                 }
             }
@@ -145,7 +144,6 @@ public class DirectRaccoonProbe extends TlsProbe {
                 responseList.add(vectorResponse);
             }
         }
-        // Generate result
         return responseList;
     }
 

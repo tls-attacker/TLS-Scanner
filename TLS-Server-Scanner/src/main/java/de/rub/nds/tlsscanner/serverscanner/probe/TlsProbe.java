@@ -89,17 +89,13 @@ public abstract class TlsProbe implements Runnable {
             getCouldNotExecuteResult();
         } finally {
             this.stopTime = System.currentTimeMillis();
-           // } else {
-             //   LOGGER.warn("" + getProbeName() + " - is null result");
             LOGGER.debug("Finished " + getProbeName() + " -  Took " + (this.stopTime - this.startTime) / 1000 + "s");
             ThreadContext.remove("host");
         }
-        return;
     }
 
     public final void executeState(State... states) {
         this.executeState(new ArrayList<State>(Arrays.asList(states)));
-
     }
 
     public final void executeState(List<State> states) {
@@ -107,13 +103,11 @@ public abstract class TlsProbe implements Runnable {
         for (State state : states) {
             writer.extract(state);
         }
-
     }
 
     public abstract void executeTest();
 
     public void executeAndMerge(SiteReport report) {
-        //ProbeResult result = this.call();
         this.run();
     	merge(report);
     }

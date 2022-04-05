@@ -161,5 +161,4 @@ public class DtlsFeaturesProbe extends TlsProbe {
 		super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
         super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);		
 	}
-
 }

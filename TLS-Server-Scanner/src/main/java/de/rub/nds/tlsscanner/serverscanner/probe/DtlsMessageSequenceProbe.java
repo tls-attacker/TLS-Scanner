@@ -46,7 +46,6 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     private TestResult acceptsSkippedMessageNumbersOnce;
     private TestResult acceptsSkippedMessageNumbersMultiple;
     private TestResult acceptsRandomMessageNumbers;
-
 	    
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);

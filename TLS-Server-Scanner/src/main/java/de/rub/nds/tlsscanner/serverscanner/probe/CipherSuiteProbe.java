@@ -336,9 +336,8 @@ public class CipherSuiteProbe extends TlsProbe {
             this.supportsOnlyPfsCiphers = TestResults.TRUE;
             this.prefersPfsCiphers = TestResults.TRUE;
             for (VersionSuiteListPair pair : this.pairLists) {
-                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) {
-                	this.prefersPfsCiphers = TestResults.FALSE;
-                }
+                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) 
+                	this.prefersPfsCiphers = TestResults.FALSE;                
                 allSupported.addAll(pair.getCipherSuiteList());
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -416,8 +415,7 @@ public class CipherSuiteProbe extends TlsProbe {
 	            case STREAM:
 	            	this.supportsStreamCiphers = TestResults.TRUE;
 	                break;
-	            default:
-	                ;
+	            default:;
 	        }
 	    }
 
@@ -509,8 +507,7 @@ public class CipherSuiteProbe extends TlsProbe {
 	            case CHACHA20_POLY1305:
 	            	this.supportsChacha = TestResults.TRUE;
 	                break;
-	            default:
-	                ;
+	            default:;
 	        }
 	    }
 

@@ -69,22 +69,20 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     @Override
     public void executeTest() {
         try {
-        	hasHvrRetransmissions(); 
-        	checksCookie(); 
-            usesVersionInCookie();
-            usesRandomInCookie();
-            usesSessionIdInCookie();
-            usesCiphersuitesInCookie();
-            usesCompressionsInCookie();
-            return;/* new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
-                usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(), usesCiphersuitesInCookie(),
-                usesCompressionsInCookie());
-        */} catch (Exception E) {
+        	this.hasHvrRetransmissions = hasHvrRetransmissions(); 
+        	this.checksCookie = checksCookie(); 
+            this.usesVersionInCookie = usesVersionInCookie();
+            this.usesRandomInCookie = usesRandomInCookie();
+            this.usesSessionIdInCookie = usesSessionIdInCookie();
+            this.usesCiphersuitesInCookie = usesCiphersuitesInCookie();
+            this.usesCompressionsInCookie = usesCompressionsInCookie();
+        } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-           /* return new DtlsHelloVerifyRequestResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, -1,
-                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST);
-      */  }
+            this.hasHvrRetransmissions = this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie 
+            		= this.usesSessionIdInCookie = this.usesCiphersuitesInCookie = this.usesCompressionsInCookie 
+            		= TestResults.COULD_NOT_TEST;
+            this.cookieLength = -1;
+        }
     }
 
     private TestResult hasHvrRetransmissions() {
@@ -273,6 +271,5 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         super.setPropertyReportValue(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
         super.setPropertyReportValue(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);		
         report.setCookieLength(this.cookieLength);
-}
-
+	}
 }

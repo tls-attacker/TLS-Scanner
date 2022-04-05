@@ -44,13 +44,11 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public void executeTest() {
-        strictSni = isSupportingStrictSni();
-        if (!alpnSupported) {
-            strictAlpn = TestResults.FALSE;
-        } else {
-            strictAlpn = isSupportingStrictAlpn();
-        }
-        return;
+        this.strictSni = isSupportingStrictSni();
+        if (!this.alpnSupported) 
+        	this.strictAlpn = TestResults.FALSE;
+        else 
+        	this.strictAlpn = isSupportingStrictAlpn();        
     }
 
     private Config getBaseConfig() {

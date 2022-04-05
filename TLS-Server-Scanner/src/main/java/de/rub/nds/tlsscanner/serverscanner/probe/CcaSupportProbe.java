@@ -66,6 +66,6 @@ public class CcaSupportProbe extends TlsProbe {
 
 	@Override
 	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CCA, supportsCca);		
+        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CCA, this.supportsCca);		
 	}
 }

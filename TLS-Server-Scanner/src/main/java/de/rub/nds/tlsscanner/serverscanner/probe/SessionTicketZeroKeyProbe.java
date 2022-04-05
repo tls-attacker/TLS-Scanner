@@ -223,5 +223,4 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, this.hasDecryptableMasterSecret);
         super.setPropertyReportValue(AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);		
 	}
-
 }

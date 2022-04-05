@@ -95,8 +95,7 @@ public class ECPointFormatProbe extends TlsProbe {
             case ANSIX962_COMPRESSED_CHAR2:
                 groups = getSectGroups();
                 break;
-            default: // will never occur as all enum types are caught
-                ;
+            default:; // will never occur as all enum types are caught
         }
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
@@ -199,7 +198,6 @@ public class ECPointFormatProbe extends TlsProbe {
                 secpGroups.add(group);
             }
         }
-
         return secpGroups;
     }
 
@@ -210,7 +208,6 @@ public class ECPointFormatProbe extends TlsProbe {
                 sectGroups.add(group);
             }
         }
-
         return sectGroups;
     }
 
@@ -228,8 +225,7 @@ public class ECPointFormatProbe extends TlsProbe {
                     case ANSIX962_COMPRESSED_CHAR2:
                         this.supportsANSIX962CompressedChar2 = TestResults.TRUE;
                         break;
-                    default: // will never occur as all enum types are caught
-                        ;
+                    default:; // will never occur as all enum types are caught
                 }
             }
         } else {

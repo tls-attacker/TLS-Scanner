@@ -104,8 +104,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
 
                 if (scanResponse.getVectorResponses().size() > 0) {
-                    DistributionTest distTest =
-                        new DistributionTest(new InvalidCurveTestInfo(vector), scanResponse.getVectorResponses(),
+                    DistributionTest<?> distTest =
+                        new DistributionTest<>(new InvalidCurveTestInfo(vector), scanResponse.getVectorResponses(),
                             getInfinityProbability(vector, InvalidCurveScanType.REGULAR));
                     if (distTest.isDistinctAnswers()
                         && scanResponse.getShowsPointsAreNotValidated() != TestResults.TRUE) {
@@ -710,7 +710,6 @@ public class InvalidCurveProbe extends TlsProbe {
                 + vector.toString() + " - omitting from Invalid Curve");
             return false;
         }
-
         return true;
     }
 
@@ -739,8 +738,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     attackConfig.setKeyOffset(0);
                     attackConfig.setProtocolFlows(LARGE_ORDER_ITERATIONS);
                     break;
-                default: // will never occur as all enum types are handled
-                    ;
+                default:; // will never occur as all enum types are handled                    
             }
         }
     }
@@ -822,17 +820,16 @@ public class InvalidCurveProbe extends TlsProbe {
                 order = InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getOrder().doubleValue();
             }
         }
-
         return (double) (1 / order);
     }
 
-    private void testForSidechannel(DistributionTest initialTest, InvalidCurveVector vector,
+    private void testForSidechannel(DistributionTest<?> initialTest, InvalidCurveVector vector,
         InvalidCurveResponse initialResponse) {
         initialResponse.setHadDistinctFps(TestResults.TRUE);
         InvalidCurveResponse largeGroupResponse = executeSingleScan(vector, InvalidCurveScanType.LARGE_GROUP);
         if (!largeGroupResponse.getVectorResponses().isEmpty()) {
-            DistributionTest rejectionDistTest =
-                new DistributionTest(new InvalidCurveTestInfo(vector), largeGroupResponse.getVectorResponses(),
+            DistributionTest<?> rejectionDistTest =
+                new DistributionTest<>(new InvalidCurveTestInfo(vector), largeGroupResponse.getVectorResponses(),
                     getInfinityProbability(vector, InvalidCurveScanType.LARGE_GROUP));
             if (rejectionDistTest.isDistinctAnswers() == false) {
                 InvalidCurveResponse extendedResponse = executeSingleScan(vector, InvalidCurveScanType.EXTENDED);
@@ -846,7 +843,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         InvalidCurveResponse redundantResponse =
                             executeSingleScan(vector, InvalidCurveScanType.REDUNDANT);
                         if (!redundantResponse.getVectorResponses().isEmpty()) {
-                            DistributionTest redundantDistTest = new DistributionTest(new InvalidCurveTestInfo(vector),
+                            DistributionTest<?> redundantDistTest = new DistributionTest<>(new InvalidCurveTestInfo(vector),
                                 redundantResponse.getVectorResponses(),
                                 getInfinityProbability(vector, InvalidCurveScanType.REDUNDANT));
                             if (redundantDistTest.isDistinctAnswers()
