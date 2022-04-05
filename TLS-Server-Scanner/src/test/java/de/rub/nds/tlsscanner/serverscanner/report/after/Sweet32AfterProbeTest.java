@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +46,7 @@ public class Sweet32AfterProbeTest {
                 safeCipherSuites.add(c);
             }
         }
-        Collections.shuffle(safeCipherSuites);
+        Collections.shuffle(safeCipherSuites, new Random(2147483647));
     }
 
     @Before
@@ -69,7 +71,8 @@ public class Sweet32AfterProbeTest {
         for (CipherSuite vulnerable : vulnerableCipherSuites) {
             Set<CipherSuite> ciphers = new HashSet<>();
             ciphers.add(vulnerable);
-            ciphers.addAll(safeCipherSuites.subList(0, 5));
+            // add a number of "random" safe cipher suites to the mix
+            ciphers.addAll(safeCipherSuites.subList(0, 10));
 
             report.setCipherSuites(ciphers);
             probe.analyze(report);
