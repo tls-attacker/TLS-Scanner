@@ -26,9 +26,8 @@ public class ProbeRequirementTest {
 	 */
 	@Before
 	public void setUp() {
-		if (this.report==null) {
-			report = new SiteReport("test host", 0);
-		}
+		if (this.report == null) 
+			this.report = new SiteReport("test host", 0);
 	}
 	
 	/**
@@ -37,29 +36,29 @@ public class ProbeRequirementTest {
 	@Test
 	public void createProbeRequirementsTest() {
 		ProbeRequirement pReq = new ProbeRequirement(report);
-		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()==null && pReq.getRequiredExtensionTypes()==null && pReq.getRequiredProbeTypes()==null);
+		assertTrue(pReq.getORRequirements() == null && pReq.getNot() == null && pReq.getRequiredAnalyzedproperties() == null && pReq.getRequiredExtensionTypes() == null && pReq.getRequiredProbeTypes() == null);
 		
 		pReq.requireAnalyzedPropertiesNot(aProp);
 		assertTrue(pReq.getRequiredAnalyzedpropertiesNot()[0].equals(aProp));
 		
 		pReq.requireAnalyzedProperties(aProp);
-		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()==null && pReq.getRequiredProbeTypes()==null);
+		assertTrue(pReq.getORRequirements() == null && pReq.getNot() == null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes() == null && pReq.getRequiredProbeTypes() == null);
 		
 		pReq.requireProbeTypes(pType);
-		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()==null && pReq.getRequiredProbeTypes()[0].equals(pType));
+		assertTrue(pReq.getORRequirements() == null && pReq.getNot() == null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes() == null && pReq.getRequiredProbeTypes()[0].equals(pType));
 		
 		pReq.requireExtensionTyes(eType);
-		assertTrue(pReq.getORRequirements()==null && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
+		assertTrue(pReq.getORRequirements() == null && pReq.getNot() == null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
 		
 		ProbeRequirement pReq1 = new ProbeRequirement(report);
 		ProbeRequirement pReq2 = new ProbeRequirement(report);
 		pReq.orRequirement(pReq1, pReq2);
-		assertTrue((pReq.getORRequirements()[0].equals(pReq1) && pReq.getORRequirements()[1].equals(pReq2) || pReq.getORRequirements()[1].equals(pReq1) && pReq.getORRequirements()[0].equals(pReq2)) && pReq.getNot()==null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
+		assertTrue((pReq.getORRequirements()[0].equals(pReq1) && pReq.getORRequirements()[1].equals(pReq2) || pReq.getORRequirements()[1].equals(pReq1) && pReq.getORRequirements()[0].equals(pReq2)) && pReq.getNot() == null && pReq.getRequiredAnalyzedproperties()[0].equals(aProp) && pReq.getRequiredExtensionTypes()[0].equals(eType) && pReq.getRequiredProbeTypes()[0].equals(pType));
 		
 		pReq1.notRequirement(pReq2);
-		assertTrue(pReq1.getORRequirements()==null && pReq1.getNot().equals(pReq2) && pReq1.getRequiredAnalyzedproperties()==null && pReq1.getRequiredExtensionTypes()==null && pReq1.getRequiredProbeTypes()==null);
+		assertTrue(pReq1.getORRequirements() == null && pReq1.getNot().equals(pReq2) && pReq1.getRequiredAnalyzedproperties() == null && pReq1.getRequiredExtensionTypes() == null && pReq1.getRequiredProbeTypes() == null);
 
-		assertTrue(pReq.getRequiredProtocolVersions()==null);
+		assertTrue(pReq.getRequiredProtocolVersions() == null);
 		pReq.requireProtocolVersions(pVer);
 		assertTrue(pReq.getRequiredProtocolVersions()[0].equals(pVer));
 	}
@@ -114,11 +113,7 @@ public class ProbeRequirementTest {
 		assertFalse(pReq.evaluateRequirements());
 		List<ExtensionType> etList = new ArrayList<ExtensionType>();
 		etList.add(eType);
-		report.setSupportedExtensions(etList);
-		for (ExtensionType et : report.getSupportedExtensions()) {
-			System.out.println(et);
-		}
-		assertTrue(pReq.evaluateRequirements());
-		
+		report.setSupportedExtensions(etList);	
+		assertTrue(pReq.evaluateRequirements());	
 	}
 }
