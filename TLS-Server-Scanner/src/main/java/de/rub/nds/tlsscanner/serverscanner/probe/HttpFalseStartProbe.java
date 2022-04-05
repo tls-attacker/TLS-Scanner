@@ -9,15 +9,19 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
+import de.rub.nds.tlsattacker.core.https.header.HostHeader;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -29,25 +33,24 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpFalseStartProbe extends HttpsProbe {
+public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerReport, HttpFalseStartResult> {
 
-    public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_FALSE_START, scannerConfig);
+    public HttpFalseStartProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HttpFalseStartResult executeTest() {
         Config tlsConfig = getConfig();
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
@@ -55,8 +58,8 @@ public class HttpFalseStartProbe extends HttpsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace
-            .addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this.getHttpsRequest()));
+        trace.addTlsAction(
+            new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(
             new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
 
@@ -114,16 +117,16 @@ public class HttpFalseStartProbe extends HttpsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public HttpFalseStartResult getCouldNotExecuteResult() {
         return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
     }
 }

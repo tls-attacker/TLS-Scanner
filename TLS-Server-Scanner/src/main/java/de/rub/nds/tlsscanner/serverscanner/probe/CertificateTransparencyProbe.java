@@ -10,11 +10,12 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.asn1.model.*;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
-
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
@@ -22,23 +23,21 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.SignedCertificateTimestampExtensionMessage;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import org.bouncycastle.crypto.tls.Certificate;
-
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.time.Duration;
 import java.util.*;
+import org.bouncycastle.crypto.tls.Certificate;
 
-public class CertificateTransparencyProbe extends TlsProbe {
+public class CertificateTransparencyProbe
+    extends TlsProbe<ServerScannerConfig, ServerReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
     private OCSPResponse stapledOcspResponse;
@@ -51,12 +50,12 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE_TRANSPARENCY, config);
+    public CertificateTransparencyProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CertificateTransparencyResult executeTest() {
         Config tlsConfig = initTlsConfig();
 
         if (serverCertChain == null) {
@@ -220,19 +219,19 @@ public class CertificateTransparencyProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(ProbeType.OCSP);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CertificateTransparencyResult getCouldNotExecuteResult() {
         return new CertificateTransparencyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
             TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
             new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 }

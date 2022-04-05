@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -20,28 +21,27 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ECPointFormatResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ECPointFormatResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsProbe {
+public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerReport, ECPointFormatResult> {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
 
-    public ECPointFormatProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig);
+    public ECPointFormatProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ECPointFormatResult executeTest() {
         List<ECPointFormat> pointFormats = null;
         if (shouldTestPointFormats) {
             pointFormats = getSupportedPointFormats();
@@ -165,25 +165,25 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResult.TRUE
+                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ECPointFormatResult getCouldNotExecuteResult() {
         return new ECPointFormatResult(null, TestResult.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
-        shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+    public void adjustConfig(ServerReport report) {
+        shouldTestPointFormats = report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
+        shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
     }
 
     private List<NamedGroup> getSecpGroups() {

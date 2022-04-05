@@ -14,7 +14,7 @@ import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseExtractor;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -28,8 +28,8 @@ import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.TlsMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -42,31 +42,31 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.MacResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.MacResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MacProbe extends TlsProbe {
+public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport, MacResult> {
 
     private List<CipherSuite> suiteList;
 
     private ResponseFingerprint correctFingerprint;
 
-    public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.MAC, scannerConfig);
+    public MacProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.MAC, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public MacResult executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
         if (correctFingerprint == null) {
             return new MacResult(null, null, null);
@@ -316,7 +316,7 @@ public class MacProbe extends TlsProbe {
             if (trace.executedAsPlanned()) {
                 if (check == Check.APPDATA) {
                     ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint);
+                    EqualityError equalityError = FingerprintChecker.checkEquality(fingerprint, correctFingerprint);
                     LOGGER.debug("Fingerprint: " + fingerprint.toString());
                     if (equalityError != EqualityError.NONE) {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
@@ -357,7 +357,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() == null) {
             return false;
@@ -372,7 +372,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() != null) {
 
@@ -389,7 +389,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public MacResult getCouldNotExecuteResult() {
         return new MacResult(null, null, null);
     }
 }

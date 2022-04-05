@@ -9,19 +9,66 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "guideline")
 @XmlType(propOrder = { "name", "link", "checks" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Guideline implements Serializable {
 
     private String name;
     private String link;
+
+    @XmlElements(
+        value = { @XmlElement(type = AnalyzedPropertyGuidelineCheck.class, name = "AnalyzedPropertyGuidelineCheck"),
+            @XmlElement(type = CertificateCurveGuidelineCheck.class, name = "CertificateCurveGuidelineCheck"),
+            @XmlElement(type = CertificateGuidelineCheck.class, name = "CertificateGuidelineCheck"),
+            @XmlElement(type = CertificateSignatureCheck.class, name = "CertificateSignatureCheck"),
+            @XmlElement(type = CertificateValidityGuidelineCheck.class, name = "CertificateValidityGuidelineCheck"),
+            @XmlElement(type = CertificateVersionGuidelineCheck.class, name = "CertificateVersionGuidelineCheck"),
+            @XmlElement(type = CipherSuiteGuidelineCheck.class, name = "CipherSuiteGuidelineCheck"),
+            @XmlElement(type = ExtendedKeyUsageCertificateCheck.class, name = "ExtendedKeyUsageCertificateCheck"),
+            @XmlElement(type = ExtensionGuidelineCheck.class, name = "ExtensionGuidelineCheck"),
+            @XmlElement(type = HashAlgorithmStrengthCheck.class, name = "HashAlgorithmStrengthCheck"),
+            @XmlElement(type = HashAlgorithmsGuidelineCheck.class, name = "HashAlgorithmsGuidelineCheck"),
+            @XmlElement(type = KeySizeCertGuidelineCheck.class, name = "KeySizeCertGuidelineCheck"),
+            @XmlElement(type = KeyUsageCertificateCheck.class, name = "KeyUsageCertificateCheck"),
+            @XmlElement(type = NamedGroupsGuidelineCheck.class, name = "NamedGroupsGuidelineCheck"),
+            @XmlElement(type = SignatureAlgorithmsCertificateGuidelineCheck.class,
+                name = "SignatureAlgorithmsCertificateGuidelineCheck"),
+            @XmlElement(type = SignatureAlgorithmsGuidelineCheck.class, name = "SignatureAlgorithmsGuidelineCheck"),
+            @XmlElement(type = SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
+                name = "SignatureAndHashAlgorithmsCertificateGuidelineCheck"),
+            @XmlElement(type = SignatureAndHashAlgorithmsGuidelineCheck.class,
+                name = "SignatureAndHashAlgorithmsGuidelineCheck"),
+            @XmlElement(type = CertificateAgilityGuidelineCheck.class, name = "CertificateAgilityGuidelineCheck"), })
     private List<GuidelineCheck> checks;
 
     private Guideline() {
@@ -37,7 +84,6 @@ public class Guideline implements Serializable {
         return name;
     }
 
-    @XmlElement(name = "name")
     public void setName(String name) {
         this.name = name;
     }
@@ -46,7 +92,6 @@ public class Guideline implements Serializable {
         return link;
     }
 
-    @XmlElement(name = "link")
     public void setLink(String link) {
         this.link = link;
     }
@@ -55,8 +100,6 @@ public class Guideline implements Serializable {
         return checks;
     }
 
-    @XmlElement(name = "check")
-    @XmlElementWrapper(name = "checks")
     public void setChecks(List<GuidelineCheck> checks) {
         this.checks = checks;
     }

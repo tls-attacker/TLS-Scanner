@@ -9,20 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.NamedGroupsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class NamedGroupsGuidelineCheck extends GuidelineCheck {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     /**
      * Only these are allowed.
@@ -58,7 +62,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         List<NamedGroup> supportedGroups =
             this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {

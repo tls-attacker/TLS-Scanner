@@ -40,12 +40,19 @@
                                     <directory>${main.basedir}/trust_stores_observatory/certificates/</directory>
                                 </resource>
                             </resources>
-                        </configuration>            
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Scanner-Core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>

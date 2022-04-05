@@ -26,41 +26,40 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RandomnessResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-
+import de.rub.nds.tlsscanner.serverscanner.probe.result.RandomnessResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
  */
-public class RandomnessProbe extends TlsProbe {
+public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport, RandomnessResult> {
 
     private ProtocolVersion bestVersion;
     private CipherSuite bestCipherSuite;
     private boolean supportsExtendedRandom;
 
-    public RandomnessProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RANDOMNESS, config);
+    public RandomnessProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RANDOMNESS, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public RandomnessResult executeTest() {
         collectData(scannerConfig.getAdditionalRandomnessHandshakes());
         return new RandomnessResult();
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)) {
+    public boolean canBeExecuted(ServerReport report) {
+        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)) {
             return true;
         } else {
             return false;
@@ -68,12 +67,12 @@ public class RandomnessProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public RandomnessResult getCouldNotExecuteResult() {
         return new RandomnessResult();
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
         if (report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM)) {
             supportsExtendedRandom = true;
@@ -83,7 +82,7 @@ public class RandomnessProbe extends TlsProbe {
 
     }
 
-    private void chooseBestCipherAndVersion(SiteReport report) {
+    private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
         List<VersionSuiteListPair> versionSuitePairs = report.getVersionSuitePairs();
         for (VersionSuiteListPair pair : versionSuitePairs) {
