@@ -67,6 +67,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
     private TestResult prefersPfsCiphers = TestResult.FALSE;
     private TestResult supportsStreamCiphers = TestResult.FALSE;
     private TestResult supportsBlockCiphers = TestResult.FALSE;
+    private TestResult supportsCBC = TestResult.FALSE;
     private TestResult supportsLegacyPrf = TestResult.FALSE;
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
@@ -99,6 +100,9 @@ public class CipherSuiteProbeResult extends ProbeResult {
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsSha384Prf = TestResult.TRUE;
                     }
+                    if(suite.isCBC()){
+                        supportsCBC = TestResult.TRUE;
+                    }
                 }
             }
             for (CipherSuite suite : allSupported) {
@@ -116,6 +120,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
             supportsAnonCiphers = TestResult.COULD_NOT_TEST;
             supportsAria = TestResult.COULD_NOT_TEST;
             supportsBlockCiphers = TestResult.COULD_NOT_TEST;
+            supportsCBC = TestResult.COULD_NOT_TEST;
             supportsCamellia = TestResult.COULD_NOT_TEST;
             supportsChacha = TestResult.COULD_NOT_TEST;
             supportsDesCiphers = TestResult.COULD_NOT_TEST;
@@ -330,6 +335,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.PREFERS_PFS, prefersPfsCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, supportsStreamCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, supportsBlockCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_CBC, supportsCBC);
         report.putResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
