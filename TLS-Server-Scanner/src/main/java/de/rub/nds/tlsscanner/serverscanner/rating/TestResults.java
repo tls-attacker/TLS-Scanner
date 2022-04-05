@@ -25,6 +25,7 @@ public enum TestResults implements TestResult {
     UNCERTAIN,
     UNSUPPORTED,
     NOT_TESTED_YET,
+    UNASSIGNED_ERROR,
     TIMEOUT;
 
     private TestResults() {
