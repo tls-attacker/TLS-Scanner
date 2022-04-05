@@ -15,6 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -151,7 +152,7 @@ public abstract class TlsProbe implements Runnable {
     		if (this.propertiesMap.containsKey(aProp))
     			this.propertiesMap.replace(aProp, result);
     		else // avoid unregistered properties are set
-    			System.out.println("FORBIDDEN PROPERTY!!!"); //TODO exception? logging error? 
+    			LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registred!"); 
     	}
     	else {
     		this.propertiesMap = new HashMap<>();
@@ -167,20 +168,23 @@ public abstract class TlsProbe implements Runnable {
     	// catch case that no properties are set
     	if(this.propertiesMap==null) {
     		this.propertiesMap = new HashMap<>();
-    		for (AnalyzedProperty property : this.properties)
-    			this.propertiesMap.put(property, null);    
-    	}
-    	
-    	// check whether every property has been set
-    	for (AnalyzedProperty aProp : this.properties) {
-    		if (this.propertiesMap.get(aProp) == null)
-    			System.out.println("UNSET PROPERTY " + aProp.name() + " in " + this.getClass()); //TODO was nu?
+    		for (AnalyzedProperty property : this.properties) {
+    			LOGGER.error("Unassigned property " + property.name() + " in " + this.getClass());
+    			this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);   
+    		}
+    	} else {    	
+	    	// check whether every property has been set
+	    	for (AnalyzedProperty aProp : this.properties) {
+	    		if (this.propertiesMap.get(aProp) == null) {
+	    			LOGGER.error("Unassigned property " + aProp.name() + " in " + this.getClass());
+	    			this.propertiesMap.replace(aProp, TestResults.UNASSIGNED_ERROR);
+	    		}    		
+	    	}
     	}
     	// merge data
-    	if (this.startTime != 0 && this.stopTime != 0) {
-            report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));
-        }
-    	for (AnalyzedProperty aProp : this.properties) // TODO wäre es ok, aprops zu setzen, auch wenn nicht alle props gesetzt wurden vorher?
+    	if (this.startTime != 0 && this.stopTime != 0) 
+            report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));        
+    	for (AnalyzedProperty aProp : this.properties)
         	report.putResult(aProp, this.propertiesMap.get(aProp)); 
    		this.mergeData(report);
     	report.markAsChangedAndNotify(); // was macht die???
