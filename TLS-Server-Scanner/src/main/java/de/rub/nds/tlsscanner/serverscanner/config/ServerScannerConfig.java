@@ -26,7 +26,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import org.bouncycastle.util.IPAddress;
 
-
 import java.util.Arrays;
 import java.util.List;
 
