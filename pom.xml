@@ -183,6 +183,7 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <version>4.1</version>
                 <configuration>
                     <header>license_header_plain.txt</header>
                     <strictCheck>true</strictCheck>
