@@ -237,13 +237,9 @@ public class CertificateReportGenerator {
 
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
-        try {
-            String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-            if (ocspUrl != null) {
-                report.setOcspSupported(true);
-            }
-        } catch (ParserException ex) {
-            LOGGER.error(ex);
+        String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
+        if (ocspUrl != null) {
+            report.setOcspSupported(true);
         }
     }
 
@@ -289,7 +285,7 @@ public class CertificateReportGenerator {
                         report.setRevoked(true);
                     }
                 }
-            } catch (IOException | ParserException e) {
+            } catch (IOException e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }
