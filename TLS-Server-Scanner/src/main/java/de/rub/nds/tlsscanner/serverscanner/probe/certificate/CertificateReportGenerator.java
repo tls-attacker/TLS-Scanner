@@ -20,7 +20,20 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import org.apache.commons.math3.analysis.function.Log;
+
+import java.io.IOException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
+import java.util.LinkedList;
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x500.RDN;
@@ -34,23 +47,9 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-import javax.annotation.Nullable;
-import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
-import java.util.LinkedList;
-import java.util.List;
-
 public class CertificateReportGenerator {
 
-    private static final Logger LOGGER = LogManager.getLogger(CertificateReportGenerator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static List<CertificateReport> generateReports(Certificate certs) {
         List<CertificateReport> reportList = new LinkedList<>();
@@ -238,9 +237,7 @@ public class CertificateReportGenerator {
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
         String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-        if (ocspUrl != null) {
-            report.setOcspSupported(true);
-        }
+        report.setOcspSupported(ocspUrl != null);
     }
 
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

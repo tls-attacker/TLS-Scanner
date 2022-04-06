@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustPlatform;
-
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.Date;

@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.record.layer.TlsRecordLayer;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
