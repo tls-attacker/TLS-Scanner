@@ -9,12 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.HashMap;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class ServerReportRaterTest {
@@ -36,9 +40,9 @@ public class ServerReportRaterTest {
     @Test
     public void testGetScoreReport() throws Exception {
         HashMap<String, TestResult> resultMap = new HashMap<>();
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResult.FALSE);
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResult.TRUE);
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResult.TRUE);
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResults.FALSE);
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResults.TRUE);
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResults.TRUE);
 
         SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
         ScoreReport report = rater.getScoreReport(resultMap);

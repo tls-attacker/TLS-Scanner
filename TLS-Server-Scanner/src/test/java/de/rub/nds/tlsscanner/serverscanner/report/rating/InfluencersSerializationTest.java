@@ -9,7 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import static org.junit.Assert.assertEquals;
+
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
@@ -20,7 +22,6 @@ import java.util.LinkedList;
 import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,37 +39,17 @@ public class InfluencersSerializationTest {
 
         original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/InfluencersSerializationTest.java
-        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
+        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_SSL_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 500));
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.FALSE, 50));
         influencers.add(i);
 
         i = new RatingInfluencer();
-        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
+        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, 100));
         influencers.add(i);
 
         original.setRatingInfluencer(influencers);
-
-        writer = new StringWriter();
-        context = JAXBContext.newInstance(RatingInfluencers.class);
-        m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        um = context.createUnmarshaller();
-=======
-        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
-        influencers.add(i);
-
-        i = new RatingInfluencer();
-        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
-        influencers.add(i);
-
-        original.setRatingInfluencers(influencers);
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/InfluencersSerializationTest.java
     }
 
     @Test
@@ -77,11 +58,11 @@ public class InfluencersSerializationTest {
         RatingInfluencersIO.write(stream, original);
         result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
-        assertEquals("Influencer length check.", original.getRatingInfluencer().size(),
-            result.getRatingInfluencer().size());
+        assertEquals("Influencer length check.", original.getRatingInfluencers().size(),
+            result.getRatingInfluencers().size());
 
-        RatingInfluencer oInfluencer = original.getRatingInfluencer().get(0);
-        RatingInfluencer rInfluencer = result.getRatingInfluencer().get(0);
+        RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
+        RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);
         assertEquals(oInfluencer.getAnalyzedProperty(), rInfluencer.getAnalyzedProperty());
 
         PropertyResultRatingInfluencer ori = oInfluencer.getPropertyRatingInfluencers().get(0);

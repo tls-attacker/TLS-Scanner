@@ -9,27 +9,18 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-<<<<<<< HEAD
 import static org.junit.Assert.assertEquals;
 
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
-=======
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
->>>>>>> fixing_imports_and_packages
 import java.math.BigInteger;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 

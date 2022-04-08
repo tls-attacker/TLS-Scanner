@@ -9,17 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-<<<<<<< HEAD
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-=======
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
->>>>>>> fixing_imports_and_packages
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,11 +25,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-<<<<<<< HEAD
-            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
-=======
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
->>>>>>> fixing_imports_and_packages
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
@@ -48,11 +38,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-<<<<<<< HEAD
-            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
-=======
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
->>>>>>> fixing_imports_and_packages
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
@@ -64,11 +50,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
 
         AnalyzedPropertyGuidelineCheck check =
-<<<<<<< HEAD
-            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
-=======
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
->>>>>>> fixing_imports_and_packages
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
