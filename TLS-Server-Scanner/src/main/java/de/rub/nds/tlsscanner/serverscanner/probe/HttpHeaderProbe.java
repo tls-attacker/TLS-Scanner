@@ -114,9 +114,9 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport,
     public HttpHeaderResult getCouldNotExecuteResult() {
         return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

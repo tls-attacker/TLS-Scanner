@@ -54,8 +54,8 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

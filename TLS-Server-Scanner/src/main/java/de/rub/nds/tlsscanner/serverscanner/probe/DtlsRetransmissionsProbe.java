@@ -128,9 +128,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
     @Override
     public void adjustConfig(ServerReport report) {
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

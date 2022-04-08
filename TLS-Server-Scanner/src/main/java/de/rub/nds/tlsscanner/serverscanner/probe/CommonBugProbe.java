@@ -135,11 +135,11 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
     @Override
     public void adjustConfig(ServerReport report) {
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
         TlsContext context = new TlsContext(config);

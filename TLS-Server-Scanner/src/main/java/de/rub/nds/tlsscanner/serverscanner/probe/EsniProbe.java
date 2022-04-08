@@ -97,11 +97,11 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport, EsniR
     public EsniResult getCouldNotExecuteResult() {
         return new EsniResult(TestResults.COULD_NOT_TEST);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {
         List<CipherSuite> cipherSuites = new LinkedList<>();

@@ -47,11 +47,11 @@ public class CcaSupportProbe extends TlsProbe<ServerScannerConfig, ServerReport,
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
-	
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
+
     @Override
     public CcaSupportResult getCouldNotExecuteResult() {
         return new CcaSupportResult(TestResults.COULD_NOT_TEST);

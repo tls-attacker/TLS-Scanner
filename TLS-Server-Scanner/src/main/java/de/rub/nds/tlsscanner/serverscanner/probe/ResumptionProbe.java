@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -353,7 +354,7 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport,
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 

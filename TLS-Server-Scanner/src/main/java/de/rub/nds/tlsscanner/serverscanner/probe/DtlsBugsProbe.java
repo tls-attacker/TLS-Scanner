@@ -156,11 +156,11 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport, D
     public DtlsBugsResult getCouldNotExecuteResult() {
         return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
     @Override
     public void adjustConfig(ServerReport report) {

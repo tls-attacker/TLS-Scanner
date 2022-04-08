@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
@@ -138,9 +139,9 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.REQUIRES_CCA)
-        		.requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
+            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override

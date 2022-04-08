@@ -13,6 +13,7 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseExtractor;
@@ -359,10 +360,9 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport, MacRes
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE)
-        		.requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, 
-        				TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE).requireAnalyzedProperties(
+            TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
     }
 
     @Override

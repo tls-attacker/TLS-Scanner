@@ -52,9 +52,9 @@ public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport, E
     public EarlyCcsResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -49,8 +50,9 @@ public class SignatureHashAlgorithmOrderProbe
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-    	ProbeRequirement preq = new ProbeRequirement(report).requireProbeTypes(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
+    protected Requirement getRequirements(ServerReport report) {
+        ProbeRequirement preq =
+            new ProbeRequirement(report).requireProbeTypes(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
         return new ProbeRequirement(report).notRequirement(preq);
     }
 

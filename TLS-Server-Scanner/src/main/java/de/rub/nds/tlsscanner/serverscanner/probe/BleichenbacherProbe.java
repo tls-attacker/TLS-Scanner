@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
@@ -135,9 +136,9 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE, 
-        		TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
     }
 
     @Override

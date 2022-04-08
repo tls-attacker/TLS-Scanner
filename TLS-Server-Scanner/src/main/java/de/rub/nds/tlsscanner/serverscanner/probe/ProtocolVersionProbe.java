@@ -151,11 +151,11 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
     @Override
     public void adjustConfig(ServerReport report) {
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
     @Override
     public ProtocolVersionResult getCouldNotExecuteResult() {

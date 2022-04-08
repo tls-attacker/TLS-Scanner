@@ -147,8 +147,8 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         return new TokenbindingResult(null, null);
     }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

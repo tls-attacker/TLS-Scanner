@@ -86,9 +86,9 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport, SniRes
     public SniResult getCouldNotExecuteResult() {
         return new SniResult(TestResults.COULD_NOT_TEST);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

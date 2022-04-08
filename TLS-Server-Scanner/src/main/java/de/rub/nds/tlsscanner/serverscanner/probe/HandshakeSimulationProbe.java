@@ -225,9 +225,9 @@ public class HandshakeSimulationProbe extends TlsProbe<ServerScannerConfig, Serv
     public HandshakeSimulationResult getCouldNotExecuteResult() {
         return new HandshakeSimulationResult(null);
     }
-    
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

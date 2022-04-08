@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.vectorstatistics.DistributionTest;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
@@ -121,13 +122,13 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, 
-        		TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, TlsAnalyzedProperty.SUPPORTS_ECDHE, 
-        		TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, 
-        		TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
-        		.requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, 
-        				TlsProbeType.NAMED_GROUPS, TlsProbeType.RESUMPTION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
+                TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
+                TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
+            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.NAMED_GROUPS,
+                TlsProbeType.RESUMPTION);
     }
 
     @Override

@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -197,11 +198,12 @@ public class SignatureAndHashAlgorithmProbe
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-    	ProbeRequirement pReqTls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS12);
-    	ProbeRequirement pReqTls13 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS13);
-    	ProbeRequirement pReqDtls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.DTLS12);
-    	return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(pReqDtls12, pReqTls12, pReqTls13);
+    protected Requirement getRequirements(ServerReport report) {
+        ProbeRequirement pReqTls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS12);
+        ProbeRequirement pReqTls13 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.TLS13);
+        ProbeRequirement pReqDtls12 = new ProbeRequirement(report).requireProtocolVersions(ProtocolVersion.DTLS12);
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(pReqDtls12,
+            pReqTls12, pReqTls13);
     }
 
     @Override

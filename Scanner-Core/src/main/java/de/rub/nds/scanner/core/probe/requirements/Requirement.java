@@ -10,5 +10,5 @@
 package de.rub.nds.scanner.core.probe.requirements;
 
 public interface Requirement {
-	public boolean evaluateRequirements();
+    public boolean evaluateRequirements();
 }

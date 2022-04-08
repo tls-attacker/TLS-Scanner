@@ -71,11 +71,11 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report);
-	}
-	
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
+
     @Override
     public CipherSuiteOrderResult getCouldNotExecuteResult() {
         return new CipherSuiteOrderResult(TestResults.COULD_NOT_TEST);

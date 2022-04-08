@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -167,10 +168,13 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
-    	ProbeRequirement preq_ecdh = new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-    	ProbeRequirement preq_tls13 = new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(preq_ecdh, preq_tls13);
+    protected Requirement getRequirements(ServerReport report) {
+        ProbeRequirement preq_ecdh =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        ProbeRequirement preq_tls13 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(preq_ecdh,
+            preq_tls13);
     }
 
     @Override

@@ -64,11 +64,12 @@ public abstract class ScannerProbe<Report extends ScanReport, Result extends Pro
         Result result = this.call();
         result.merge(report);
     }
-    
+
     /**
      * Override for individual requirements.
-     * @param report
-     * @return ProbeRequirement object without requirements (default)
+     * 
+     * @param  report
+     * @return        ProbeRequirement object without requirements (default)
      */
     protected abstract Requirement getRequirements(Report report);
 

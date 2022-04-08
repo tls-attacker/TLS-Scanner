@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -187,9 +188,9 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
     }
 
     @Override
-    protected ProbeRequirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
-        		.requireProbeTypes(TlsProbeType.CIPHER_SUITE);
+            .requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
