@@ -366,7 +366,7 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport,
     @Override
     public ResumptionResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 }

@@ -26,12 +26,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
-@XmlSeeAlso({TestResults.class})
+@XmlSeeAlso({ TestResults.class })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
     private TlsAnalyzedProperty property;
-    
+
     @XmlAnyElement(lax = true)
     private TestResult result;
 
@@ -54,7 +54,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(ScanReport report) {
         TestResult reportResult = report.getResult(this.property);
-        switch ((TestResults)reportResult) {
+        switch ((TestResults) reportResult) {
             case UNCERTAIN:
             case COULD_NOT_TEST:
             case CANNOT_BE_TESTED:
@@ -62,8 +62,8 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(reportResult, property, result, reportResult);
-		default:
-			break;
+            default:
+                break;
         }
         return new AnalyzedPropertyGuidelineCheckResult(TestResults.of(reportResult.equals(this.result)), property,
             result, reportResult);

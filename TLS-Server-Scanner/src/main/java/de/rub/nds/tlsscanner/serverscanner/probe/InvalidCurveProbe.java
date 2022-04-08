@@ -256,8 +256,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public InvalidCurveResult getCouldNotExecuteResult() {
-        return new InvalidCurveResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            null);
+        return new InvalidCurveResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, null);
     }
 
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,

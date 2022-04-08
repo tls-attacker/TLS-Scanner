@@ -82,15 +82,16 @@ public class DefaultRecommendationsTest {
                 "Export ciphers are enabled", "Disable export ciphers", ""),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ANON, "Anonymous cipher support",
-            "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(TestResults.TRUE,
-                "Anonymous ciphers are enabled", "Disable anonymous ciphers"),
+            "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(
+                TestResults.TRUE, "Anonymous ciphers are enabled", "Disable anonymous ciphers"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DES, "DES support",
             "Evaluates whether the server supports DES ciphers",
             new PropertyResultRecommendation(TestResults.TRUE, "DES ciphers are enabled", "Disable DES ciphers"), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_3DES, "3DES (Triple DES) support",
             "Evaluates whether the server supports 3DES (Triple DES) ciphers",
-            new PropertyResultRecommendation(TestResults.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"), ""));
+            new PropertyResultRecommendation(TestResults.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"),
+            ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SEED, "SEED cipher support",
             "Evaluates whether the server supports SEED ciphers",
             "SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998",
@@ -179,7 +180,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_GOST, "GOST cipher support",
             "Evaluates whether the server supports GOST cipher",
             "GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. ",
-            new PropertyResultRecommendation(TestResults.TRUE, "GOST ciphers are enabled", "Disable GOST ciphers"), ""));
+            new PropertyResultRecommendation(TestResults.TRUE, "GOST ciphers are enabled", "Disable GOST ciphers"),
+            ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SRP, "Secure Remote Password (SRP) support",
             "Evaluates whether the server supports Secure Remote Password (SRP) cipher suites",
             "https://tools.ietf.org/html/rfc5054"));
@@ -438,7 +440,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
             "Vulnerable to a CBC padding oracle attack vulnerability",
             "Evaluates whether the server is vulnerable to a CBC padding oracle attack",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to a CBC padding oracle attack",
+            new PropertyResultRecommendation(TestResults.TRUE,
+                "The server is vulnerable to a CBC padding oracle attack",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
@@ -541,7 +544,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,
             "Misses Application message MAC check",
             "Evaluates whether the server correctly validates the Application message MACs",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server does not verify MACs in Application messages",
+            new PropertyResultRecommendation(TestResults.TRUE,
+                "The server does not verify MACs in Application messages",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MAC_FINISHED_CHECKS,
@@ -634,7 +638,8 @@ public class DefaultRecommendationsTest {
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
             "Misses message sequence number checks", "Evaluates whether the server verify the message sequence numbers",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server does not verify the message sequence numbers",
+            new PropertyResultRecommendation(TestResults.TRUE,
+                "The server does not verify the message sequence numbers",
                 "Configure your server to always verify the message sequence numbers"),
             ""));
         RecommendationsIO.write(new File("src/main/resources/rating/recommendations.xml"),

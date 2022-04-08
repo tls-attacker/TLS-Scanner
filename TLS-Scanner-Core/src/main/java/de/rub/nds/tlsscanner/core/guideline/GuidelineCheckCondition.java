@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {
-	
+
     @XmlElement(name = "condition")
     @XmlElementWrapper(name = "and")
     private List<GuidelineCheckCondition> and;
@@ -35,7 +35,7 @@ public class GuidelineCheckCondition {
 
     @XmlAnyElement(lax = true)
     private AnalyzedProperty analyzedProperty;
-    
+
     @XmlAnyElement(lax = true)
     private TestResult result;
 

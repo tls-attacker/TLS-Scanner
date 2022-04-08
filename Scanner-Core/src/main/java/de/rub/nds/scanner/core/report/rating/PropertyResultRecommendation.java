@@ -18,11 +18,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
-@XmlSeeAlso({TestResults.class})
+@XmlSeeAlso({ TestResults.class })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 
-	@XmlAnyElement(lax = true)
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private String shortDescription;

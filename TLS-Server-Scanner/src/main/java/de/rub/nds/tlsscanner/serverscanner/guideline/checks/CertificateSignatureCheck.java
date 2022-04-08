@@ -58,7 +58,8 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
                     signatureAlgorithm);
             case "DH":
                 return new CertificateSignatureCheckResult(
-                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm, signatureAlgorithm);
+                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm,
+                    signatureAlgorithm);
             case "RSA":
             case "DSA":
                 return new CertificateSignatureCheckResult(
