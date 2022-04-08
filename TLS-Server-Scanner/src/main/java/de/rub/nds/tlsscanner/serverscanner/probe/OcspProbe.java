@@ -39,13 +39,13 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsProbe {
+public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport, OcspResult> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -67,12 +67,12 @@ public class OcspProbe extends TlsProbe {
     private static final long STAPLED_NONCE_RANDOM_SEED = 42;
     private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
-    public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.OCSP, config);
+    public OcspProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.OCSP, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public OcspResult executeTest() {
         Config tlsConfig = initTlsConfig();
         List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
 
@@ -229,12 +229,12 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CERTIFICATE);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
         for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
@@ -288,7 +288,7 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public OcspResult getCouldNotExecuteResult() {
         return new OcspResult(null, null);
     }
 }

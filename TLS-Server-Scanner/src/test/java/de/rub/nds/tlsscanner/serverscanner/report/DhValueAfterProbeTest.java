@@ -11,11 +11,12 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import static org.junit.Assert.assertEquals;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 import java.math.BigInteger;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
@@ -31,15 +32,15 @@ public class DhValueAfterProbeTest {
 
     private static final Logger LOGGER = (Logger) LogManager.getLogger();
 
-    private SiteReport report;
-    private HashMap<TrackableValueType, ExtractedValueContainer> cipherMap;
+    private ServerReport report;
+    private HashMap<TrackableValue, ExtractedValueContainer> cipherMap;
     private ExtractedValueContainer<CustomDhPublicKey> pubkeyContainer;
     private DhValueAfterProbe test;
 
     // initializes attributes
     @Before
     public void setup() {
-        report = new SiteReport("sample", 443);
+        report = new ServerReport("sample", 443);
         cipherMap = new HashMap<>();
         pubkeyContainer = new ExtractedValueContainer<CustomDhPublicKey>(TrackableValueType.DHE_PUBLICKEY);
         test = new DhValueAfterProbe();

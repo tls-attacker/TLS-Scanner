@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -20,11 +21,12 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TokenbindingResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.TokenbindingResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,14 +34,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe {
+public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerReport, TokenbindingResult> {
 
-    public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TOKENBINDING, config);
+    public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public TokenbindingResult executeTest() {
         List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
@@ -132,11 +134,21 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
+        return true;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public void adjustConfig(ServerReport report) {
+    }
+
+    @Override
+    public TokenbindingResult getCouldNotExecuteResult() {
         return new TokenbindingResult(null, null);
     }
+
+	@Override
+	protected Requirement getRequirements(ServerReport report) {
+		return new ProbeRequirement(report);
+	}
 }

@@ -9,20 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateSignatureCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
 import java.util.Locale;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Checks if the certificate is signed with an algorithm consistent with the public key.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateSignatureCheck extends CertificateGuidelineCheck {
 
     private CertificateSignatureCheck() {
@@ -54,7 +58,8 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
                     signatureAlgorithm);
             case "DH":
                 return new CertificateSignatureCheckResult(
-                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm, signatureAlgorithm);
+                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm,
+                    signatureAlgorithm);
             case "RSA":
             case "DSA":
                 return new CertificateSignatureCheckResult(

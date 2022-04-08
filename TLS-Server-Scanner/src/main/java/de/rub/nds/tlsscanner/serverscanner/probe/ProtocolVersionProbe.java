@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -26,21 +27,22 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProtocolVersionResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ProtocolVersionResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProtocolVersionProbe extends TlsProbe {
+public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ProtocolVersionResult> {
 
     private List<ProtocolVersion> toTestList;
 
-    public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config);
+    public ProtocolVersionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             toTestList.add(ProtocolVersion.DTLS10);
@@ -55,7 +57,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ProtocolVersionResult executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
@@ -147,11 +149,16 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
+    
+	@Override
+	protected Requirement getRequirements(ServerReport report) {
+		return new ProbeRequirement(report);
+	}
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ProtocolVersionResult getCouldNotExecuteResult() {
         return new ProtocolVersionResult(null, null);
     }
 

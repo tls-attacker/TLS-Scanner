@@ -11,11 +11,13 @@ package de.rub.nds.tlsscanner.serverscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import de.rub.nds.scanner.core.report.AnsiColor;
+import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +27,7 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        ScannerConfig config = new ScannerConfig(new GeneralDelegate());
+        ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {
             commander.parse(args);
@@ -35,10 +37,10 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                TlsScanner scanner = new TlsScanner(config);
+                TlsServerScanner scanner = new TlsServerScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
-                SiteReport report = scanner.scan();
+                ServerReport report = scanner.scan();
                 LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
                 ConsoleLogger.CONSOLE
                     .info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000)

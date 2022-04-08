@@ -10,6 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -29,14 +31,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketZeroKeyResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -68,7 +68,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe extends TlsProbe {
+public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, ServerReport, SessionTicketZeroKeyResult> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -102,12 +102,12 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     private List<CipherSuite> supportedSuites;
 
-    public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
+    public SessionTicketZeroKeyProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SessionTicketZeroKeyResult executeTest() {
         State state;
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
@@ -187,8 +187,9 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_SESSION_TICKETS).requireProbeTypes(ProbeType.CIPHER_SUITE);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
+        		.requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -210,12 +211,12 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public SessionTicketZeroKeyResult getCouldNotExecuteResult() {
         return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = new ArrayList<>(report.getCipherSuites());
     }
 

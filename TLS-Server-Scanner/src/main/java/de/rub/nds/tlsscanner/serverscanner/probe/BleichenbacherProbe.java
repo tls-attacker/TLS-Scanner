@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
@@ -20,36 +23,33 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.BleichenbacherResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.BleichenbacherResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BleichenbacherProbe extends TlsProbe {
+public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerReport, BleichenbacherResult> {
 
-    private static int numberOfIterations;
-    private static int numberOfAddtionalIterations;
+    private final int numberOfIterations;
+    private final int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
+    public BleichenbacherProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.BLEICHENBACHER, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
         this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public BleichenbacherResult executeTest() {
 
         LOGGER.debug("Starting evaluation");
         List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
@@ -135,17 +135,18 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE, ProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_RSA);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE, 
+        		TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public BleichenbacherResult getCouldNotExecuteResult() {
         return new BleichenbacherResult(TestResults.COULD_NOT_TEST);
     }
 

@@ -11,6 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -32,28 +35,28 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsHelloVerifyRequestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsHelloVerifyRequestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DtlsHelloVerifyRequestProbe extends TlsProbe {
+public class DtlsHelloVerifyRequestProbe
+    extends TlsProbe<ServerScannerConfig, ServerReport, DtlsHelloVerifyRequestResult> {
 
     private Integer cookieLength;
 
-    public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
+    public DtlsHelloVerifyRequestProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DtlsHelloVerifyRequestResult executeTest() {
         try {
             return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
                 usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(), usesCiphersuitesInCookie(),
@@ -230,14 +233,19 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public DtlsHelloVerifyRequestResult getCouldNotExecuteResult() {
         return new DtlsHelloVerifyRequestResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, -1,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST);
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
+    
+	@Override
+	protected Requirement getRequirements(ServerReport report) {
+		return new ProbeRequirement(report);
+	}
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 }

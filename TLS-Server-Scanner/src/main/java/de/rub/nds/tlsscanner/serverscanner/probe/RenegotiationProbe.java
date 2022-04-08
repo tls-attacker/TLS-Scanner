@@ -10,6 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,29 +31,27 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.RenegotiationResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsProbe {
+public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerReport, RenegotiationResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInRenegotiation;
 
-    public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig);
+    public RenegotiationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RENEGOTIATION, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public RenegotiationResult executeTest() {
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
         } else {
@@ -203,22 +203,25 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedPropertiesNot(AnalyzedProperty.SUPPORTS_TLS_1_0, AnalyzedProperty.SUPPORTS_TLS_1_1, AnalyzedProperty.SUPPORTS_TLS_1_2, AnalyzedProperty.SUPPORTS_DTLS_1_0, AnalyzedProperty.SUPPORTS_DTLS_1_2);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE)
+        		.requireAnalyzedPropertiesNot(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, 
+        				TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2, 
+        				TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new RenegotiationResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST);
+    public RenegotiationResult getCouldNotExecuteResult() {
+        return new RenegotiationResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     private Config getBaseConfig() {

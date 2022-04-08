@@ -9,19 +9,19 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
+import de.rub.nds.scanner.core.vectorstatistics.VectorContainer;
 import de.rub.nds.tlsattacker.attacks.padding.vector.PaddingVector;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
+import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -715,7 +715,7 @@ public class PaddingOracleAttributor {
                     found = true;
                     // TODO This need to be a correct check - this currently
                     // just checks the first message
-                    if (FingerPrintChecker.checkEquality(response.getFingerprint(),
+                    if (FingerprintChecker.checkEquality(response.getFingerprint(),
                         vectorContainer.getResponseFingerprintList().get(0)) != EqualityError.NONE) {
                         return false;
                     }

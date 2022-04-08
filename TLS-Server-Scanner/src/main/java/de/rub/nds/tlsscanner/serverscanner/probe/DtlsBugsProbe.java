@@ -10,6 +10,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -31,26 +34,25 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsBugsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsBugsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DtlsBugsProbe extends TlsProbe {
+public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport, DtlsBugsResult> {
 
-    public DtlsBugsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_COMMON_BUGS, scannerConfig);
+    public DtlsBugsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DtlsBugsResult executeTest() {
         try {
             return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isAcceptingUnencryptedAppData(),
                 isEarlyFinished());
@@ -151,12 +153,17 @@ public class DtlsBugsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public DtlsBugsResult getCouldNotExecuteResult() {
         return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
+    
+	@Override
+	protected Requirement getRequirements(ServerReport report) {
+		return new ProbeRequirement(report);
+	}
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 }

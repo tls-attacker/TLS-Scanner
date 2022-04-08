@@ -9,10 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test", 443);
+        ServerReport report = new ServerReport("test", 443);
         report.setSupportedSignatureAndHashAlgorithmsSke(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
 
         SignatureAlgorithmsGuidelineCheck check = new SignatureAlgorithmsGuidelineCheck(null, null,
@@ -32,7 +33,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test", 443);
+        ServerReport report = new ServerReport("test", 443);
         report.setSupportedSignatureAndHashAlgorithmsSke(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
 
         SignatureAlgorithmsGuidelineCheck check = new SignatureAlgorithmsGuidelineCheck(null, null,

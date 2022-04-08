@@ -13,6 +13,8 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1Field;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
@@ -31,13 +33,11 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -47,7 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class CertificateTransparencyProbe extends TlsProbe {
+public class CertificateTransparencyProbe
+    extends TlsProbe<ServerScannerConfig, ServerReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
     private OCSPResponse stapledOcspResponse;
@@ -60,12 +61,12 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE_TRANSPARENCY, config);
+    public CertificateTransparencyProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CertificateTransparencyResult executeTest() {
         Config tlsConfig = initTlsConfig();
 
         if (serverCertChain == null) {
@@ -77,7 +78,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
         getTlsHandshakeSCTs(tlsConfig);
         evaluateChromeCtPolicy();
 
-        TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        TestResult supportsPrecertificateSCTsResult =
+            (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
@@ -229,19 +231,19 @@ public class CertificateTransparencyProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.OCSP, ProbeType.CERTIFICATE);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CertificateTransparencyResult getCouldNotExecuteResult() {
         return new CertificateTransparencyResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
             TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
             new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 }

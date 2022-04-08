@@ -9,26 +9,28 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.config.EarlyCCSCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.impl.EarlyCCSAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EarlyCcsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
-public class EarlyCcsProbe extends TlsProbe {
+public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport, EarlyCcsResult> {
 
-    public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig);
+    public EarlyCcsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.EARLY_CCS, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public EarlyCcsResult executeTest() {
         EarlyCCSCommandConfig earlyCcsCommandConfig =
             new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
@@ -43,11 +45,16 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public EarlyCcsResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
     }
+    
+	@Override
+	protected Requirement getRequirements(ServerReport report) {
+		return new ProbeRequirement(report);
+	}
 }

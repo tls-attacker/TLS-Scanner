@@ -9,9 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class CertificateAgilityGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test", 443);
+        ServerReport report = new ServerReport("test", 443);
 
         CertificateAgilityGuidelineCheck check = new CertificateAgilityGuidelineCheck(null, null);
 

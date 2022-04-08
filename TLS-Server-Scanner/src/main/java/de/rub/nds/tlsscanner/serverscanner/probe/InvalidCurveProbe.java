@@ -9,6 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.vectorstatistics.DistributionTest;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
@@ -32,23 +36,19 @@ import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.leak.InvalidCurveTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.InvalidCurveResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.InvalidCurveResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.DistributionTest;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class InvalidCurveProbe extends TlsProbe {
+public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerReport, InvalidCurveResult> {
 
     /**
      * Defines the error probability for each test vector
@@ -93,12 +93,12 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private Map<NamedGroup, NamedGroupWitness> namedCurveWitnessesTls13;
 
-    public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.INVALID_CURVE, config);
+    public InvalidCurveProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.INVALID_CURVE, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public InvalidCurveResult executeTest() {
         List<InvalidCurveVector> vectors = prepareVectors();
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for (InvalidCurveVector vector : vectors) {
@@ -121,20 +121,26 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3, AnalyzedProperty.SUPPORTS_STATIC_ECDH, AnalyzedProperty.SUPPORTS_ECDH, AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
-        		.requireProbeTypes(ProbeType.PROTOCOL_VERSION, ProbeType.CIPHER_SUITE, ProbeType.NAMED_GROUPS, ProbeType.RESUMPTION);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, 
+        		TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, TlsAnalyzedProperty.SUPPORTS_ECDHE, 
+        		TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, 
+        		TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
+        		.requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, 
+        				TlsProbeType.NAMED_GROUPS, TlsProbeType.RESUMPTION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportsRenegotiation =
-            (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION) == TestResults.TRUE
-                || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResults.TRUE);
+            (report.getResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
+                == TestResults.TRUE
+                || report.getResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION)
+                    == TestResults.TRUE);
         supportsSecureRenegotiation =
-            report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
-        issuesTls13SessionTickets = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        supportsTls13PskDhe = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+            report.getResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
+        issuesTls13SessionTickets = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        supportsTls13PskDhe = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
         supportedFpGroups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
@@ -167,32 +173,32 @@ public class InvalidCurveProbe extends TlsProbe {
 
         List<ECPointFormat> fpPointFormats = new LinkedList<>();
         fpPointFormats.add(ECPointFormat.UNCOMPRESSED);
-        if (report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) != TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) != TestResults.TRUE) {
             LOGGER.warn("Server did not list uncompressed points as supported");
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResults.TRUE
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResults.TRUE
             || getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
             fpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
         }
 
         List<ProtocolVersion> protocolVersions = new LinkedList<>();
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS10);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS11);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS10);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS12);
         }
         supportedTls13FpGroups = new LinkedList();
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
             for (NamedGroup group : report.getSupportedTls13Groups()) {
                 if (NamedGroup.getImplemented().contains(group)
@@ -214,7 +220,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
             List<ECPointFormat> tls13FpPointFormats = new LinkedList<>();
             tls13FpPointFormats.add(ECPointFormat.UNCOMPRESSED);
-            if (report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION) == TestResults.TRUE) {
+            if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION) == TestResults.TRUE) {
                 tls13FpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             }
 
@@ -240,16 +246,16 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new InvalidCurveResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            null);
+    public InvalidCurveResult getCouldNotExecuteResult() {
+        return new InvalidCurveResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, null);
     }
 
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,
         List<CipherSuite> cipherSuites, NamedGroup group, List<NamedGroup> ecdsaRequiredGroups) {
         ClientDelegate delegate = (ClientDelegate) attackConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        delegate.setHost(scannerConfig.getClientDelegate().getHost());
+        delegate.setSniHostname(scannerConfig.getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         ProtocolVersionDelegate protocolVersionDelegate =

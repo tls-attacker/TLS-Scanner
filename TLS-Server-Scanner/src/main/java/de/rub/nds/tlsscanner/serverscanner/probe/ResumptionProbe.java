@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -41,13 +43,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ResumptionResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -55,19 +55,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ResumptionProbe extends TlsProbe {
+public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ResumptionResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInResumption;
     private TestResult supportsDtlsCookieExchangeInTicketResumption;
     private TestResult respectsPskModes;
 
-    public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
+    public ResumptionProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RESUMPTION, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ResumptionResult executeTest() {
         this.respectsPskModes = TestResults.TRUE;
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
@@ -200,7 +200,7 @@ public class ResumptionProbe extends TlsProbe {
             return TestResults.COULD_NOT_TEST;
         }
         ServerHelloMessage second = hellos.get(1);
-        KeyShareExtensionMessage keyShareExtensionMessage = second.getExtension(KeyShareExtensionMessage.class);
+        second.getExtension(KeyShareExtensionMessage.class);
         return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResults.TRUE : TestResults.FALSE;
     }
 
@@ -353,21 +353,21 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ResumptionResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 }
