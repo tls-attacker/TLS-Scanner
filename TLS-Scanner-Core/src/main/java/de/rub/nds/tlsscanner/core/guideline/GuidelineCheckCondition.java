@@ -36,7 +36,7 @@ public class GuidelineCheckCondition {
     @XmlAnyElement(lax = true)
     private AnalyzedProperty analyzedProperty;
     
-    @XmlElement(name = "result")
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private GuidelineCheckCondition() {
