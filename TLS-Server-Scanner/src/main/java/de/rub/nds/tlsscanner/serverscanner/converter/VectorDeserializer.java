@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
-
 import java.io.IOException;
 
 public class VectorDeserializer extends StdDeserializer<Vector> {

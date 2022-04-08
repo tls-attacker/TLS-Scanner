@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,14 +22,13 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsProbe {
+public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport, CertificateResult> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -54,12 +54,12 @@ public class CertificateProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE, config);
+    public CertificateProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CertificateResult executeTest() {
         ecdsaPkGroupsStatic = new LinkedList<>();
         ecdsaPkGroupsEphemeral = new LinkedList<>();
         ecdsaPkGroupsTls13 = new LinkedList<>();
@@ -93,35 +93,35 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+    public boolean canBeExecuted(ServerReport report) {
+        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return true;
         }
         return false;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
+    public void adjustConfig(ServerReport report) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
             scanForRsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
             scanForEcdsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
             scanForDssCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CertificateResult getCouldNotExecuteResult() {
         return new CertificateResult(null, null, null, null, null, null, null);
     }
 
@@ -401,7 +401,7 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
@@ -431,7 +431,7 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
