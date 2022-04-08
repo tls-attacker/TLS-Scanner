@@ -9,16 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-<<<<<<< HEAD
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-=======
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
->>>>>>> fixing_imports_and_packages
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Assert;

@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
@@ -51,14 +51,9 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the TLS 1.3 protocol is supported",
             new PropertyResultRecommendation(TestResults.FALSE, "TLS 1.3 is disabled", "Enable TLS 1.3"),
             "https://tools.ietf.org/html/rfc8446"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, "TLS 1.3 draft version support",
-            "Evaluates whether a TLS 1.3 version draft is supported", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(
             TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, "TLS 1.3 draft version support",
-            "Evaluates whether a TLS 1.3 version draft is supported", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether a TLS 1.3 version draft is supported", new PropertyResultRecommendation(TestResults.TRUE,
                 "TLS 1.3 draft version is enabled", "Update your server and enable the TLS 1.3 final version"),
             "https://tools.ietf.org/html/rfc8446"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, "DTLS 1.0 support",
@@ -72,14 +67,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3, "DTLS 1.3 support",
             "Evaluates whether the DTLS 1.3 protocol is supported",
             new PropertyResultRecommendation(TestResults.FALSE, "DTLS 1.3 is disabled", "Enable DTLS 1.3"), ""));
-
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
-            "Evaluates whether the server supports null ciphers", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
-            "Evaluates whether the server supports null ciphers", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server supports null ciphers", new PropertyResultRecommendation(TestResults.TRUE,
                 "Null ciphers are supported", "Disable insecure null ciphers"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, "Fortezza support",
@@ -88,38 +77,21 @@ public class DefaultRecommendationsTest {
                 "Disable Fortezza cipher suites",
                 "Fortezza cipher suites were developed by NSA in the 90s. You should better get rid of Fortezza algorithms."),
             ""));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
             "Evaluates whether the server supports export ciphers", new PropertyResultRecommendation(TestResults.TRUE,
                 "Export ciphers are enabled", "Disable export ciphers", ""),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ANON, "Anonymous cipher support",
-            "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(TestResults.TRUE,
-=======
-        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
-            "Evaluates whether the server supports export ciphers", new PropertyResultRecommendation(TestResult.TRUE,
-                "Export ciphers are enabled", "Disable export ciphers", ""),
-            ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ANON, "Anonymous cipher support",
-            "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server supports anonymous ciphers", new PropertyResultRecommendation(TestResults.TRUE,
                 "Anonymous ciphers are enabled", "Disable anonymous ciphers"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DES, "DES support",
             "Evaluates whether the server supports DES ciphers",
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
             new PropertyResultRecommendation(TestResults.TRUE, "DES ciphers are enabled", "Disable DES ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_3DES, "3DES (Triple DES) support",
-            "Evaluates whether the server supports 3DES (Triple DES) ciphers",
-            new PropertyResultRecommendation(TestResults.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SEED, "SEED cipher support",
-=======
-            new PropertyResultRecommendation(TestResult.TRUE, "DES ciphers are enabled", "Disable DES ciphers"), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_3DES, "3DES (Triple DES) support",
             "Evaluates whether the server supports 3DES (Triple DES) ciphers",
-            new PropertyResultRecommendation(TestResult.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"), ""));
+            new PropertyResultRecommendation(TestResults.TRUE, "3DES ciphers are enabled", "Disable 3DES ciphers"), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SEED, "SEED cipher support",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Evaluates whether the server supports SEED ciphers",
             "SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998",
             "https://tools.ietf.org/html/rfc4162"));
@@ -131,13 +103,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RC2, "RC2 cipher support",
             "Evaluates whether the server supports RC2 ciphers",
             "RC2 is a 64 bit block cipher designed by Ron Rivest in 1987",
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
             new PropertyResultRecommendation(TestResults.TRUE, "RC2 ciphers are enabled", "Disable RC2 ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RC4, "RC4 cipher support",
-=======
-            new PropertyResultRecommendation(TestResult.TRUE, "RC2 ciphers are enabled", "Disable RC2 ciphers"), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RC4, "RC4 cipher support",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Evaluates whether the server supports RC4 ciphers",
             "RC4 is a stream cipher designed by Ron Rivest in 1987",
             new PropertyResultRecommendation(TestResults.TRUE, "RC4 ciphers are enabled", "Disable RC4 ciphers"),
@@ -149,58 +116,33 @@ public class DefaultRecommendationsTest {
             ""));
 
         // PFS
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PFS, "Perfect Forward Secrecy (PFS) support",
-            "Evaluates whether the server supports Perfect Forward Secrecy (PFS)",
-            new PropertyResultRecommendation(TestResults.FALSE, "PFS is not supported",
-                "Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_PFS, "Support for only PFS cipher suites",
-=======
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PFS, "Perfect Forward Secrecy (PFS) support",
                 "Evaluates whether the server supports Perfect Forward Secrecy (PFS)",
-                new PropertyResultRecommendation(TestResult.FALSE, "PFS is not supported",
+                new PropertyResultRecommendation(TestResults.FALSE, "PFS is not supported",
                     "Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
                 ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
             "Support for only PFS cipher suites",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Evaluates whether the server exclusively supports Perfect Forward Secrecy (PFS)",
             new PropertyResultRecommendation(TestResults.FALSE, "Not all cipher suites are perfect forward secure",
                 "Consider disabling cipher suites which are not perfect forward secure. Enable only perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE"),
             ""));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.PREFERS_PFS, "Perfect Forward Secrecy (PFS) preference",
-            "Evaluates whether the server prefers Perfect Forward Secrecy (PFS) cipher suites",
-            new PropertyResultRecommendation(TestResults.FALSE, "PFS cipher suites are not preferred",
-                "Enable cipher suite ordering and prefer PFS cipher suites"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_PFS, "Perfect Forward Secrecy (PFS) enforcing",
-            "Evaluates whether the server enforces Perfect Forward Secrecy (PFS) cipher suites",
-            new PropertyResultRecommendation(TestResults.FALSE, "PFS cipher suites are not enforced",
-                "Enable cipher suite ordering and enforce PFS cipher suites"),
-            ""));
-
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_AES, "AES cipher support",
-            "Evaluates whether the server supports AES cipher", new PropertyResultRecommendation(TestResults.FALSE,
-=======
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.PREFERS_PFS, "Perfect Forward Secrecy (PFS) preference",
                 "Evaluates whether the server prefers Perfect Forward Secrecy (PFS) cipher suites",
-                new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not preferred",
+                new PropertyResultRecommendation(TestResults.FALSE, "PFS cipher suites are not preferred",
                     "Enable cipher suite ordering and prefer PFS cipher suites"),
                 ""));
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.ENFORCES_PFS, "Perfect Forward Secrecy (PFS) enforcing",
                 "Evaluates whether the server enforces Perfect Forward Secrecy (PFS) cipher suites",
-                new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not enforced",
+                new PropertyResultRecommendation(TestResults.FALSE, "PFS cipher suites are not enforced",
                     "Enable cipher suite ordering and enforce PFS cipher suites"),
                 ""));
 
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_AES, "AES cipher support",
-            "Evaluates whether the server supports AES cipher", new PropertyResultRecommendation(TestResult.FALSE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server supports AES cipher", new PropertyResultRecommendation(TestResults.FALSE,
                 "AES cipher suites are disabled", "Enable AES cipher suites"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, "Camellia cipher support",
@@ -213,13 +155,8 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the server supports ChaCha cipher",
             new PropertyResultRecommendation(TestResults.FALSE, "ChaCha cipher is disabled", "Enable ChaCha cipher"),
             "https://tools.ietf.org/html/rfc7905"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RSA, "RSA key exchange support",
-            "Evaluates whether the server supports RSA key exchange", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_RSA, "RSA key exchange support",
-            "Evaluates whether the server supports RSA key exchange", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server supports RSA key exchange", new PropertyResultRecommendation(TestResults.TRUE,
                 "RSA key exchange is enabled", "Disable RSA key exchange"),
             ""));
         recommendations
@@ -242,13 +179,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_GOST, "GOST cipher support",
             "Evaluates whether the server supports GOST cipher",
             "GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. ",
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
             new PropertyResultRecommendation(TestResults.TRUE, "GOST ciphers are enabled", "Disable GOST ciphers"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SRP, "Secure Remote Password (SRP) support",
-=======
-            new PropertyResultRecommendation(TestResult.TRUE, "GOST ciphers are enabled", "Disable GOST ciphers"), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SRP, "Secure Remote Password (SRP) support",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Evaluates whether the server supports Secure Remote Password (SRP) cipher suites",
             "https://tools.ietf.org/html/rfc5054"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_KERBEROS, "Kerberos cipher suites support",
@@ -342,13 +274,8 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "TLS SCSV is disabled",
                 " Enable TLS Fallback Signaling Cipher Suite Value (SCSV)"),
             "https://tools.ietf.org/html/rfc7507"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, "TLS compression support",
-            "Evaluates whether the server supports TLS compression", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, "TLS compression support",
-            "Evaluates whether the server supports TLS compression", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server supports TLS compression", new PropertyResultRecommendation(TestResults.TRUE,
                 "TLS compression is supported", "Disable TLS compression"),
             ""));
 
@@ -380,30 +307,7 @@ public class DefaultRecommendationsTest {
                 "https://tools.ietf.org/html/rfc6797"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING,
             "Support for HTTP Strict Transport Security (HSTS) preloading", "",
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
             new PropertyResultRecommendation(TestResults.FALSE, "HSTS is disabled", "Enable HSTS"), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HPKP, "HTTP Public Key Pinning (HPKP) support",
-            "Evaluates whether the server supports Public Key Pinning Extension for HTTP",
-            "https://tools.ietf.org/html/rfc7469"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HPKP_REPORTING,
-            "HTTP Public Key Pinning (HPKP) report-only mode support",
-            "Evaluates whether the server supports Public Key Pinning Extension for HTTP in a report-only mode",
-            "https://tools.ietf.org/html/rfc7469"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HTTP_COMPRESSION, "HTTP compression support",
-            "Evaluates whether the server supports HTTP compression", new PropertyResultRecommendation(TestResults.TRUE,
-                "HTTP compression is enabled", "Disable HTTP compression"),
-            ""));
-
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_CS_ORDERING, "Cipher suite ordering support",
-            "Evaluates whether the server supports cipher suite ordering", new PropertyResultRecommendation(
-                TestResults.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, "Named group order",
-            "Evaluates whether the server enforces the client's named group ordering", new PropertyResultRecommendation(
-                TestResults.FALSE, "Server does not enforce client's group order", "Enforce client's group order")));
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
-=======
-            new PropertyResultRecommendation(TestResult.FALSE, "HSTS is disabled", "Enable HSTS"), ""));
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HPKP, "HTTP Public Key Pinning (HPKP) support",
                 "Evaluates whether the server supports Public Key Pinning Extension for HTTP",
@@ -415,19 +319,18 @@ public class DefaultRecommendationsTest {
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HTTP_COMPRESSION, "HTTP compression support",
                 "Evaluates whether the server supports HTTP compression", new PropertyResultRecommendation(
-                    TestResult.TRUE, "HTTP compression is enabled", "Disable HTTP compression"),
+                    TestResults.TRUE, "HTTP compression is enabled", "Disable HTTP compression"),
                 ""));
 
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, "Cipher suite ordering support",
                 "Evaluates whether the server supports cipher suite ordering", new PropertyResultRecommendation(
-                    TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
+                    TestResults.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
                 ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, "Named group order",
             "Evaluates whether the server enforces the client's named group ordering", new PropertyResultRecommendation(
-                TestResult.FALSE, "Server does not enforce client's group order", "Enforce client's group order")));
+                TestResults.FALSE, "Server does not enforce client's group order", "Enforce client's group order")));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Signature has algorithm ordering enforced",
             "Evaluates whether the server enforces signature hash algorithm ordering",
             new PropertyResultRecommendation(TestResults.FALSE, "Signature hash ordering is not enforced",
@@ -445,15 +348,9 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "The server is cipher suite intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, "TLS extension intolerance",
-            "Evaluates whether the server is TLS extension intolerant",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server is TLS extension intolerant",
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
             "TLS extension intolerance", "Evaluates whether the server is TLS extension intolerant",
-            new PropertyResultRecommendation(TestResult.TRUE, "The server is TLS extension intolerant",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            new PropertyResultRecommendation(TestResults.TRUE, "The server is TLS extension intolerant",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
@@ -495,22 +392,12 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "The server has big ClientHello intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(
-            new Recommendation(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, "Elliptic curve named group intolerance",
-                "Evaluates whether the server has elliptic curve named group intolerance",
-                new PropertyResultRecommendation(TestResults.TRUE,
-                    "The server has elliptic curve named group intolerance",
-                    "There is a bug in your implementation. Update your software or contact the developers."),
-                ""));
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
             "Elliptic curve named group intolerance",
             "Evaluates whether the server has elliptic curve named group intolerance",
-            new PropertyResultRecommendation(TestResult.TRUE, "The server has elliptic curve named group intolerance",
+            new PropertyResultRecommendation(TestResults.TRUE, "The server has elliptic curve named group intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
         recommendations
             .add(new Recommendation(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, "Second cipher suite bug",
                 "Evaluates whether the server always evaluates only the second cipher suite byte",
@@ -579,18 +466,8 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to POODLE",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://www.openssl.org/~bodo/ssl-poodle.pdf"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE, "Vulnerable to TLS POODLE",
-            "Evaluates whether the server is vulnerable to TLS POODLE (Padding Oracle On Downgraded Legacy Encryption)",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to POODLE with TLS",
-                "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
-            ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_SWEET_32, "Vulnerable to Sweet32",
-            "Evaluates whether the server is vulnerable to Sweet32", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, "Vulnerable to Sweet32",
-            "Evaluates whether the server is vulnerable to Sweet32", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server is vulnerable to Sweet32", new PropertyResultRecommendation(TestResults.TRUE,
                 "The server is vulnerable to Sweet32", "Disable 64 bit block ciphers like 3DES."),
             "https://sweet32.info"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, "Vulnerable to DROWN",
@@ -603,15 +480,9 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to Heartbleed",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "http://heartbleed.com"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_TICKETBLEED, "Vulnerable to Ticketbleed",
-            "Evaluates whether the server is vulnerable to Ticketbleed",
-            new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to Ticketbleed",
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_TICKETBLEED,
             "Vulnerable to Ticketbleed", "Evaluates whether the server is vulnerable to Ticketbleed",
-            new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to Ticketbleed",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to Ticketbleed",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://filippo.io/ticketbleed"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
@@ -626,13 +497,8 @@ public class DefaultRecommendationsTest {
                 "Disable TLS compression"),
             "https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf",
             "https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
-            "Evaluates whether the server is vulnerable to BREACH", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
-            "Evaluates whether the server is vulnerable to BREACH", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server is vulnerable to BREACH", new PropertyResultRecommendation(TestResults.TRUE,
                 "The server is vulnerable to BREACH", "Disable HTTP compression"),
             "http://breachattack.com"));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM, "Vulnerable to Logjam",
@@ -640,13 +506,8 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResults.TRUE, "The server is vulnerable to Logjam",
                 "Disable export cipher suites and short Diffie-Hellman groups. Use at least 2048-bit Diffie-Hellman keys."),
             "https://weakdh.org"));
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_FREAK, "Vulnerable to FREAK",
-            "Evaluates whether the server is vulnerable to FREAK", new PropertyResultRecommendation(TestResults.TRUE,
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, "Vulnerable to FREAK",
-            "Evaluates whether the server is vulnerable to FREAK", new PropertyResultRecommendation(TestResult.TRUE,
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
+            "Evaluates whether the server is vulnerable to FREAK", new PropertyResultRecommendation(TestResults.TRUE,
                 "The server is vulnerable to FREAK", "Disable export cipher suites."),
             "https://www.smacktls.com/smack.pdf"));
         recommendations
@@ -733,15 +594,9 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the server requires the client to send a Server Name Indication (SNI) extension", ""));
 
         // certificate issues
-<<<<<<< HEAD:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/rating/DefaultRecommendationsTest.java
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues", "",
-            new PropertyResultRecommendation(TestResults.TRUE, "", ""), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.STRICT_ALPN, "Strict ALPN",
-=======
         recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues", "",
-            new PropertyResultRecommendation(TestResult.TRUE, "", ""), ""));
+            new PropertyResultRecommendation(TestResults.TRUE, "", ""), ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.STRICT_ALPN, "Strict ALPN",
->>>>>>> fixing_imports_and_packages:TLS-Server-Scanner/src/test/java/de/rub/nds/tlsscanner/serverscanner/report/rating/DefaultRecommendationsTest.java
             "Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks",
             new PropertyResultRecommendation(TestResults.FALSE, "The server does not reject unsupported ALPN Strings",
                 "If possible configure your server to use strict ALPN verification"),

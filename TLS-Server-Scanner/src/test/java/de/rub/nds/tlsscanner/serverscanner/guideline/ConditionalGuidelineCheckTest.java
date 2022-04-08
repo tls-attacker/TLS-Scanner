@@ -9,18 +9,12 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-<<<<<<< HEAD
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-=======
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
->>>>>>> fixing_imports_and_packages
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,15 +27,9 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
         GuidelineCheckCondition condition =
-<<<<<<< HEAD
-            new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
-=======
-            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
->>>>>>> fixing_imports_and_packages
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = null;
 
@@ -60,15 +48,9 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, false);
 
         GuidelineCheckCondition condition =
-<<<<<<< HEAD
-            new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
-=======
-            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
->>>>>>> fixing_imports_and_packages
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = null;
 
