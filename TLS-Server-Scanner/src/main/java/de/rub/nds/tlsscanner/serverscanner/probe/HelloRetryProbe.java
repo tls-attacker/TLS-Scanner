@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,47 +23,46 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HelloRetryResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HelloRetryResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 
 /**
  * Test the servers Hello Retry Request
  */
-public class HelloRetryProbe extends TlsProbe {
+public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResults.FALSE;
     private TestResult issuesCookie = TestResults.FALSE;
+    private NamedGroup serversChosenGroup = null;
 
-    public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HELLO_RETRY, scannerConfig);
+    public HelloRetryProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HelloRetryResult executeTest() {
         testHelloRetry();
-        return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
+        return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie, serversChosenGroup);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public HelloRetryResult getCouldNotExecuteResult() {
+        return new HelloRetryResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, serversChosenGroup);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     private void testHelloRetry() {
@@ -92,6 +93,7 @@ public class HelloRetryProbe extends TlsProbe {
             && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
+            serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;

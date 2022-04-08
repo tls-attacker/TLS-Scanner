@@ -9,10 +9,12 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -30,24 +32,23 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpHeaderResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpHeaderProbe extends HttpsProbe {
+public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport, HttpHeaderResult> {
 
-    public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
+    public HttpHeaderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HttpHeaderResult executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
@@ -79,7 +80,7 @@ public class HttpHeaderProbe extends HttpsProbe {
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new SendAction(this.getHttpsRequest()));
+        trace.addTlsAction(new SendAction(new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
         State state = new State(tlsConfig, trace);
         executeState(state);
@@ -104,16 +105,16 @@ public class HttpHeaderProbe extends HttpsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public HttpHeaderResult getCouldNotExecuteResult() {
         return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
     }
 }

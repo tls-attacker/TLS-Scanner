@@ -9,15 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -29,7 +30,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
-    private AnalyzedProperty property;
+    private TlsAnalyzedProperty property;
     
     @XmlAnyElement(lax = true)
     private TestResult result;
@@ -38,20 +39,20 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
         super(null, null);
     }
 
-    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel, AnalyzedProperty property,
+    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel, TlsAnalyzedProperty property,
         TestResult result) {
         this(name, requirementLevel, null, property, result);
     }
 
     public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, AnalyzedProperty property, TestResult result) {
+        GuidelineCheckCondition condition, TlsAnalyzedProperty property, TestResult result) {
         super(name, requirementLevel, condition);
         this.property = property;
         this.result = result;
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ScanReport report) {
         TestResult reportResult = report.getResult(this.property);
         switch ((TestResults)reportResult) {
             case UNCERTAIN:

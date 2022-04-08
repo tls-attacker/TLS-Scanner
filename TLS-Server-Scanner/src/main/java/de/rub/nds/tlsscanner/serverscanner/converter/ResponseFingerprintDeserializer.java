@@ -20,7 +20,6 @@ import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

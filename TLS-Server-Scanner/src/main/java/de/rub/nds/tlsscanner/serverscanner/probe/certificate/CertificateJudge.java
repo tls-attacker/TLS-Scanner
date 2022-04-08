@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-
 import java.io.ByteArrayInputStream;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;

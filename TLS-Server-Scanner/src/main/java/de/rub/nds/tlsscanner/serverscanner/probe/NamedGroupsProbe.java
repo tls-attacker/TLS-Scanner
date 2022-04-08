@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -26,14 +28,12 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.NamedGroupResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NamedGroupsProbe extends TlsProbe {
+public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport, NamedGroupResult> {
 
-    Set<CipherSuite> supportedCipherSuites;
+    private Set<CipherSuite> supportedCipherSuites;
 
     // curves used for ecdsa in key exchange
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
@@ -59,12 +59,12 @@ public class NamedGroupsProbe extends TlsProbe {
 
     private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
-    public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
+    public NamedGroupsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public NamedGroupResult executeTest() {
         Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
 
         addGroupsFound(overallSupported,
@@ -244,16 +244,17 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
-            || report.getCertificateChainList() == null || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            || report.getCertificateChainList() == null
+            || !report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
@@ -264,7 +265,7 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public NamedGroupResult getCouldNotExecuteResult() {
         return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResults.COULD_NOT_TEST,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
