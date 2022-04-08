@@ -77,7 +77,8 @@ public class CertificateTransparencyProbe
         getTlsHandshakeSCTs(tlsConfig);
         evaluateChromeCtPolicy();
 
-        TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        TestResult supportsPrecertificateSCTsResult =
+            (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
         TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);

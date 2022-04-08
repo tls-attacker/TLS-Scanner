@@ -9,30 +9,31 @@
 
 package de.rub.nds.tlsscanner.serverscanner.requirements;
 
+import de.rub.nds.scanner.core.constants.ProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 import java.util.Map;
 
 public class ProbeRequirement {
-	private SiteReport report;
-	private ProbeType[] requiredProbeTypes;
-	private AnalyzedProperty[] requiredAnalyzedproperties, requiredAnalyzedpropertiesNot;
+	private ServerReport report;
+	private TlsProbeType[] requiredProbeTypes;
+	private TlsAnalyzedProperty[] requiredAnalyzedproperties, requiredAnalyzedpropertiesNot;
 	private ExtensionType[] requiredExtensionTypes;	
 	private ProtocolVersion[] requiredProtocolVersions;
 	private ProbeRequirement not;
 	private ProbeRequirement[] requiredOR;
 
-	public ProbeRequirement(SiteReport report) {
+	public ProbeRequirement(ServerReport report) {
 		this.report=report;
 	}
 	
-	public ProbeRequirement requireProbeTypes(ProbeType ... probeTypes) {
+	public ProbeRequirement requireProbeTypes(TlsProbeType ... probeTypes) {
 		this.requiredProbeTypes=probeTypes;
 		return this;
 	}
@@ -42,12 +43,12 @@ public class ProbeRequirement {
 		return this;
 	}
 	
-	public ProbeRequirement requireAnalyzedProperties(AnalyzedProperty ... analyzedProperties) {
+	public ProbeRequirement requireAnalyzedProperties(TlsAnalyzedProperty ... analyzedProperties) {
 		this.requiredAnalyzedproperties=analyzedProperties;
 		return this;
 	}
 	
-	public ProbeRequirement requireAnalyzedPropertiesNot(AnalyzedProperty ... analyzedPropertiesNot) {
+	public ProbeRequirement requireAnalyzedPropertiesNot(TlsAnalyzedProperty ... analyzedPropertiesNot) {
 		this.requiredAnalyzedpropertiesNot=analyzedPropertiesNot;
 		return this;
 	}
@@ -85,7 +86,7 @@ public class ProbeRequirement {
 		if (this.requiredAnalyzedproperties==null)
 			return true;
 		Map<String, TestResult> apList = report.getResultMap();
-		for (AnalyzedProperty ap : this.requiredAnalyzedproperties) {
+		for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
 			if (apList.containsKey(ap.toString())) {
 				if (apList.get(ap.toString())!= TestResults.TRUE)
 					return false;
@@ -113,7 +114,7 @@ public class ProbeRequirement {
 		if (this.requiredAnalyzedpropertiesNot==null)
 			return true;
 		Map<String, TestResult> apList = report.getResultMap();
-		for (AnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
+		for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
 			if (apList.containsKey(ap.toString())) {
 				if (apList.get(ap.toString())!= TestResults.FALSE)
 					return false;
@@ -163,14 +164,14 @@ public class ProbeRequirement {
 	/**
 	 * @return the requiredAnalyzedproperties
 	 */
-	public AnalyzedProperty[] getRequiredAnalyzedproperties() {
+	public TlsAnalyzedProperty[] getRequiredAnalyzedproperties() {
 		return this.requiredAnalyzedproperties;
 	}
 
 	/**
 	 * @return the requiredAnalyzedpropertiesNot
 	 */
-	public AnalyzedProperty[] getRequiredAnalyzedpropertiesNot() {
+	public TlsAnalyzedProperty[] getRequiredAnalyzedpropertiesNot() {
 		return this.requiredAnalyzedpropertiesNot;
 	}
 	

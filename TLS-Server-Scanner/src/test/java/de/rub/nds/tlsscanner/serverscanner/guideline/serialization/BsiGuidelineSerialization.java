@@ -100,43 +100,52 @@ public class BsiGuidelineSerialization {
                 NamedGroup.FFDHE4096),
             Collections.emptyList(), false, 2));
         checks.add(new SignatureAlgorithmsGuidelineCheck("Die folgenden Signaturverfahren werden empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.DSA, SignatureAlgorithm.ECDSA)));
-        checks.add(new HashAlgorithmsGuidelineCheck("Die folgenden Hashfunktionen werden empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-            Arrays.asList(HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512)));
+        checks.add(
+            new HashAlgorithmsGuidelineCheck("Die folgenden Hashfunktionen werden empfohlen.", RequirementLevel.SHOULD,
+                new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                Arrays.asList(HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512)));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, TestResults.TRUE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION, TestResults.FALSE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, TestResults.FALSE));
         checks.add(
             new ExtensionGuidelineCheck("truncated_hmac sollte nicht unterstüzt werden.", RequirementLevel.SHOULD_NOT,
                 new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                 ExtensionType.TRUNCATED_HMAC));
         checks.add(new AnalyzedPropertyGuidelineCheck("Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TestResults.TRUE));
         checks.add(new ExtensionGuidelineCheck("Heartbeat sollte nicht unterstüzt werden.", RequirementLevel.SHOULD_NOT,
             new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             ExtensionType.HEARTBEAT));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, TestResults.TRUE));
         checks.add(new AnalyzedPropertyGuidelineCheck("Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
             TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.FALSE));
         checks.add(new NamedGroupsGuidelineCheck("Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
             RequirementLevel.SHOULD, Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1,
@@ -146,7 +155,8 @@ public class BsiGuidelineSerialization {
                 NamedGroup.FFDHE2048, NamedGroup.FFDHE3072, NamedGroup.FFDHE4096),
             Collections.emptyList(), true, 2));
         checks.add(new SignatureAndHashAlgorithmsGuidelineCheck("Die folgenden Signaturverfahren werden empfohlen.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
             Arrays.asList(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256, SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384,
                 SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512, SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256,
                 SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384, SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,

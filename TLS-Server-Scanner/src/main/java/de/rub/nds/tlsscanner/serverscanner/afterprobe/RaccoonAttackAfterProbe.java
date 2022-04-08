@@ -54,8 +54,8 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
     }
 
     @Override
-	public void analyze(ServerReport report) {
-    	supportsLegacyPrf = report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResults.TRUE;
+    public void analyze(ServerReport report) {
+        supportsLegacyPrf = report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResults.TRUE;
         supportsSha256 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResults.TRUE;
         supportsSha384 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResults.TRUE;
         supportsSSLv3 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE;

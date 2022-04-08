@@ -182,7 +182,8 @@ public class NistGuidelineSerialization {
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The Fallback Signaling Cipher Suite Value (SCSV) shall be supported if the server supports versions of TLS prior to TLS 1.2 and does not support TLS 1.3.",
             RequirementLevel.MUST,
-            GuidelineCheckCondition.and(Arrays.asList(GuidelineCheckCondition.or(
+            GuidelineCheckCondition.and(Arrays.asList(
+                GuidelineCheckCondition.or(
                     Arrays.asList(new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE),
                         new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE))),
                 new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE))),
@@ -210,7 +211,8 @@ public class NistGuidelineSerialization {
                     "The EC Point Format extension shall be supported if the server supports EC cipher suites",
                     RequirementLevel.MUST,
                     GuidelineCheckCondition
-                        .and(Arrays.asList(
+                        .and(
+                            Arrays.asList(
                                 GuidelineCheckCondition.or(Arrays.asList(
                                     new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE),
                                     new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE),
@@ -222,7 +224,8 @@ public class NistGuidelineSerialization {
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The Multiple Certificate Status extension should be supported if status information for the server’s certificate is available via OCSP and the extension is supported by the server implementation",
             RequirementLevel.SHOULD,
-            GuidelineCheckCondition.and(Arrays.asList(GuidelineCheckCondition.or(
+            GuidelineCheckCondition.and(Arrays.asList(
+                GuidelineCheckCondition.or(
                     Arrays.asList(new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE),
                         new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE),
                         new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE))),
@@ -231,7 +234,8 @@ public class NistGuidelineSerialization {
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The Encrypt-then-MAC extension shall be supported if the server is configured to negotiate CBC cipher suites.",
             RequirementLevel.MUST,
-            GuidelineCheckCondition.and(Arrays.asList(GuidelineCheckCondition.or(
+            GuidelineCheckCondition.and(Arrays.asList(
+                GuidelineCheckCondition.or(
                     Arrays.asList(new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE),
                         new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE),
                         new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE))),
@@ -240,7 +244,8 @@ public class NistGuidelineSerialization {
 
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the Pre-Shared Key extension.",
-            RequirementLevel.MUST, GuidelineCheckCondition
+            RequirementLevel.MUST,
+            GuidelineCheckCondition
                 .and(
                     Arrays
                         .asList(
@@ -259,7 +264,8 @@ public class NistGuidelineSerialization {
             ExtensionType.COOKIE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The Signed Certificate Timestamps extension should be supported if the server’s certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.",
-            RequirementLevel.SHOULD, new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TestResults.FALSE),
+            RequirementLevel.SHOULD,
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TestResults.FALSE),
             TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, TestResults.TRUE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "Servers should not process early data received in the ClientHello message.", RequirementLevel.SHOULD,

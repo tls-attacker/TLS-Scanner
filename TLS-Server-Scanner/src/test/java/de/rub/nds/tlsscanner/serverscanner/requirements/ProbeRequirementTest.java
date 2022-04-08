@@ -3,23 +3,23 @@ package de.rub.nds.tlsscanner.serverscanner.requirements;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ProbeRequirementTest {
-	private ProbeType pType = ProbeType.PROTOCOL_VERSION;
+	private TlsProbeType pType = TlsProbeType.PROTOCOL_VERSION;
 	private ExtensionType eType = ExtensionType.TOKEN_BINDING;
-	private AnalyzedProperty aProp = AnalyzedProperty.SUPPORTS_DES;
+	private TlsAnalyzedProperty aProp = TlsAnalyzedProperty.SUPPORTS_DES;
 	private ProtocolVersion pVer = ProtocolVersion.DTLS10;
-    private SiteReport report;
+    private ServerReport report;
     
 	/**
 	 * Set up of testing
@@ -27,7 +27,7 @@ public class ProbeRequirementTest {
 	@Before
 	public void setUp() {
 		if (this.report == null) 
-			this.report = new SiteReport("test host", 0);
+			this.report = new ServerReport("test host", 0);
 	}
 	
 	/**
