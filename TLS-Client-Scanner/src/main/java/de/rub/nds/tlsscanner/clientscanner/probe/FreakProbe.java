@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -33,6 +34,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.FreakResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -123,11 +125,6 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, Frea
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResults.TRUE;
-    }
-
-    @Override
     public FreakResult getCouldNotExecuteResult() {
         return new FreakResult(TestResults.CANNOT_BE_TESTED);
     }
@@ -144,4 +141,9 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, Frea
             }
         }
     }
+
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
+	}
 }
