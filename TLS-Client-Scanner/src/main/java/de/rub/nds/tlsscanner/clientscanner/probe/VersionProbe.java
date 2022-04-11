@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -19,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.VersionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -93,12 +95,6 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport, Ve
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.getAdvertisedCipherSuites() != null;
-
-    }
-
-    @Override
     public VersionResult getCouldNotExecuteResult() {
         return new VersionResult(null, null);
     }
@@ -107,4 +103,9 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport, Ve
     public void adjustConfig(ClientReport report) {
         this.clientAdvertisedCipherSuites = report.getAdvertisedCipherSuites();
     }
+
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.BASIC);
+	}
 }
