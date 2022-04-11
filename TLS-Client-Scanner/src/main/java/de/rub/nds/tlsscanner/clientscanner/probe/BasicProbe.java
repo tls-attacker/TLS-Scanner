@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -26,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.BasicProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -66,11 +68,6 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport, Basi
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
     public BasicProbeResult getCouldNotExecuteResult() {
         return new BasicProbeResult(null, null, null, null, null, null, null);
     }
@@ -91,4 +88,8 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport, Basi
         return keyShareGroups;
     }
 
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report);
+	}
 }
