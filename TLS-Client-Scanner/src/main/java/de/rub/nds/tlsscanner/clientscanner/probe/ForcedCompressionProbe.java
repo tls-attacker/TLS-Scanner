@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -22,6 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ForcedCompressionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -54,11 +56,6 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
     public ForcedCompressionResult getCouldNotExecuteResult() {
         return new ForcedCompressionResult(TestResults.COULD_NOT_TEST);
     }
@@ -66,4 +63,9 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
     @Override
     public void adjustConfig(ClientReport report) {
     }
+
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report);
+	}
 }
