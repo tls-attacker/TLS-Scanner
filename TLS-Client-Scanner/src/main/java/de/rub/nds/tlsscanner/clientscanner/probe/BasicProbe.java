@@ -88,8 +88,8 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport, Basi
         return keyShareGroups;
     }
 
-	@Override
-	protected Requirement getRequirements(ClientReport report) {
-		return new ProbeRequirement(report);
-	}
+    @Override
+    protected Requirement getRequirements(ClientReport report) {
+        return new ProbeRequirement(report);
+    }
 }

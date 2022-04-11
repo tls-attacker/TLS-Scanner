@@ -142,8 +142,8 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, Frea
         }
     }
 
-	@Override
-	protected Requirement getRequirements(ClientReport report) {
-		return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
-	}
+    @Override
+    protected Requirement getRequirements(ClientReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
+    }
 }

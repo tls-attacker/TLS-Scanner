@@ -216,9 +216,9 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
         this.supportedDheCipherSuites = dheCiphers;
     }
 
-	@Override
-	protected Requirement getRequirements(ClientReport report) {
-		return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
-	}
+    @Override
+    protected Requirement getRequirements(ClientReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
+    }
 
 }

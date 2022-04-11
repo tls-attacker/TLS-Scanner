@@ -104,8 +104,8 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport, Ve
         this.clientAdvertisedCipherSuites = report.getAdvertisedCipherSuites();
     }
 
-	@Override
-	protected Requirement getRequirements(ClientReport report) {
-		return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.BASIC);
-	}
+    @Override
+    protected Requirement getRequirements(ClientReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.BASIC);
+    }
 }
