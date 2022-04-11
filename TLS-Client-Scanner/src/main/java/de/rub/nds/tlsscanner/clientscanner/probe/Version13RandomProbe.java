@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.Version13RandomResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -81,12 +82,6 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        // TODO Check if atleast one non tls 1.3 version is supported
-        return true;
-    }
-
-    @Override
     public Version13RandomResult getCouldNotExecuteResult() {
         return new Version13RandomResult(TestResults.CANNOT_BE_TESTED);
     }
@@ -94,5 +89,11 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     @Override
     public void adjustConfig(ClientReport report) {
     }
+
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+        // TODO Check if atleast one non tls 1.3 version is supported
+		return new ProbeRequirement(report);
+	}
 
 }
