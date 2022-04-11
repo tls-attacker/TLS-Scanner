@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -22,6 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType;
 import de.rub.nds.tlsscanner.clientscanner.constants.SmallSubgroupType;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.DheParameterResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
@@ -213,5 +215,10 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
         }
         this.supportedDheCipherSuites = dheCiphers;
     }
+
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
+	}
 
 }
