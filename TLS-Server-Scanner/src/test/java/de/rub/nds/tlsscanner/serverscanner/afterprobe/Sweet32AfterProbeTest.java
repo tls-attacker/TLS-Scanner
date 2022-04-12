@@ -63,7 +63,7 @@ public class Sweet32AfterProbeTest {
         for (CipherSuite vulnerable : vulnerableCipherSuites) {
             report.setCipherSuites(Collections.singleton(vulnerable));
             probe.analyze(report);
-            assertEquals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.TRUE);
+            assertEquals(TestResult.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
         }
 
         // test reports that use both vulnerable and safe ciphers
@@ -75,7 +75,7 @@ public class Sweet32AfterProbeTest {
 
             report.setCipherSuites(ciphers);
             probe.analyze(report);
-            assertEquals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.TRUE);
+            assertEquals(TestResult.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
         }
     }
 
@@ -87,7 +87,7 @@ public class Sweet32AfterProbeTest {
         for (CipherSuite safe : safeCipherSuites) {
             report.setCipherSuites(Collections.singleton(safe));
             probe.analyze(report);
-            assertEquals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.FALSE);
+            assertEquals(TestResult.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
         }
     }
 
@@ -97,7 +97,7 @@ public class Sweet32AfterProbeTest {
     @Test
     public void testNoCipherSuites() {
         probe.analyze(report);
-        assertEquals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.FALSE);
+        assertEquals(TestResult.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 
     /**
@@ -107,7 +107,7 @@ public class Sweet32AfterProbeTest {
     public void testEmptyServerReport() {
         ServerReport emptyReport = new ServerReport();
         probe.analyze(emptyReport);
-        assertEquals(emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32), TestResult.UNCERTAIN);
+        assertEquals(TestResult.UNCERTAIN, emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 
 }
