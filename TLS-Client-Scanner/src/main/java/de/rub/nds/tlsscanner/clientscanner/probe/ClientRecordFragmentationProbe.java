@@ -26,16 +26,16 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ClientRecordFragmentationResult;
 /**
  *
  * 
  */
-public class ClientRecordFragmentationProbe extends TlsProbe<ClientReport, ClientRecordFragmentationResult>{
+public class ClientRecordFragmentationProbe extends TlsProbe<ClientScannerConfig, ClientReport, ClientRecordFragmentationResult>{
     
-    public ClientRecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+    public ClientRecordFragmentationProbe(ClientScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
     }
 
