@@ -59,11 +59,6 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public CertificateProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RSA_CERT);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ECDSA);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DSS);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_GOST);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override

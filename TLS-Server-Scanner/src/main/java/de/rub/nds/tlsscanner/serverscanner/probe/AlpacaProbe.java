@@ -30,12 +30,8 @@ import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private boolean alpnSupported;
     private TestResult strictSni;

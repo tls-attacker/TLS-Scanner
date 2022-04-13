@@ -115,5 +115,6 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport>
             super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, this.sendsHelloRetryRequest);
         else
             super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
+        report.setHelloRetryRequestSelectedNamedGroup(this.serversChosenGroup);
     }
 }

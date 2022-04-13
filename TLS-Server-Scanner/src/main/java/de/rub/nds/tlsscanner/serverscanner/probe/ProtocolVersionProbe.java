@@ -215,50 +215,50 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
 
             for (ProtocolVersion version : this.supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS12)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL2)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL3)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS10)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS11)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS12)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS13)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
             }
 
             for (ProtocolVersion version : this.unsupportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS12)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL2)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL3)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS10)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS11)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS12)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS13)
-                    report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
+                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
             }
         } else {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+        	super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
         report.setVersions(this.supportedProtocolVersions);
     }
