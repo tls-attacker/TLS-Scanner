@@ -39,7 +39,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     private final ScanJob scanJob;
 
-    private List<ScannerProbe<?>> notScheduledTasks = new LinkedList<>();
+    private List<ScannerProbe> notScheduledTasks = new LinkedList<>();
 
     private List<Future<ScannerProbe>> futureResults = new LinkedList<>();
 
@@ -99,7 +99,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
                 if (result.isDone()) {
                     lastMerge = System.currentTimeMillis();
                     try {
-                    	ScannerProbe probeResult = result.get();
+                        ScannerProbe probeResult = result.get();
                         ConsoleLogger.CONSOLE.info("+++" + probeResult.getType().getName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
@@ -179,7 +179,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     public synchronized void update(Observable o, Object o1) {
         if (o != null && o instanceof ScanReport) {
             ScanReport report = (ScanReport) o;
-            List<ScannerProbe<?>> newNotSchedulesTasksList = new LinkedList<>();
+            List<ScannerProbe> newNotSchedulesTasksList = new LinkedList<>();
             for (ScannerProbe probe : notScheduledTasks) {
                 if (probe.canBeExecuted(report)) {
                     probe.adjustConfig(report);

@@ -87,7 +87,7 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-    	super.setPropertyReportValue(TlsAnalyzedProperty.REQUIRES_SNI, this.requiresSni);
+        super.setPropertyReportValue(TlsAnalyzedProperty.REQUIRES_SNI, this.requiresSni);
     }
 
     public void adjustConfig(ServerReport report) {

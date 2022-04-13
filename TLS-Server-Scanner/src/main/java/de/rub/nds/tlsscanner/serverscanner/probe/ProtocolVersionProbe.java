@@ -251,7 +251,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
                     super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
             }
         } else {
-        	super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
             super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
             super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
             super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
