@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
@@ -40,9 +39,9 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     private final ScanJob scanJob;
 
-    private List<ScannerProbe> notScheduledTasks = new LinkedList<>();
+    private List<ScannerProbe<?>> notScheduledTasks = new LinkedList<>();
 
-    private List<Future<ProbeResult>> futureResults = new LinkedList<>();
+    private List<Future<ScannerProbe>> futureResults = new LinkedList<>();
 
     private final ThreadPoolExecutor executor;
 
@@ -95,12 +94,12 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         while (true) {
             // handle all Finished Results
             long lastMerge = System.currentTimeMillis();
-            List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
-            for (Future<ProbeResult> result : futureResults) {
+            List<Future<ScannerProbe>> finishedFutures = new LinkedList<>();
+            for (Future<ScannerProbe> result : futureResults) {
                 if (result.isDone()) {
                     lastMerge = System.currentTimeMillis();
                     try {
-                        ProbeResult probeResult = result.get();
+                    	ScannerProbe probeResult = result.get();
                         ConsoleLogger.CONSOLE.info("+++" + probeResult.getType().getName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
@@ -180,7 +179,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     public synchronized void update(Observable o, Object o1) {
         if (o != null && o instanceof ScanReport) {
             ScanReport report = (ScanReport) o;
-            List<ScannerProbe> newNotSchedulesTasksList = new LinkedList<>();
+            List<ScannerProbe<?>> newNotSchedulesTasksList = new LinkedList<>();
             for (ScannerProbe probe : notScheduledTasks) {
                 if (probe.canBeExecuted(report)) {
                     probe.adjustConfig(report);
