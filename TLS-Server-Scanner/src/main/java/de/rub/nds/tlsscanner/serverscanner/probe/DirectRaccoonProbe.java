@@ -50,17 +50,17 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList;
-    
+
     private TestResult vulnerable;
 
     public DirectRaccoonProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, config);
         super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
-}
+    }
 
     @Override
     public void executeTest() {
-    	this.testResultList = new LinkedList<>();
+        this.testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : this.serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -191,9 +191,9 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		report.setDirectRaccoonResultList(this.testResultList);
-		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setDirectRaccoonResultList(this.testResultList);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
+    }
 }

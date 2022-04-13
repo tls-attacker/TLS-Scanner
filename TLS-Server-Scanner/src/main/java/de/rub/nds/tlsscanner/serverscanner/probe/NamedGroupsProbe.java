@@ -266,9 +266,9 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public NamedGroupsProbe getCouldNotExecuteResult() {
-    	this.namedGroupsMap = this.namedGroupsMapTls13 = new HashMap<>();
-    	this.supportsExplicitPrime = this.supportsExplicitChar2 = this.groupsDependOnCipherSuite
-    			= this.ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
+        this.namedGroupsMap = this.namedGroupsMapTls13 = new HashMap<>();
+        this.supportsExplicitPrime = this.supportsExplicitChar2 =
+            this.groupsDependOnCipherSuite = this.ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -432,7 +432,7 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
                     witness.setEcdsaSigGroupEphemeral(newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
                     break;
                 default:
-				break;
+                    break;
             }
         }
     }
@@ -461,13 +461,13 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         return TestResults.FALSE;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         LinkedList<NamedGroup> allGroups = new LinkedList<>();
-        if (this.namedGroupsMap != null) 
-            allGroups.addAll(this.namedGroupsMap.keySet());  
+        if (this.namedGroupsMap != null)
+            allGroups.addAll(this.namedGroupsMap.keySet());
         LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
-        if (this.namedGroupsMapTls13 != null) 
+        if (this.namedGroupsMapTls13 != null)
             tls13Groups.addAll(this.namedGroupsMapTls13.keySet());
         report.setSupportedNamedGroups(allGroups);
         report.setSupportedTls13Groups(tls13Groups);
@@ -476,6 +476,7 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
         super.setPropertyReportValue(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, this.ignoresEcdsaGroupDisparity);		
-	}
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
+            this.ignoresEcdsaGroupDisparity);
+    }
 }

@@ -91,7 +91,7 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
         if (scanForTls13) {
             certificates.addAll(getTls13Certs());
         }
-        if (certificates.isEmpty()) 
+        if (certificates.isEmpty())
             getCouldNotExecuteResult();
     }
 
@@ -121,8 +121,9 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public CertificateProbe getCouldNotExecuteResult() {
-    	this.certificates = null;
-        this.ecdsaPkGroupsStatic = this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
+        this.certificates = null;
+        this.ecdsaPkGroupsStatic =
+            this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
         return this;
     }
 
@@ -455,11 +456,11 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
         return algorithms;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.certificates != null) 
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.certificates != null)
             report.setCertificateChainList(new LinkedList<>(this.certificates));
         report.setEcdsaPkGroupsStatic(this.ecdsaPkGroupsStatic);
-        report.setEcdsaPkGroupsEphemeral(this.ecdsaPkGroupsEphemeral);		
-	}
+        report.setEcdsaPkGroupsEphemeral(this.ecdsaPkGroupsEphemeral);
+    }
 }

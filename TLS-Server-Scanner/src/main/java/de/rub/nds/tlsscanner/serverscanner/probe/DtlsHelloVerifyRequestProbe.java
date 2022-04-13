@@ -46,18 +46,17 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DtlsHelloVerifyRequestProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-	private TestResult hasHvrRetransmissions;
-	private TestResult checksCookie;
+    private TestResult hasHvrRetransmissions;
+    private TestResult checksCookie;
     private TestResult usesVersionInCookie;
     private TestResult usesRandomInCookie;
     private TestResult usesSessionIdInCookie;
     private TestResult usesCiphersuitesInCookie;
     private TestResult usesCompressionsInCookie;
 
-	private Integer cookieLength;
+    private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
@@ -73,8 +72,8 @@ public class DtlsHelloVerifyRequestProbe
     @Override
     public void executeTest() {
         try {
-        	this.hasHvrRetransmissions = hasHvrRetransmissions(); 
-        	this.checksCookie = checksCookie(); 
+            this.hasHvrRetransmissions = hasHvrRetransmissions();
+            this.checksCookie = checksCookie();
             this.usesVersionInCookie = usesVersionInCookie();
             this.usesRandomInCookie = usesRandomInCookie();
             this.usesSessionIdInCookie = usesSessionIdInCookie();
@@ -82,9 +81,9 @@ public class DtlsHelloVerifyRequestProbe
             this.usesCompressionsInCookie = usesCompressionsInCookie();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            this.hasHvrRetransmissions = this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie 
-            		= this.usesSessionIdInCookie = this.usesCiphersuitesInCookie = this.usesCompressionsInCookie 
-            		= TestResults.COULD_NOT_TEST;
+            this.hasHvrRetransmissions =
+                this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie = this.usesSessionIdInCookie =
+                    this.usesCiphersuitesInCookie = this.usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
             this.cookieLength = -1;
         }
     }
@@ -254,10 +253,10 @@ public class DtlsHelloVerifyRequestProbe
 
     @Override
     public DtlsHelloVerifyRequestProbe getCouldNotExecuteResult() {
-    	this.hasHvrRetransmissions = this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie 
-    			= this.usesSessionIdInCookie = this.usesCiphersuitesInCookie = this.usesCompressionsInCookie 
-    			= TestResults.COULD_NOT_TEST;
-    	this.cookieLength = -1;
+        this.hasHvrRetransmissions =
+            this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie = this.usesSessionIdInCookie =
+                this.usesCiphersuitesInCookie = this.usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
+        this.cookieLength = -1;
         return this;
     }
 
@@ -270,15 +269,15 @@ public class DtlsHelloVerifyRequestProbe
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		super.setPropertyReportValue(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, this.checksCookie);
         super.setPropertyReportValue(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, this.usesVersionInCookie);
         super.setPropertyReportValue(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, this.usesRandomInCookie);
         super.setPropertyReportValue(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, this.usesSessionIdInCookie);
         super.setPropertyReportValue(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);		
+        super.setPropertyReportValue(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);
         report.setCookieLength(this.cookieLength);
-	}
+    }
 }

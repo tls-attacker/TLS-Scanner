@@ -34,7 +34,7 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
     public RecordFragmentationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
- 	}
+    }
 
     @Override
     public void executeTest() {
@@ -45,12 +45,14 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
             .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
         executeState(state);
-        this.supported = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()) ? TestResults.TRUE : TestResults.FALSE;
+        this.supported =
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())
+                ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
     public RecordFragmentationProbe getCouldNotExecuteResult() {
-    	this.supported = TestResults.COULD_NOT_TEST; 
+        this.supported = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -63,8 +65,8 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
         return new ProbeRequirement(report);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
-	}
+    }
 }

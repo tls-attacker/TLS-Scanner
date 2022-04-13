@@ -31,12 +31,12 @@ import java.util.List;
 
 public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-	private TestResult enforced;
-	
+    private TestResult enforced;
+
     public CipherSuiteOrderProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, config);
         super.properties.add(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
-}
+    }
 
     @Override
     public void executeTest() {
@@ -79,14 +79,14 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
         this.enforced = TestResults.COULD_NOT_TEST;
         return this;
     }
-    
+
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, this.enforced);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, this.enforced);
+    }
 }

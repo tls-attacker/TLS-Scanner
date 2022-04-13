@@ -43,7 +43,7 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
     private static final int BITLENGTH_CUTOFF_UPPER_BOUND = 8192;
 
     private Random random;
-    
+
     private List<SmallSubgroupResult> smallSubgroupResults;
     private List<CompositeModulusResult> compositeModulusResultList;
     private List<CipherSuite> supportedDheCipherSuites;
@@ -189,11 +189,11 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
     @Override
     public DheParameterProbe getCouldNotExecuteResult() {
         this.smallSubgroupResults = new LinkedList<>();
-        for (SmallSubgroupType type : SmallSubgroupType.values()) 
-            this.smallSubgroupResults.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));        
+        for (SmallSubgroupType type : SmallSubgroupType.values())
+            this.smallSubgroupResults.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));
         this.compositeModulusResultList = new LinkedList<>();
-        for (CompositeModulusType type : CompositeModulusType.values()) 
-            this.compositeModulusResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type)); 
+        for (CompositeModulusType type : CompositeModulusType.values())
+            this.compositeModulusResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type));
         this.lowestDheModulusLength = null;
         return this;
     }
@@ -209,7 +209,7 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
         }
         this.supportedDheCipherSuites = dheCiphers;
     }
-    
+
     @Override
     protected void mergeData(ClientReport report) {
         report.setCompositeDheModulusResultList(this.compositeModulusResultList);

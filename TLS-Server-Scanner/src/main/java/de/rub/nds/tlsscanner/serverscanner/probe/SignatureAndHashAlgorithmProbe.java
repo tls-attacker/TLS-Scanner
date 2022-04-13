@@ -38,27 +38,26 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class SignatureAndHashAlgorithmProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<ProtocolVersion> versions;
-    
+
     private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
     private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
 
     public SignatureAndHashAlgorithmProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, config);
-	}
+    }
 
     @Override
     public void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         for (ProtocolVersion version : this.versions) {
-            if (version.isTLS13()) 
+            if (version.isTLS13())
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
-            else 
-                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));            
+            else
+                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
         }
         this.signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
         this.signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
@@ -220,14 +219,14 @@ public class SignatureAndHashAlgorithmProbe
 
     @Override
     public SignatureAndHashAlgorithmProbe getCouldNotExecuteResult() {
-    	this.signatureAndHashAlgorithmListSke = null;
-    	this.signatureAndHashAlgorithmListTls13 = null;
+        this.signatureAndHashAlgorithmListSke = null;
+        this.signatureAndHashAlgorithmListTls13 = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         report.setSupportedSignatureAndHashAlgorithmsSke(this.signatureAndHashAlgorithmListSke);
         report.setSupportedSignatureAndHashAlgorithmsTls13(this.signatureAndHashAlgorithmListTls13);
-	}
+    }
 }

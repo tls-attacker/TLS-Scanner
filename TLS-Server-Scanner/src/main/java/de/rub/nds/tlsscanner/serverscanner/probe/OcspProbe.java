@@ -103,7 +103,7 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
             this.certResults.add(certResult);
         }
-        if (!this.tls13NamedGroups.isEmpty()) 
+        if (!this.tls13NamedGroups.isEmpty())
             this.tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
     }
 
@@ -299,61 +299,70 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public OcspProbe getCouldNotExecuteResult() {
-    	this.certResults = null;
-    	this.tls13CertStatus = null;
+        this.certResults = null;
+        this.tls13CertStatus = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		report.setOcspResults(this.certResults);
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setOcspResults(this.certResults);
 
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-        super.setPropertyReportValue(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
+        super.setPropertyReportValue(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
+            getConclusiveIncludesCertMessage());
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
         super.setPropertyReportValue(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
-        super.setPropertyReportValue(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
+        super.setPropertyReportValue(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
+            getConclusiveStapledResponseExpired());
 
         if (this.tls13CertStatus != null) {
             if (this.tls13CertStatus.size() == 1) {
-                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                    TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                    TestResults.FALSE);
             } else if (tls13CertStatus.size() > 1) {
-                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                    TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                    TestResults.TRUE);
             } else {
-                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
-                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                    TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                    TestResults.FALSE);
             }
         } else {
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
-        }		
-	}
-	
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                TestResults.COULD_NOT_TEST);
+        }
+    }
 
     private TestResult getConclusiveSupportsOcsp() {
         boolean foundFalse = false;
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (Boolean.TRUE.equals(result.getSupportsOcsp())) 
+                if (Boolean.TRUE.equals(result.getSupportsOcsp()))
                     return TestResults.TRUE;
                 else if (Boolean.FALSE.equals(result.getSupportsOcsp()))
-                    foundFalse = true;                
+                    foundFalse = true;
             }
             if (foundFalse)
-                return TestResults.FALSE;            
+                return TestResults.FALSE;
         }
         return TestResults.ERROR_DURING_TEST;
     }
-    
-	private TestResult getConclusiveSupportsStapling() {
+
+    private TestResult getConclusiveSupportsStapling() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.isSupportsStapling()) 
-                    return TestResults.TRUE;                
+                if (result.isSupportsStapling())
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;
@@ -362,8 +371,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult getConclusiveIncludesCertMessage() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.getStapledResponse() != null) 
-                    return TestResults.TRUE;                
+                if (result.getStapledResponse() != null)
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;
@@ -372,8 +381,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult getConclusiveSupportsStapledNonce() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) 
-                    return TestResults.TRUE;                
+                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null)
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;
@@ -382,8 +391,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult getConclusiveMustStaple() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.isMustStaple()) 
-                    return TestResults.TRUE;                
+                if (result.isMustStaple())
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;
@@ -392,8 +401,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult getConclusiveSupportsNonce() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.isSupportsNonce()) 
-                    return TestResults.TRUE;                
+                if (result.isSupportsNonce())
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;
@@ -402,8 +411,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult getConclusiveStapledResponseExpired() {
         if (this.certResults != null) {
             for (OcspCertificateResult result : this.certResults) {
-                if (result.isStapledResponseExpired()) 
-                    return TestResults.TRUE;                
+                if (result.isStapledResponseExpired())
+                    return TestResults.TRUE;
             }
         }
         return TestResults.FALSE;

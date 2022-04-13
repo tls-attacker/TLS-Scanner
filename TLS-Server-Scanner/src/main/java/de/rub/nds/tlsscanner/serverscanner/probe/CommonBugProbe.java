@@ -639,40 +639,50 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     public CommonBugProbe getCouldNotExecuteResult() {
-    	this.extensionIntolerance =  this.cipherSuiteIntolerance = this.cipherSuiteLengthIntolerance512 
-    			= this.compressionIntolerance = this.versionIntolerance = this.alpnIntolerance 
-    			= this.clientHelloLengthIntolerance = this.emptyLastExtensionIntolerance 
-    			= this.onlySecondCipherSuiteByteEvaluated = this.namedGroupIntolerant 
-    			= this.namedSignatureAndHashAlgorithmIntolerance = this.ignoresCipherSuiteOffering 
-    			= this.reflectsCipherSuiteOffering = this.ignoresOfferedNamedGroups 
-    			= this.ignoresOfferedSignatureAndHashAlgorithms = this.maxLengthClientHelloIntolerant 
-    			= this.greaseNamedGroupIntolerance = this.greaseCipherSuiteIntolerance 
-    			= this.greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
+        this.extensionIntolerance = this.cipherSuiteIntolerance =
+            this.cipherSuiteLengthIntolerance512 = this.compressionIntolerance = this.versionIntolerance =
+                this.alpnIntolerance = this.clientHelloLengthIntolerance = this.emptyLastExtensionIntolerance =
+                    this.onlySecondCipherSuiteByteEvaluated = this.namedGroupIntolerant =
+                        this.namedSignatureAndHashAlgorithmIntolerance = this.ignoresCipherSuiteOffering =
+                            this.reflectsCipherSuiteOffering = this.ignoresOfferedNamedGroups =
+                                this.ignoresOfferedSignatureAndHashAlgorithms = this.maxLengthClientHelloIntolerant =
+                                    this.greaseNamedGroupIntolerance = this.greaseCipherSuiteIntolerance =
+                                        this.greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, this.cipherSuiteLengthIntolerance512);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+            this.cipherSuiteLengthIntolerance512);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, this.clientHelloLengthIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, this.emptyLastExtensionIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, this.onlySecondCipherSuiteByteEvaluated);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+            this.clientHelloLengthIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+            this.emptyLastExtensionIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+            this.onlySecondCipherSuiteByteEvaluated);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
-        		this.namedSignatureAndHashAlgorithmIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, this.ignoresCipherSuiteOffering);
-        super.setPropertyReportValue(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, this.reflectsCipherSuiteOffering);
+            this.namedSignatureAndHashAlgorithmIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+            this.ignoresCipherSuiteOffering);
+        super.setPropertyReportValue(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
+            this.reflectsCipherSuiteOffering);
         super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, this.ignoresOfferedSignatureAndHashAlgorithms);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, this.maxLengthClientHelloIntolerant);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, this.greaseNamedGroupIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, this.greaseCipherSuiteIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+            this.ignoresOfferedSignatureAndHashAlgorithms);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+            this.maxLengthClientHelloIntolerant);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+            this.greaseNamedGroupIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+            this.greaseCipherSuiteIntolerance);
         super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
-        		this.greaseSignatureAndHashAlgorithmIntolerance);		
-	}
+            this.greaseSignatureAndHashAlgorithmIntolerance);
+    }
 }

@@ -28,8 +28,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SignatureHashAlgorithmOrderProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class SignatureHashAlgorithmOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult enforced;
 
@@ -47,8 +46,8 @@ public class SignatureHashAlgorithmOrderProbe
         Collections.reverse(toTestList);
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
             getSelectedSignatureAndHashAlgorithm(toTestList);
-       	this.enforced = firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
-                : TestResults.FALSE;
+        this.enforced = firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm
+            ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -60,7 +59,7 @@ public class SignatureHashAlgorithmOrderProbe
 
     @Override
     public SignatureHashAlgorithmOrderProbe getCouldNotExecuteResult() {
-    	this.enforced = TestResults.COULD_NOT_TEST;
+        this.enforced = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -87,8 +86,8 @@ public class SignatureHashAlgorithmOrderProbe
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, this.enforced);
-	}
+    }
 }

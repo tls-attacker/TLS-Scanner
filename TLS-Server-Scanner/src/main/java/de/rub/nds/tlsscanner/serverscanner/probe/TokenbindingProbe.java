@@ -37,8 +37,8 @@ import java.util.Set;
 
 public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-	private List<TokenBindingVersion> supportedTokenBindingVersion;
-	private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
+    private List<TokenBindingVersion> supportedTokenBindingVersion;
+    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
 
     public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
@@ -50,8 +50,8 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         this.supportedTokenBindingVersion = new LinkedList<>();
         this.supportedTokenBindingVersion.addAll(getSupportedVersions());
         this.supportedTokenBindingKeyParameters = new LinkedList<>();
-        if (!this.supportedTokenBindingVersion.isEmpty()) 
-            this.supportedTokenBindingKeyParameters.addAll(getKeyParameters(this.supportedTokenBindingVersion.get(0)));        
+        if (!this.supportedTokenBindingVersion.isEmpty())
+            this.supportedTokenBindingKeyParameters.addAll(getKeyParameters(this.supportedTokenBindingVersion.get(0)));
 
     }
 
@@ -139,23 +139,23 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public TokenbindingProbe getCouldNotExecuteResult() {
-    	this.supportedTokenBindingVersion = null;
-    	this.supportedTokenBindingKeyParameters = null;
+        this.supportedTokenBindingVersion = null;
+        this.supportedTokenBindingKeyParameters = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         report.setSupportedTokenBindingKeyParameters(this.supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(this.supportedTokenBindingVersion);
         if (this.supportedTokenBindingVersion != null && !this.supportedTokenBindingVersion.isEmpty()) {
             super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
-            if (report.getSupportedExtensions() == null) 
-                report.setSupportedExtensions(new LinkedList<ExtensionType>());            
+            if (report.getSupportedExtensions() == null)
+                report.setSupportedExtensions(new LinkedList<ExtensionType>());
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
-        } else 
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);        		
-	}
+        } else
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
+    }
 
     public void adjustConfig(ServerReport report) {
     }

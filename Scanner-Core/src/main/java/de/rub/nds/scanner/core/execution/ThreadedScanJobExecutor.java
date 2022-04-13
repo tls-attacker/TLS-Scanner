@@ -185,7 +185,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
                 if (probe.canBeExecuted(report)) {
                     probe.adjustConfig(report);
                     LOGGER.debug("Scheduling: " + probe.getProbeName());
-                    //Future<ProbeResult> future = executor.submit(probe);
+                    // Future<ProbeResult> future = executor.submit(probe);
                     Future future = executor.submit(probe);
                     futureResults.add(future);
                 } else {

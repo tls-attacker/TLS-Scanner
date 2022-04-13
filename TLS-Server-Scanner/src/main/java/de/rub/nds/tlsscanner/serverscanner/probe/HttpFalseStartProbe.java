@@ -50,7 +50,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
     public HttpFalseStartProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
- 	}
+    }
 
     @Override
     public void executeTest() {
@@ -76,18 +76,18 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-            
-                	this.supportsFalseStart = TestResults.TRUE;
-                	return;
-                } else if (message instanceof FinishedMessage) 
-                    receivedServerFinishedMessage = true;                
+
+                    this.supportsFalseStart = TestResults.TRUE;
+                    return;
+                } else if (message instanceof FinishedMessage)
+                    receivedServerFinishedMessage = true;
             }
         }
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
-            // handshake        	
-        	this.supportsFalseStart = TestResults.FALSE;
-        	return;
+            // handshake
+            this.supportsFalseStart = TestResults.FALSE;
+            return;
         }
         // received no http response -> maybe server did not understand
         // request
@@ -136,8 +136,8 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
-	}
+    }
 }

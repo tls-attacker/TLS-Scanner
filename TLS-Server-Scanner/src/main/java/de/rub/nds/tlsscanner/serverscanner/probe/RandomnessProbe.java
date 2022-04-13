@@ -177,8 +177,8 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         executeState(stateList);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {	
+    @Override
+    protected void mergeData(ServerReport report) {
         // Nothing to do here - all data analysis is done in the after probe
-	}
+    }
 }

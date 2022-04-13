@@ -39,7 +39,7 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public SniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SNI, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.REQUIRES_SNI);
-	}
+    }
 
     @Override
     public void executeTest() {
@@ -62,7 +62,7 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             this.requiresSni = TestResults.FALSE;
-        	return;
+            return;
         }
         // Test if we can get a hello with SNI
         config.setAddServerNameIndicationExtension(true);
@@ -71,8 +71,8 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-           	this.requiresSni = TestResults.TRUE;
-        	return;
+            this.requiresSni = TestResults.TRUE;
+            return;
         }
         // We cannot get a ServerHello from this Server...
         LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
@@ -83,12 +83,12 @@ public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public SniProbe getCouldNotExecuteResult() {
         this.requiresSni = TestResults.COULD_NOT_TEST;
         return this;
-}
+    }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        report.putResult(TlsAnalyzedProperty.REQUIRES_SNI, this.requiresSni);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.REQUIRES_SNI, this.requiresSni);
+    }
 
     public void adjustConfig(ServerReport report) {
     }

@@ -45,15 +45,16 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.STRICT_SNI);
         super.properties.add(TlsAnalyzedProperty.STRICT_ALPN);
-        super.properties.add(TlsAnalyzedProperty.ALPACA_MITIGATED);}
+        super.properties.add(TlsAnalyzedProperty.ALPACA_MITIGATED);
+    }
 
-	@Override
-	public void executeTest() {
-	    this.strictSni = isSupportingStrictSni();
-	    if (!this.alpnSupported) 
-	    	this.strictAlpn = TestResults.FALSE;
-	    else 
-	    	this.strictAlpn = isSupportingStrictAlpn();  
+    @Override
+    public void executeTest() {
+        this.strictSni = isSupportingStrictSni();
+        if (!this.alpnSupported)
+            this.strictAlpn = TestResults.FALSE;
+        else
+            this.strictAlpn = isSupportingStrictAlpn();
     }
 
     private Config getBaseConfig() {
@@ -117,7 +118,7 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public AlpacaProbe getCouldNotExecuteResult() {
-    	this.strictSni = this.strictAlpn = TestResults.COULD_NOT_TEST;
+        this.strictSni = this.strictAlpn = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -126,25 +127,25 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if ((this.strictSni == TestResults.TRUE || this.strictSni == TestResults.FALSE)
-	            && (this.strictAlpn == TestResults.TRUE || this.strictAlpn == TestResults.FALSE)) {
-	            TestResult alpacaMitigated;
-	            if (this.strictAlpn == TestResults.TRUE && this.strictSni == TestResults.TRUE)
-	                alpacaMitigated = TestResults.TRUE;
-	            else if (this.strictAlpn == TestResults.TRUE || this.strictSni == TestResults.TRUE) 
-	                alpacaMitigated = TestResults.PARTIALLY;
-	            else 
-	                alpacaMitigated = TestResults.FALSE;
-	    
-	            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
-	            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-	            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
-	        } else {
-	        	super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
-	        	super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-	        	super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
-	        }		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        if ((this.strictSni == TestResults.TRUE || this.strictSni == TestResults.FALSE)
+            && (this.strictAlpn == TestResults.TRUE || this.strictAlpn == TestResults.FALSE)) {
+            TestResult alpacaMitigated;
+            if (this.strictAlpn == TestResults.TRUE && this.strictSni == TestResults.TRUE)
+                alpacaMitigated = TestResults.TRUE;
+            else if (this.strictAlpn == TestResults.TRUE || this.strictSni == TestResults.TRUE)
+                alpacaMitigated = TestResults.PARTIALLY;
+            else
+                alpacaMitigated = TestResults.FALSE;
+
+            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
+        } else {
+            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+        }
+    }
 }

@@ -16,15 +16,14 @@ import de.rub.nds.scanner.core.report.ScanReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ScannerProbe<Report extends ScanReport>
-    implements Runnable {
+public abstract class ScannerProbe<Report extends ScanReport> implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected final ProbeType type;
 
     private StatsWriter writer;
-    
+
     protected long startTime;
     protected long stopTime;
 
@@ -68,7 +67,7 @@ public abstract class ScannerProbe<Report extends ScanReport>
     protected abstract Requirement getRequirements(Report report);
 
     public abstract void merge(Report report);
-    
+
     public boolean canBeExecuted(Report report) {
         return getRequirements(report).evaluateRequirements();
     }

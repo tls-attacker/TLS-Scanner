@@ -31,7 +31,7 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult generalDrown;
     private TestResult extraClear;
-    
+
     public DrownProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
@@ -40,8 +40,8 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public void executeTest() {
-    	this.generalDrown = testForGeneralDrown();
-    	this.extraClear = testForExtraClearDrown();
+        this.generalDrown = testForGeneralDrown();
+        this.extraClear = testForExtraClearDrown();
     }
 
     private TestResult testForGeneralDrown() {
@@ -100,15 +100,15 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         this.generalDrown = this.extraClear = TestResults.COULD_NOT_TEST;
         return this;
     }
-    
+
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, this.extraClear);
-		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, this.generalDrown);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, this.extraClear);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, this.generalDrown);
+    }
 }

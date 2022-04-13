@@ -43,7 +43,7 @@ import java.util.Set;
 public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
-    
+
     private TestResult supportsDtlsCookieExchangeInRenegotiation;
     private TestResult secureRenegotiationExtension;
     private TestResult secureRenegotiationCipherSuite;
@@ -69,8 +69,8 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     public void executeTest() {
         if (getScannerConfig().getDtlsDelegate().isDTLS())
             this.supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
-        else 
-            this.supportsDtlsCookieExchangeInRenegotiation = TestResults.NOT_TESTED_YET;        
+        else
+            this.supportsDtlsCookieExchangeInRenegotiation = TestResults.NOT_TESTED_YET;
         this.secureRenegotiationExtension = supportsSecureClientRenegotiationExtension();
         this.secureRenegotiationCipherSuite = supportsSecureClientRenegotiationCipherSuite();
         this.insecureRenegotiation = supportsInsecureClientRenegotiation();
@@ -79,7 +79,6 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         this.vulnerableRenegotiationAttackCipherSuiteV1 = vulnerableToRenegotiationAttackCipherSuite(false, true);
         this.vulnerableRenegotiationAttackCipherSuiteV2 = vulnerableToRenegotiationAttackCipherSuite(true, false);
     }
-
 
     private TestResult vulnerableToRenegotiationAttackExtension(boolean addExtensionInFirstHandshake,
         boolean addExtensionInSecondHandshake) {
@@ -235,10 +234,10 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public RenegotiationProbe getCouldNotExecuteResult() {
-    	this.secureRenegotiationExtension = this.secureRenegotiationCipherSuite = this.insecureRenegotiation 
-    			= this.vulnerableRenegotiationAttackExtensionV1 = this.vulnerableRenegotiationAttackExtensionV2 
-    			= this.vulnerableRenegotiationAttackCipherSuiteV1 = this.vulnerableRenegotiationAttackCipherSuiteV2 
-    			= this.supportsDtlsCookieExchangeInRenegotiation = TestResults.COULD_NOT_TEST;
+        this.secureRenegotiationExtension = this.secureRenegotiationCipherSuite = this.insecureRenegotiation =
+            this.vulnerableRenegotiationAttackExtensionV1 = this.vulnerableRenegotiationAttackExtensionV2 =
+                this.vulnerableRenegotiationAttackCipherSuiteV1 = this.vulnerableRenegotiationAttackCipherSuiteV2 =
+                    this.supportsDtlsCookieExchangeInRenegotiation = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -272,22 +271,23 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         return tlsConfig;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
-                this.secureRenegotiationExtension);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
-            		this.secureRenegotiationCipherSuite);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
-            		this.vulnerableRenegotiationAttackExtensionV1);
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
-            		this.vulnerableRenegotiationAttackExtensionV2);
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
-            		this.vulnerableRenegotiationAttackCipherSuiteV1);
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
-            		this.vulnerableRenegotiationAttackCipherSuiteV2);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
-            		this.supportsDtlsCookieExchangeInRenegotiation);		
-	}
+            this.secureRenegotiationExtension);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+            this.secureRenegotiationCipherSuite);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
+            insecureRenegotiation);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+            this.vulnerableRenegotiationAttackExtensionV1);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+            this.vulnerableRenegotiationAttackExtensionV2);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+            this.vulnerableRenegotiationAttackCipherSuiteV1);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+            this.vulnerableRenegotiationAttackCipherSuiteV2);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+            this.supportsDtlsCookieExchangeInRenegotiation);
+    }
 }

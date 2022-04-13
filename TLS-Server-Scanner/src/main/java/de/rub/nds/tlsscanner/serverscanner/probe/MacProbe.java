@@ -66,7 +66,7 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private CheckPattern appPattern;
     private CheckPattern finishedPattern;
     private CheckPattern verifyPattern;
-    
+
     public MacProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, scannerConfig);
     }
@@ -75,16 +75,16 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public void executeTest() {
         this.correctFingerprint = getCorrectAppDataFingerprint();
         if (this.correctFingerprint != null) {
-	        LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
-	        if (receivedAppdata(this.correctFingerprint)) 
-	        	this.appPattern = getCheckPattern(Check.APPDATA);
-	        else 
-	        	this.appPattern = null;	        
-	        this.finishedPattern = getCheckPattern(Check.FINISHED);
-	        this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
-	    }
+            LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
+            if (receivedAppdata(this.correctFingerprint))
+                this.appPattern = getCheckPattern(Check.APPDATA);
+            else
+                this.appPattern = null;
+            this.finishedPattern = getCheckPattern(Check.FINISHED);
+            this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
+        }
     }
-    
+
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
         for (ProtocolMessage message : fingerprint.getMessageList()) {
             if (message instanceof TlsMessage
@@ -383,14 +383,14 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public MacProbe getCouldNotExecuteResult() {
-    	this.appPattern = this.finishedPattern = this.verifyPattern = null;
+        this.appPattern = this.finishedPattern = this.verifyPattern = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         report.setMacCheckPatternAppData(this.appPattern);
         report.setMacCheckPatternFinished(this.finishedPattern);
-        report.setVerifyCheckPattern(this.verifyPattern);		
-	}
+        report.setVerifyCheckPattern(this.verifyPattern);
+    }
 }

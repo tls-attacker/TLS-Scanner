@@ -117,8 +117,8 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             RSAClientKeyExchangeMessage rsaCke = (RSAClientKeyExchangeMessage) ckeMessage;
             BigInteger c = new BigInteger(1, rsaCke.getPublicKey().getValue());
             this.vulnerable = c.bitLength() <= MODULUS_LENGTH ? TestResults.TRUE : TestResults.FALSE;
-        } else 
-            this.vulnerable = TestResults.FALSE;        
+        } else
+            this.vulnerable = TestResults.FALSE;
     }
 
     @Override
@@ -144,7 +144,7 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     protected Requirement getRequirements(ClientReport report) {
         return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
     }
-    
+
     @Override
     protected void mergeData(ClientReport report) {
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, this.vulnerable);

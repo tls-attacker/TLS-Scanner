@@ -33,9 +33,9 @@ import org.apache.logging.log4j.Logger;
 
 public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-	private List<String> supportedAlpnProtocols;
+    private List<String> supportedAlpnProtocols;
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public AlpnProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ALPN, scannerConfig);
@@ -123,8 +123,8 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        report.setSupportedAlpns(this.supportedAlpnProtocols);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setSupportedAlpns(this.supportedAlpnProtocols);
+    }
 }

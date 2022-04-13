@@ -46,9 +46,9 @@ import java.util.Set;
 public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<ProtocolVersion> protocolVersions;
-    
+
     private List<VersionSuiteListPair> pairLists;
-    
+
     private TestResult supportsNullCiphers = TestResults.FALSE;
     private TestResult supportsAnonCiphers = TestResults.FALSE;
     private TestResult supportsExportCiphers = TestResults.FALSE;
@@ -86,10 +86,10 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
     private TestResult supportsBlockCiphers = TestResults.FALSE;
     private TestResult supportsLegacyPrf = TestResults.FALSE;
     private TestResult supportsSha256Prf = TestResults.FALSE;
-    private TestResult supportsSha384Prf = TestResults.FALSE;  
-    
+    private TestResult supportsSha384Prf = TestResults.FALSE;
+
     public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-		super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
+        super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
         this.protocolVersions = new LinkedList<>();
         super.properties.add(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS);
         super.properties.add(TlsAnalyzedProperty.SUPPORTS_ANON);
@@ -323,234 +323,236 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public CipherSuiteProbe getCouldNotExecuteResult() {
-    	this.pairLists = null;
+        this.pairLists = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.pairLists != null) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.pairLists != null) {
             Set<CipherSuite> allSupported = new HashSet<>();
             this.supportsOnlyPfsCiphers = TestResults.TRUE;
             this.prefersPfsCiphers = TestResults.TRUE;
             for (VersionSuiteListPair pair : this.pairLists) {
-                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) 
-                	this.prefersPfsCiphers = TestResults.FALSE;                
+                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral())
+                    this.prefersPfsCiphers = TestResults.FALSE;
                 allSupported.addAll(pair.getCipherSuiteList());
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) 
-                    	this.supportsLegacyPrf = TestResults.TRUE;                
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) 
-                    	this.supportsSha256Prf = TestResults.TRUE;                    
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) 
-                    	this.supportsSha384Prf = TestResults.TRUE;                    
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                        this.supportsLegacyPrf = TestResults.TRUE;
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                        this.supportsSha256Prf = TestResults.TRUE;
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                        this.supportsSha384Prf = TestResults.TRUE;
                 }
             }
             for (CipherSuite suite : allSupported) {
-            	this.adjustBulk(suite);
-            	this.adjustKeyExchange(suite);
-            	this.adjustCipherType(suite);
-            	this.adjustCertificate(suite);
+                this.adjustBulk(suite);
+                this.adjustKeyExchange(suite);
+                this.adjustCipherType(suite);
+                this.adjustCertificate(suite);
             }
             report.addCipherSuites(allSupported);
         } else {
-        	this.supportsAeadCiphers = TestResults.COULD_NOT_TEST;
-        	this.prefersPfsCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsAeadCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsAes = TestResults.COULD_NOT_TEST;
-        	this.supportsAnonCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsAria = TestResults.COULD_NOT_TEST;
-        	this.supportsBlockCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsCamellia = TestResults.COULD_NOT_TEST;
-        	this.supportsChacha = TestResults.COULD_NOT_TEST;
-        	this.supportsDesCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsEcmqv = TestResults.COULD_NOT_TEST;
-        	this.supportsExportCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsFortezza = TestResults.COULD_NOT_TEST;
-        	this.supportsGost = TestResults.COULD_NOT_TEST;
-        	this.supportsIdeaCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsKerberos = TestResults.COULD_NOT_TEST;
-        	this.supportsNewHope = TestResults.COULD_NOT_TEST;
-        	this.supportsNullCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsOnlyPfsCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsPfsCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsPostQuantumCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsPskDhe = TestResults.COULD_NOT_TEST;
-        	this.supportsPskEcdhe = TestResults.COULD_NOT_TEST;
-        	this.supportsPskPlain = TestResults.COULD_NOT_TEST;
-        	this.supportsPskRsa = TestResults.COULD_NOT_TEST;
-        	this.supportsRc2Ciphers = TestResults.COULD_NOT_TEST;
-        	this.supportsRc4Ciphers = TestResults.COULD_NOT_TEST;
-        	this.supportsRsa = TestResults.COULD_NOT_TEST;
-        	this.supportsSeedCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsSrp = TestResults.COULD_NOT_TEST;
-        	this.supportsStaticEcdh = TestResults.COULD_NOT_TEST;
-        	this.supportsEcdsa = TestResults.COULD_NOT_TEST;
-        	this.supportsRsaCert = TestResults.COULD_NOT_TEST;
-        	this.supportsDss = TestResults.COULD_NOT_TEST;
-        	this.supportsStreamCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsTripleDesCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsLegacyPrf = TestResults.COULD_NOT_TEST;
-        	this.supportsSha256Prf = TestResults.COULD_NOT_TEST;
-        	this.supportsSha384Prf = TestResults.COULD_NOT_TEST;
+            this.supportsAeadCiphers = TestResults.COULD_NOT_TEST;
+            this.prefersPfsCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsAeadCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsAes = TestResults.COULD_NOT_TEST;
+            this.supportsAnonCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsAria = TestResults.COULD_NOT_TEST;
+            this.supportsBlockCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsCamellia = TestResults.COULD_NOT_TEST;
+            this.supportsChacha = TestResults.COULD_NOT_TEST;
+            this.supportsDesCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsEcmqv = TestResults.COULD_NOT_TEST;
+            this.supportsExportCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsFortezza = TestResults.COULD_NOT_TEST;
+            this.supportsGost = TestResults.COULD_NOT_TEST;
+            this.supportsIdeaCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsKerberos = TestResults.COULD_NOT_TEST;
+            this.supportsNewHope = TestResults.COULD_NOT_TEST;
+            this.supportsNullCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsOnlyPfsCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsPfsCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsPostQuantumCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsPskDhe = TestResults.COULD_NOT_TEST;
+            this.supportsPskEcdhe = TestResults.COULD_NOT_TEST;
+            this.supportsPskPlain = TestResults.COULD_NOT_TEST;
+            this.supportsPskRsa = TestResults.COULD_NOT_TEST;
+            this.supportsRc2Ciphers = TestResults.COULD_NOT_TEST;
+            this.supportsRc4Ciphers = TestResults.COULD_NOT_TEST;
+            this.supportsRsa = TestResults.COULD_NOT_TEST;
+            this.supportsSeedCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsSrp = TestResults.COULD_NOT_TEST;
+            this.supportsStaticEcdh = TestResults.COULD_NOT_TEST;
+            this.supportsEcdsa = TestResults.COULD_NOT_TEST;
+            this.supportsRsaCert = TestResults.COULD_NOT_TEST;
+            this.supportsDss = TestResults.COULD_NOT_TEST;
+            this.supportsStreamCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsTripleDesCiphers = TestResults.COULD_NOT_TEST;
+            this.supportsLegacyPrf = TestResults.COULD_NOT_TEST;
+            this.supportsSha256Prf = TestResults.COULD_NOT_TEST;
+            this.supportsSha384Prf = TestResults.COULD_NOT_TEST;
         }
-		this.writeToReport(report);		
-	}
-	
-	 private void adjustCipherType(CipherSuite suite) {
-	        CipherType cipherType = AlgorithmResolver.getCipherType(suite);
-	        switch (cipherType) {
-	            case AEAD:
-	            	this.supportsAeadCiphers = TestResults.TRUE;
-	                break;
-	            case BLOCK:
-	            	this.supportsBlockCiphers = TestResults.TRUE;
-	                break;
-	            case STREAM:
-	            	this.supportsStreamCiphers = TestResults.TRUE;
-	                break;
-	            default:;
-	        }
-	    }
+        this.writeToReport(report);
+    }
 
-	    private void adjustKeyExchange(CipherSuite suite) {
-	        if (suite.name().contains("SRP")) 
-	        	this.supportsSrp = TestResults.TRUE;	        
-	        if (suite.name().contains("TLS_RSA"))
-	        	this.supportsRsa = TestResults.TRUE;	        
-	        if (suite.name().contains("ECDH_"))
-	        	this.supportsStaticEcdh = TestResults.TRUE;	        
-	        if (suite.name().contains("NULL")) 
-	        	this.supportsNullCiphers = TestResults.TRUE;	        
-	        if (suite.name().contains("GOST")) 
-	        	this.supportsGost = TestResults.TRUE;	        
-	        if (suite.name().contains("KRB5")) 
-	        	this.supportsKerberos = TestResults.TRUE;	        
-	        if (suite.name().contains("TLS_PSK_WITH")) 
-	        	this.supportsPskPlain = TestResults.TRUE;	        
-	        if (suite.name().contains("_DHE_PSK")) 
-	        	this.supportsPskDhe = TestResults.TRUE;	        
-	        if (suite.name().contains("ECDHE_PSK")) 
-	        	this.supportsPskEcdhe = TestResults.TRUE;	        
-	        if (suite.name().contains("RSA_PSK")) 
-	        	this.supportsPskRsa = TestResults.TRUE;	        
-	        if (suite.name().contains("FORTEZZA")) 
-	        	this.supportsFortezza = TestResults.TRUE;	        
-	        if (suite.name().contains("ECMQV")) {
-	        	this.supportsPostQuantumCiphers = TestResults.TRUE;
-	        	this.supportsEcmqv = TestResults.TRUE;
-	        }
-	        if (suite.name().contains("CECPQ1")) {
-	        	this.supportsPostQuantumCiphers = TestResults.TRUE;
-	        	this.supportsNewHope = TestResults.TRUE;
-	        }
-	        if (suite.name().contains("anon")) 
-	        	this.supportsAnonCiphers = TestResults.TRUE;	        
-	        if (suite.isEphemeral()) 
-	        	this.supportsPfsCiphers = TestResults.TRUE;
-	        else 
-	        	this.supportsOnlyPfsCiphers = TestResults.FALSE;	        
-	        if (suite.isExport()) 
-	        	this.supportsExportCiphers = TestResults.TRUE;	        
-	    }
+    private void adjustCipherType(CipherSuite suite) {
+        CipherType cipherType = AlgorithmResolver.getCipherType(suite);
+        switch (cipherType) {
+            case AEAD:
+                this.supportsAeadCiphers = TestResults.TRUE;
+                break;
+            case BLOCK:
+                this.supportsBlockCiphers = TestResults.TRUE;
+                break;
+            case STREAM:
+                this.supportsStreamCiphers = TestResults.TRUE;
+                break;
+            default:
+                ;
+        }
+    }
 
-	    private void adjustBulk(CipherSuite suite) {
-	        BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
-	        switch (bulkCipherAlgorithm) {
-	            case AES:
-	            	this.supportsAes = TestResults.TRUE;
-	                break;
-	            case CAMELLIA:
-	            	this.supportsCamellia = TestResults.TRUE;
-	                break;
-	            case DES40:
-	            	this.supportsDesCiphers = TestResults.TRUE;
-	            	this.supportsExportCiphers = TestResults.TRUE;
-	                break;
-	            case DES:
-	            	this.supportsDesCiphers = TestResults.TRUE;
-	                break;
-	            case ARIA:
-	            	this.supportsAria = TestResults.TRUE;
-	                break;
-	            case DESede:
-	            	this.supportsTripleDesCiphers = TestResults.TRUE;
-	                break;
-	            case FORTEZZA:
-	            	this.supportsFortezza = TestResults.TRUE;
-	                break;
-	            case IDEA:
-	            	this.supportsIdeaCiphers = TestResults.TRUE;
-	                break;
-	            case NULL:
-	            	this.supportsNullCiphers = TestResults.TRUE;
-	                break;
-	            case RC2:
-	            	this.supportsRc2Ciphers = TestResults.TRUE;
-	                break;
-	            case RC4:
-	            	this.supportsRc4Ciphers = TestResults.TRUE;
-	                break;
-	            case SEED:
-	            	this.supportsSeedCiphers = TestResults.TRUE;
-	                break;
-	            case CHACHA20_POLY1305:
-	            	this.supportsChacha = TestResults.TRUE;
-	                break;
-	            default:;
-	        }
-	    }
+    private void adjustKeyExchange(CipherSuite suite) {
+        if (suite.name().contains("SRP"))
+            this.supportsSrp = TestResults.TRUE;
+        if (suite.name().contains("TLS_RSA"))
+            this.supportsRsa = TestResults.TRUE;
+        if (suite.name().contains("ECDH_"))
+            this.supportsStaticEcdh = TestResults.TRUE;
+        if (suite.name().contains("NULL"))
+            this.supportsNullCiphers = TestResults.TRUE;
+        if (suite.name().contains("GOST"))
+            this.supportsGost = TestResults.TRUE;
+        if (suite.name().contains("KRB5"))
+            this.supportsKerberos = TestResults.TRUE;
+        if (suite.name().contains("TLS_PSK_WITH"))
+            this.supportsPskPlain = TestResults.TRUE;
+        if (suite.name().contains("_DHE_PSK"))
+            this.supportsPskDhe = TestResults.TRUE;
+        if (suite.name().contains("ECDHE_PSK"))
+            this.supportsPskEcdhe = TestResults.TRUE;
+        if (suite.name().contains("RSA_PSK"))
+            this.supportsPskRsa = TestResults.TRUE;
+        if (suite.name().contains("FORTEZZA"))
+            this.supportsFortezza = TestResults.TRUE;
+        if (suite.name().contains("ECMQV")) {
+            this.supportsPostQuantumCiphers = TestResults.TRUE;
+            this.supportsEcmqv = TestResults.TRUE;
+        }
+        if (suite.name().contains("CECPQ1")) {
+            this.supportsPostQuantumCiphers = TestResults.TRUE;
+            this.supportsNewHope = TestResults.TRUE;
+        }
+        if (suite.name().contains("anon"))
+            this.supportsAnonCiphers = TestResults.TRUE;
+        if (suite.isEphemeral())
+            this.supportsPfsCiphers = TestResults.TRUE;
+        else
+            this.supportsOnlyPfsCiphers = TestResults.FALSE;
+        if (suite.isExport())
+            this.supportsExportCiphers = TestResults.TRUE;
+    }
 
-	    private void adjustCertificate(CipherSuite suite) {
-	        if (suite.name().contains("ECDSA")) 
-	        	this.supportsEcdsa = TestResults.TRUE;	        
-	        if (suite.name().contains("DSS")) 
-	        	this.supportsDss = TestResults.TRUE;	        
-	        if (suite.name().contains("RSA")) 
-	        	this.supportsRsaCert = TestResults.TRUE;	        
-	    }
+    private void adjustBulk(CipherSuite suite) {
+        BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
+        switch (bulkCipherAlgorithm) {
+            case AES:
+                this.supportsAes = TestResults.TRUE;
+                break;
+            case CAMELLIA:
+                this.supportsCamellia = TestResults.TRUE;
+                break;
+            case DES40:
+                this.supportsDesCiphers = TestResults.TRUE;
+                this.supportsExportCiphers = TestResults.TRUE;
+                break;
+            case DES:
+                this.supportsDesCiphers = TestResults.TRUE;
+                break;
+            case ARIA:
+                this.supportsAria = TestResults.TRUE;
+                break;
+            case DESede:
+                this.supportsTripleDesCiphers = TestResults.TRUE;
+                break;
+            case FORTEZZA:
+                this.supportsFortezza = TestResults.TRUE;
+                break;
+            case IDEA:
+                this.supportsIdeaCiphers = TestResults.TRUE;
+                break;
+            case NULL:
+                this.supportsNullCiphers = TestResults.TRUE;
+                break;
+            case RC2:
+                this.supportsRc2Ciphers = TestResults.TRUE;
+                break;
+            case RC4:
+                this.supportsRc4Ciphers = TestResults.TRUE;
+                break;
+            case SEED:
+                this.supportsSeedCiphers = TestResults.TRUE;
+                break;
+            case CHACHA20_POLY1305:
+                this.supportsChacha = TestResults.TRUE;
+                break;
+            default:
+                ;
+        }
+    }
 
-	    private void writeToReport(ServerReport report) {
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, this.supportsNullCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANON, this.supportsAnonCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPORT, this.supportsExportCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DES, this.supportsDesCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SEED, this.supportsSeedCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_IDEA, this.supportsIdeaCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC2, this.supportsRc2Ciphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC4, this.supportsRc4Ciphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_3DES, this.supportsTripleDesCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, this.supportsPostQuantumCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AEAD, this.supportsAeadCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PFS, this.supportsPfsCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, this.supportsOnlyPfsCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AES, this.supportsAes);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, this.supportsCamellia);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ARIA, this.supportsAria);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CHACHA, this.supportsChacha);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA, this.supportsRsa);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, this.supportsStaticEcdh);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECDSA, this.supportsEcdsa);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, this.supportsRsaCert);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DSS, this.supportsDss);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_GOST, this.supportsGost);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SRP, this.supportsSrp);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_KERBEROS, this.supportsKerberos);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, this.supportsPskPlain);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, this.supportsPskRsa);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, this.supportsPskDhe);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, this.supportsPskEcdhe);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, this.supportsFortezza);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, this.supportsNewHope);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECMQV, this.supportsEcmqv);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.PREFERS_PFS, this.prefersPfsCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, this.supportsStreamCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, this.supportsBlockCiphers);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, this.supportsLegacyPrf);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, this.supportsSha256Prf);
-	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, this.supportsSha384Prf);
-	        report.setVersionSuitePairs(this.pairLists);
-	    }
+    private void adjustCertificate(CipherSuite suite) {
+        if (suite.name().contains("ECDSA"))
+            this.supportsEcdsa = TestResults.TRUE;
+        if (suite.name().contains("DSS"))
+            this.supportsDss = TestResults.TRUE;
+        if (suite.name().contains("RSA"))
+            this.supportsRsaCert = TestResults.TRUE;
+    }
+
+    private void writeToReport(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, this.supportsNullCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANON, this.supportsAnonCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPORT, this.supportsExportCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DES, this.supportsDesCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SEED, this.supportsSeedCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_IDEA, this.supportsIdeaCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC2, this.supportsRc2Ciphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC4, this.supportsRc4Ciphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_3DES, this.supportsTripleDesCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, this.supportsPostQuantumCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AEAD, this.supportsAeadCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PFS, this.supportsPfsCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, this.supportsOnlyPfsCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AES, this.supportsAes);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, this.supportsCamellia);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ARIA, this.supportsAria);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CHACHA, this.supportsChacha);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA, this.supportsRsa);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, this.supportsStaticEcdh);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECDSA, this.supportsEcdsa);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, this.supportsRsaCert);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DSS, this.supportsDss);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_GOST, this.supportsGost);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SRP, this.supportsSrp);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_KERBEROS, this.supportsKerberos);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, this.supportsPskPlain);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, this.supportsPskRsa);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, this.supportsPskDhe);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, this.supportsPskEcdhe);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, this.supportsFortezza);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, this.supportsNewHope);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECMQV, this.supportsEcmqv);
+        super.setPropertyReportValue(TlsAnalyzedProperty.PREFERS_PFS, this.prefersPfsCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, this.supportsStreamCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, this.supportsBlockCiphers);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, this.supportsLegacyPrf);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, this.supportsSha256Prf);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, this.supportsSha384Prf);
+        report.setVersionSuitePairs(this.pairLists);
+    }
 }

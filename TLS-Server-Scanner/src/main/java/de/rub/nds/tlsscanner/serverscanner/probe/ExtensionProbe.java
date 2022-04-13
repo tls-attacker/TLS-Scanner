@@ -41,7 +41,7 @@ import java.util.function.Predicate;
 public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private boolean supportsTls13;
-    
+
     private List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResults.FALSE;
     private TestResult encryptThenMac = TestResults.FALSE;
@@ -159,40 +159,42 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (report.getSupportedExtensions() == null) 
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (report.getSupportedExtensions() == null)
             report.setSupportedExtensions(this.allSupportedExtensions);
         else
             report.getSupportedExtensions().addAll(this.allSupportedExtensions);
         if (this.allSupportedExtensions != null) {
             for (ExtensionType type : this.allSupportedExtensions) {
-                if (type == ExtensionType.ENCRYPT_THEN_MAC) 
+                if (type == ExtensionType.ENCRYPT_THEN_MAC)
                     this.encryptThenMac = TestResults.TRUE;
-                if (type == ExtensionType.EXTENDED_MASTER_SECRET) 
-                	this.extendedMasterSecret = TestResults.TRUE;                
-                if (type == ExtensionType.RENEGOTIATION_INFO) 
-                	this.secureRenegotiation = TestResults.TRUE;                
-                if (type == ExtensionType.SESSION_TICKET) 
-                	this.sessionTickets = TestResults.TRUE;                
-                if (type == ExtensionType.STATUS_REQUEST) 
-                	this.certStatusRequest = TestResults.TRUE;                
-                if (type == ExtensionType.STATUS_REQUEST_V2) 
-                	this.certStatusRequestV2 = TestResults.TRUE;                
+                if (type == ExtensionType.EXTENDED_MASTER_SECRET)
+                    this.extendedMasterSecret = TestResults.TRUE;
+                if (type == ExtensionType.RENEGOTIATION_INFO)
+                    this.secureRenegotiation = TestResults.TRUE;
+                if (type == ExtensionType.SESSION_TICKET)
+                    this.sessionTickets = TestResults.TRUE;
+                if (type == ExtensionType.STATUS_REQUEST)
+                    this.certStatusRequest = TestResults.TRUE;
+                if (type == ExtensionType.STATUS_REQUEST_V2)
+                    this.certStatusRequestV2 = TestResults.TRUE;
             }
         } else {
-        	this.encryptThenMac = TestResults.COULD_NOT_TEST;
-        	this.extendedMasterSecret = TestResults.COULD_NOT_TEST;
-        	this.secureRenegotiation = TestResults.COULD_NOT_TEST;
-        	this.sessionTickets = TestResults.COULD_NOT_TEST;
-        	this.certStatusRequest = TestResults.COULD_NOT_TEST;
-        	this.certStatusRequestV2 = TestResults.COULD_NOT_TEST;
+            this.encryptThenMac = TestResults.COULD_NOT_TEST;
+            this.extendedMasterSecret = TestResults.COULD_NOT_TEST;
+            this.secureRenegotiation = TestResults.COULD_NOT_TEST;
+            this.sessionTickets = TestResults.COULD_NOT_TEST;
+            this.certStatusRequest = TestResults.COULD_NOT_TEST;
+            this.certStatusRequestV2 = TestResults.COULD_NOT_TEST;
         }
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, this.extendedMasterSecret);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, this.encryptThenMac);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, this.secureRenegotiation);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+            this.secureRenegotiation);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, this.sessionTickets);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, this.certStatusRequest);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, this.certStatusRequestV2);		
-	}
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+            this.certStatusRequestV2);
+    }
 }

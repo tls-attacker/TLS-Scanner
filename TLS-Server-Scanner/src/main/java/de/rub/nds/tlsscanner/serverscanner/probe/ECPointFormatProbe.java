@@ -55,16 +55,16 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public void executeTest() {
-        if (this.shouldTestPointFormats) 
-        	this.supportedFormats = getSupportedPointFormats();
-        if (this.shouldTestTls13) 
-        	this.tls13SecpCompression = getTls13SecpCompressionSupported();
-        else 
-        	this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
+        if (this.shouldTestPointFormats)
+            this.supportedFormats = getSupportedPointFormats();
+        if (this.shouldTestTls13)
+            this.tls13SecpCompression = getTls13SecpCompressionSupported();
+        else
+            this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
         if (this.supportedFormats != null)
             return;
         else
-        	LOGGER.debug("Unable to determine supported point formats"); 
+            LOGGER.debug("Unable to determine supported point formats");
     }
 
     private List<ECPointFormat> getSupportedPointFormats() {
@@ -97,7 +97,8 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             case ANSIX962_COMPRESSED_CHAR2:
                 groups = getSectGroups();
                 break;
-            default:; // will never occur as all enum types are caught
+            default:
+                ; // will never occur as all enum types are caught
         }
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
@@ -216,9 +217,9 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         return sectGroups;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.supportedFormats != null) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.supportedFormats != null) {
             for (ECPointFormat format : this.supportedFormats) {
                 switch (format) {
                     case UNCOMPRESSED:
@@ -230,7 +231,8 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
                     case ANSIX962_COMPRESSED_CHAR2:
                         this.supportsANSIX962CompressedChar2 = TestResults.TRUE;
                         break;
-                    default:; // will never occur as all enum types are caught
+                    default:
+                        ; // will never occur as all enum types are caught
                 }
             }
         } else {
@@ -239,11 +241,15 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             this.supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, this.supportsUncompressedPoint);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, this.supportsANSIX962CompressedPrime);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, this.supportsANSIX962CompressedChar2);
-        if (tls13SecpCompression != null) 
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, this.tls13SecpCompression);
-        else 
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);        		
-	}
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+            this.supportsANSIX962CompressedPrime);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+            this.supportsANSIX962CompressedChar2);
+        if (tls13SecpCompression != null)
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
+                this.tls13SecpCompression);
+        else
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
+                TestResults.COULD_NOT_TEST);
+    }
 }

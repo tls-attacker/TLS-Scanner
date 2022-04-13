@@ -31,7 +31,7 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
 public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult result;
+    private TestResult result;
 
     public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
@@ -54,8 +54,8 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     public ForcedCompressionProbe getCouldNotExecuteResult() {
-    	this.result = TestResults.COULD_NOT_TEST;
-    	return this;
+        this.result = TestResults.COULD_NOT_TEST;
+        return this;
     }
 
     @Override
@@ -66,9 +66,9 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
     protected Requirement getRequirements(ClientReport report) {
         return new ProbeRequirement(report);
     }
-    
+
     @Override
     protected void mergeData(ClientReport report) {
-    	report.putResult(TlsAnalyzedProperty.FORCED_COMPRESSION, this.result);
+        report.putResult(TlsAnalyzedProperty.FORCED_COMPRESSION, this.result);
     }
 }

@@ -87,8 +87,10 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         this.respectsPskModes = TestResults.TRUE;
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             this.supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
-            this.supportsDtlsCookieExchangeInSessionTicketResumption = getSupportsDtlsCookieExchangeInSessionTicketResumption();
-            this.supportsTls13SessionTicket = this.supportsTls13PskDhe = this.supportsTls13Psk = this.supportsTls13_0rtt = TestResults.NOT_TESTED_YET;
+            this.supportsDtlsCookieExchangeInSessionTicketResumption =
+                getSupportsDtlsCookieExchangeInSessionTicketResumption();
+            this.supportsTls13SessionTicket =
+                this.supportsTls13PskDhe = this.supportsTls13Psk = this.supportsTls13_0rtt = TestResults.NOT_TESTED_YET;
         } else {
             this.supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             this.supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
@@ -381,24 +383,27 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     @Override
     public ResumptionProbe getCouldNotExecuteResult() {
-    	this.supportsResumption = this.supportsSessionTicketResumption = this.supportsTls13SessionTicket = this.supportsTls13PskDhe 
-    			= this.supportsTls13Psk = this.supportsTls13_0rtt = this.supportsDtlsCookieExchangeInResumption 
-    			= this.supportsDtlsCookieExchangeInSessionTicketResumption = this.respectsPskModes = TestResults.COULD_NOT_TEST;
+        this.supportsResumption = this.supportsSessionTicketResumption = this.supportsTls13SessionTicket =
+            this.supportsTls13PskDhe = this.supportsTls13Psk = this.supportsTls13_0rtt =
+                this.supportsDtlsCookieExchangeInResumption = this.supportsDtlsCookieExchangeInSessionTicketResumption =
+                    this.respectsPskModes = TestResults.COULD_NOT_TEST;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, this.supportsSessionTicketResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, this.supportsTls13SessionTicket);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+            this.supportsSessionTicketResumption);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+            this.supportsTls13SessionTicket);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
-        		this.supportsDtlsCookieExchangeInResumption);
+            this.supportsDtlsCookieExchangeInResumption);
         super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
-        		this.supportsDtlsCookieExchangeInSessionTicketResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);		
-	}
+            this.supportsDtlsCookieExchangeInSessionTicketResumption);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);
+    }
 }

@@ -43,7 +43,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public EsniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ESNI, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.SUPPORTS_ESNI);
-}
+    }
 
     @Override
     public void executeTest() {
@@ -85,13 +85,13 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-        	this.receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
-        	return;
+            this.receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
+            return;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-        	this.receivedCorrectNonce = TestResults.TRUE;
-        	return;
-        } else 
-        	this.receivedCorrectNonce = TestResults.FALSE;
+            this.receivedCorrectNonce = TestResults.TRUE;
+            return;
+        } else
+            this.receivedCorrectNonce = TestResults.FALSE;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         this.receivedCorrectNonce = TestResults.COULD_NOT_TEST;
         return this;
     }
-    
+
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report);
@@ -148,8 +148,8 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         return list;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);
+    }
 }

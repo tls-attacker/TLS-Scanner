@@ -44,9 +44,9 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList;
-    
+
     private TestResult vulnerable;
-    
+
     public BleichenbacherProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.BLEICHENBACHER, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
@@ -176,16 +176,16 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
         return false;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.testResultList != null) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.testResultList != null) {
             this.vulnerable = TestResults.FALSE;
             for (InformationLeakTest<?> informationLeakTest : this.testResultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers())
-                    this.vulnerable = TestResults.TRUE;                
+                    this.vulnerable = TestResults.TRUE;
             }
-        } else 
+        } else
             this.vulnerable = TestResults.ERROR_DURING_TEST;
-		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, this.vulnerable);
-	}
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, this.vulnerable);
+    }
 }

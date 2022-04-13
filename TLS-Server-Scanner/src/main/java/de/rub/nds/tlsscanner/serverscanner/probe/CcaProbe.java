@@ -51,14 +51,14 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private final long additionalTcpTimeout = 1000;
 
     private final int reexecutions = 3;
-    
+
     private TestResult vulnerable;
-    private List<CcaTestResult> resultList; 
+    private List<CcaTestResult> resultList;
 
     public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, config);
         this.versionSuiteListPairsList = new LinkedList<>();
-    	super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            vulnerable=TestResults.COULD_NOT_TEST;
+            vulnerable = TestResults.COULD_NOT_TEST;
             return;
         }
 
@@ -232,9 +232,9 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         return versionSuiteListPairList;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
         report.setCcaTestResultList(this.resultList);
-	}
+    }
 }

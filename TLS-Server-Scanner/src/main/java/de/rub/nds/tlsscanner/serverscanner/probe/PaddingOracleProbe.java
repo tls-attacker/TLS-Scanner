@@ -153,7 +153,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public PaddingOracleProbe getCouldNotExecuteResult() {
-    	this.vulnerable = TestResults.COULD_NOT_TEST;
+        this.vulnerable = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -179,17 +179,17 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         return false;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.resultList != null) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.resultList != null) {
             this.vulnerable = TestResults.FALSE;
             for (InformationLeakTest<?> informationLeakTest : this.resultList) {
-                if (informationLeakTest.isSignificantDistinctAnswers()) 
-                    this.vulnerable = TestResults.TRUE;                
+                if (informationLeakTest.isSignificantDistinctAnswers())
+                    this.vulnerable = TestResults.TRUE;
             }
-        } else 
-            this.vulnerable = TestResults.ERROR_DURING_TEST;       
-		report.setPaddingOracleTestResultList(this.resultList);
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, this.vulnerable);		
-	}
+        } else
+            this.vulnerable = TestResults.ERROR_DURING_TEST;
+        report.setPaddingOracleTestResultList(this.resultList);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, this.vulnerable);
+    }
 }

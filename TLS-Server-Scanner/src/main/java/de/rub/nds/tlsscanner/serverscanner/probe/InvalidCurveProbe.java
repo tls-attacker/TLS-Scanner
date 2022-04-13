@@ -74,7 +74,7 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     private TestResult vulnerableClassic = TestResults.FALSE;
     private TestResult vulnerableEphemeral = TestResults.FALSE;
     private TestResult vulnerableTwist = TestResults.FALSE;
-    
+
     private List<ProtocolVersion> supportedProtocolVersions;
 
     private List<InvalidCurveResponse> responses;
@@ -247,8 +247,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public InvalidCurveProbe getCouldNotExecuteResult() {
-    	this.vulnerableClassic = this.vulnerableEphemeral = this.vulnerableTwist = TestResults.COULD_NOT_TEST;
-    	this.responses = null;
+        this.vulnerableClassic = this.vulnerableEphemeral = this.vulnerableTwist = TestResults.COULD_NOT_TEST;
+        this.responses = null;
         return this;
     }
 
@@ -746,7 +746,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
                     attackConfig.setKeyOffset(0);
                     attackConfig.setProtocolFlows(LARGE_ORDER_ITERATIONS);
                     break;
-                default:; // will never occur as all enum types are handled                    
+                default:
+                    ; // will never occur as all enum types are handled
             }
         }
     }
@@ -851,8 +852,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
                         InvalidCurveResponse redundantResponse =
                             executeSingleScan(vector, InvalidCurveScanType.REDUNDANT);
                         if (!redundantResponse.getVectorResponses().isEmpty()) {
-                            DistributionTest<?> redundantDistTest = new DistributionTest<>(new InvalidCurveTestInfo(vector),
-                                redundantResponse.getVectorResponses(),
+                            DistributionTest<?> redundantDistTest = new DistributionTest<>(
+                                new InvalidCurveTestInfo(vector), redundantResponse.getVectorResponses(),
                                 getInfinityProbability(vector, InvalidCurveScanType.REDUNDANT));
                             if (redundantDistTest.isDistinctAnswers()
                                 && redundantDistTest.isSignificantDistinctAnswers()) {
@@ -867,11 +868,12 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         }
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, this.vulnerableEphemeral);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
+            this.vulnerableEphemeral);
         super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
-        report.setInvalidCurveResultList(this.responses);		
-	}
+        report.setInvalidCurveResultList(this.responses);
+    }
 }

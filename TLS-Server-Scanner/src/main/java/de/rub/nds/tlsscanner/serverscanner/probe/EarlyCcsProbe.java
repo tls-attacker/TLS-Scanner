@@ -53,13 +53,13 @@ public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public EarlyCcsProbe getCouldNotExecuteResult() {
-    	this.earlyCcsVulnerabilityType = null;
+        this.earlyCcsVulnerabilityType = null;
         return this;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.earlyCcsVulnerabilityType == null) 
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.earlyCcsVulnerabilityType == null)
             report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
         else {
             switch (this.earlyCcsVulnerabilityType) {

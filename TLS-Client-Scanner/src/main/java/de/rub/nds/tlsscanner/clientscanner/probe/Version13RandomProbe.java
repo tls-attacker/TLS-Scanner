@@ -48,7 +48,8 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
         boolean tls10Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS10);
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
-        this.hasDowngradeProtection = tls10Rejected && tls11Rejected && tls12Rejected ? TestResults.TRUE : TestResults.FALSE;
+        this.hasDowngradeProtection =
+            tls10Rejected && tls11Rejected && tls12Rejected ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
@@ -92,7 +93,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
         // TODO Check if atleast one non tls 1.3 version is supported
         return new ProbeRequirement(report);
     }
-    
+
     @Override
     protected void mergeData(ClientReport report) {
         report.putResult(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);

@@ -94,17 +94,17 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             // confirm success
             State state = new State(config, trace);
             executeState(state);
-            if (state.getWorkflowTrace().executedAsPlanned()) 
+            if (state.getWorkflowTrace().executedAsPlanned())
                 this.supportedProtocolVersions.add(version);
-            else 
-                this.unsupportedProtocolVersions.add(version);            
+            else
+                this.unsupportedProtocolVersions.add(version);
         }
     }
 
     @Override
     public VersionProbe getCouldNotExecuteResult() {
-    	this.supportedProtocolVersions = this.unsupportedProtocolVersions = null;
-    	return this;
+        this.supportedProtocolVersions = this.unsupportedProtocolVersions = null;
+        return this;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     protected Requirement getRequirements(ClientReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.BASIC);
     }
-    
+
     @Override
     protected void mergeData(ClientReport report) {
         if (supportedProtocolVersions != null) {

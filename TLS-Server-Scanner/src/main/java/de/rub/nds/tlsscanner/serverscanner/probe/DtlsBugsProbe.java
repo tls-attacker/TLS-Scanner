@@ -50,7 +50,7 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private TestResult isEarlyFinished;
     private TestResult isAcceptingUnencryptedAppData;
     private TestResult isAcceptingUnencryptedFinished;
-    
+
     public DtlsBugsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
@@ -61,12 +61,13 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     @Override
     public void executeTest() {
         try {
-        	this.isEarlyFinished = isAcceptingUnencryptedFinished();
-        	this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData();
+            this.isEarlyFinished = isAcceptingUnencryptedFinished();
+            this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData();
             this.isAcceptingUnencryptedFinished = isEarlyFinished();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            this.isEarlyFinished = this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.ERROR_DURING_TEST;          
+            this.isEarlyFinished = this.isAcceptingUnencryptedAppData =
+                this.isAcceptingUnencryptedFinished = TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -161,7 +162,8 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public DtlsBugsProbe getCouldNotExecuteResult() {
-        this.isEarlyFinished = this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
+        this.isEarlyFinished =
+            this.isAcceptingUnencryptedAppData = this.isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -174,10 +176,12 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, this.isAcceptingUnencryptedFinished);
-	    super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, this.isAcceptingUnencryptedAppData);
-	    super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+            this.isAcceptingUnencryptedFinished);
+        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
+            this.isAcceptingUnencryptedAppData);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);
+    }
 }

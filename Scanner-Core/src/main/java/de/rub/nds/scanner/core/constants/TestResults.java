@@ -35,8 +35,8 @@ public enum TestResults implements TestResult {
         return value ? TRUE : FALSE;
     }
 
-	@Override
-	public TestResults getResultStatus() {
-		return this;
-	}
+    @Override
+    public TestResults getResultStatus() {
+        return this;
+    }
 }

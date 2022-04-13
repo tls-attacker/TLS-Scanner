@@ -33,8 +33,8 @@ import java.util.List;
 
 public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-	private List<CompressionMethod> compressions;
-	
+    private List<CompressionMethod> compressions;
+
     public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
         super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CRIME);
@@ -104,16 +104,18 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         this.compressions = null;
         return this;
     }
+
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report);
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		if (this.compressions != null) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (this.compressions != null) {
             report.setSupportedCompressionMethods(this.compressions);
-            if (this.compressions.contains(CompressionMethod.LZS) || this.compressions.contains(CompressionMethod.DEFLATE)) {
+            if (this.compressions.contains(CompressionMethod.LZS)
+                || this.compressions.contains(CompressionMethod.DEFLATE)) {
                 super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
                 super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
@@ -124,5 +126,5 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
             super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
             super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
-	}
+    }
 }

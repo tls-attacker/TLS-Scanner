@@ -44,7 +44,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    
+
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
     }
@@ -59,9 +59,8 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
         executeState(state);
         if (trace.executedAsPlanned()) {
             this.clientAdvertisedCipherSuites = state.getTlsContext().getClientSupportedCipherSuites();
-            this.clientAdvertisedCompressions  =
-                state.getTlsContext().getClientSupportedCompressions();
-            this.clientSupportedSignatureAndHashAlgorithms  =
+            this.clientAdvertisedCompressions = state.getTlsContext().getClientSupportedCompressions();
+            this.clientSupportedSignatureAndHashAlgorithms =
                 state.getTlsContext().getClientSupportedSignatureAndHashAlgorithms();
             this.clientAdvertisedExtensions = state.getTlsContext().getProposedExtensions();
             this.clientAdvertisedNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
@@ -74,14 +73,13 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     public BasicProbe getCouldNotExecuteResult() {
-    	this.clientAdvertisedCipherSuites = null;
-    	this.clientAdvertisedCompressions = null;
-    	this.clientSupportedSignatureAndHashAlgorithms = null;
-    	this.clientAdvertisedExtensions = null;
-    	this.clientAdvertisedNamedGroupsList
-    		= this.clientKeyShareNamedGroupsList = null;
-    	this.clientAdvertisedPointFormatsList = null;
-    	return this;
+        this.clientAdvertisedCipherSuites = null;
+        this.clientAdvertisedCompressions = null;
+        this.clientSupportedSignatureAndHashAlgorithms = null;
+        this.clientAdvertisedExtensions = null;
+        this.clientAdvertisedNamedGroupsList = this.clientKeyShareNamedGroupsList = null;
+        this.clientAdvertisedPointFormatsList = null;
+        return this;
     }
 
     @Override
@@ -105,14 +103,14 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
         return new ProbeRequirement(report);
     }
 
-	@Override
-	protected void mergeData(ClientReport report) {
+    @Override
+    protected void mergeData(ClientReport report) {
         report.setAdvertisedCipherSuites(this.clientAdvertisedCipherSuites);
         report.setClientAdvertisedCompressions(this.clientAdvertisedCompressions);
         report.setClientAdvertisedSignatureAndHashAlgorithms(this.clientSupportedSignatureAndHashAlgorithms);
         report.setClientAdvertisedExtensions(this.clientAdvertisedExtensions);
         report.setClientAdvertisedNamedGroupsList(this.clientAdvertisedNamedGroupsList);
         report.setClientAdvertisedKeyShareNamedGroupsList(this.clientKeyShareNamedGroupsList);
-        report.setClientAdvertisedPointFormatsList(this.clientAdvertisedPointFormatsList);		
-	}
+        report.setClientAdvertisedPointFormatsList(this.clientAdvertisedPointFormatsList);
+    }
 }

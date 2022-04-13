@@ -109,7 +109,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
         super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         super.properties.add(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
-	}
+    }
 
     @Override
     public void executeTest() {
@@ -139,8 +139,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         executeState(state);
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-           	this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
-        	return;
+            this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
+            return;
         }
 
         byte[] ticket = null;
@@ -175,14 +175,14 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         }
         LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
 
-        if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) 
+        if (checkForMasterSecret(decryptedSessionState, state.getTlsContext()))
             this.hasDecryptableMasterSecret = TestResults.TRUE;
-        else 
-            this.hasDecryptableMasterSecret = TestResults.FALSE;  
-        if (checkForGnuTlsMagicBytes(decryptedSessionState)) 
+        else
+            this.hasDecryptableMasterSecret = TestResults.FALSE;
+        if (checkForGnuTlsMagicBytes(decryptedSessionState))
             this.hasGnuTlsMagicBytes = TestResults.TRUE;
-        else 
-            this.hasGnuTlsMagicBytes = TestResults.FALSE;        
+        else
+            this.hasGnuTlsMagicBytes = TestResults.FALSE;
     }
 
     @Override
@@ -211,7 +211,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     @Override
     public SessionTicketZeroKeyProbe getCouldNotExecuteResult() {
-    	this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
+        this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
         return this;
     }
 
@@ -220,9 +220,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         supportedSuites = new ArrayList<>(report.getCipherSuites());
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, this.hasDecryptableMasterSecret);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+            this.hasDecryptableMasterSecret);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);
+    }
 }
