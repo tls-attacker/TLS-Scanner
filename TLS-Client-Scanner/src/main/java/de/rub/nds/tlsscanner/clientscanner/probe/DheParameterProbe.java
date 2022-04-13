@@ -182,11 +182,6 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE) == TestResults.TRUE;
-    }
-
-    @Override
     public DheParameterProbe getCouldNotExecuteResult() {
         this.smallSubgroupResults = new LinkedList<>();
         for (SmallSubgroupType type : SmallSubgroupType.values())

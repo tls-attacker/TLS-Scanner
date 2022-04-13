@@ -96,6 +96,6 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.putResult(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);
+        super.setPropertyReportValue(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);
     }
 }
