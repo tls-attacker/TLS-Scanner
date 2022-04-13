@@ -74,7 +74,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAtt
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -86,7 +85,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -970,7 +968,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (informationLeakTestList == null || informationLeakTestList.isEmpty()) {
             prettyAppend(builder, "No test results");
         } else {
-            for (InformationLeakTest testResult : informationLeakTestList) {
+            for (InformationLeakTest<?> testResult : informationLeakTestList) {
                 String valueP;
                 if (testResult.getValueP() >= 0.001) {
                     valueP = String.format("%.3f", testResult.getValueP());
@@ -1067,7 +1065,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendInformationLeakTestResult(StringBuilder builder,
-        InformationLeakTest informationLeakTest) {
+        InformationLeakTest<?> informationLeakTest) {
         try {
             ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
             List<VectorContainer> vectorContainerList = informationLeakTest.getVectorContainerList();
@@ -1885,8 +1883,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
                 prettyAppendSubheading(builder, "Probe execution performance");
                 for (PerformanceData data : report.getPerformanceList()) {
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    Duration duration = new Duration(data.getStartTime(), data.getStopTime());
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     prettyAppend(builder,
                         padToLength(data.getType().getName(), 25) + " " + PeriodFormat.getDefault().print(period));
