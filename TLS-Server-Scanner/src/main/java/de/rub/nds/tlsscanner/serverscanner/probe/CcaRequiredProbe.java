@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
@@ -19,22 +22,21 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
-public class CcaRequiredProbe extends TlsProbe {
+public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult requiresCca;
 
-    public CcaRequiredProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
-        super.properties.add(AnalyzedProperty.REQUIRES_CCA);
-    }
+    public CcaRequiredProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
+        super.properties.add(TlsAnalyzedProperty.REQUIRES_CCA);
+}
 
     @Override
     public void executeTest() {
@@ -51,18 +53,18 @@ public class CcaRequiredProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_CCA);
-    }
-    
-    @Override
-    public void adjustConfig(SiteReport report) {
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CcaRequiredProbe getCouldNotExecuteResult() {
         this.requiresCca = TestResults.COULD_NOT_TEST;
         return this;
+    }
+    
+    @Override
+    public void adjustConfig(ServerReport report) {
     }
 
     private Config generateConfig() {
@@ -77,7 +79,7 @@ public class CcaRequiredProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.REQUIRES_CCA, this.requiresCca);		
+	protected void mergeData(ServerReport report) {
+		super.setPropertyReportValue(TlsAnalyzedProperty.REQUIRES_CCA, this.requiresCca);		
 	}
 }

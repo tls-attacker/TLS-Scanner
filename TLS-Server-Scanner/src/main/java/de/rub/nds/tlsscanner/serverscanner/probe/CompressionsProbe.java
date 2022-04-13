@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -18,24 +20,25 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompressionsProbe extends TlsProbe {
+public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
 	private List<CompressionMethod> compressions;
 	
-    public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMPRESSIONS, config);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_CRIME);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
+    public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CRIME);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
     }
 
     @Override
@@ -93,29 +96,33 @@ public class CompressionsProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CompressionsProbe getCouldNotExecuteResult() {
         this.compressions = null;
         return this;
     }
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		if (this.compressions != null) {
             report.setSupportedCompressionMethods(this.compressions);
             if (this.compressions.contains(CompressionMethod.LZS) || this.compressions.contains(CompressionMethod.DEFLATE)) {
-                super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
-                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
-                super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
-                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
 	}
 }

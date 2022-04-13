@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -19,20 +20,25 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class AlpnProbe extends TlsProbe {
+public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
 	private List<String> supportedAlpnProtocols;
-	
-    public AlpnProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.ALPN, scannerConfig);
+
+	private static final Logger LOGGER = LogManager.getLogger();
+
+    public AlpnProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.ALPN, scannerConfig);
     }
 
     @Override
@@ -102,22 +108,23 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.EXTENSIONS).requireExtensionTyes(ExtensionType.ALPN);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.EXTENSIONS)
+            .requireExtensionTyes(ExtensionType.ALPN);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public AlpnProbe getCouldNotExecuteResult() {
         this.supportedAlpnProtocols = new LinkedList<>();
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
         report.setSupportedAlpns(this.supportedAlpnProtocols);		
 	}
 }

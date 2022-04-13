@@ -9,18 +9,20 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,16 +35,16 @@ import java.util.stream.Collectors;
  * Probe that checks if server enforces the order of named groups sent by the client
  *
  */
-public class NamedCurvesOrderProbe extends TlsProbe {
+public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private Collection<NamedGroup> supportedGroups;
 
     private TestResult enforced;
 
-    public NamedCurvesOrderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS_ORDER, scannerConfig);
-        super.properties.add(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
-    }
+    public NamedCurvesOrderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS_ORDER, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
+	}
 
     @Override
     public void executeTest() {
@@ -75,24 +77,24 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CIPHER_SUITE)
-        		.requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_ECDH, AnalyzedProperty.SUPPORTS_ECDHE);
-    }
-
-    @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public NamedCurvesOrderProbe getCouldNotExecuteResult() {
         this.enforced = TestResults.COULD_NOT_TEST;
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+    }
+
+    @Override
+    public void adjustConfig(ServerReport report) {
         supportedGroups = report.getSupportedNamedGroups();
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, this.enforced);		
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, this.enforced);		
 	}
 }

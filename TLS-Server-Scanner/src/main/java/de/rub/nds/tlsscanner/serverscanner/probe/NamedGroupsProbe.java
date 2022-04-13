@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -26,13 +29,12 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,9 +46,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NamedGroupsProbe extends TlsProbe {
+public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-    Set<CipherSuite> supportedCipherSuites;
+    private Set<CipherSuite> supportedCipherSuites;
 
     // curves used for ecdsa in key exchange
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
@@ -65,17 +67,18 @@ public class NamedGroupsProbe extends TlsProbe {
     private TestResult groupsDependOnCipherSuite;
     private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
-    public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
-        super.properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
-        super.properties.add(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
-        super.properties.add(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
+    public NamedGroupsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
+        super.properties.add(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
+        super.properties.add(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
     }
 
     @Override
     public void executeTest() {
         this.namedGroupsMap = new HashMap<>();
+
         addGroupsFound(this.namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
             KeyExchangeAlgorithm.DHE_RSA);
@@ -247,12 +250,12 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION, ProbeType.CERTIFICATE);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
@@ -262,7 +265,7 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public NamedGroupsProbe getCouldNotExecuteResult() {
     	this.namedGroupsMap = this.namedGroupsMapTls13 = new HashMap<>();
     	this.supportsExplicitPrime = this.supportsExplicitChar2 = this.groupsDependOnCipherSuite
     			= this.ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
@@ -459,7 +462,7 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
         LinkedList<NamedGroup> allGroups = new LinkedList<>();
         if (this.namedGroupsMap != null) 
             allGroups.addAll(this.namedGroupsMap.keySet());  
@@ -470,9 +473,9 @@ public class NamedGroupsProbe extends TlsProbe {
         report.setSupportedTls13Groups(tls13Groups);
         report.setSupportedNamedGroupsWitnesses(this.namedGroupsMap);
         report.setSupportedNamedGroupsWitnessesTls13(this.namedGroupsMapTls13);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
-        super.setPropertyReportValue(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
-        super.setPropertyReportValue(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, this.ignoresEcdsaGroupDisparity);		
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
+        super.setPropertyReportValue(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, this.ignoresEcdsaGroupDisparity);		
 	}
 }

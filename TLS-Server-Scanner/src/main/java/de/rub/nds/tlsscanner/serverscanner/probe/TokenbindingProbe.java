@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -20,11 +22,12 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,14 +35,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe {
+public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-    private List<TokenBindingVersion> supportedTokenBindingVersion;
-    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
+	private List<TokenBindingVersion> supportedTokenBindingVersion;
+	private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
 
-    public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TOKENBINDING, config);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TOKENBINDING);
+    public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING);
     }
 
     @Override
@@ -49,6 +52,7 @@ public class TokenbindingProbe extends TlsProbe {
         this.supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!this.supportedTokenBindingVersion.isEmpty()) 
             this.supportedTokenBindingKeyParameters.addAll(getKeyParameters(this.supportedTokenBindingVersion.get(0)));        
+
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
@@ -134,26 +138,30 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-    }
-
-    @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public TokenbindingProbe getCouldNotExecuteResult() {
     	this.supportedTokenBindingVersion = null;
     	this.supportedTokenBindingKeyParameters = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
         report.setSupportedTokenBindingKeyParameters(this.supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(this.supportedTokenBindingVersion);
         if (this.supportedTokenBindingVersion != null && !this.supportedTokenBindingVersion.isEmpty()) {
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             if (report.getSupportedExtensions() == null) 
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());            
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else 
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);        		
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);        		
 	}
+
+    public void adjustConfig(ServerReport report) {
+    }
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.config.SpecialDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
@@ -16,23 +19,23 @@ import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Objects;
 
-public class DrownProbe extends TlsProbe {
+public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult generalDrown;
     private TestResult extraClear;
     
-    public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DROWN, scannerConfig);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+    public DrownProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
@@ -64,8 +67,8 @@ public class DrownProbe extends TlsProbe {
                 new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
 
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+            delegate.setHost(scannerConfig.getClientDelegate().getHost());
+            delegate.setSniHostname(scannerConfig.getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate =
                 (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
@@ -89,18 +92,23 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public DrownProbe getCouldNotExecuteResult() {
         this.generalDrown = this.extraClear = TestResults.COULD_NOT_TEST;
         return this;
     }
+    
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, this.extraClear);
-		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, this.generalDrown);		
+	protected void mergeData(ServerReport report) {
+		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, this.extraClear);
+		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, this.generalDrown);		
 	}
 }

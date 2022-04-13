@@ -13,8 +13,9 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseExtractor;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -42,47 +43,48 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MacProbe extends TlsProbe {
+public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<CipherSuite> suiteList;
 
     private ResponseFingerprint correctFingerprint;
 
-    private CheckPattern appDataPattern;
+    private CheckPattern appPattern;
     private CheckPattern finishedPattern;
     private CheckPattern verifyPattern;
     
-    public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.MAC, scannerConfig);
+    public MacProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.MAC, scannerConfig);
     }
 
     @Override
     public void executeTest() {
         this.correctFingerprint = getCorrectAppDataFingerprint();
-        if (correctFingerprint == null) 
-        	return;        
-        LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
-        if (receivedAppdata(this.correctFingerprint)) 
-        	this.appDataPattern = getCheckPattern(Check.APPDATA);
-        else 
-        	this.appDataPattern = null;        
-        this.finishedPattern = getCheckPattern(Check.FINISHED);
-        this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
+        if (this.correctFingerprint != null) {
+	        LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
+	        if (receivedAppdata(this.correctFingerprint)) 
+	        	this.appPattern = getCheckPattern(Check.APPDATA);
+	        else 
+	        	this.appPattern = null;	        
+	        this.finishedPattern = getCheckPattern(Check.FINISHED);
+	        this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
+	    }
     }
-
+    
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
         for (ProtocolMessage message : fingerprint.getMessageList()) {
             if (message instanceof TlsMessage
@@ -316,7 +318,7 @@ public class MacProbe extends TlsProbe {
             if (trace.executedAsPlanned()) {
                 if (check == Check.APPDATA) {
                     ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint);
+                    EqualityError equalityError = FingerprintChecker.checkEquality(fingerprint, correctFingerprint);
                     LOGGER.debug("Fingerprint: " + fingerprint.toString());
                     if (equalityError != EqualityError.NONE) {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
@@ -357,12 +359,13 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE).requireAnalyzedProperties(
+            TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() != null) {
 
@@ -379,14 +382,14 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
-    	this.appDataPattern = this.finishedPattern = this.verifyPattern = null;
+    public MacProbe getCouldNotExecuteResult() {
+    	this.appPattern = this.finishedPattern = this.verifyPattern = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        report.setMacCheckPatternAppData(this.appDataPattern);
+	protected void mergeData(ServerReport report) {
+        report.setMacCheckPatternAppData(this.appPattern);
         report.setMacCheckPatternFinished(this.finishedPattern);
         report.setVerifyCheckPattern(this.verifyPattern);		
 	}

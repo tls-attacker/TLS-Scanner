@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,12 +23,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsProbe {
+public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -55,13 +57,13 @@ public class CertificateProbe extends TlsProbe {
 
     private Set<CertificateChain> certificates;
 
-    public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE, config);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RSA_CERT);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ECDSA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DSS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_GOST);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS_1_3);
+    public CertificateProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RSA_CERT);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ECDSA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DSS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_GOST);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override
@@ -94,31 +96,31 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE, ProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
+    public void adjustConfig(ServerReport report) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
             scanForRsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
             scanForEcdsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
             scanForDssCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CertificateProbe getCouldNotExecuteResult() {
     	this.certificates = null;
         this.ecdsaPkGroupsStatic = this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
         return this;
@@ -398,7 +400,7 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
@@ -428,7 +430,7 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
-        } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
+        } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
@@ -454,7 +456,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		if (this.certificates != null) 
             report.setCertificateChainList(new LinkedList<>(this.certificates));
         report.setEcdsaPkGroupsStatic(this.ecdsaPkGroupsStatic);

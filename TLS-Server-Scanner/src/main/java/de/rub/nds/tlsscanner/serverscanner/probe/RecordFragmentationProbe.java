@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -17,21 +20,21 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
-public class RecordFragmentationProbe extends TlsProbe {
+public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult supported;
 
-    public RecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
-    }
+    public RecordFragmentationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+ 	}
 
     @Override
     public void executeTest() {
@@ -46,18 +49,22 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public RecordFragmentationProbe getCouldNotExecuteResult() {
     	this.supported = TestResults.COULD_NOT_TEST; 
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
+    }
 
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
 	}
 }

@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -18,37 +21,39 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class AlpacaProbe extends TlsProbe {
+public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private boolean alpnSupported;
     private TestResult strictSni;
     private TestResult strictAlpn;
 
-    public AlpacaProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
-        super.properties.add(AnalyzedProperty.STRICT_SNI);
-        super.properties.add(AnalyzedProperty.STRICT_ALPN);
-        super.properties.add(AnalyzedProperty.ALPACA_MITIGATED);
-    }
+    public AlpacaProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.STRICT_SNI);
+        super.properties.add(TlsAnalyzedProperty.STRICT_ALPN);
+        super.properties.add(TlsAnalyzedProperty.ALPACA_MITIGATED);}
 
-    @Override
-    public void executeTest() {
-        this.strictSni = isSupportingStrictSni();
-        if (!this.alpnSupported) 
-        	this.strictAlpn = TestResults.FALSE;
-        else 
-        	this.strictAlpn = isSupportingStrictAlpn();        
+	@Override
+	public void executeTest() {
+	    this.strictSni = isSupportingStrictSni();
+	    if (!this.alpnSupported) 
+	    	this.strictAlpn = TestResults.FALSE;
+	    else 
+	    	this.strictAlpn = isSupportingStrictAlpn();  
     }
 
     private Config getBaseConfig() {
@@ -106,23 +111,23 @@ public class AlpacaProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.EXTENSIONS);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.EXTENSIONS);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public AlpacaProbe getCouldNotExecuteResult() {
     	this.strictSni = this.strictAlpn = TestResults.COULD_NOT_TEST;
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		if ((this.strictSni == TestResults.TRUE || this.strictSni == TestResults.FALSE)
 	            && (this.strictAlpn == TestResults.TRUE || this.strictAlpn == TestResults.FALSE)) {
 	            TestResult alpacaMitigated;
@@ -133,13 +138,13 @@ public class AlpacaProbe extends TlsProbe {
 	            else 
 	                alpacaMitigated = TestResults.FALSE;
 	    
-	            super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, this.strictSni);
-	            super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-	            super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
+	            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+	            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+	            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
 	        } else {
-	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_SNI, this.strictSni);
-	        	super.setPropertyReportValue(AnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-	        	super.setPropertyReportValue(AnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+	        	super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+	        	super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+	        	super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
 	        }		
 	}
 }

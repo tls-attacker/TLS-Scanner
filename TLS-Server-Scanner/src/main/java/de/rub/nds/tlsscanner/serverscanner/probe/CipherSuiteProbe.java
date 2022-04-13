@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
@@ -26,13 +29,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,9 +43,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CipherSuiteProbe extends TlsProbe {
+public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
-    private final List<ProtocolVersion> protocolVersions;
+    private List<ProtocolVersion> protocolVersions;
     
     private List<VersionSuiteListPair> pairLists;
     
@@ -65,8 +67,6 @@ public class CipherSuiteProbe extends TlsProbe {
     private TestResult supportsAria = TestResults.FALSE;
     private TestResult supportsChacha = TestResults.FALSE;
     private TestResult supportsRsa = TestResults.FALSE;
-    private TestResult supportsDh = TestResults.FALSE;
-    private TestResult supportsEcdh = TestResults.FALSE;
     private TestResult supportsStaticEcdh = TestResults.FALSE;
     private TestResult supportsEcdsa = TestResults.FALSE;
     private TestResult supportsRsaCert = TestResults.FALSE;
@@ -88,49 +88,47 @@ public class CipherSuiteProbe extends TlsProbe {
     private TestResult supportsSha256Prf = TestResults.FALSE;
     private TestResult supportsSha384Prf = TestResults.FALSE;  
     
-    public CipherSuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHER_SUITE, config);
-        protocolVersions = new LinkedList<>();
-        super.properties.add(AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ANON);
-        super.properties.add(AnalyzedProperty.SUPPORTS_EXPORT);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DES);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SEED);
-        super.properties.add(AnalyzedProperty.SUPPORTS_IDEA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RC2);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RC4);
-        super.properties.add(AnalyzedProperty.SUPPORTS_3DES);
-        super.properties.add(AnalyzedProperty.SUPPORTS_POST_QUANTUM);
-        super.properties.add(AnalyzedProperty.SUPPORTS_AEAD);
-        super.properties.add(AnalyzedProperty.SUPPORTS_PFS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ONLY_PFS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_AES);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CAMELLIA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ARIA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CHACHA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RSA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DH);
-        super.properties.add(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ECDSA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_RSA_CERT);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DSS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ECDH);
-        super.properties.add(AnalyzedProperty.SUPPORTS_GOST);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SRP);
-        super.properties.add(AnalyzedProperty.SUPPORTS_KERBEROS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_PLAIN);
-        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_RSA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_DHE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_PSK_ECDHE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_FORTEZZA);
-        super.properties.add(AnalyzedProperty.SUPPORTS_NEWHOPE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_ECMQV);
-        super.properties.add(AnalyzedProperty.PREFERS_PFS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_LEGACY_PRF);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SHA256_PRF);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SHA384_PRF);
+    public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+		super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
+        this.protocolVersions = new LinkedList<>();
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ANON);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXPORT);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DES);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SEED);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_IDEA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RC2);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RC4);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_3DES);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_AEAD);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_PFS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_AES);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CAMELLIA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ARIA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CHACHA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RSA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ECDSA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RSA_CERT);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DSS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_GOST);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SRP);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_KERBEROS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_PSK_RSA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_PSK_DHE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_FORTEZZA);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_NEWHOPE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ECMQV);
+        super.properties.add(TlsAnalyzedProperty.PREFERS_PFS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF);
     }
 
     @Override
@@ -294,43 +292,43 @@ public class CipherSuiteProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE) {
+    public void adjustConfig(ServerReport report) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS10);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS12);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.SSL3);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS10);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS11);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
         }
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CipherSuiteProbe getCouldNotExecuteResult() {
     	this.pairLists = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		if (this.pairLists != null) {
             Set<CipherSuite> allSupported = new HashSet<>();
             this.supportsOnlyPfsCiphers = TestResults.TRUE;
@@ -368,8 +366,6 @@ public class CipherSuiteProbe extends TlsProbe {
         	this.supportsCamellia = TestResults.COULD_NOT_TEST;
         	this.supportsChacha = TestResults.COULD_NOT_TEST;
         	this.supportsDesCiphers = TestResults.COULD_NOT_TEST;
-        	this.supportsDh = TestResults.COULD_NOT_TEST;
-        	this.supportsEcdh = TestResults.COULD_NOT_TEST;
         	this.supportsEcmqv = TestResults.COULD_NOT_TEST;
         	this.supportsExportCiphers = TestResults.COULD_NOT_TEST;
         	this.supportsFortezza = TestResults.COULD_NOT_TEST;
@@ -422,14 +418,10 @@ public class CipherSuiteProbe extends TlsProbe {
 	    private void adjustKeyExchange(CipherSuite suite) {
 	        if (suite.name().contains("SRP")) 
 	        	this.supportsSrp = TestResults.TRUE;	        
-	        if (suite.name().contains("_DH")) 
-	        	this.supportsDh = TestResults.TRUE;
 	        if (suite.name().contains("TLS_RSA"))
 	        	this.supportsRsa = TestResults.TRUE;	        
 	        if (suite.name().contains("ECDH_"))
 	        	this.supportsStaticEcdh = TestResults.TRUE;	        
-	        if (suite.name().contains("ECDH")) 
-	        	this.supportsEcdh = TestResults.TRUE;	        
 	        if (suite.name().contains("NULL")) 
 	        	this.supportsNullCiphers = TestResults.TRUE;	        
 	        if (suite.name().contains("GOST")) 
@@ -520,47 +512,45 @@ public class CipherSuiteProbe extends TlsProbe {
 	        	this.supportsRsaCert = TestResults.TRUE;	        
 	    }
 
-	    private void writeToReport(SiteReport report) {
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, this.supportsNullCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ANON, this.supportsAnonCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_EXPORT, this.supportsExportCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DES, this.supportsDesCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SEED, this.supportsSeedCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_IDEA, this.supportsIdeaCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RC2, this.supportsRc2Ciphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RC4, this.supportsRc4Ciphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_3DES, this.supportsTripleDesCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_POST_QUANTUM, this.supportsPostQuantumCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_AEAD, this.supportsAeadCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_PFS, this.supportsPfsCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ONLY_PFS, this.supportsOnlyPfsCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_AES, this.supportsAes);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CAMELLIA, this.supportsCamellia);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ARIA, this.supportsAria);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CHACHA, this.supportsChacha);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RSA, this.supportsRsa);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DH, this.supportsDh);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_STATIC_ECDH, this.supportsStaticEcdh);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ECDSA, this.supportsEcdsa);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_RSA_CERT, this.supportsRsaCert);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DSS, this.supportsDss);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ECDH, this.supportsEcdh);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_GOST, this.supportsGost);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SRP, this.supportsSrp);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_KERBEROS, this.supportsKerberos);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_PSK_PLAIN, this.supportsPskPlain);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_PSK_RSA, this.supportsPskRsa);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_PSK_DHE, this.supportsPskDhe);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_PSK_ECDHE, this.supportsPskEcdhe);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_FORTEZZA, this.supportsFortezza);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_NEWHOPE, this.supportsNewHope);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_ECMQV, this.supportsEcmqv);
-	        super.setPropertyReportValue(AnalyzedProperty.PREFERS_PFS, this.prefersPfsCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, this.supportsStreamCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, this.supportsBlockCiphers);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_LEGACY_PRF, this.supportsLegacyPrf);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SHA256_PRF, this.supportsSha256Prf);
-	        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SHA384_PRF, this.supportsSha384Prf);
+	    private void writeToReport(ServerReport report) {
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, this.supportsNullCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ANON, this.supportsAnonCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPORT, this.supportsExportCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DES, this.supportsDesCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SEED, this.supportsSeedCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_IDEA, this.supportsIdeaCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC2, this.supportsRc2Ciphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RC4, this.supportsRc4Ciphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_3DES, this.supportsTripleDesCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, this.supportsPostQuantumCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AEAD, this.supportsAeadCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PFS, this.supportsPfsCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, this.supportsOnlyPfsCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_AES, this.supportsAes);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, this.supportsCamellia);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ARIA, this.supportsAria);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CHACHA, this.supportsChacha);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA, this.supportsRsa);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, this.supportsStaticEcdh);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECDSA, this.supportsEcdsa);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, this.supportsRsaCert);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DSS, this.supportsDss);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_GOST, this.supportsGost);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SRP, this.supportsSrp);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_KERBEROS, this.supportsKerberos);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, this.supportsPskPlain);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, this.supportsPskRsa);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, this.supportsPskDhe);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, this.supportsPskEcdhe);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, this.supportsFortezza);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, this.supportsNewHope);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ECMQV, this.supportsEcmqv);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.PREFERS_PFS, this.prefersPfsCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, this.supportsStreamCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, this.supportsBlockCiphers);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, this.supportsLegacyPrf);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, this.supportsSha256Prf);
+	        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, this.supportsSha384Prf);
 	        report.setVersionSuitePairs(this.pairLists);
 	    }
 }

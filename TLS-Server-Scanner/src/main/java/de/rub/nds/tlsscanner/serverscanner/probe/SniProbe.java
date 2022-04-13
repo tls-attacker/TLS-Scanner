@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -19,24 +22,24 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SniProbe extends TlsProbe {
+public class SniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult requiresSni;
 
-    public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SNI, scannerConfig);
-        super.properties.add(AnalyzedProperty.REQUIRES_SNI);
-    }
+    public SniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.SNI, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.REQUIRES_SNI);
+	}
 
     @Override
     public void executeTest() {
@@ -77,17 +80,21 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-    }
-
-    @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public SniProbe getCouldNotExecuteResult() {
         this.requiresSni = TestResults.COULD_NOT_TEST;
         return this;
 }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.REQUIRES_SNI, this.requiresSni);		
+	protected void mergeData(ServerReport report) {
+        report.putResult(TlsAnalyzedProperty.REQUIRES_SNI, this.requiresSni);		
 	}
+
+    public void adjustConfig(ServerReport report) {
+    }
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

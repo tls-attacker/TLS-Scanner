@@ -9,6 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
@@ -25,21 +29,20 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe {
-    private final List<VersionSuiteListPair> versionSuiteListPairsList;
+public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+
+    private List<VersionSuiteListPair> versionSuiteListPairsList;
 
     private final boolean increasingTimeout = false;
 
@@ -52,10 +55,10 @@ public class CcaProbe extends TlsProbe {
     private TestResult vulnerable;
     private List<CcaTestResult> resultList; 
 
-    public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config);
+    public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CCA, config);
         this.versionSuiteListPairsList = new LinkedList<>();
-    	super.properties.add(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
+    	super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
     }
 
     @Override
@@ -140,17 +143,18 @@ public class CcaProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.REQUIRES_CCA).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.REQUIRES_CCA)
+            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CcaProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
         this.resultList = null;
         return this;
@@ -229,8 +233,8 @@ public class CcaProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
         report.setCcaTestResultList(this.resultList);
 	}
 }

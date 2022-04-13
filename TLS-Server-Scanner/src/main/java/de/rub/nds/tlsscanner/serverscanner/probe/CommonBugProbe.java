@@ -10,6 +10,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -35,12 +38,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,7 +51,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonBugProbe extends TlsProbe {
+public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     // does it handle unknown extensions correctly?
     private TestResult extensionIntolerance;
@@ -89,27 +92,27 @@ public class CommonBugProbe extends TlsProbe {
     // does it accept grease values in the signature and hash algorithms extension?
     private TestResult greaseSignatureAndHashAlgorithmIntolerance;
 
-    public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMMON_BUGS, config);
-        super.properties.add(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_VERSION_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_ALPN_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
-        super.properties.add(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
-        super.properties.add(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
-        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
-        super.properties.add(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
-        super.properties.add(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
-        super.properties.add(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
+    public CommonBugProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.COMMON_BUGS, config);
+        super.properties.add(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
+        super.properties.add(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
+        super.properties.add(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
+        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
+        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
+        super.properties.add(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
+        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override
@@ -142,7 +145,12 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
+    }
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
@@ -177,8 +185,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -199,8 +207,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -338,8 +346,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -432,8 +440,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -453,8 +461,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -474,8 +482,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -499,8 +507,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -520,8 +528,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -547,8 +555,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -576,8 +584,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -616,8 +624,8 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.FALSE
-                : TestResults.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -630,7 +638,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CommonBugProbe getCouldNotExecuteResult() {
     	this.extensionIntolerance =  this.cipherSuiteIntolerance = this.cipherSuiteLengthIntolerance512 
     			= this.compressionIntolerance = this.versionIntolerance = this.alpnIntolerance 
     			= this.clientHelloLengthIntolerance = this.emptyLastExtensionIntolerance 
@@ -644,27 +652,27 @@ public class CommonBugProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, this.cipherSuiteLengthIntolerance512);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, this.clientHelloLengthIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, this.emptyLastExtensionIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, this.onlySecondCipherSuiteByteEvaluated);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+	protected void mergeData(ServerReport report) {
+		super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, this.cipherSuiteLengthIntolerance512);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, this.clientHelloLengthIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, this.emptyLastExtensionIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, this.onlySecondCipherSuiteByteEvaluated);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
         		this.namedSignatureAndHashAlgorithmIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, this.ignoresCipherSuiteOffering);
-        super.setPropertyReportValue(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, this.reflectsCipherSuiteOffering);
-        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
-        super.setPropertyReportValue(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, this.ignoresOfferedSignatureAndHashAlgorithms);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, this.maxLengthClientHelloIntolerant);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, this.greaseNamedGroupIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, this.greaseCipherSuiteIntolerance);
-        super.setPropertyReportValue(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, this.ignoresCipherSuiteOffering);
+        super.setPropertyReportValue(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, this.reflectsCipherSuiteOffering);
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
+        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, this.ignoresOfferedSignatureAndHashAlgorithms);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, this.maxLengthClientHelloIntolerant);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, this.greaseNamedGroupIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, this.greaseCipherSuiteIntolerance);
+        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
         		this.greaseSignatureAndHashAlgorithmIntolerance);		
 	}
 }

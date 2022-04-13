@@ -9,31 +9,34 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CipherSuiteOrderProbe extends TlsProbe {
+public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
 	private TestResult enforced;
 	
-    public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHER_SUITE_ORDER, config);
-        super.properties.add(AnalyzedProperty.ENFORCES_CS_ORDERING);
-    }
+    public CipherSuiteOrderProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, config);
+        super.properties.add(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
+}
 
     @Override
     public void executeTest() {
@@ -68,17 +71,22 @@ public class CipherSuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public CipherSuiteOrderProbe getCouldNotExecuteResult() {
         this.enforced = TestResults.COULD_NOT_TEST;
         return this;
     }
+    
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.ENFORCES_CS_ORDERING, this.enforced);		
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, this.enforced);		
 	}
 }

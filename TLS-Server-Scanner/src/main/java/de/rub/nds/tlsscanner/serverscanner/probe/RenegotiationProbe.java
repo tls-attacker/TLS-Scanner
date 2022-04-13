@@ -10,6 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,17 +31,16 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsProbe {
+public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
     
@@ -52,16 +53,16 @@ public class RenegotiationProbe extends TlsProbe {
     private TestResult vulnerableRenegotiationAttackCipherSuiteV1;
     private TestResult vulnerableRenegotiationAttackCipherSuiteV2;
 
-    public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
+    public RenegotiationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RENEGOTIATION, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
     }
 
     @Override
@@ -78,6 +79,7 @@ public class RenegotiationProbe extends TlsProbe {
         this.vulnerableRenegotiationAttackCipherSuiteV1 = vulnerableToRenegotiationAttackCipherSuite(false, true);
         this.vulnerableRenegotiationAttackCipherSuiteV2 = vulnerableToRenegotiationAttackCipherSuite(true, false);
     }
+
 
     private TestResult vulnerableToRenegotiationAttackExtension(boolean addExtensionInFirstHandshake,
         boolean addExtensionInSecondHandshake) {
@@ -217,22 +219,22 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE)
-        		.requireAnalyzedPropertiesNot(AnalyzedProperty.SUPPORTS_TLS_1_0, 
-        				AnalyzedProperty.SUPPORTS_TLS_1_1, AnalyzedProperty.SUPPORTS_TLS_1_2, 
-        				AnalyzedProperty.SUPPORTS_DTLS_1_0, AnalyzedProperty.SUPPORTS_DTLS_1_2);
+    protected ProbeRequirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE).requireAnalyzedPropertiesNot(
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public RenegotiationProbe getCouldNotExecuteResult() {
     	this.secureRenegotiationExtension = this.secureRenegotiationCipherSuite = this.insecureRenegotiation 
     			= this.vulnerableRenegotiationAttackExtensionV1 = this.vulnerableRenegotiationAttackExtensionV2 
     			= this.vulnerableRenegotiationAttackCipherSuiteV1 = this.vulnerableRenegotiationAttackCipherSuiteV2 
@@ -271,21 +273,21 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
                 this.secureRenegotiationExtension);
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             		this.secureRenegotiationCipherSuite);
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
-            super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
+            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
             		this.vulnerableRenegotiationAttackExtensionV1);
-            super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
             		this.vulnerableRenegotiationAttackExtensionV2);
-            super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
             		this.vulnerableRenegotiationAttackCipherSuiteV1);
-            super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
             		this.vulnerableRenegotiationAttackCipherSuiteV2);
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
             		this.supportsDtlsCookieExchangeInRenegotiation);		
 	}
 }

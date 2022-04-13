@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -22,27 +25,26 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TlsFallbackScsvProbe extends TlsProbe {
+public class TlsFallbackScsvProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private ProtocolVersion secondHighestVersion;
     private TestResult result;
 
-    public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
-        super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
-    }
+    public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ServerScannerConfig scannerConfig) {
+        super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
+}
 
     @Override
     public void executeTest() {
@@ -88,25 +90,25 @@ public class TlsFallbackScsvProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public TlsFallbackScsvProbe getCouldNotExecuteResult() {
         this.result = TestResults.COULD_NOT_TEST;
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         List<ProtocolVersion> versions = new ArrayList<>(report.getVersions());
         Collections.sort(versions);
         this.secondHighestVersion = versions.get(versions.size() - 2);
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, this.result);		
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, this.result);		
 	}
 }

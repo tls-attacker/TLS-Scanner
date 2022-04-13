@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CipherSuiteDelegate;
@@ -19,26 +22,25 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HeartbleedProbe extends TlsProbe {
+public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<CipherSuite> supportedCiphers;
     private TestResult vulnerable;
 
-    public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HEARTBLEED, config);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
-    }
+    public HeartbleedProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HEARTBLEED, config);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
+}
 
     @Override
     public void executeTest() {
@@ -63,12 +65,13 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.EXTENSIONS).requireExtensionTyes(ExtensionType.HEARTBEAT);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.EXTENSIONS)
+            .requireExtensionTyes(ExtensionType.HEARTBEAT);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
             supportedCiphers = new ArrayList<>(report.getCipherSuites());
         } else {
@@ -77,13 +80,13 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public HeartbleedProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);		
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, this.vulnerable);		
 	}
 }

@@ -9,22 +9,28 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.config.EarlyCCSCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.impl.EarlyCCSAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 
-public class EarlyCcsProbe extends TlsProbe {
+public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
-    public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig);
+    public EarlyCcsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.EARLY_CCS, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
     }
 
     @Override
@@ -42,17 +48,36 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public EarlyCcsProbe getCouldNotExecuteResult() {
     	this.earlyCcsVulnerabilityType = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        report.putResult(this.earlyCcsVulnerabilityType);		
-	}
+	protected void mergeData(ServerReport report) {
+		if (this.earlyCcsVulnerabilityType == null) 
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+        else {
+            switch (this.earlyCcsVulnerabilityType) {
+                case VULN_EXPLOITABLE:
+                case VULN_NOT_EXPLOITABLE:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.TRUE);
+                    break;
+                case NOT_VULNERABLE:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.FALSE);
+                    break;
+                case UNKNOWN:
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+            }
+        }
+    }
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

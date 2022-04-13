@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,28 +24,28 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.LinkedList;
 
 /**
  * Test the servers Hello Retry Request
  */
-public class HelloRetryProbe extends TlsProbe {
+public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult sendsHelloRetryRequest = TestResults.FALSE;
     private TestResult issuesCookie = TestResults.FALSE;
+    private NamedGroup serversChosenGroup = null;
 
-    public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HELLO_RETRY, scannerConfig);
-        super.properties.add(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY);
-        super.properties.add(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
-    }
+    public HelloRetryProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY);
+        super.properties.add(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+   }
 
     @Override
     public void executeTest() {
@@ -50,19 +53,19 @@ public class HelloRetryProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_3)
-        		.requireProbeTypes(ProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
+            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public HelloRetryProbe getCouldNotExecuteResult() {
         this.sendsHelloRetryRequest = this.issuesCookie = TestResults.COULD_NOT_TEST;
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     private void testHelloRetry() {
@@ -93,6 +96,7 @@ public class HelloRetryProbe extends TlsProbe {
             && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
+            serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;
@@ -101,14 +105,14 @@ public class HelloRetryProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
         if (this.issuesCookie != null) 
-            super.setPropertyReportValue(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, this.issuesCookie);
+            super.setPropertyReportValue(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, this.issuesCookie);
         else 
-            super.setPropertyReportValue(AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
         if (sendsHelloRetryRequest != null) 
-            super.setPropertyReportValue(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, this.sendsHelloRetryRequest);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, this.sendsHelloRetryRequest);
         else 
-            super.setPropertyReportValue(AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);    	
+            super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);    	
 	}
 }

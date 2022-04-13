@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -30,26 +33,26 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DtlsFeaturesProbe extends TlsProbe {
+public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult supportsFragmentation;
     private TestResult supportsReordering;
     
-    public DtlsFeaturesProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_FEATURES, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_REORDERING);
+    public DtlsFeaturesProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_FEATURES, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override
@@ -147,18 +150,23 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public DtlsFeaturesProbe getCouldNotExecuteResult() {
         this.supportsFragmentation = this.supportsReordering = TestResults.COULD_NOT_TEST;    
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
+
+    @Override
+    public void adjustConfig(ServerReport report) {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);		
+	protected void mergeData(ServerReport report) {
+		super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);		
 	}
 }

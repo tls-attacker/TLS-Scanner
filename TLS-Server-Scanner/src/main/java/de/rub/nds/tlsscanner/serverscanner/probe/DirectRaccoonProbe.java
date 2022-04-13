@@ -9,6 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -18,19 +22,17 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,7 +41,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe extends TlsProbe {
+public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -51,14 +53,14 @@ public class DirectRaccoonProbe extends TlsProbe {
     
     private TestResult vulnerable;
 
-    public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
-    }
+    public DirectRaccoonProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, config);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
+}
 
     @Override
     public void executeTest() {
-        this.testResultList = new LinkedList<>();
+    	this.testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : this.serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -151,8 +153,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
-            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version=" + version + ", suite="
-                + suite + ", pmsWithNullByte=" + withNullByte + ";");
+            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + workflowType + ", version=" + version
+                + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
@@ -160,30 +162,38 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-    	ProbeRequirement pReqSsl3 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_SSL_3);
-    	ProbeRequirement pReqTls10 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_0);
-    	ProbeRequirement pReqTls11 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_1);
-    	ProbeRequirement pReqTls12 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_TLS_1_2);
-    	ProbeRequirement pReqDtls10 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DTLS_1_0);
-    	ProbeRequirement pReqDtls12 = new ProbeRequirement(report).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE).requireAnalyzedProperties(AnalyzedProperty.SUPPORTS_DH).orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
+    protected Requirement getRequirements(ServerReport report) {
+        ProbeRequirement pReqSsl3 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+        ProbeRequirement pReqTls10 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        ProbeRequirement pReqTls11 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        ProbeRequirement pReqTls12 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        ProbeRequirement pReqDtls10 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
+        ProbeRequirement pReqDtls12 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE)
+            .orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public DirectRaccoonProbe getCouldNotExecuteResult() {
         this.vulnerable = TestResults.COULD_NOT_TEST;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		report.setDirectRaccoonResultList(this.testResultList);
-		super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
+		super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
 	}
 }

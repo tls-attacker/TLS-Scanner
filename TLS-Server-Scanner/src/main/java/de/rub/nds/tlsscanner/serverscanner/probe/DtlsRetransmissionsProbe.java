@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -25,26 +28,26 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DtlsRetransmissionsProbe extends TlsProbe {
+public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private TestResult sendsRetransmissions;
     private TestResult processesRetransmissions;
 
-    public DtlsRetransmissionsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
-        super.properties.add(AnalyzedProperty.SENDS_RETRANSMISSIONS);
-        super.properties.add(AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+    public DtlsRetransmissionsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS);
+        super.properties.add(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
     @Override
@@ -124,18 +127,23 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public DtlsRetransmissionsProbe getCouldNotExecuteResult() {
         this.sendsRetransmissions = this.processesRetransmissions = TestResults.COULD_NOT_TEST;
         return this;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
-        super.setPropertyReportValue(AnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);		
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
+        super.setPropertyReportValue(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);		
 	}
+
+	@Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

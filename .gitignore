@@ -16,7 +16,7 @@ nbactions.xml
 .classpath
 .project
 .settings/
-/nbproject/
+nbproject/
 .factorypath
 .idea
 *.iml

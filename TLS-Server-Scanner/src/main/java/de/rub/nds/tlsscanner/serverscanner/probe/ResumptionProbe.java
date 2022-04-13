@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -41,12 +44,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -54,7 +56,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ResumptionProbe extends TlsProbe {
+public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInResumption;
@@ -67,17 +69,17 @@ public class ResumptionProbe extends TlsProbe {
     private TestResult supportsTls13_0rtt;
     private TestResult supportsDtlsCookieExchangeInSessionTicketResumption;
 
-    public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
-        super.properties.add(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+    public ResumptionProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RESUMPTION, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override
@@ -366,19 +368,19 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.CIPHER_SUITE);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public ResumptionProbe getCouldNotExecuteResult() {
     	this.supportsResumption = this.supportsSessionTicketResumption = this.supportsTls13SessionTicket = this.supportsTls13PskDhe 
     			= this.supportsTls13Psk = this.supportsTls13_0rtt = this.supportsDtlsCookieExchangeInResumption 
     			= this.supportsDtlsCookieExchangeInSessionTicketResumption = this.respectsPskModes = TestResults.COULD_NOT_TEST;
@@ -386,17 +388,17 @@ public class ResumptionProbe extends TlsProbe {
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, this.supportsSessionTicketResumption);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, this.supportsTls13SessionTicket);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+	protected void mergeData(ServerReport report) {
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, this.supportsSessionTicketResumption);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, this.supportsTls13SessionTicket);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
         		this.supportsDtlsCookieExchangeInResumption);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
         		this.supportsDtlsCookieExchangeInSessionTicketResumption);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);		
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);		
 	}
 }

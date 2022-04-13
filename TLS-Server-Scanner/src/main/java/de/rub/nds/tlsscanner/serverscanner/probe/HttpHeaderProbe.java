@@ -9,10 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -30,13 +34,13 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedList;
@@ -44,7 +48,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class HttpHeaderProbe extends HttpsProbe {
+public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -62,14 +66,14 @@ public class HttpHeaderProbe extends HttpsProbe {
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
 
-    public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
-        super.properties.add(AnalyzedProperty.SUPPORTS_HSTS);
-        super.properties.add(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
-        super.properties.add(AnalyzedProperty.SUPPORTS_HPKP);
-        super.properties.add(AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
-        super.properties.add(AnalyzedProperty.VULNERABLE_TO_BREACH);
-    }
+    public HttpHeaderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_HSTS);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_HPKP);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING);
+        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_BREACH);
+   }
 
     @Override
     public void executeTest() {
@@ -104,7 +108,7 @@ public class HttpHeaderProbe extends HttpsProbe {
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new SendAction(this.getHttpsRequest()));
+        trace.addTlsAction(new SendAction(new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
         State state = new State(tlsConfig, trace);
         executeState(state);
@@ -127,19 +131,19 @@ public class HttpHeaderProbe extends HttpsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public HttpHeaderProbe getCouldNotExecuteResult() {
         this.speaksHttps = TestResults.COULD_NOT_TEST;
         this.headerList = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
-		super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HTTPS, this.speaksHttps);
+	protected void mergeData(ServerReport report) {
+		super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HTTPS, this.speaksHttps);
         report.setHeaderList(this.headerList);
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
@@ -248,13 +252,18 @@ public class HttpHeaderProbe extends HttpsProbe {
         	this.vulnerableBreach = TestResults.COULD_NOT_TEST;
         }
         report.setHstsMaxAge(this.hstsMaxAge);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HSTS, this.supportsHsts);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING, this.supportsHstsPreloading);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HPKP, this.supportsHpkp);
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_HPKP_REPORTING, this.supportsHpkpReportOnly);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HSTS, this.supportsHsts);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, this.supportsHstsPreloading);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HPKP, this.supportsHpkp);
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, this.supportsHpkpReportOnly);
         report.setHpkpMaxAge(this.hpkpMaxAge);
         report.setNormalHpkpPins(pinList);
         report.setReportOnlyHpkpPins(reportOnlyPinList);
-        super.setPropertyReportValue(AnalyzedProperty.VULNERABLE_TO_BREACH, this.vulnerableBreach);
+        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, this.vulnerableBreach);
 	}
+
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report);
+    }
 }

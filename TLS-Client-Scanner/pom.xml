@@ -49,7 +49,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>TLS-Server-Scanner</artifactId>
+            <artifactId>TLS-Scanner-Core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

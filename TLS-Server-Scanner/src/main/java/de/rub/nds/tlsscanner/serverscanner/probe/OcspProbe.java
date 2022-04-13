@@ -17,6 +17,9 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -39,14 +42,13 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResults;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -58,7 +60,7 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsProbe {
+public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -71,17 +73,17 @@ public class OcspProbe extends TlsProbe {
     private static final long STAPLED_NONCE_RANDOM_SEED = 42;
     private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
-    public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.OCSP, config);
-        super.properties.add(AnalyzedProperty.SUPPORTS_OCSP);
-        super.properties.add(AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
-        super.properties.add(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
-        super.properties.add(AnalyzedProperty.MUST_STAPLE);
-        super.properties.add(AnalyzedProperty.SUPPORTS_NONCE);
-        super.properties.add(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
-        super.properties.add(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
-        super.properties.add(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
+    public OcspProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.OCSP, config);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_OCSP);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+        super.properties.add(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE);
+        super.properties.add(TlsAnalyzedProperty.MUST_STAPLE);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_NONCE);
+        super.properties.add(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
+        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+        super.properties.add(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
     }
 
     @Override
@@ -237,12 +239,12 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    protected ProbeRequirement getRequirements(SiteReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(ProbeType.NAMED_GROUPS, ProbeType.CERTIFICATE);
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
         for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
@@ -296,38 +298,38 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public TlsProbe getCouldNotExecuteResult() {
+    public OcspProbe getCouldNotExecuteResult() {
     	this.certResults = null;
     	this.tls13CertStatus = null;
         return this;
     }
 
 	@Override
-	protected void mergeData(SiteReport report) {
+	protected void mergeData(ServerReport report) {
 		report.setOcspResults(this.certResults);
 
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-        super.setPropertyReportValue(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
-        super.setPropertyReportValue(AnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
-        super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
-        super.setPropertyReportValue(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
+        super.setPropertyReportValue(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
+        super.setPropertyReportValue(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
+        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
+        super.setPropertyReportValue(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
 
         if (this.tls13CertStatus != null) {
             if (this.tls13CertStatus.size() == 1) {
-                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             } else if (tls13CertStatus.size() > 1) {
-                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
             } else {
-                super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
-                super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
+                super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             }
         } else {
-            super.setPropertyReportValue(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
+            super.setPropertyReportValue(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
         }		
 	}
 	
