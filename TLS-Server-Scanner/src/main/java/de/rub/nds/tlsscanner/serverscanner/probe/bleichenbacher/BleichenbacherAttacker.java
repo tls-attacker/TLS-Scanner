@@ -14,8 +14,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vect
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
-import de.rub.nds.tlsattacker.core.exceptions.AttackFailedException;
-import de.rub.nds.tlsattacker.core.exceptions.OracleUnstableException;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -23,6 +21,8 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.serverscanner.exceptions.AttackFailedException;
+import de.rub.nds.tlsscanner.serverscanner.exceptions.OracleUnstableException;
 import de.rub.nds.tlsscanner.serverscanner.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.serverscanner.task.FingerprintTaskVectorPair;
 import de.rub.nds.tlsscanner.serverscanner.util.response.EqualityError;

@@ -11,8 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.trace.PaddingTraceGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.trace.PaddingTraceGeneratorFactory;
-import de.rub.nds.tlsattacker.core.exceptions.AttackFailedException;
-import de.rub.nds.tlsattacker.core.exceptions.OracleUnstableException;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,6 +19,8 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.serverscanner.exceptions.AttackFailedException;
+import de.rub.nds.tlsscanner.serverscanner.exceptions.OracleUnstableException;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.vector.PaddingVector;
