@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
@@ -74,7 +73,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
         return "AnalyzedProperty_" + getRequirementLevel() + "_" + property + "_" + result;
     }
 
-    public AnalyzedProperty getProperty() {
+    public TlsAnalyzedProperty getProperty() {
         return property;
     }
 
