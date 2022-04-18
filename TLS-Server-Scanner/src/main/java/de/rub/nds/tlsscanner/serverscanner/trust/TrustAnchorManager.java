@@ -272,6 +272,10 @@ public class TrustAnchorManager {
         }
     }
 
+    public boolean hasCustomTrustAnchros() {
+        return customTrustAnchors.size() > 0;
+    }
+
     public boolean isCustomTrustAnchor(CertificateReport report) {
         if (customTrustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a customTrustAnchor for Issuer report");
