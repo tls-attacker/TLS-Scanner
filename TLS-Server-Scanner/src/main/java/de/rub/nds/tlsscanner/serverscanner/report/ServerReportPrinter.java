@@ -72,6 +72,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResu
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -457,6 +458,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
         prettyAppend(builder, "Generally Trusted", chain.getGenerallyTrusted(),
             chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
+        if (TrustAnchorManager.getInstance().hasCustomTrustAnchros()) {
+            prettyAppend(builder, "Custom Trusted", chain.getContainsCustomTrustAnchor(),
+                chain.getContainsCustomTrustAnchor() ? AnsiColor.GREEN : AnsiColor.RED);
+        }
         if (chain.getCertificateIssues().size() > 0) {
             prettyAppendSubheading(builder, "Certificate Issues");
             for (CertificateIssue issue : chain.getCertificateIssues()) {

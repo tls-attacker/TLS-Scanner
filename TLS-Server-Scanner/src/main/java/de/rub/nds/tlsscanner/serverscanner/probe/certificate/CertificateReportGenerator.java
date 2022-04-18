@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
+import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
@@ -19,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+
 import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -31,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x500.RDN;
@@ -83,6 +86,7 @@ public class CertificateReportGenerator {
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
             report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+            report.setCustomTrustAnchor(anchorManger.isCustomTrustAnchor(report));
         } else {
             report.setTrustAnchor(null);
         }
