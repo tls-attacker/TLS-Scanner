@@ -54,7 +54,7 @@ public class ServerScannerConfig extends ScannerConfig {
         description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
 
-    @Parameter(names = "-addCustomCA", required = false, variableArity = true,
+    @Parameter(names = "-ca", required = false, variableArity = true,
         description = "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
     private List<String> customCAPathList = null;
 
