@@ -58,10 +58,6 @@ public class ServerScannerConfig extends ScannerConfig {
         description = "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
     private List<String> customCAPathList = null;
 
-    @Parameter(names = "-probeTimeout", required = false,
-        description = "The timeout for each probe in ms (default 1800000)")
-    private int probeTimeout = 1800000;
-
     @ParametersDelegate
     private CcaDelegate ccaDelegate;
 
