@@ -49,7 +49,7 @@ public class InfluencersSerializationTest {
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, 100));
         influencers.add(i);
 
-        original.setRatingInfluencer(influencers);
+        original.setRatingInfluencers(influencers);
     }
 
     @Test
