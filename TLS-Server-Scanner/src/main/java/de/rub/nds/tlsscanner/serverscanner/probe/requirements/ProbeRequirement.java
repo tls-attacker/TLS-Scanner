@@ -34,8 +34,8 @@ public class ProbeRequirement implements Requirement {
         this.report = report;
     }
    
-    public ProbeRequirement getMissingRequirements(ServerReport report) {    	
-    	ProbeRequirement missing = new ProbeRequirement(report);
+    public ProbeRequirement getMissingRequirements() {    	
+    	ProbeRequirement missing = new ProbeRequirement(this.report);
     	
     	if(this.requiredProbeTypes != null) {
 	    	List<TlsProbeType> ptypes = new ArrayList<>();
