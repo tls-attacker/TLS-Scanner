@@ -12,12 +12,14 @@ package de.rub.nds.tlsscanner.core.guideline;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -33,10 +35,10 @@ public class GuidelineCheckCondition {
     @XmlElementWrapper(name = "or")
     private List<GuidelineCheckCondition> or;
 
-    @XmlAnyElement(lax = true)
+    @XmlElements({ @XmlElement(name = "analyzedProperty", type = TlsAnalyzedProperty.class) })
     private AnalyzedProperty analyzedProperty;
 
-    @XmlAnyElement(lax = true)
+    @XmlElements({ @XmlElement(name = "result", type = TestResults.class) })
     private TestResult result;
 
     private GuidelineCheckCondition() {
