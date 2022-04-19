@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.requirements;
+package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;

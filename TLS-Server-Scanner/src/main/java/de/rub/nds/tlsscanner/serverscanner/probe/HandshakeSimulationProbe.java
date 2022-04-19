@@ -28,8 +28,8 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileL
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.requirements.ProbeRequirement;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
