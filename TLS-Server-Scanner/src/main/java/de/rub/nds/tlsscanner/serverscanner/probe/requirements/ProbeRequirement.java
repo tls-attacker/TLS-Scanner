@@ -17,7 +17,8 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,27 +39,27 @@ public class ProbeRequirement implements Requirement {
         ProbeRequirement missing = new ProbeRequirement(this.report);
 
         if (this.requiredProbeTypes != null) {
-            List<TlsProbeType> ptypes = new ArrayList<>();
+            List<TlsProbeType> ptypes = new LinkedList<>();
             for (TlsProbeType pt : this.requiredProbeTypes) {
                 if (report.isProbeAlreadyExecuted(pt) == false)
                     ptypes.add(pt);
             }
             TlsProbeType[] tpt = new TlsProbeType[ptypes.size()];
-            java.util.Iterator<TlsProbeType> it = ptypes.iterator();
+            Iterator<TlsProbeType> it = ptypes.iterator();
             for (int i = 0; i < ptypes.size(); i++)
                 tpt[i] = it.next();
             missing.requireProbeTypes(tpt);
         }
 
         if (this.requiredAnalyzedproperties != null) {
-            List<TlsAnalyzedProperty> aprops = new ArrayList<>();
+            List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
             for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE)
                     aprops.add(ap);
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
-            java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
+            Iterator<TlsAnalyzedProperty> it = aprops.iterator();
             for (int i = 0; i < aprops.size(); i++)
                 tap[i] = it.next();
             missing.requireAnalyzedProperties(tap);
@@ -69,13 +70,13 @@ public class ProbeRequirement implements Requirement {
             if (pvList == null)
                 missing.requireProtocolVersions(this.requiredProtocolVersions);
             else {
-                List<ProtocolVersion> pvers = new ArrayList<>();
+                List<ProtocolVersion> pvers = new LinkedList<>();
                 for (ProtocolVersion pv : this.requiredProtocolVersions) {
                     if (!pvList.contains(pv))
                         pvers.add(pv);
                 }
                 ProtocolVersion[] pva = new ProtocolVersion[pvers.size()];
-                java.util.Iterator<ProtocolVersion> it = pvers.iterator();
+                Iterator<ProtocolVersion> it = pvers.iterator();
                 for (int i = 0; i < pvers.size(); i++)
                     pva[i] = it.next();
                 missing.requireProtocolVersions(pva);
@@ -83,14 +84,14 @@ public class ProbeRequirement implements Requirement {
         }
 
         if (this.requiredAnalyzedpropertiesNot != null) {
-            List<TlsAnalyzedProperty> aprops = new ArrayList<>();
+            List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
             for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE)
                     aprops.add(ap);
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
-            java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
+            Iterator<TlsAnalyzedProperty> it = aprops.iterator();
             for (int i = 0; i < aprops.size(); i++)
                 tap[i] = it.next();
             missing.requireAnalyzedPropertiesNot(tap);
@@ -101,13 +102,13 @@ public class ProbeRequirement implements Requirement {
             if (etList == null)
                 missing.requireExtensionTyes(this.requiredExtensionTypes);
             else {
-                List<ExtensionType> etype = new ArrayList<>();
+                List<ExtensionType> etype = new LinkedList<>();
                 for (ExtensionType et : this.requiredExtensionTypes) {
                     if (!etList.contains(et))
                         etype.add(et);
                 }
                 ExtensionType[] eta = new ExtensionType[etype.size()];
-                java.util.Iterator<ExtensionType> it = etype.iterator();
+                Iterator<ExtensionType> it = etype.iterator();
                 for (int i = 0; i < etype.size(); i++)
                     eta[i] = it.next();
                 missing.requireExtensionTyes(eta);
