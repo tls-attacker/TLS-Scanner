@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import static org.junit.Assert.assertEquals;
@@ -23,52 +32,52 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class GuidelineIOTest {
-	private Guideline original, result;
-	
-	@Before
-	public void setUp() {
-		String testName = "guideline test name";
-		String testLink = "www.guideline.test.link";
-		
-		@SuppressWarnings("rawtypes")
-		List<GuidelineCheck> checks = new ArrayList<>();
+    private Guideline original, result;
 
-        checks.add(new AnalyzedPropertyGuidelineCheck("Dies ist eine Empfehlung.",
-            RequirementLevel.MAY, TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE));
+    @Before
+    public void setUp() {
+        String testName = "guideline test name";
+        String testLink = "www.guideline.test.link";
+
+        @SuppressWarnings("rawtypes")
+        List<GuidelineCheck> checks = new ArrayList<>();
+
+        checks.add(new AnalyzedPropertyGuidelineCheck("Dies ist eine Empfehlung.", RequirementLevel.MAY,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE));
         this.original = new Guideline(testName, testLink, checks);
-	}
-	
-	@Test
-	public void testDeSerializationSimple() throws IOException, JAXBException, XMLStreamException {	
+    }
+
+    @Test
+    public void testDeSerializationSimple() throws IOException, JAXBException, XMLStreamException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         GuidelineIO.write(stream, this.original);
         this.result = GuidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
-		
-        assertEquals("Influencer length check.", this.original.getChecks().size(),
-                result.getChecks().size());
-        assertEquals("Influencer length check.", this.original.getChecks().get(0).getRequirementLevel(),
-                result.getChecks().get(0).getRequirementLevel());
-        assertEquals("Influencer length check.", this.original.getChecks().get(0).getName(),
-                result.getChecks().get(0).getName());  
-        assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId());  
-    
-        GuidelineIO.write(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile(), this.original);
-        this.result = GuidelineIO.read(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile());
 
-        assertEquals("Influencer length check.", this.original.getChecks().size(),
-                result.getChecks().size());
+        assertEquals("Influencer length check.", this.original.getChecks().size(), result.getChecks().size());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getRequirementLevel(),
-                result.getChecks().get(0).getRequirementLevel());
+            result.getChecks().get(0).getRequirementLevel());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getName(),
-                result.getChecks().get(0).getName());
+            result.getChecks().get(0).getName());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId());  
-	}
+            result.getChecks().get(0).getId());
 
-	@After
-	public void cleanUp() {
-		File file = Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile();
-		file.delete();
-	}
+        GuidelineIO.write(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile(),
+            this.original);
+        this.result =
+            GuidelineIO.read(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile());
+
+        assertEquals("Influencer length check.", this.original.getChecks().size(), result.getChecks().size());
+        assertEquals("Influencer length check.", this.original.getChecks().get(0).getRequirementLevel(),
+            result.getChecks().get(0).getRequirementLevel());
+        assertEquals("Influencer length check.", this.original.getChecks().get(0).getName(),
+            result.getChecks().get(0).getName());
+        assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
+            result.getChecks().get(0).getId());
+    }
+
+    @After
+    public void cleanUp() {
+        File file = Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile();
+        file.delete();
+    }
 }
