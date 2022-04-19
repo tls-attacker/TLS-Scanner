@@ -190,11 +190,9 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
         }
         super.put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, this.extendedMasterSecret);
         super.put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, this.encryptThenMac);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-            this.secureRenegotiation);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, this.secureRenegotiation);
         super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, this.sessionTickets);
         super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, this.certStatusRequest);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
-            this.certStatusRequestV2);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, this.certStatusRequestV2);
     }
 }

@@ -257,8 +257,7 @@ public class CertificateTransparencyProbe extends TlsProbe<ServerScannerConfig, 
         report.setHandshakeSctList(this.handshakeSctList);
         report.setOcspSctList(this.ocspSctList);
 
-        super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
-            this.supportsPrecertificateSCTsResult);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, this.supportsPrecertificateSCTsResult);
         super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, this.supportsHandshakeSCTsResult);
         super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, this.supportsOcspSCTsResult);
         super.put(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, this.meetsChromeCTPolicyResult);

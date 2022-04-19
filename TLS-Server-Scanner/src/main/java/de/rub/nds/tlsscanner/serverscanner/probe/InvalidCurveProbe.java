@@ -871,8 +871,7 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-            this.vulnerableEphemeral);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, this.vulnerableEphemeral);
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
         report.setInvalidCurveResultList(this.responses);
     }

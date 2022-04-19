@@ -310,36 +310,26 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-        super.put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
-            getConclusiveIncludesCertMessage());
+        super.put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
         super.put(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
         super.put(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
         super.put(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
-        super.put(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
-            getConclusiveStapledResponseExpired());
+        super.put(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
 
         if (this.tls13CertStatus != null) {
             if (this.tls13CertStatus.size() == 1) {
-                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-                    TestResults.TRUE);
-                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
-                    TestResults.FALSE);
+                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             } else if (tls13CertStatus.size() > 1) {
-                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-                    TestResults.TRUE);
-                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
-                    TestResults.TRUE);
+                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
             } else {
-                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-                    TestResults.FALSE);
-                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
-                    TestResults.FALSE);
+                super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
+                super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             }
         } else {
-            super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-                TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
-                TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
         }
     }
 

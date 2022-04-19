@@ -393,10 +393,8 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
-            this.supportsSessionTicketResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
-            this.supportsTls13SessionTicket);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, this.supportsSessionTicketResumption);
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, this.supportsTls13SessionTicket);
         super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
         super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
         super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);

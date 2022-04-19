@@ -178,10 +178,8 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
-            this.isAcceptingUnencryptedFinished);
-        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
-            this.isAcceptingUnencryptedAppData);
+        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, this.isAcceptingUnencryptedFinished);
+        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, this.isAcceptingUnencryptedAppData);
         super.put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);
     }
 }

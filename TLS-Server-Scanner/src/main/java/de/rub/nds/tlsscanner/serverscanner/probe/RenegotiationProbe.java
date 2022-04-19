@@ -278,8 +278,7 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             this.secureRenegotiationExtension);
         super.put(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             this.secureRenegotiationCipherSuite);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-            insecureRenegotiation);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
             this.vulnerableRenegotiationAttackExtensionV1);
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,

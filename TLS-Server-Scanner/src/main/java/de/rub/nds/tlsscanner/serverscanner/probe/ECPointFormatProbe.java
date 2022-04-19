@@ -241,15 +241,11 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             this.supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
         super.put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, this.supportsUncompressedPoint);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
-            this.supportsANSIX962CompressedPrime);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
-            this.supportsANSIX962CompressedChar2);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, this.supportsANSIX962CompressedPrime);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, this.supportsANSIX962CompressedChar2);
         if (tls13SecpCompression != null)
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
-                this.tls13SecpCompression);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, this.tls13SecpCompression);
         else
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
-                TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
     }
 }

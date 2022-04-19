@@ -476,7 +476,6 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
         super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
         super.put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
-        super.put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
-            this.ignoresEcdsaGroupDisparity);
+        super.put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, this.ignoresEcdsaGroupDisparity);
     }
 }

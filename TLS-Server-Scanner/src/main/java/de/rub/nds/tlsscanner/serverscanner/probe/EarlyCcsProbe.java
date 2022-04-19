@@ -71,8 +71,7 @@ public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
                     super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
                     break;
                 case UNKNOWN:
-                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
-                        TestResults.COULD_NOT_TEST);
+                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
             }
         }
     }

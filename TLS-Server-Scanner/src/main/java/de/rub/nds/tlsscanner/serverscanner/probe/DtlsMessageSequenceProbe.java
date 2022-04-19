@@ -197,8 +197,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe<ServerScannerConfig, Serv
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             this.acceptsStartedWithInvalidMessageNumber);
-        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
-            acceptsSkippedMessageNumbersOnce);
+        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
         super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             this.acceptsSkippedMessageNumbersMultiple);
         super.put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);

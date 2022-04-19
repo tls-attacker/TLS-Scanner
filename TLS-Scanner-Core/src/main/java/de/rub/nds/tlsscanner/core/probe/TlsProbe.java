@@ -68,9 +68,9 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
     }
 
     protected void register(TlsAnalyzedProperty property) {
-    	this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
+        this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
     }
-    
+
     protected void put(TlsAnalyzedProperty aProp, TestResult result) {
         if (!this.propertiesMap.containsKey(aProp))
             this.propertiesMap.replace(aProp, result);
@@ -88,10 +88,10 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
             report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));
         this.mergeData(report);
         TestResult result;
-        for(TlsAnalyzedProperty prop : this.propertiesMap.keySet()) {
-        	result = this.propertiesMap.get(prop);
-        	report.putResult(prop, result);
-        	if(result == TestResults.UNASSIGNED_ERROR)
+        for (TlsAnalyzedProperty prop : this.propertiesMap.keySet()) {
+            result = this.propertiesMap.get(prop);
+            report.putResult(prop, result);
+            if (result == TestResults.UNASSIGNED_ERROR)
                 LOGGER.error(prop.name() + " in " + this.getClass() + " had not been assigned!");
         }
     }

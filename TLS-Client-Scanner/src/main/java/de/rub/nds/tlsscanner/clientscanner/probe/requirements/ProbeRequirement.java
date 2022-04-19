@@ -31,56 +31,56 @@ public class ProbeRequirement implements Requirement {
         this.report = report;
     }
 
-    public ProbeRequirement getMissingRequirements() {    	
-    	ProbeRequirement missing = new ProbeRequirement(this.report);
-    	
-    	if(this.requiredProbeTypes != null) {
-	    	List<TlsProbeType> ptypes = new ArrayList<>();
-	    	for (TlsProbeType pt : this.requiredProbeTypes) {
-	            if (report.isProbeAlreadyExecuted(pt) == false)
-	            	ptypes.add(pt);
-	        }
-	        missing.requireProbeTypes((TlsProbeType[]) ptypes.toArray());
-    	}
-        
-	    if(this.requiredAnalyzedproperties != null) {	
-	        List<TlsAnalyzedProperty> aprops = new ArrayList<>();
-	    	Map<String, TestResult> apList = report.getResultMap();
-	        for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
-	            if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE) 
-	            	aprops.add(ap);
-	        }
-	    	missing.requireAnalyzedProperties((TlsAnalyzedProperty[]) aprops.toArray());
-	    }
-            
-	    if(this.requiredAnalyzedpropertiesNot != null) {
-		    List<TlsAnalyzedProperty> aprops = new ArrayList<>();
-	    	Map<String, TestResult> apList = report.getResultMap();
-	        for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
-	            if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE) 
-	            	aprops.add(ap);
-	        }
-	    	missing.requireAnalyzedPropertiesNot((TlsAnalyzedProperty[]) aprops.toArray());
-	    }
-        
-        if(this.requiredOR != null) {
-	        boolean or = false;
-	        for (ProbeRequirement pReq : this.requiredOR) {
-	            if (pReq.evaluateRequirements()) {
-	                or=true;
-	            	break;
-	            }
-	        }
-	        if (!or)
-	        	missing.orRequirement(this.requiredOR);
+    public ProbeRequirement getMissingRequirements() {
+        ProbeRequirement missing = new ProbeRequirement(this.report);
+
+        if (this.requiredProbeTypes != null) {
+            List<TlsProbeType> ptypes = new ArrayList<>();
+            for (TlsProbeType pt : this.requiredProbeTypes) {
+                if (report.isProbeAlreadyExecuted(pt) == false)
+                    ptypes.add(pt);
+            }
+            missing.requireProbeTypes((TlsProbeType[]) ptypes.toArray());
         }
-        
+
+        if (this.requiredAnalyzedproperties != null) {
+            List<TlsAnalyzedProperty> aprops = new ArrayList<>();
+            Map<String, TestResult> apList = report.getResultMap();
+            for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
+                if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE)
+                    aprops.add(ap);
+            }
+            missing.requireAnalyzedProperties((TlsAnalyzedProperty[]) aprops.toArray());
+        }
+
+        if (this.requiredAnalyzedpropertiesNot != null) {
+            List<TlsAnalyzedProperty> aprops = new ArrayList<>();
+            Map<String, TestResult> apList = report.getResultMap();
+            for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
+                if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE)
+                    aprops.add(ap);
+            }
+            missing.requireAnalyzedPropertiesNot((TlsAnalyzedProperty[]) aprops.toArray());
+        }
+
+        if (this.requiredOR != null) {
+            boolean or = false;
+            for (ProbeRequirement pReq : this.requiredOR) {
+                if (pReq.evaluateRequirements()) {
+                    or = true;
+                    break;
+                }
+            }
+            if (!or)
+                missing.orRequirement(this.requiredOR);
+        }
+
         if (this.not != null && not.evaluateRequirements())
-        	missing.notRequirement(this.not);       
-        
-    	return missing;
+            missing.notRequirement(this.not);
+
+        return missing;
     }
-    
+
     public ProbeRequirement requireProbeTypes(TlsProbeType... probeTypes) {
         this.requiredProbeTypes = probeTypes;
         return this;
