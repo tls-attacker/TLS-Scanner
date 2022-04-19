@@ -45,8 +45,8 @@ public class ProbeRequirement implements Requirement {
             }
             TlsProbeType[] tpt = new TlsProbeType[ptypes.size()];
             java.util.Iterator<TlsProbeType> it = ptypes.iterator();
-            for(int i = 0; i<ptypes.size(); i++) 
-            	tpt[i] = it.next();  
+            for (int i = 0; i < ptypes.size(); i++)
+                tpt[i] = it.next();
             missing.requireProbeTypes(tpt);
         }
 
@@ -59,8 +59,8 @@ public class ProbeRequirement implements Requirement {
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
             java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
-            for(int i = 0; i<aprops.size(); i++) 
-            	tap[i] = it.next(); 
+            for (int i = 0; i < aprops.size(); i++)
+                tap[i] = it.next();
             missing.requireAnalyzedProperties(tap);
         }
 
@@ -76,8 +76,8 @@ public class ProbeRequirement implements Requirement {
                 }
                 ProtocolVersion[] pva = new ProtocolVersion[pvers.size()];
                 java.util.Iterator<ProtocolVersion> it = pvers.iterator();
-                for(int i = 0; i<pvers.size(); i++) 
-                	pva[i] = it.next(); 
+                for (int i = 0; i < pvers.size(); i++)
+                    pva[i] = it.next();
                 missing.requireProtocolVersions(pva);
             }
         }
@@ -91,8 +91,8 @@ public class ProbeRequirement implements Requirement {
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
             java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
-            for(int i = 0; i<aprops.size(); i++) 
-            	tap[i] = it.next(); 
+            for (int i = 0; i < aprops.size(); i++)
+                tap[i] = it.next();
             missing.requireAnalyzedPropertiesNot(tap);
         }
 
@@ -108,8 +108,8 @@ public class ProbeRequirement implements Requirement {
                 }
                 ExtensionType[] eta = new ExtensionType[etype.size()];
                 java.util.Iterator<ExtensionType> it = etype.iterator();
-                for(int i = 0; i<etype.size(); i++) 
-                	eta[i] = it.next(); 
+                for (int i = 0; i < etype.size(); i++)
+                    eta[i] = it.next();
                 missing.requireExtensionTyes(eta);
             }
         }

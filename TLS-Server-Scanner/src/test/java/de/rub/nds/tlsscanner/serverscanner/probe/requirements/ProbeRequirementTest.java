@@ -133,8 +133,8 @@ public class ProbeRequirementTest {
         assertTrue(pReq.evaluateRequirements());
 
         pReq.requireExtensionTyes(eType);
-        assertFalse(pReq.evaluateRequirements());        
-        assertTrue(pReq.getMissingRequirements().getRequiredExtensionTypes()[0]==eType);
+        assertFalse(pReq.evaluateRequirements());
+        assertTrue(pReq.getMissingRequirements().getRequiredExtensionTypes()[0] == eType);
         List<ExtensionType> etList = new ArrayList<ExtensionType>();
         etList.add(eType);
         report.setSupportedExtensions(etList);
