@@ -47,6 +47,8 @@ public class CertificateChain {
 
     private Boolean generallyTrusted = null;
 
+    private Boolean containsCustomTrustAnchor = null;
+
     private Boolean containsTrustAnchor = null;
 
     private Boolean chainIsComplete = null;
@@ -89,11 +91,16 @@ public class CertificateChain {
             certificateReportList.add(certificateReport);
         }
         LOGGER.debug("Certificate Reports:" + certificateReportList.size());
-        // Check if trust anchor is contained
+        // Check if trust anchor or custom trust anchor is contained
         containsTrustAnchor = false;
+        containsCustomTrustAnchor = false;
         for (CertificateReport report : certificateReportList) {
             if (Objects.equals(report.isTrustAnchor(), Boolean.TRUE)) {
                 containsTrustAnchor = true;
+            }
+
+            if (Objects.equals(report.isCustomTrustAnchor(), Boolean.TRUE)) {
+                containsCustomTrustAnchor = true;
             }
         }
         // find leaf certificate
@@ -216,8 +223,10 @@ public class CertificateChain {
         if (Objects.equals(containsWeakSignedNonTrustStoresCertificates, Boolean.TRUE)) {
             certificateIssues.add(CertificateIssue.WEAK_SIGNATURE_OR_HASH_ALGORITHM);
         }
+
         if (Objects.equals(chainIsComplete, Boolean.TRUE) && Objects.equals(containsValidLeaf, Boolean.TRUE)
-            && Objects.equals(containsExpired, Boolean.FALSE) && Objects.equals(containsNotYetValid, Boolean.FALSE)) {
+            && Objects.equals(containsExpired, Boolean.FALSE) && Objects.equals(containsNotYetValid, Boolean.FALSE)
+            && Objects.equals(containsCustomTrustAnchor, Boolean.FALSE)) {
             CertPathValidationResult certPathValidationResult = evaluateGeneralTrust(orderedCertificateChain);
             generallyTrusted = certPathValidationResult.isValid();
             if (!generallyTrusted) {
@@ -322,6 +331,10 @@ public class CertificateChain {
 
     public List<CertificateReport> getCertificateReportList() {
         return certificateReportList;
+    }
+
+    public Boolean getContainsCustomTrustAnchor() {
+        return containsCustomTrustAnchor;
     }
 
     public final boolean checkCertificateChainIsOrdered(List<CertificateReport> reports) {
