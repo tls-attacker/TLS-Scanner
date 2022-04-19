@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlRootElement
 @XmlSeeAlso({ TestResults.class })
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
+public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ScanReport> {
 
     private TlsAnalyzedProperty property;
 

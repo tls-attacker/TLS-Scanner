@@ -49,8 +49,10 @@ public class GuidelineIOTest {
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getRequirementLevel(),
                 result.getChecks().get(0).getRequirementLevel());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getName(),
-                result.getChecks().get(0).getName());    
-        
+                result.getChecks().get(0).getName());  
+        assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
+                result.getChecks().get(0).getId());  
+    
         GuidelineIO.write(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile(), this.original);
         this.result = GuidelineIO.read(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile());
 
@@ -60,6 +62,8 @@ public class GuidelineIOTest {
                 result.getChecks().get(0).getRequirementLevel());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getName(),
                 result.getChecks().get(0).getName());
+        assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
+                result.getChecks().get(0).getId());  
 	}
 
 	@After
@@ -67,22 +71,4 @@ public class GuidelineIOTest {
 		File file = Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile();
 		file.delete();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
