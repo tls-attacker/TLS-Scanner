@@ -52,12 +52,12 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     public ExtensionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, config);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
+        super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
+        super.register(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        super.register(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        super.register(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
     }
 
     @Override
@@ -188,13 +188,13 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
             this.certStatusRequest = TestResults.COULD_NOT_TEST;
             this.certStatusRequestV2 = TestResults.COULD_NOT_TEST;
         }
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, this.extendedMasterSecret);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, this.encryptThenMac);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+        super.put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, this.extendedMasterSecret);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, this.encryptThenMac);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             this.secureRenegotiation);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, this.sessionTickets);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, this.certStatusRequest);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, this.sessionTickets);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, this.certStatusRequest);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
             this.certStatusRequestV2);
     }
 }

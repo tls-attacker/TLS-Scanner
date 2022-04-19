@@ -30,7 +30,7 @@ public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public EarlyCcsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
     }
 
     @Override
@@ -60,18 +60,18 @@ public class EarlyCcsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     @Override
     protected void mergeData(ServerReport report) {
         if (this.earlyCcsVulnerabilityType == null)
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
         else {
             switch (this.earlyCcsVulnerabilityType) {
                 case VULN_EXPLOITABLE:
                 case VULN_NOT_EXPLOITABLE:
-                    super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.TRUE);
                     break;
                 case NOT_VULNERABLE:
-                    super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
                     break;
                 case UNKNOWN:
-                    super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
+                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
                         TestResults.COULD_NOT_TEST);
             }
         }

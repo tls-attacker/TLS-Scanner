@@ -69,10 +69,10 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public NamedGroupsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
-        super.properties.add(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
-        super.properties.add(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
+        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
+        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
+        super.register(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
+        super.register(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
     }
 
     @Override
@@ -473,10 +473,10 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         report.setSupportedTls13Groups(tls13Groups);
         report.setSupportedNamedGroupsWitnesses(this.namedGroupsMap);
         report.setSupportedNamedGroupsWitnessesTls13(this.namedGroupsMapTls13);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
-        super.setPropertyReportValue(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
+        super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, this.supportsExplicitPrime);
+        super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, this.supportsExplicitChar2);
+        super.put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, this.groupsDependOnCipherSuite);
+        super.put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
             this.ignoresEcdsaGroupDisparity);
     }
 }

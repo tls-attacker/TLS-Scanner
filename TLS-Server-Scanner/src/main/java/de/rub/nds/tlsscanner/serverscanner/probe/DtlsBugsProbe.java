@@ -53,9 +53,9 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public DtlsBugsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
-        super.properties.add(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
+        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        super.register(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
@@ -178,10 +178,10 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
             this.isAcceptingUnencryptedFinished);
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
+        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
             this.isAcceptingUnencryptedAppData);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);
+        super.put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, this.isEarlyFinished);
     }
 }

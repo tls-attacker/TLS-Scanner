@@ -58,7 +58,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, config);
         this.versionSuiteListPairsList = new LinkedList<>();
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
     }
 
     @Override
@@ -234,7 +234,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
         report.setCcaTestResultList(this.resultList);
     }
 }

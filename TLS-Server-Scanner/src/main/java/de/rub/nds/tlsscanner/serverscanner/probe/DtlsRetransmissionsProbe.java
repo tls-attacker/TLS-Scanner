@@ -46,8 +46,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
 
     public DtlsRetransmissionsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS);
-        super.properties.add(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+        super.register(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS);
+        super.register(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
     @Override
@@ -138,8 +138,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
-        super.setPropertyReportValue(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);
+        super.put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
+        super.put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);
     }
 
     @Override

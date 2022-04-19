@@ -40,7 +40,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
 
     public Version13RandomProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.VERSION_1_3_RANDOM_DOWNGRADE, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION);
+        super.register(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION);
     }
 
     @Override
@@ -96,6 +96,6 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);
+        super.put(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);
     }
 }

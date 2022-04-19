@@ -42,7 +42,7 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING);
     }
 
     @Override
@@ -149,12 +149,12 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         report.setSupportedTokenBindingKeyParameters(this.supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(this.supportedTokenBindingVersion);
         if (this.supportedTokenBindingVersion != null && !this.supportedTokenBindingVersion.isEmpty()) {
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             if (report.getSupportedExtensions() == null)
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
     }
 
     public void adjustConfig(ServerReport report) {

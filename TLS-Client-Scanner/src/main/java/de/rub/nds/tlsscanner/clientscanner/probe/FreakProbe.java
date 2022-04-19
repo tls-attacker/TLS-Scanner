@@ -64,7 +64,7 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     public FreakProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FREAK, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_FREAK);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_FREAK);
     }
 
     @Override
@@ -147,6 +147,6 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, this.vulnerable);
     }
 }

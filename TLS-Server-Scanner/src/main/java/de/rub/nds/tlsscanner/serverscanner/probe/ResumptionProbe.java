@@ -71,15 +71,15 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     public ResumptionProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override
@@ -392,18 +392,18 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, this.supportsResumption);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             this.supportsSessionTicketResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
             this.supportsTls13SessionTicket);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, this.supportsTls13PskDhe);
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, this.supportsTls13_0rtt);
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, this.supportsTls13Psk);
+        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
             this.supportsDtlsCookieExchangeInResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
             this.supportsDtlsCookieExchangeInSessionTicketResumption);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, this.respectsPskModes);
     }
 }

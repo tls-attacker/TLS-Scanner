@@ -57,14 +57,14 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             toTestList.add(ProtocolVersion.TLS11);
             toTestList.add(ProtocolVersion.TLS12);
         }
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_2);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override
@@ -215,50 +215,50 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
 
             for (ProtocolVersion version : this.supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS12)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL2)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL3)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS10)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS11)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS12)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS13)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
             }
 
             for (ProtocolVersion version : this.unsupportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS12)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL2)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL3)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS10)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS11)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS12)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS13)
-                    super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
+                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
             }
         } else {
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
         report.setVersions(this.supportedProtocolVersions);
     }

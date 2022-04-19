@@ -51,8 +51,8 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public DtlsFeaturesProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_FEATURES, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_REORDERING);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);
+        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
+        super.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);
     }
 }

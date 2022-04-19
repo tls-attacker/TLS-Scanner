@@ -39,9 +39,9 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public AlpacaProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.STRICT_SNI);
-        super.properties.add(TlsAnalyzedProperty.STRICT_ALPN);
-        super.properties.add(TlsAnalyzedProperty.ALPACA_MITIGATED);
+        super.register(TlsAnalyzedProperty.STRICT_SNI);
+        super.register(TlsAnalyzedProperty.STRICT_ALPN);
+        super.register(TlsAnalyzedProperty.ALPACA_MITIGATED);
     }
 
     @Override
@@ -135,13 +135,13 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             else
                 alpacaMitigated = TestResults.FALSE;
 
-            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
-            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
+            super.put(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+            super.put(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+            super.put(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
         } else {
-            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
-            super.setPropertyReportValue(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
-            super.setPropertyReportValue(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+            super.put(TlsAnalyzedProperty.STRICT_SNI, this.strictSni);
+            super.put(TlsAnalyzedProperty.STRICT_ALPN, this.strictAlpn);
+            super.put(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
         }
     }
 }

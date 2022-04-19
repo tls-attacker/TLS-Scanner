@@ -39,7 +39,7 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     public HeartbleedProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, config);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
     }
 
     @Override
@@ -87,6 +87,6 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, this.vulnerable);
     }
 }

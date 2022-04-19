@@ -42,7 +42,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public EsniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ESNI, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_ESNI);
+        super.register(TlsAnalyzedProperty.SUPPORTS_ESNI);
     }
 
     @Override
@@ -150,6 +150,6 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);
     }
 }

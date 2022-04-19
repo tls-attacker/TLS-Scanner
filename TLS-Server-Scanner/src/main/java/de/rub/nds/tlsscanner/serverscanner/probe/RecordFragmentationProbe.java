@@ -33,7 +33,7 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
 
     public RecordFragmentationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class RecordFragmentationProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
+        super.put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.supported);
     }
 }

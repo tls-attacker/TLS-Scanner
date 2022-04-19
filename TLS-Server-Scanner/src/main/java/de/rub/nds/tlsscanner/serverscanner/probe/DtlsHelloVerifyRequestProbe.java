@@ -60,13 +60,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
 
     public DtlsHelloVerifyRequestProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
-        super.properties.add(TlsAnalyzedProperty.HAS_COOKIE_CHECKS);
-        super.properties.add(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE);
-        super.properties.add(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE);
-        super.properties.add(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
-        super.properties.add(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
-        super.properties.add(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
+        super.register(TlsAnalyzedProperty.HAS_COOKIE_CHECKS);
+        super.register(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override
@@ -271,13 +271,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, this.checksCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, this.usesVersionInCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, this.usesRandomInCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, this.usesSessionIdInCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
-        super.setPropertyReportValue(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);
+        super.put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
+        super.put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, this.checksCookie);
+        super.put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, this.usesVersionInCookie);
+        super.put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, this.usesRandomInCookie);
+        super.put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, this.usesSessionIdInCookie);
+        super.put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
+        super.put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);
         report.setCookieLength(this.cookieLength);
     }
 }

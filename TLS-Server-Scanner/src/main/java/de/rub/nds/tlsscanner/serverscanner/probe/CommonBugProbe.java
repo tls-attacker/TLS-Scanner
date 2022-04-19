@@ -94,25 +94,25 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     public CommonBugProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMMON_BUGS, config);
-        super.properties.add(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
-        super.properties.add(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
-        super.properties.add(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
-        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
-        super.properties.add(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
-        super.properties.add(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
-        super.properties.add(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
+        super.register(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
+        super.register(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
+        super.register(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
+        super.register(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
+        super.register(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
+        super.register(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override
@@ -653,36 +653,36 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, this.extensionIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, this.cipherSuiteIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
             this.cipherSuiteLengthIntolerance512);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, this.compressionIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, this.versionIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, this.alpnIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
             this.clientHelloLengthIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
             this.emptyLastExtensionIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+        super.put(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
             this.onlySecondCipherSuiteByteEvaluated);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, this.namedGroupIntolerant);
+        super.put(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
             this.namedSignatureAndHashAlgorithmIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+        super.put(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
             this.ignoresCipherSuiteOffering);
-        super.setPropertyReportValue(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
+        super.put(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             this.reflectsCipherSuiteOffering);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
-        super.setPropertyReportValue(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+        super.put(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, this.ignoresOfferedNamedGroups);
+        super.put(TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
             this.ignoresOfferedSignatureAndHashAlgorithms);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
             this.maxLengthClientHelloIntolerant);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
             this.greaseNamedGroupIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
             this.greaseCipherSuiteIntolerance);
-        super.setPropertyReportValue(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+        super.put(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
             this.greaseSignatureAndHashAlgorithmIntolerance);
     }
 }

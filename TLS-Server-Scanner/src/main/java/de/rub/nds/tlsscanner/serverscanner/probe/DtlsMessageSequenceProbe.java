@@ -52,11 +52,11 @@ public class DtlsMessageSequenceProbe extends TlsProbe<ServerScannerConfig, Serv
 
     public DtlsMessageSequenceProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
-        super.properties.add(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
-        super.properties.add(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        super.register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
+        super.register(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
+        super.register(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
+        super.register(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
+        super.register(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override
@@ -195,18 +195,18 @@ public class DtlsMessageSequenceProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+        super.put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             this.acceptsStartedWithInvalidMessageNumber);
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
             acceptsSkippedMessageNumbersOnce);
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             this.acceptsSkippedMessageNumbersMultiple);
-        super.setPropertyReportValue(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        super.put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
         if (this.acceptsSkippedMessageNumbersOnce == TestResults.FALSE
             && this.acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
             && this.acceptsRandomMessageNumbers == TestResults.FALSE) {
-            super.setPropertyReportValue(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
+            super.put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
         } else
-            super.setPropertyReportValue(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+            super.put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
     }
 }

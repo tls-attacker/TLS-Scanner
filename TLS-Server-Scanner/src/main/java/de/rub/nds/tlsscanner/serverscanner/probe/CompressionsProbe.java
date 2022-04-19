@@ -37,8 +37,8 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_CRIME);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
     }
 
     @Override
@@ -116,15 +116,15 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
             report.setSupportedCompressionMethods(this.compressions);
             if (this.compressions.contains(CompressionMethod.LZS)
                 || this.compressions.contains(CompressionMethod.DEFLATE)) {
-                super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
-                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
+                super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
+                super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
-                super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
-                super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
+                super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
+                super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
-            super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
     }
 }

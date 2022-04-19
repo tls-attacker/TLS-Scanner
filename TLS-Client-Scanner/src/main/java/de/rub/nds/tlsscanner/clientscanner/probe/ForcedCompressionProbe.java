@@ -35,7 +35,7 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.FORCED_COMPRESSION);
+        super.register(TlsAnalyzedProperty.FORCED_COMPRESSION);
     }
 
     @Override
@@ -69,6 +69,6 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.FORCED_COMPRESSION, this.result);
+        super.put(TlsAnalyzedProperty.FORCED_COMPRESSION, this.result);
     }
 }

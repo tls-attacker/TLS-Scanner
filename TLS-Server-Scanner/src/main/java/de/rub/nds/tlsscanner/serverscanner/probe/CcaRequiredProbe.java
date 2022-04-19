@@ -35,7 +35,7 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public CcaRequiredProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
-        super.properties.add(TlsAnalyzedProperty.REQUIRES_CCA);
+        super.register(TlsAnalyzedProperty.REQUIRES_CCA);
     }
 
     @Override
@@ -80,6 +80,6 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.REQUIRES_CCA, this.requiresCca);
+        super.put(TlsAnalyzedProperty.REQUIRES_CCA, this.requiresCca);
     }
 }

@@ -49,7 +49,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     public HttpFalseStartProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
-        super.properties.add(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
+        super.register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
     }
 
     @Override
@@ -138,6 +138,6 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
+        super.put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
     }
 }

@@ -92,9 +92,9 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public InvalidCurveProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, config);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
-        super.properties.add(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
     }
 
     @Override
@@ -870,10 +870,10 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
             this.vulnerableEphemeral);
-        super.setPropertyReportValue(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
         report.setInvalidCurveResultList(this.responses);
     }
 }
