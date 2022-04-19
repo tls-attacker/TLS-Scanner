@@ -36,14 +36,13 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
 
     private final ParallelExecutor parallelExecutor;
 
-    protected List<TlsAnalyzedProperty> properties;
     private Map<TlsAnalyzedProperty, TestResult> propertiesMap;
 
     protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScanConfig scannerConfig) {
         super(type);
         this.scannerConfig = scannerConfig;
         this.parallelExecutor = parallelExecutor;
-        this.properties = new ArrayList<>();
+        this.propertiesMap = new HashMap<>();
     }
 
     public final ScanConfig getScannerConfig() {
@@ -68,44 +67,32 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
         return parallelExecutor;
     }
 
-    protected void setPropertyReportValue(TlsAnalyzedProperty aProp, TestResult result) {
-        if (this.propertiesMap != null) {
-            if (this.propertiesMap.containsKey(aProp))
-                this.propertiesMap.replace(aProp, result);
-            else // avoid unregistered properties are set
-                LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registred!");
-        } else {
-            this.propertiesMap = new HashMap<>();
-            for (TlsAnalyzedProperty property : this.properties)
-                this.propertiesMap.put(property, null);
+    protected void register(TlsAnalyzedProperty property) {
+    	this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
+    }
+    
+    protected void put(TlsAnalyzedProperty aProp, TestResult result) {
+        if (!this.propertiesMap.containsKey(aProp))
+            this.propertiesMap.replace(aProp, result);
+        else { // unregistered property
+            LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registred!");
+            this.propertiesMap.put(aProp, result);
         }
     }
 
-    // can be overwritten if some data must be set manually
     protected abstract void mergeData(Report report);
 
     public void merge(Report report) {
-        // catch case that no properties are set
-        if (this.propertiesMap == null) {
-            this.propertiesMap = new HashMap<>();
-            for (TlsAnalyzedProperty property : this.properties) {
-                LOGGER.error("Unassigned property " + property.name() + " in " + this.getClass());
-                this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
-            }
-        } else {
-            // check whether every property has been set
-            for (TlsAnalyzedProperty aProp : this.properties) {
-                if (this.propertiesMap.get(aProp) == null) {
-                    LOGGER.error("Unassigned property " + aProp.name() + " in " + this.getClass());
-                    this.propertiesMap.replace(aProp, TestResults.UNASSIGNED_ERROR);
-                }
-            }
-        }
         // merge data
         if (this.startTime != 0 && this.stopTime != 0)
             report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));
-        for (TlsAnalyzedProperty aProp : this.properties)
-            report.putResult(aProp, this.propertiesMap.get(aProp));
         this.mergeData(report);
+        TestResult result;
+        for(TlsAnalyzedProperty prop : this.propertiesMap.keySet()) {
+        	result = this.propertiesMap.get(prop);
+        	report.putResult(prop, result);
+        	if(result == TestResults.UNASSIGNED_ERROR)
+                LOGGER.error(prop.name() + " in " + this.getClass() + " had not been assigned!");
+        }
     }
 }
