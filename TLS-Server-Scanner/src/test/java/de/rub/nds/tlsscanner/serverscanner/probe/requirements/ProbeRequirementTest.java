@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.requirements;
+package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +133,8 @@ public class ProbeRequirementTest {
         assertTrue(pReq.evaluateRequirements());
 
         pReq.requireExtensionTyes(eType);
-        assertFalse(pReq.evaluateRequirements());
+        assertFalse(pReq.evaluateRequirements());        
+        assertTrue(pReq.getMissingRequirements().getRequiredExtensionTypes()[0]==eType);
         List<ExtensionType> etList = new ArrayList<ExtensionType>();
         etList.add(eType);
         report.setSupportedExtensions(etList);

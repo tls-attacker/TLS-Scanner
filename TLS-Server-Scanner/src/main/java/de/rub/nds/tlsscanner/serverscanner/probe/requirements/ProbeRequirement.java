@@ -43,7 +43,11 @@ public class ProbeRequirement implements Requirement {
                 if (report.isProbeAlreadyExecuted(pt) == false)
                     ptypes.add(pt);
             }
-            missing.requireProbeTypes((TlsProbeType[]) ptypes.toArray());
+            TlsProbeType[] tpt = new TlsProbeType[ptypes.size()];
+            java.util.Iterator<TlsProbeType> it = ptypes.iterator();
+            for(int i = 0; i<ptypes.size(); i++) 
+            	tpt[i] = it.next();  
+            missing.requireProbeTypes(tpt);
         }
 
         if (this.requiredAnalyzedproperties != null) {
@@ -53,7 +57,11 @@ public class ProbeRequirement implements Requirement {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE)
                     aprops.add(ap);
             }
-            missing.requireAnalyzedProperties((TlsAnalyzedProperty[]) aprops.toArray());
+            TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
+            java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
+            for(int i = 0; i<aprops.size(); i++) 
+            	tap[i] = it.next(); 
+            missing.requireAnalyzedProperties(tap);
         }
 
         if (this.requiredProtocolVersions != null) {
@@ -66,7 +74,11 @@ public class ProbeRequirement implements Requirement {
                     if (!pvList.contains(pv))
                         pvers.add(pv);
                 }
-                missing.requireProtocolVersions((ProtocolVersion[]) pvers.toArray());
+                ProtocolVersion[] pva = new ProtocolVersion[pvers.size()];
+                java.util.Iterator<ProtocolVersion> it = pvers.iterator();
+                for(int i = 0; i<pvers.size(); i++) 
+                	pva[i] = it.next(); 
+                missing.requireProtocolVersions(pva);
             }
         }
 
@@ -77,7 +89,11 @@ public class ProbeRequirement implements Requirement {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE)
                     aprops.add(ap);
             }
-            missing.requireAnalyzedPropertiesNot((TlsAnalyzedProperty[]) aprops.toArray());
+            TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
+            java.util.Iterator<TlsAnalyzedProperty> it = aprops.iterator();
+            for(int i = 0; i<aprops.size(); i++) 
+            	tap[i] = it.next(); 
+            missing.requireAnalyzedPropertiesNot(tap);
         }
 
         if (this.requiredExtensionTypes != null) {
@@ -90,7 +106,11 @@ public class ProbeRequirement implements Requirement {
                     if (!etList.contains(et))
                         etype.add(et);
                 }
-                missing.requireExtensionTyes((ExtensionType[]) etype.toArray());
+                ExtensionType[] eta = new ExtensionType[etype.size()];
+                java.util.Iterator<ExtensionType> it = etype.iterator();
+                for(int i = 0; i<etype.size(); i++) 
+                	eta[i] = it.next(); 
+                missing.requireExtensionTyes(eta);
             }
         }
 
