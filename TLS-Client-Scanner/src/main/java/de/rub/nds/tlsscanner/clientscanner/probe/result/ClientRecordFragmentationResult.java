@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 public class ClientRecordFragmentationResult extends ProbeResult<ClientReport> {
     private final TestResult supportsRecordFragmentation;
-    
+
     public ClientRecordFragmentationResult(TestResult supportsRecordFragmentation) {
         super(TlsProbeType.RECORD_FRAGMENTATION);
 
@@ -25,10 +25,7 @@ public class ClientRecordFragmentationResult extends ProbeResult<ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-        
+
     }
 
 }
-
-
-

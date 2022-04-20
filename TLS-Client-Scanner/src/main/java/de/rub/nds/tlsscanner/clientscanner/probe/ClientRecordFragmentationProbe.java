@@ -39,7 +39,7 @@ public class ClientRecordFragmentationProbe
     public ClientRecordFragmentationResult executeTest() {
         Config config = getScannerConfig().createConfig();
         config.setDefaultMaxRecordData(50);
-        
+
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
@@ -53,7 +53,7 @@ public class ClientRecordFragmentationProbe
         } else {
             result = TestResult.FALSE;
         }
-        
+
         return new ClientRecordFragmentationResult(result);
     }
 
