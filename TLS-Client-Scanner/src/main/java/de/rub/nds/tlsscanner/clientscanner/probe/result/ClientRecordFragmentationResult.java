@@ -9,30 +9,26 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe.result;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 public class ClientRecordFragmentationResult extends ProbeResult<ClientReport> {
-    private Boolean supported = null;
-
-    public ClientRecordFragmentationResult(Boolean supported) {
+    private final TestResult supportsRecordFragmentation;
+    
+    public ClientRecordFragmentationResult(TestResult supportsRecordFragmentation) {
         super(TlsProbeType.RECORD_FRAGMENTATION);
 
-        this.supported = supported;
+        this.supportsRecordFragmentation = supportsRecordFragmentation;
     }
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supported);
+        
     }
 
-    public Boolean getSupported() {
-        return supported;
-    }
-
-    public void setSupported(Boolean supported) {
-        this.supported = supported;
-    }
 }
+
+
+

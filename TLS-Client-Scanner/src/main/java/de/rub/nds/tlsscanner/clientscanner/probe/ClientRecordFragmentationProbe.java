@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -46,8 +47,14 @@ public class ClientRecordFragmentationProbe
 
         executeState(state);
 
-        return new ClientRecordFragmentationResult(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace()));
+        TestResult result;
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            result = TestResult.TRUE;
+        } else {
+            result = TestResult.FALSE;
+        }
+        
+        return new ClientRecordFragmentationResult(result);
     }
 
     @Override
@@ -57,7 +64,7 @@ public class ClientRecordFragmentationProbe
 
     @Override
     public ClientRecordFragmentationResult getCouldNotExecuteResult() {
-        return new ClientRecordFragmentationResult(null);
+        return new ClientRecordFragmentationResult(TestResult.COULD_NOT_TEST);
     }
 
     @Override
