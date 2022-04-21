@@ -307,7 +307,7 @@ public final class TlsServerScanner extends TlsScanner {
 
     private void executeGuidelineEvaluation(ServerReport report) {
         LOGGER.debug("Evaluating guidelines...");
-        List<String> guidelines = Arrays.asList("bsi.xml"/* , "nist.xml" */);
+        List<String> guidelines = Arrays.asList("bsi.xml", "nist.xml");
         for (String guidelineName : guidelines) {
             try {
                 InputStream guideLineStream = GuidelineIO.class.getResourceAsStream("/guideline/" + guidelineName);
