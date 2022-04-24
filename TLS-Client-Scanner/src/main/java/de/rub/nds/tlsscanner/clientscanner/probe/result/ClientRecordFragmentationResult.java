@@ -26,7 +26,7 @@ public class ClientRecordFragmentationResult extends ProbeResult<ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.putResult(TlsAnalyzedProperty.RECORD_FRAGMENTATION, supportsRecordFragmentation);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supportsRecordFragmentation);
     }
 
 }

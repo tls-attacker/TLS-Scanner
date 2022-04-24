@@ -300,8 +300,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CHANGES_PORT_TO_RANDOM_PORTS(TlsAnalyzedPropertyCategory.QUIRKS),
     // CLIENT SPECIFIC PROPERTIES
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
-    FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS),
-    RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS);
+    FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS);
 
     private final TlsAnalyzedPropertyCategory category;
 
