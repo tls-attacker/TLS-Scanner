@@ -22,17 +22,20 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class GuidelineIOTest {
     private Guideline original, result;
+    
+    @Rule
+    public TemporaryFolder tempDir = new TemporaryFolder();
 
     @Before
     public void setUp() {
@@ -61,10 +64,9 @@ public class GuidelineIOTest {
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
             result.getChecks().get(0).getId());
 
-        GuidelineIO.write(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile(),
-            this.original);
-        this.result =
-            GuidelineIO.read(Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile());
+        File tempFile = tempDir.newFile("serializarion_test_simple.xml");
+        GuidelineIO.write(tempFile, this.original);
+        this.result = GuidelineIO.read(tempFile);
 
         assertEquals("Influencer length check.", this.original.getChecks().size(), result.getChecks().size());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getRequirementLevel(),
@@ -73,11 +75,5 @@ public class GuidelineIOTest {
             result.getChecks().get(0).getName());
         assertEquals("Influencer length check.", this.original.getChecks().get(0).getId(),
             result.getChecks().get(0).getId());
-    }
-
-    @After
-    public void cleanUp() {
-        File file = Paths.get("src/main/resources/guideline/serializarion_test_simple.xml").toFile();
-        file.delete();
     }
 }
