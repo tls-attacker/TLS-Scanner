@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
@@ -56,16 +56,16 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (!SignatureAlgorithm.ECDSA.equals(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
-            return new CertificateCurveGuidelineCheckResult(TestResult.TRUE);
+            return new CertificateCurveGuidelineCheckResult(TestResults.TRUE);
         }
         if (!(report.getPublicKey() instanceof CustomEcPublicKey)) {
-            return new CertificateCurveGuidelineCheckResult(TestResult.UNCERTAIN);
+            return new CertificateCurveGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         NamedGroup group = ((CustomEcPublicKey) report.getPublicKey()).getGroup();
         if (!this.recommendedGroups.contains(group)) {
-            return new CertificateCurveGuidelineCheckResult(TestResult.FALSE, false, group);
+            return new CertificateCurveGuidelineCheckResult(TestResults.FALSE, false, group);
         }
-        return new CertificateCurveGuidelineCheckResult(TestResult.TRUE, true, group);
+        return new CertificateCurveGuidelineCheckResult(TestResults.TRUE, true, group);
     }
 
     @Override

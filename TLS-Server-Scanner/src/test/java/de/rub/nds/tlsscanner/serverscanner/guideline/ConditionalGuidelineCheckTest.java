@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -27,9 +27,9 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
         GuidelineCheckCondition condition =
-            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = null;
 
@@ -38,7 +38,7 @@ public class ConditionalGuidelineCheckTest {
         }
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(TestResult.FALSE, result.getResult());
+        Assert.assertEquals(TestResults.FALSE, result.getResult());
     }
 
     @Test
@@ -48,9 +48,9 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, false);
 
         GuidelineCheckCondition condition =
-            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
         AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = null;
 

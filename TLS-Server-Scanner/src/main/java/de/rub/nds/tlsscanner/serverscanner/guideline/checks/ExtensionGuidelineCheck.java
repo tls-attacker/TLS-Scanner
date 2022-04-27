@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -45,7 +45,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResult.of(report.getSupportedExtensions().contains(requiredExtension)),
+            TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
             report.getSupportedExtensions().contains(requiredExtension), requiredExtension);
     }
 

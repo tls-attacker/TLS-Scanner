@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -47,9 +47,9 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
         if (tls10Rejected && tls11Rejected && tls12Rejected) {
-            return new Version13RandomResult(TestResult.TRUE);
+            return new Version13RandomResult(TestResults.TRUE);
         } else {
-            return new Version13RandomResult(TestResult.FALSE);
+            return new Version13RandomResult(TestResults.FALSE);
         }
     }
 
@@ -87,7 +87,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
 
     @Override
     public Version13RandomResult getCouldNotExecuteResult() {
-        return new Version13RandomResult(TestResult.CANNOT_BE_TESTED);
+        return new Version13RandomResult(TestResults.CANNOT_BE_TESTED);
     }
 
     @Override

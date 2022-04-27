@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -28,16 +29,16 @@ public class AlpacaResult extends ProbeResult<ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        if ((strictSni == TestResult.TRUE || strictSni == TestResult.FALSE)
-            && (strictAlpn == TestResult.TRUE || strictAlpn == TestResult.FALSE)) {
+        if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
+            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
 
             TestResult alpacaMitigated;
-            if (strictAlpn == TestResult.TRUE && strictSni == TestResult.TRUE) {
-                alpacaMitigated = TestResult.TRUE;
-            } else if (strictAlpn == TestResult.TRUE || strictSni == TestResult.TRUE) {
-                alpacaMitigated = TestResult.PARTIALLY;
+            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
+                alpacaMitigated = TestResults.TRUE;
+            } else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
+                alpacaMitigated = TestResults.PARTIALLY;
             } else {
-                alpacaMitigated = TestResult.FALSE;
+                alpacaMitigated = TestResults.FALSE;
             }
             report.putResult(TlsAnalyzedProperty.STRICT_SNI, strictSni);
             report.putResult(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
@@ -45,7 +46,7 @@ public class AlpacaResult extends ProbeResult<ServerReport> {
         } else {
             report.putResult(TlsAnalyzedProperty.STRICT_SNI, strictSni);
             report.putResult(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResult.UNCERTAIN);
+            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
         }
     }
 }

@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -21,10 +22,10 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        TestResult vulnerable = TestResult.NOT_TESTED_YET;
+        TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-            if (ssl3Result == TestResult.TRUE) {
+            if (ssl3Result == TestResults.TRUE) {
                 for (VersionSuiteListPair versionSuitList : report.getVersionSuitePairs()) {
                     if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
                         for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
@@ -38,7 +39,7 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
             }
             report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
         } catch (Exception e) {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, vulnerable);
     }

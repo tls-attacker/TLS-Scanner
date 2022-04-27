@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -35,14 +36,14 @@ public class DirectRaccoonResult extends ProbeResult<ServerReport> {
         super(TlsProbeType.DIRECT_RACCOON);
         this.resultList = resultList;
         if (this.resultList != null) {
-            vulnerable = TestResult.FALSE;
+            vulnerable = TestResults.FALSE;
             for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResult.TRUE;
+                    vulnerable = TestResults.TRUE;
                 }
             }
         } else {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
     }
 

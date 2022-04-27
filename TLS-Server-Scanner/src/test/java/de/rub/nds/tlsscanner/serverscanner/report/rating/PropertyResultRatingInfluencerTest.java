@@ -9,9 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import static org.junit.Assert.assertEquals;
+
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class PropertyResultRatingInfluencerTest {
@@ -24,24 +25,24 @@ public class PropertyResultRatingInfluencerTest {
      */
     @Test
     public void testCompareTo() {
-        PropertyResultRatingInfluencer ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200);
-        PropertyResultRatingInfluencer ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200);
+        PropertyResultRatingInfluencer ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200);
+        PropertyResultRatingInfluencer ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, -200);
         assertEquals(1, ri1.compareTo(ri2));
         assertEquals(-1, ri2.compareTo(ri1));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
+        ri2 = new PropertyResultRatingInfluencer(TestResults.TRUE, 300, 100);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 200);
+        ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 200, 200);
         assertEquals(1, ri1.compareTo(ri2));
 
-        ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
+        ri1 = new PropertyResultRatingInfluencer(TestResults.TRUE, 300, 100);
         assertEquals(0, ri1.compareTo(ri2));
     }
 

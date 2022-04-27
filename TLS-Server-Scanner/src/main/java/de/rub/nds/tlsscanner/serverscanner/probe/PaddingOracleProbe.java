@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
@@ -136,7 +136,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     public boolean canBeExecuted(ServerReport report) {
         if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
+            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResults.TRUE);
         } else {
             return false;
         }
@@ -149,7 +149,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public PaddingOracleResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(TestResult.COULD_NOT_TEST);
+        return new PaddingOracleResult(TestResults.COULD_NOT_TEST);
     }
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
@@ -166,7 +166,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     private boolean isPotentiallyVulnerable(List<InformationLeakTest<PaddingOracleTestInfo>> testResultList) {
-        for (InformationLeakTest fingerprint : testResultList) {
+        for (InformationLeakTest<?> fingerprint : testResultList) {
             if (fingerprint.isDistinctAnswers()) {
                 return true;
             }

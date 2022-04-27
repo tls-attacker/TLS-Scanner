@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
@@ -73,7 +73,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return new CcaResult(TestResult.COULD_NOT_TEST, null);
+            return new CcaResult(TestResults.COULD_NOT_TEST, null);
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -133,12 +133,12 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
                     ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-        return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
+        return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
     }
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return (report.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+        return (report.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE)
             && (report.getVersionSuitePairs() != null);
     }
 
@@ -149,7 +149,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
 
     @Override
     public CcaResult getCouldNotExecuteResult() {
-        return new CcaResult(TestResult.COULD_NOT_TEST, null);
+        return new CcaResult(TestResults.COULD_NOT_TEST, null);
     }
 
     private Config generateConfig() {

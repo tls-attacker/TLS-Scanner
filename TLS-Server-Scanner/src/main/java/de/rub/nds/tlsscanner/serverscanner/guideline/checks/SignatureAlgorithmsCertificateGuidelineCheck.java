@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -56,13 +56,13 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (report.getSignatureAndHashAlgorithm() == null) {
-            return new SignatureAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, null);
+            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
         if (!this.recommendedAlgorithms.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             nonRecommended.add(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm());
         }
-        return new SignatureAlgorithmsGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new SignatureAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

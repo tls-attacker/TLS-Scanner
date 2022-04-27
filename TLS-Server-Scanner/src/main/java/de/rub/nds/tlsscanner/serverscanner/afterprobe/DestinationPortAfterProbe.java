@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -32,16 +33,16 @@ public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
         try {
             if (container.getNumberOfExtractedValues() >= 1) {
                 if (container.getExtractedValueList().get(0) == intialPort) {
-                    changesPort = TestResult.FALSE;
+                    changesPort = TestResults.FALSE;
                 } else {
-                    changesPort = TestResult.TRUE;
+                    changesPort = TestResults.TRUE;
                 }
             } else {
-                changesPort = TestResult.COULD_NOT_TEST;
+                changesPort = TestResults.COULD_NOT_TEST;
             }
         } catch (Exception e) {
             LOGGER.error(e.toString());
-            changesPort = TestResult.ERROR_DURING_TEST;
+            changesPort = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(TlsAnalyzedProperty.CHANGES_PORT, changesPort);
 
@@ -49,16 +50,16 @@ public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
         try {
             if (container.getNumberOfExtractedValues() >= 2) {
                 if (container.areAllValuesIdentical()) {
-                    changesPortToRandomPorts = TestResult.FALSE;
+                    changesPortToRandomPorts = TestResults.FALSE;
                 } else {
-                    changesPortToRandomPorts = TestResult.TRUE;
+                    changesPortToRandomPorts = TestResults.TRUE;
                 }
             } else {
-                changesPortToRandomPorts = TestResult.COULD_NOT_TEST;
+                changesPortToRandomPorts = TestResults.COULD_NOT_TEST;
             }
         } catch (Exception e) {
             LOGGER.error(e.toString());
-            changesPortToRandomPorts = TestResult.ERROR_DURING_TEST;
+            changesPortToRandomPorts = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
     }

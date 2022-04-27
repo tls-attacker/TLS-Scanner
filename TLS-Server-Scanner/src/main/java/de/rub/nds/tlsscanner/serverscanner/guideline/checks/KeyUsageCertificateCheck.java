@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -63,23 +63,23 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Extensions extensions = report.convertToCertificateHolder().getExtensions();
         if (extensions == null) {
-            return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, null);
+            return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
         }
         KeyUsage extension = KeyUsage.fromExtensions(extensions);
         if (extension == null) {
-            return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, null);
+            return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
         }
         if (SIGNATURE_ALGORITHM_LIST.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
-                return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, "digitalSignature");
+                return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, "digitalSignature");
             }
         }
         if (report.getPublicKey() instanceof CustomDhPublicKey) {
             if (!extension.hasUsages(KeyUsage.keyAgreement)) {
-                return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, "keyAgreement");
+                return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, "keyAgreement");
             }
         }
-        return new KeyUsageCertificateCheckResult(TestResult.TRUE, true, null);
+        return new KeyUsageCertificateCheckResult(TestResults.TRUE, true, null);
     }
 
     @Override

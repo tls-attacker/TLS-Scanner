@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -37,13 +37,13 @@ public class TokenbindingResult extends ProbeResult<ServerReport> {
         report.setSupportedTokenBindingKeyParameters(supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(supportedTokenBindingVersion);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.TRUE);
+            report.putResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             if (report.getSupportedExtensions() == null) {
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());
             }
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.FALSE);
+            report.putResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
         }
     }
 }

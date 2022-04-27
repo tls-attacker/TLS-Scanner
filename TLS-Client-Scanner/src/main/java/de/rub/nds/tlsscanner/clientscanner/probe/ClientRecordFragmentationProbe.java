@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -20,11 +20,11 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ClientRecordFragmentationResult;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
 public class ClientRecordFragmentationProbe
     extends TlsProbe<ClientScannerConfig, ClientReport, ClientRecordFragmentationResult> {
@@ -47,9 +47,9 @@ public class ClientRecordFragmentationProbe
 
         TestResult result;
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            result = TestResult.TRUE;
+            result = TestResults.TRUE;
         } else {
-            result = TestResult.FALSE;
+            result = TestResults.FALSE;
         }
 
         return new ClientRecordFragmentationResult(result);
@@ -62,7 +62,7 @@ public class ClientRecordFragmentationProbe
 
     @Override
     public ClientRecordFragmentationResult getCouldNotExecuteResult() {
-        return new ClientRecordFragmentationResult(TestResult.COULD_NOT_TEST);
+        return new ClientRecordFragmentationResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -45,7 +46,7 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport, Alp
         TestResult strictSni = isSupportingStrictSni();
         TestResult strictAlpn;
         if (!alpnSupported) {
-            strictAlpn = TestResult.FALSE;
+            strictAlpn = TestResults.FALSE;
         } else {
             strictAlpn = isSupportingStrictAlpn();
         }
@@ -85,9 +86,9 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport, Alp
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
@@ -100,9 +101,9 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport, Alp
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
@@ -113,7 +114,7 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport, Alp
 
     @Override
     public AlpacaResult getCouldNotExecuteResult() {
-        return new AlpacaResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new AlpacaResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

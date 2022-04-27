@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
@@ -51,7 +51,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            return new HashAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, Collections.emptySet());
+            return new HashAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, Collections.emptySet());
         }
         Set<HashAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
@@ -59,7 +59,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 nonRecommended.add(alg.getHashAlgorithm());
             }
         }
-        return new HashAlgorithmsGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

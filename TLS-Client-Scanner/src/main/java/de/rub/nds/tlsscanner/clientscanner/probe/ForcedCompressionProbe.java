@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -45,9 +46,9 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
         executeState(state);
         TestResult result;
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            result = TestResult.TRUE;
+            result = TestResults.TRUE;
         } else {
-            result = TestResult.FALSE;
+            result = TestResults.FALSE;
         }
         return new ForcedCompressionResult(result);
     }
@@ -59,7 +60,7 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     public ForcedCompressionResult getCouldNotExecuteResult() {
-        return new ForcedCompressionResult(TestResult.COULD_NOT_TEST);
+        return new ForcedCompressionResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

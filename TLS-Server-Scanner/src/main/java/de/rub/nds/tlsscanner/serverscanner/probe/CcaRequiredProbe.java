@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
@@ -42,15 +42,15 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return new CcaRequiredResult(TestResult.FALSE);
+            return new CcaRequiredResult(TestResults.FALSE);
         } else {
-            return new CcaRequiredResult(TestResult.TRUE);
+            return new CcaRequiredResult(TestResults.TRUE);
         }
     }
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE);
+        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public CcaRequiredResult getCouldNotExecuteResult() {
-        return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
+        return new CcaRequiredResult(TestResults.COULD_NOT_TEST);
     }
 
     private Config generateConfig() {

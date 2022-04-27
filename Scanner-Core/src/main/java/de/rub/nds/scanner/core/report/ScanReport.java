@@ -13,6 +13,7 @@ import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import java.io.Serializable;
@@ -71,7 +72,7 @@ public abstract class ScanReport extends Observable implements Serializable {
 
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
-        return (result == null) ? TestResult.NOT_TESTED_YET : result;
+        return (result == null) ? TestResults.NOT_TESTED_YET : result;
     }
 
     public synchronized void removeResult(AnalyzedProperty property) {
@@ -83,8 +84,8 @@ public abstract class ScanReport extends Observable implements Serializable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-            : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResults.TRUE
+            : Objects.equals(result, Boolean.FALSE) ? TestResults.FALSE : TestResults.UNCERTAIN);
     }
 
     public synchronized void markAsChangedAndNotify() {

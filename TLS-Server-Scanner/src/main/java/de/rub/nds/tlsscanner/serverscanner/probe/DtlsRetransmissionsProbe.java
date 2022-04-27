@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -64,9 +65,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -87,9 +88,9 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -124,7 +125,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     public DtlsRetransmissionsResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsRetransmissionsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

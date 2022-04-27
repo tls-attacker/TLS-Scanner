@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -54,13 +55,13 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        supportsLegacyPrf = report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
-        supportsSha256 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
-        supportsSha384 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
-        supportsSSLv3 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
-        ExtractedValueContainer publicKeyContainer =
+        supportsLegacyPrf = report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResults.TRUE;
+        supportsSha256 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResults.TRUE;
+        supportsSha384 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResults.TRUE;
+        supportsSSLv3 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE;
+        ExtractedValueContainer<?> publicKeyContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
-        List extractedValueList = publicKeyContainer.getExtractedValueList();
+        List<?> extractedValueList = publicKeyContainer.getExtractedValueList();
         Map<Integer, BigInteger> smallestByteSizeModuloMap = generateSmallestByteSizeModuloMap(extractedValueList);
         for (Integer i : smallestByteSizeModuloMap.keySet()) {
             BigInteger modulo = smallestByteSizeModuloMap.get(i);
@@ -69,11 +70,10 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
         report.setRaccoonAttackProbabilities(attackProbabilityList);
 
         TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
-        if (reusesDhPublicKey == TestResult.TRUE) {
-            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.TRUE);
+        if (reusesDhPublicKey == TestResults.TRUE) {
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResults.TRUE);
         } else {
-            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
-
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResults.FALSE);
         }
     }
 
@@ -83,7 +83,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
      * @param  extractedValueList
      * @return
      */
-    public Map<Integer, BigInteger> generateSmallestByteSizeModuloMap(List extractedValueList) {
+    public Map<Integer, BigInteger> generateSmallestByteSizeModuloMap(List<?> extractedValueList) {
         Map<Integer, BigInteger> smallestByteSizeModuloMap = new HashMap<>();
         for (Object o : extractedValueList) {
             CustomDhPublicKey publicKey = (CustomDhPublicKey) o;

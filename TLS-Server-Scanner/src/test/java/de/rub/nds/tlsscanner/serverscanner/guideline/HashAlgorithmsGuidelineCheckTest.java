@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
@@ -27,7 +27,7 @@ public class HashAlgorithmsGuidelineCheckTest {
         HashAlgorithmsGuidelineCheck check = new HashAlgorithmsGuidelineCheck(null, null,
             Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResult.TRUE, result.getResult());
+        Assert.assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -38,6 +38,6 @@ public class HashAlgorithmsGuidelineCheckTest {
         HashAlgorithmsGuidelineCheck check = new HashAlgorithmsGuidelineCheck(null, null,
             Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResult.FALSE, result.getResult());
+        Assert.assertEquals(TestResults.FALSE, result.getResult());
     }
 }

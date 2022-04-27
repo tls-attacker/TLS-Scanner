@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -50,7 +51,7 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         if (shouldTestTls13) {
             tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
         } else {
-            tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
+            tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
         }
         if (pointFormats != null) {
             return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
@@ -150,9 +151,9 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             }
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -160,30 +161,30 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             } else {
                 LOGGER.error("Could not test for Tls13SecpCompression", e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-            && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResult.TRUE
-                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+            && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResults.TRUE
+                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE);
     }
 
     @Override
     public ECPointFormatResult getCouldNotExecuteResult() {
-        return new ECPointFormatResult(null, TestResult.COULD_NOT_TEST);
+        return new ECPointFormatResult(null, TestResults.COULD_NOT_TEST);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        shouldTestPointFormats = report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
-        shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+        shouldTestPointFormats = report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE;
+        shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     private List<NamedGroup> getSecpGroups() {

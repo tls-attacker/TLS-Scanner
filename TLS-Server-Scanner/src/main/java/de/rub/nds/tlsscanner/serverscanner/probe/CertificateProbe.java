@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -103,19 +103,19 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public void adjustConfig(ServerReport report) {
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.FALSE) {
             scanForRsaCert = false;
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDSA) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDSA) == TestResults.FALSE) {
             scanForEcdsaCert = false;
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResults.FALSE) {
             scanForDssCert = false;
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
     }

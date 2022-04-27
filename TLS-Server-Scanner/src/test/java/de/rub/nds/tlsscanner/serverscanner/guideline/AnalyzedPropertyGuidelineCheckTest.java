@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
@@ -25,11 +25,11 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResult.TRUE, result.getResult());
+        Assert.assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -38,11 +38,11 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResult.FALSE, result.getResult());
+        Assert.assertEquals(TestResults.FALSE, result.getResult());
     }
 
     @Test
@@ -50,10 +50,10 @@ public class AnalyzedPropertyGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
+            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResult.NOT_TESTED_YET, result.getResult());
+        Assert.assertEquals(TestResults.NOT_TESTED_YET, result.getResult());
     }
 }

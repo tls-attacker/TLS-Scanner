@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
@@ -161,18 +161,18 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        if (!(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0), TestResult.TRUE))
-            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2), TestResult.TRUE))) {
+        if (!(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0), TestResults.TRUE))
+            && !(Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2), TestResults.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {
             return false;
         }
-        return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE), TestResult.TRUE);
+        return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE), TestResults.TRUE);
     }
 
     @Override
@@ -182,6 +182,6 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public DirectRaccoonResult getCouldNotExecuteResult() {
-        return new DirectRaccoonResult(TestResult.COULD_NOT_TEST);
+        return new DirectRaccoonResult(TestResults.COULD_NOT_TEST);
     }
 }

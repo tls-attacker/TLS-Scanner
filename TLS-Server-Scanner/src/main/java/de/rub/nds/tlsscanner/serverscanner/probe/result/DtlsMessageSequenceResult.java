@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -40,12 +41,12 @@ public class DtlsMessageSequenceResult extends ProbeResult<ServerReport> {
         report.putResult(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             acceptsSkippedMessageNumbersMultiple);
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
-        if (acceptsSkippedMessageNumbersOnce == TestResult.FALSE
-            && acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
-            && acceptsRandomMessageNumbers == TestResult.FALSE) {
-            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
+        if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
+            && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+            && acceptsRandomMessageNumbers == TestResults.FALSE) {
+            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
         } else {
-            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
+            report.putResult(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
         }
     }
 

@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -28,7 +28,7 @@ public class EarlyCcsResult extends ProbeResult<ServerReport> {
     @Override
     public void mergeData(ServerReport report) {
         if (earlyCcsVulnerabilityType == null) {
-            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.COULD_NOT_TEST);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
         } else {
             switch (earlyCcsVulnerabilityType) {
                 case VULN_EXPLOITABLE:
@@ -39,7 +39,7 @@ public class EarlyCcsResult extends ProbeResult<ServerReport> {
                     report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, Boolean.FALSE);
                     break;
                 case UNKNOWN:
-                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.COULD_NOT_TEST);
+                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
             }
         }
     }

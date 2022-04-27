@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -43,8 +43,8 @@ public class SignatureHashAlgorithmOrderProbe
             getSelectedSignatureAndHashAlgorithm(toTestList);
 
         return new SignatureHashAlgorithmOrderResult(
-            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResult.TRUE
-                : TestResult.FALSE);
+            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
+                : TestResults.FALSE);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SignatureHashAlgorithmOrderProbe
 
     @Override
     public SignatureHashAlgorithmOrderResult getCouldNotExecuteResult() {
-        return new SignatureHashAlgorithmOrderResult(TestResult.COULD_NOT_TEST);
+        return new SignatureHashAlgorithmOrderResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

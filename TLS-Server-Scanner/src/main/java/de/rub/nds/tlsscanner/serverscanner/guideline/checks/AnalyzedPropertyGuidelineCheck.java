@@ -9,14 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import static de.rub.nds.scanner.core.constants.TestResult.CANNOT_BE_TESTED;
-import static de.rub.nds.scanner.core.constants.TestResult.COULD_NOT_TEST;
-import static de.rub.nds.scanner.core.constants.TestResult.ERROR_DURING_TEST;
-import static de.rub.nds.scanner.core.constants.TestResult.NOT_TESTED_YET;
-import static de.rub.nds.scanner.core.constants.TestResult.TIMEOUT;
-import static de.rub.nds.scanner.core.constants.TestResult.UNCERTAIN;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
@@ -26,14 +20,18 @@ import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
+@XmlSeeAlso({ TestResults.class })
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
+public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ScanReport> {
 
     private TlsAnalyzedProperty property;
 
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private AnalyzedPropertyGuidelineCheck() {
@@ -55,7 +53,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(ScanReport report) {
         TestResult reportResult = report.getResult(this.property);
-        switch (reportResult) {
+        switch ((TestResults) reportResult) {
             case UNCERTAIN:
             case COULD_NOT_TEST:
             case CANNOT_BE_TESTED:
@@ -63,8 +61,10 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(reportResult, property, result, reportResult);
+            default:
+                break;
         }
-        return new AnalyzedPropertyGuidelineCheckResult(TestResult.of(reportResult.equals(this.result)), property,
+        return new AnalyzedPropertyGuidelineCheckResult(TestResults.of(reportResult.equals(this.result)), property,
             result, reportResult);
     }
 
@@ -73,7 +73,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
         return "AnalyzedProperty_" + getRequirementLevel() + "_" + property + "_" + result;
     }
 
-    public AnalyzedProperty getProperty() {
+    public TlsAnalyzedProperty getProperty() {
         return property;
     }
 

@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -35,8 +36,8 @@ import java.util.LinkedList;
  */
 public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport, HelloRetryResult> {
 
-    private TestResult sendsHelloRetryRequest = TestResult.FALSE;
-    private TestResult issuesCookie = TestResult.FALSE;
+    private TestResult sendsHelloRetryRequest = TestResults.FALSE;
+    private TestResult issuesCookie = TestResults.FALSE;
     private NamedGroup serversChosenGroup = null;
 
     public HelloRetryProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -52,12 +53,12 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport,
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
     public HelloRetryResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, serversChosenGroup);
+        return new HelloRetryResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, serversChosenGroup);
     }
 
     @Override
@@ -91,11 +92,11 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport,
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
             && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
-            sendsHelloRetryRequest = TestResult.TRUE;
+            sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
-                issuesCookie = TestResult.TRUE;
+                issuesCookie = TestResults.TRUE;
             }
         }
     }

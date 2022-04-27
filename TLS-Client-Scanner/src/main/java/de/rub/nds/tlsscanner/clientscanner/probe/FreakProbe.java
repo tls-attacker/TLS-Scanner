@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -113,23 +113,23 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, Frea
             RSAClientKeyExchangeMessage rsaCke = (RSAClientKeyExchangeMessage) ckeMessage;
             BigInteger c = new BigInteger(1, rsaCke.getPublicKey().getValue());
             if (c.bitLength() <= MODULUS_LENGTH) {
-                return new FreakResult(TestResult.TRUE);
+                return new FreakResult(TestResults.TRUE);
             } else {
-                return new FreakResult(TestResult.FALSE);
+                return new FreakResult(TestResults.FALSE);
             }
         } else {
-            return new FreakResult(TestResult.FALSE);
+            return new FreakResult(TestResults.FALSE);
         }
     }
 
     @Override
     public boolean canBeExecuted(ClientReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE;
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResults.TRUE;
     }
 
     @Override
     public FreakResult getCouldNotExecuteResult() {
-        return new FreakResult(TestResult.CANNOT_BE_TESTED);
+        return new FreakResult(TestResults.CANNOT_BE_TESTED);
     }
 
     @Override
