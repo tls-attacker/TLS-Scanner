@@ -33,7 +33,7 @@ import org.junit.rules.TemporaryFolder;
 
 public class GuidelineIOTest {
     private Guideline original, result;
-    
+
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
 
