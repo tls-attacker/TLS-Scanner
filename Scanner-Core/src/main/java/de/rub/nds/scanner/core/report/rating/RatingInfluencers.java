@@ -37,7 +37,7 @@ public class RatingInfluencers implements Serializable {
         return ratingInfluencers;
     }
 
-    public void setRatingInfluencer(LinkedList<RatingInfluencer> ratingInfluencers) {
+    public void setRatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
         this.ratingInfluencers = ratingInfluencers;
     }
 

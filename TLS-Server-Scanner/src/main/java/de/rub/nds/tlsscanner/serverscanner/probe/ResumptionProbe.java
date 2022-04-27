@@ -217,7 +217,6 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
             return TestResults.COULD_NOT_TEST;
         }
         ServerHelloMessage second = hellos.get(1);
-        second.getExtension(KeyShareExtensionMessage.class);
         return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResults.TRUE : TestResults.FALSE;
     }
 
