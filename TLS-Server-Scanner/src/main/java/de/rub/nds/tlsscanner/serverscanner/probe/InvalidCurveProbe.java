@@ -210,7 +210,7 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
             for (NamedGroup group : report.getSupportedTls13Groups()) {
-                if (NamedGroup.getImplemented().contains(group)
+                if (NamedGroup.getImplemented().contains(group) && group.isCurve()
                     && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     supportedTls13FpGroups.add(group);
                 }
