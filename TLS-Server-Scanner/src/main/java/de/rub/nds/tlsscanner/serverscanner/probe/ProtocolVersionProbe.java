@@ -74,11 +74,10 @@ public class ProtocolVersionProbe extends TlsProbe {
         if (toTest == ProtocolVersion.SSL2) {
             return isSSL2Supported();
         }
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setHighestProtocolVersion(toTest);
+        Config tlsConfig;
+        List<CipherSuite> cipherSuites = new LinkedList<>();
         if (!toTest.isTLS13()) {
-            List<CipherSuite> cipherSuites = new LinkedList<>();
+            tlsConfig = getConfigSelector().getBaseConfig();
             if (intolerance) {
                 cipherSuites.addAll(CipherSuite.getImplemented());
             } else {
@@ -86,8 +85,14 @@ public class ProtocolVersionProbe extends TlsProbe {
                 cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
                 cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             }
-            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        } else {
+            tlsConfig = getConfigSelector().getTls13BaseConfig();
+            cipherSuites.addAll(CipherSuite.getTls13CipherSuites());
         }
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        tlsConfig.setHighestProtocolVersion(toTest);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

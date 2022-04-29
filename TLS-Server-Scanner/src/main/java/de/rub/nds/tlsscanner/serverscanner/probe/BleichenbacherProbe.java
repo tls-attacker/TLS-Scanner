@@ -34,17 +34,24 @@ import java.util.Objects;
 
 public class BleichenbacherProbe extends TlsProbe {
 
+    private static final int NUMBER_OF_ITERATIONS = 3;
+    private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
+    private static final int NUMBER_OF_ADDTIONAL_ITERATIONS = 7;
+    private static final int NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE = 9;
+
     private final ScannerDetail scanDetail;
-    private static int numberOfIterations;
-    private static int numberOfAddtionalIterations;
+    private final int numberOfIterations;
+    private final int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     public BleichenbacherProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, configSelector);
         scanDetail = getConfigSelector().getScannerConfig().getScanDetail();
-        numberOfIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+        numberOfIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ITERATIONS
+            : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
+        numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
+            : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
     }
 
     @Override

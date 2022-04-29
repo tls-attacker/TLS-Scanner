@@ -17,8 +17,6 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -279,6 +277,7 @@ public class NamedGroupsProbe extends TlsProbe {
         }
 
         tlsConfig.setDefaultClientSupportedCipherSuites(allEcCipherSuites);
+        getConfigSelector().repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
 
@@ -302,8 +301,6 @@ public class NamedGroupsProbe extends TlsProbe {
     private Config getBasicConfig() {
         Config tlsConfig = getConfigSelector().getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
         return tlsConfig;
     }
 

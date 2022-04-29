@@ -155,13 +155,8 @@ public class CommonBugProbe extends TlsProbe {
         try {
             State state = new State(config, trace);
             executeState(state);
-            if (checkForTrue) {
-                return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                    ? TestResult.TRUE : TestResult.FALSE;
-            } else {
-                return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                    ? TestResult.FALSE : TestResult.TRUE;
-            }
+            return checkForTrue == WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());

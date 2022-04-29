@@ -53,7 +53,7 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
+        Config tlsConfig = getConfigSelector().getBaseConfig();
         List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
             .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);

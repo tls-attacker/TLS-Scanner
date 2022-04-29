@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -38,6 +39,9 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        // ESNI stuff is in a bad state and only works with X25519 on our end
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
         executeState(state);
 

@@ -42,9 +42,9 @@ public class SimulationRequest {
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
-        // TODO: discuss
-        config.setStopReceivingAfterWarning(true);
-        config.setStopActionsAfterWarning(true);
+        config.setStopReceivingAfterWarning(false);
+        config.setStopActionsAfterWarning(false);
+        config.setEnforceSettings(false);
 
         WorkflowTrace trace = new WorkflowTrace();
 

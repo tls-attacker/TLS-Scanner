@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -24,6 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,12 +33,12 @@ import org.apache.logging.log4j.Logger;
 public class ConfigSelector {
 
     private ScannerConfig scannerConfig;
-
     private Config workingConfig;
 
-    public final String PATH = "/configs/";
-
-    public final List<String> CONFIGS = Arrays.asList("default.config", "nice.config");
+    public static final String PATH = "/configs/";
+    public static final String SSL2_CONFIG = "ssl2Only.config";
+    public static final String TLS13_CONFIG = "tls13Only.config";
+    public static final List<String> CONFIGS = Arrays.asList("default.config", "nice.config");
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -44,13 +46,13 @@ public class ConfigSelector {
         this.scannerConfig = scannerConfig;
     }
 
-    public boolean init() {
+    public boolean findWorkingConfig() {
         for (String resource : CONFIGS) {
             Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
             applyDelegates(config);
             applyPerformanceParamters(config);
             repairConfig(config);
-            if (works(config)) {
+            if (configWorks(config)) {
                 workingConfig = config.createCopy();
                 return true;
             }
@@ -58,9 +60,9 @@ public class ConfigSelector {
         return false;
     }
 
-    private boolean works(Config config) {
+    private boolean configWorks(Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
         WorkflowExecutor executor =
             WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
@@ -75,9 +77,8 @@ public class ConfigSelector {
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
-        // TODO: discuss
-        config.setStopReceivingAfterWarning(true);
-        config.setStopActionsAfterWarning(true);
+        config.setStopReceivingAfterWarning(false);
+        config.setStopActionsAfterWarning(false);
         config.setEnforceSettings(false);
     }
 
@@ -88,19 +89,29 @@ public class ConfigSelector {
     }
 
     public Config repairConfig(Config config) {
-        // TODO: is that enough? tls 1.3?
-        boolean containsEc = false;
-        for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
-            KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-            if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
-                containsEc = true;
-                break;
-            }
-        }
-        config.setAddEllipticCurveExtension(containsEc);
         if (config.getHighestProtocolVersion().isTLS13()) {
+            config.setAddEllipticCurveExtension(true);
             config.setAddECPointFormatExtension(false);
+            Iterator iterator = config.getDefaultClientNamedGroups().iterator();
+            while (iterator.hasNext()) {
+                NamedGroup group = (NamedGroup) iterator.next();
+                if (!group.isTls13()) {
+                    iterator.remove();
+                }
+            }
         } else {
+            boolean containsEc = false;
+            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
+                try {
+                    KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
+                    if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.isEC()) {
+                        containsEc = true;
+                        break;
+                    }
+                } catch (UnsupportedOperationException ex) {
+                }
+            }
+            config.setAddEllipticCurveExtension(containsEc);
             config.setAddECPointFormatExtension(containsEc);
         }
         return config;
@@ -111,14 +122,14 @@ public class ConfigSelector {
     }
 
     public Config getSSL2BaseConfig() {
-        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + "ssl2Only.config"));
+        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + SSL2_CONFIG));
         applyDelegates(config);
         applyPerformanceParamters(config);
         return config;
     }
 
     public Config getTls13BaseConfig() {
-        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + "tls13Only.config"));
+        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
         applyDelegates(config);
         applyPerformanceParamters(config);
         return config;

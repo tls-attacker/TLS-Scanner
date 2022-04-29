@@ -42,13 +42,13 @@ import java.util.List;
 public class CcaProbe extends TlsProbe {
     private final List<VersionSuiteListPair> versionSuiteListPairsList;
 
-    private final boolean increasingTimeout = false;
+    private static final boolean INCREASING_TIMEOUT = false;
 
-    private final long additionalTimeout = 10000;
+    private static final long ADDITIONAL_TIMEOUT = 10000;
 
-    private final long additionalTcpTimeout = 1000;
+    private static final long ADDITIONAL_TCP_TIMEOUT = 1000;
 
-    private final int reexecutions = 3;
+    private static final int REEXECUTIONS = 3;
 
     public CcaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, configSelector);
@@ -101,8 +101,8 @@ public class CcaProbe extends TlsProbe {
                         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
                         getConfigSelector().repairConfig(tlsConfig);
-                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
-                            increasingTimeout, reexecutions, additionalTcpTimeout);
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, ADDITIONAL_TIMEOUT,
+                            INCREASING_TIMEOUT, REEXECUTIONS, ADDITIONAL_TCP_TIMEOUT);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }

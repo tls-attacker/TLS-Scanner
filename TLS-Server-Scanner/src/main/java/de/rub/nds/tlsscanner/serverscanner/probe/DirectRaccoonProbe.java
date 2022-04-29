@@ -44,8 +44,8 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final int iterationsPerHandshake = 3;
-    private final int additionalIterationsPerHandshake = 97;
+    private static final int ITERATIONS_PER_HANDSHAKE = 3;
+    private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -76,13 +76,13 @@ public class DirectRaccoonProbe extends TlsProbe {
         ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
         List<VectorResponse> responseMap =
-            createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
+            createVectorResponseList(version, suite, workflowType, ITERATIONS_PER_HANDSHAKE);
         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
             new InformationLeakTest<>(new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
 
         if (informationLeakTest.isDistinctAnswers()) {
-            LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
-            responseMap = createVectorResponseList(version, suite, workflowType, additionalIterationsPerHandshake);
+            LOGGER.debug("Found non identical answers, performing " + ITERATIONS_PER_HANDSHAKE + " additional tests");
+            responseMap = createVectorResponseList(version, suite, workflowType, ADDITIONAL_ITERATIONS_PER_HANDSHAKE);
             informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
         return informationLeakTest;

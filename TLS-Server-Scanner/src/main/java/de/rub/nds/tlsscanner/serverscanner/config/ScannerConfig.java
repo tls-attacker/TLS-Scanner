@@ -27,8 +27,6 @@ import org.bouncycastle.util.IPAddress;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 
 public class ScannerConfig extends TLSDelegateConfig {
 
@@ -97,10 +95,6 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(ccaDelegate);
         addDelegate(dtlsDelegate);
         addDelegate(callbackDelegate);
-
-        // TODO: remove
-        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
-        Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.INFO);
     }
 
     public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {

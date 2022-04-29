@@ -211,7 +211,7 @@ public class TlsScanner {
                 if (speaksProtocol(protocolType)) {
                     speaksProtocol = true;
                     LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
-                    if (configSelector.init()) {
+                    if (configSelector.findWorkingConfig()) {
                         isHandshaking = true;
                         LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
 
@@ -280,7 +280,6 @@ public class TlsScanner {
 
     public boolean isConnectable() {
         try {
-            // TODO: change to config selector?
             Config tlsConfig = config.createConfig();
             ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
             return checker.isConnectable();

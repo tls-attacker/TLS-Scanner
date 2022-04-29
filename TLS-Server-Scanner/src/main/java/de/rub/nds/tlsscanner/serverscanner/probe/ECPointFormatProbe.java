@@ -117,6 +117,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
             tlsConfig.setDefaultClientKeyShareNamedGroups(secpGroups);
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+            tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
 
             executeState(state);
