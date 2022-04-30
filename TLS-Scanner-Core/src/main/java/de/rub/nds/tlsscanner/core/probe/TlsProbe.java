@@ -85,7 +85,7 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
     public void merge(Report report) {
         // merge data
         if (this.startTime != 0 && this.stopTime != 0)
-            report.getPerformanceList().add(new PerformanceData(this.type, this.startTime, this.stopTime));
+            report.getPerformanceList().add(new PerformanceData(super.getType(), this.startTime, this.stopTime));
         this.mergeData(report);
         TestResult result;
         for (TlsAnalyzedProperty prop : this.propertiesMap.keySet()) {

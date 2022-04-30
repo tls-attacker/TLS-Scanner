@@ -20,7 +20,7 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Runnabl
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    protected final ProbeType type;
+    private final ProbeType type;
 
     private StatsWriter writer;
 
