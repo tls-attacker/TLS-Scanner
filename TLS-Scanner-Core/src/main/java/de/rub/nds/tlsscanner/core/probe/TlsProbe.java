@@ -67,11 +67,11 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
         return parallelExecutor;
     }
 
-    protected void register(TlsAnalyzedProperty property) {
+    protected final void register(TlsAnalyzedProperty property) {
         this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
     }
 
-    protected void put(TlsAnalyzedProperty aProp, TestResult result) {
+    protected final void put(TlsAnalyzedProperty aProp, TestResult result) {
         if (!this.propertiesMap.containsKey(aProp))
             this.propertiesMap.replace(aProp, result);
         else { // unregistered property
@@ -82,7 +82,7 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
 
     protected abstract void mergeData(Report report);
 
-    public void merge(Report report) {
+    public final void merge(Report report) {
         // merge data
         if (this.startTime != 0 && this.stopTime != 0)
             report.getPerformanceList().add(new PerformanceData(super.getType(), this.startTime, this.stopTime));
