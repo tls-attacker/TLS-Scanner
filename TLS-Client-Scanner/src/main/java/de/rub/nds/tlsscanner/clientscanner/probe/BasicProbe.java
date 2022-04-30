@@ -73,12 +73,6 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     public BasicProbe getCouldNotExecuteResult() {
-        this.clientAdvertisedCipherSuites = null;
-        this.clientAdvertisedCompressions = null;
-        this.clientSupportedSignatureAndHashAlgorithms = null;
-        this.clientAdvertisedExtensions = null;
-        this.clientAdvertisedNamedGroupsList = this.clientKeyShareNamedGroupsList = null;
-        this.clientAdvertisedPointFormatsList = null;
         return this;
     }
 
