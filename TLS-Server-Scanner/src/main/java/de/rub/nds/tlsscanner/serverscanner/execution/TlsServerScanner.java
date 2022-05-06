@@ -60,6 +60,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
@@ -195,6 +196,7 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
+        addProbeToProbeList(new ConnectionClosingProbe(config, parallelExecutor));
         // Init StatsWriter
 
         afterList.add(new Sweet32AfterProbe());
