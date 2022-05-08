@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -28,6 +29,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.constants.BasicProbeTestResult;
+import de.rub.nds.tlsscanner.clientscanner.constants.MissingCHResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -46,7 +48,8 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-
+    private TestResult result;
+    
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
         super.register(TlsAnalyzedProperty.BASIC_PROBE_RESULTS);
@@ -69,6 +72,9 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             this.clientAdvertisedNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
             this.clientAdvertisedPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             this.clientKeyShareNamedGroupsList = getKeyShareGroups(trace);
+            this.result = new BasicProbeTestResult(this.clientAdvertisedCipherSuites,
+            		this.clientAdvertisedCompressions, this.clientSupportedSignatureAndHashAlgorithms, this.clientAdvertisedExtensions,
+            		this.clientAdvertisedNamedGroupsList, this.clientKeyShareNamedGroupsList, this.clientAdvertisedPointFormatsList);
         } else {
             getCouldNotExecuteResult();
         }
@@ -76,6 +82,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     public BasicProbe getCouldNotExecuteResult() {
+    	this.result = new MissingCHResult();
         return this;
     }
 
@@ -102,9 +109,6 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-        BasicProbeTestResult result = new BasicProbeTestResult(clientAdvertisedCipherSuites,
-            clientAdvertisedCompressions, clientSupportedSignatureAndHashAlgorithms, clientAdvertisedExtensions,
-            clientAdvertisedNamedGroupsList, clientKeyShareNamedGroupsList, clientAdvertisedPointFormatsList);
-        super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, result);
+        super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, this.result);
     }
 }
