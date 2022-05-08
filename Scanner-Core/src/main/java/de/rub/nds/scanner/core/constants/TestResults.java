@@ -34,9 +34,4 @@ public enum TestResults implements TestResult {
     public static TestResults of(boolean value) {
         return value ? TRUE : FALSE;
     }
-
-    @Override
-    public TestResults getResultStatus() {
-        return this;
-    }
 }

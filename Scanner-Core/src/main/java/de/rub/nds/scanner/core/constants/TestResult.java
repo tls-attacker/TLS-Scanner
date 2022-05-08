@@ -11,6 +11,4 @@ package de.rub.nds.scanner.core.constants;
 
 public interface TestResult {
     public abstract String name();
-
-    public TestResults getResultStatus();
 }
