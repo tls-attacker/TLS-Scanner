@@ -26,116 +26,79 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BasicProbeTestResult implements TestResult {
 
-    private List<CipherSuite> clientAdvertisedCipherSuites;
-    private List<CompressionMethod> clientAdvertisedCompressions;
-    private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
-    private Set<ExtensionType> clientAdvertisedExtensions;
-    private List<NamedGroup> clientAdvertisedNamedGroupsList;
-    private List<NamedGroup> clientKeyShareNamedGroupsList;
-    private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    
+    private final List<CipherSuite> clientAdvertisedCipherSuites;
+    private final List<CompressionMethod> clientAdvertisedCompressions;
+    private final List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
+    private final Set<ExtensionType> clientAdvertisedExtensions;
+    private final List<NamedGroup> clientAdvertisedNamedGroupsList;
+    private final List<NamedGroup> clientKeyShareNamedGroupsList;
+    private final List<ECPointFormat> clientAdvertisedPointFormatsList;
+
     @Override
     public String name() {
         return "BasicProbeTestResult";
     }
 
-	/**
-	 * @return the clientAdvertisedCipherSuites
-	 */
-	public List<CipherSuite> getClientAdvertisedCipherSuites() {
-		return clientAdvertisedCipherSuites;
-	}
+    public BasicProbeTestResult(List<CipherSuite> clientAdvertisedCipherSuites,
+        List<CompressionMethod> clientAdvertisedCompressions,
+        List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms,
+        Set<ExtensionType> clientAdvertisedExtensions, List<NamedGroup> clientAdvertisedNamedGroupsList,
+        List<NamedGroup> clientKeyShareNamedGroupsList, List<ECPointFormat> clientAdvertisedPointFormatsList) {
+        this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
+        this.clientAdvertisedCompressions = clientAdvertisedCompressions;
+        this.clientSupportedSignatureAndHashAlgorithms = clientSupportedSignatureAndHashAlgorithms;
+        this.clientAdvertisedExtensions = clientAdvertisedExtensions;
+        this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
+        this.clientKeyShareNamedGroupsList = clientKeyShareNamedGroupsList;
+        this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
+    }
 
-	/**
-	 * @param clientAdvertisedCipherSuites the clientAdvertisedCipherSuites to set
-	 */
-	public void setClientAdvertisedCipherSuites(List<CipherSuite> clientAdvertisedCipherSuites) {
-		this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
-	}
+    /**
+     * @return the clientAdvertisedCipherSuites
+     */
+    public List<CipherSuite> getClientAdvertisedCipherSuites() {
+        return clientAdvertisedCipherSuites;
+    }
 
-	/**
-	 * @return the clientAdvertisedCompressions
-	 */
-	public List<CompressionMethod> getClientAdvertisedCompressions() {
-		return clientAdvertisedCompressions;
-	}
+    /**
+     * @return the clientAdvertisedCompressions
+     */
+    public List<CompressionMethod> getClientAdvertisedCompressions() {
+        return clientAdvertisedCompressions;
+    }
 
-	/**
-	 * @param clientAdvertisedCompressions the clientAdvertisedCompressions to set
-	 */
-	public void setClientAdvertisedCompressions(List<CompressionMethod> clientAdvertisedCompressions) {
-		this.clientAdvertisedCompressions = clientAdvertisedCompressions;
-	}
+    /**
+     * @return the clientSupportedSignatureAndHashAlgorithms
+     */
+    public List<SignatureAndHashAlgorithm> getClientSupportedSignatureAndHashAlgorithms() {
+        return clientSupportedSignatureAndHashAlgorithms;
+    }
 
-	/**
-	 * @return the clientSupportedSignatureAndHashAlgorithms
-	 */
-	public List<SignatureAndHashAlgorithm> getClientSupportedSignatureAndHashAlgorithms() {
-		return clientSupportedSignatureAndHashAlgorithms;
-	}
+    /**
+     * @return the clientAdvertisedExtensions
+     */
+    public Set<ExtensionType> getClientAdvertisedExtensions() {
+        return clientAdvertisedExtensions;
+    }
 
-	/**
-	 * @param clientSupportedSignatureAndHashAlgorithms the clientSupportedSignatureAndHashAlgorithms to set
-	 */
-	public void setClientSupportedSignatureAndHashAlgorithms(
-			List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms) {
-		this.clientSupportedSignatureAndHashAlgorithms = clientSupportedSignatureAndHashAlgorithms;
-	}
+    /**
+     * @return the clientAdvertisedNamedGroupsList
+     */
+    public List<NamedGroup> getClientAdvertisedNamedGroupsList() {
+        return clientAdvertisedNamedGroupsList;
+    }
 
-	/**
-	 * @return the clientAdvertisedExtensions
-	 */
-	public Set<ExtensionType> getClientAdvertisedExtensions() {
-		return clientAdvertisedExtensions;
-	}
+    /**
+     * @return the clientKeyShareNamedGroupsList
+     */
+    public List<NamedGroup> getClientKeyShareNamedGroupsList() {
+        return clientKeyShareNamedGroupsList;
+    }
 
-	/**
-	 * @param clientAdvertisedExtensions the clientAdvertisedExtensions to set
-	 */
-	public void setClientAdvertisedExtensions(Set<ExtensionType> clientAdvertisedExtensions) {
-		this.clientAdvertisedExtensions = clientAdvertisedExtensions;
-	}
-
-	/**
-	 * @return the clientAdvertisedNamedGroupsList
-	 */
-	public List<NamedGroup> getClientAdvertisedNamedGroupsList() {
-		return clientAdvertisedNamedGroupsList;
-	}
-
-	/**
-	 * @param clientAdvertisedNamedGroupsList the clientAdvertisedNamedGroupsList to set
-	 */
-	public void setClientAdvertisedNamedGroupsList(List<NamedGroup> clientAdvertisedNamedGroupsList) {
-		this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
-	}
-
-	/**
-	 * @return the clientKeyShareNamedGroupsList
-	 */
-	public List<NamedGroup> getClientKeyShareNamedGroupsList() {
-		return clientKeyShareNamedGroupsList;
-	}
-
-	/**
-	 * @param clientKeyShareNamedGroupsList the clientKeyShareNamedGroupsList to set
-	 */
-	public void setClientKeyShareNamedGroupsList(List<NamedGroup> clientKeyShareNamedGroupsList) {
-		this.clientKeyShareNamedGroupsList = clientKeyShareNamedGroupsList;
-	}
-
-	/**
-	 * @return the clientAdvertisedPointFormatsList
-	 */
-	public List<ECPointFormat> getClientAdvertisedPointFormatsList() {
-		return clientAdvertisedPointFormatsList;
-	}
-
-	/**
-	 * @param clientAdvertisedPointFormatsList the clientAdvertisedPointFormatsList to set
-	 */
-	public void setClientAdvertisedPointFormatsList(List<ECPointFormat> clientAdvertisedPointFormatsList) {
-		this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
-	}
-
+    /**
+     * @return the clientAdvertisedPointFormatsList
+     */
+    public List<ECPointFormat> getClientAdvertisedPointFormatsList() {
+        return clientAdvertisedPointFormatsList;
+    }
 }

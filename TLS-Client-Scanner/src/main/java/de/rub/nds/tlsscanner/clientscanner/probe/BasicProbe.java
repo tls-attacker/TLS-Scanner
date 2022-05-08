@@ -102,15 +102,9 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-    	BasicProbeTestResult result = new BasicProbeTestResult();
-    	result.setClientAdvertisedCipherSuites(this.clientAdvertisedCipherSuites);
-    	result.setClientAdvertisedCompressions(this.clientAdvertisedCompressions);
-    	result.setClientSupportedSignatureAndHashAlgorithms(this.clientSupportedSignatureAndHashAlgorithms);
-    	result.setClientAdvertisedExtensions(this.clientAdvertisedExtensions);
-    	result.setClientAdvertisedNamedGroupsList(this.clientAdvertisedNamedGroupsList);
-    	result.setClientKeyShareNamedGroupsList(this.clientKeyShareNamedGroupsList);
-    	result.setClientAdvertisedPointFormatsList(this.clientAdvertisedPointFormatsList);
-    
-    	super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, null);
-        }
+        BasicProbeTestResult result = new BasicProbeTestResult(clientAdvertisedCipherSuites,
+            clientAdvertisedCompressions, clientSupportedSignatureAndHashAlgorithms, clientAdvertisedExtensions,
+            clientAdvertisedNamedGroupsList, clientKeyShareNamedGroupsList, clientAdvertisedPointFormatsList);
+        super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, result);
+    }
 }
