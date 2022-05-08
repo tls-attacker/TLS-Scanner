@@ -53,11 +53,6 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Runnabl
         LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
     }
 
-    public void executeAndMerge(Report report) {
-        this.run();
-        merge(report);
-    }
-
     /**
      * Override for individual requirements.
      * 

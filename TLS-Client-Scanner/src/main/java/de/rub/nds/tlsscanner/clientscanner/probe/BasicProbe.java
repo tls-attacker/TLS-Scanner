@@ -49,7 +49,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
     private TestResult result;
-    
+
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
         super.register(TlsAnalyzedProperty.BASIC_PROBE_RESULTS);
@@ -72,9 +72,10 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             this.clientAdvertisedNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
             this.clientAdvertisedPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             this.clientKeyShareNamedGroupsList = getKeyShareGroups(trace);
-            this.result = new BasicProbeTestResult(this.clientAdvertisedCipherSuites,
-            		this.clientAdvertisedCompressions, this.clientSupportedSignatureAndHashAlgorithms, this.clientAdvertisedExtensions,
-            		this.clientAdvertisedNamedGroupsList, this.clientKeyShareNamedGroupsList, this.clientAdvertisedPointFormatsList);
+            this.result = new BasicProbeTestResult(this.clientAdvertisedCipherSuites, this.clientAdvertisedCompressions,
+                this.clientSupportedSignatureAndHashAlgorithms, this.clientAdvertisedExtensions,
+                this.clientAdvertisedNamedGroupsList, this.clientKeyShareNamedGroupsList,
+                this.clientAdvertisedPointFormatsList);
         } else {
             getCouldNotExecuteResult();
         }
@@ -82,7 +83,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     public BasicProbe getCouldNotExecuteResult() {
-    	this.result = new MissingCHResult();
+        this.result = new MissingCHResult();
         return this;
     }
 
