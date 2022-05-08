@@ -27,8 +27,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.constants.BasicProbeTestResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.LinkedList;
@@ -47,6 +49,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
+        super.register(TlsAnalyzedProperty.BASIC_PROBE_RESULTS);
     }
 
     @Override
@@ -99,12 +102,15 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.setAdvertisedCipherSuites(this.clientAdvertisedCipherSuites);
-        report.setClientAdvertisedCompressions(this.clientAdvertisedCompressions);
-        report.setClientAdvertisedSignatureAndHashAlgorithms(this.clientSupportedSignatureAndHashAlgorithms);
-        report.setClientAdvertisedExtensions(this.clientAdvertisedExtensions);
-        report.setClientAdvertisedNamedGroupsList(this.clientAdvertisedNamedGroupsList);
-        report.setClientAdvertisedKeyShareNamedGroupsList(this.clientKeyShareNamedGroupsList);
-        report.setClientAdvertisedPointFormatsList(this.clientAdvertisedPointFormatsList);
-    }
+    	BasicProbeTestResult result = new BasicProbeTestResult();
+    	result.setClientAdvertisedCipherSuites(this.clientAdvertisedCipherSuites);
+    	result.setClientAdvertisedCompressions(this.clientAdvertisedCompressions);
+    	result.setClientSupportedSignatureAndHashAlgorithms(this.clientSupportedSignatureAndHashAlgorithms);
+    	result.setClientAdvertisedExtensions(this.clientAdvertisedExtensions);
+    	result.setClientAdvertisedNamedGroupsList(this.clientAdvertisedNamedGroupsList);
+    	result.setClientKeyShareNamedGroupsList(this.clientKeyShareNamedGroupsList);
+    	result.setClientAdvertisedPointFormatsList(this.clientAdvertisedPointFormatsList);
+    
+    	super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, null);
+        }
 }
