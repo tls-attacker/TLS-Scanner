@@ -91,7 +91,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     @Override
     protected Requirement getRequirements(ClientReport report) {
         // TODO Check if atleast one non tls 1.3 version is supported
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     @Override

@@ -107,7 +107,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     @Override

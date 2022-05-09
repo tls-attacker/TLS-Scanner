@@ -144,6 +144,6 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 }

@@ -58,7 +58,7 @@ public class CcaSupportProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     private Config generateConfig() {

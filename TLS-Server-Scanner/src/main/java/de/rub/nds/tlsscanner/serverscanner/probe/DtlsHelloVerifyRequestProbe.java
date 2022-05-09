@@ -262,7 +262,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     @Override

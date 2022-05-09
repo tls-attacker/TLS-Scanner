@@ -106,7 +106,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {

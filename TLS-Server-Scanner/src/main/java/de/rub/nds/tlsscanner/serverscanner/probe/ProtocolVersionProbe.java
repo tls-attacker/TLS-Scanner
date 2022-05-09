@@ -169,7 +169,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report);
+        return ProbeRequirement.NO_REQUIREMENT;
     }
 
     private boolean isTls13Supported() {
