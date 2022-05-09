@@ -30,13 +30,13 @@ public class ProbeRequirement implements Requirement {
     private ProtocolVersion[] requiredProtocolVersions;
     private ProbeRequirement not;
     private ProbeRequirement[] requiredOR;
-    
+
     public static ProbeRequirement NO_REQUIREMENT = new ProbeRequirement(null);
 
     public ProbeRequirement(ServerReport report) {
         this.report = report;
     }
-    
+
     public ProbeRequirement getMissingRequirements() {
         ProbeRequirement missing = new ProbeRequirement(this.report);
 
