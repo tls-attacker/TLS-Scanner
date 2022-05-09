@@ -16,6 +16,7 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class ProbeRequirement implements Requirement {
     private TlsAnalyzedProperty[] requiredAnalyzedproperties, requiredAnalyzedpropertiesNot;
     private ProbeRequirement not;
     private ProbeRequirement[] requiredOR;
+
+    public static ProbeRequirement NO_REQUIREMENT = new ProbeRequirement(null);
 
     public ProbeRequirement(ClientReport report) {
         this.report = report;
