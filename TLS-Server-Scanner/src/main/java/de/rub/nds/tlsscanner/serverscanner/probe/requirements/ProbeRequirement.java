@@ -31,7 +31,7 @@ public class ProbeRequirement implements Requirement {
     private ProbeRequirement not;
     private ProbeRequirement[] requiredOR;
     
-    public static ProbeRequirement NO_REQUIREMENT;
+    public static ProbeRequirement NO_REQUIREMENT = new ProbeRequirement(null);
 
     public ProbeRequirement(ServerReport report) {
         this.report = report;

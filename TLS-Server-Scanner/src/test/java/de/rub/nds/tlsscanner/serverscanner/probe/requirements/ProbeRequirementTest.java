@@ -139,5 +139,7 @@ public class ProbeRequirementTest {
         etList.add(eType);
         report.setSupportedExtensions(etList);
         assertTrue(pReq.evaluateRequirements());
+        
+        assertTrue(ProbeRequirement.NO_REQUIREMENT.evaluateRequirements());
     }
 }
