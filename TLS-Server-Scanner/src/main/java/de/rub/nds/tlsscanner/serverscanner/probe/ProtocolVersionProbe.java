@@ -57,14 +57,10 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             toTestList.add(ProtocolVersion.TLS11);
             toTestList.add(ProtocolVersion.TLS12);
         }
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2,
+            TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override

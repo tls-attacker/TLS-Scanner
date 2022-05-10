@@ -32,7 +32,6 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -71,15 +70,13 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     public ResumptionProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, scannerConfig);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override

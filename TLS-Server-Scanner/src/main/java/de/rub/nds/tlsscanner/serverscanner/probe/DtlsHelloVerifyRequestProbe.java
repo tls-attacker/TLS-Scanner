@@ -60,13 +60,10 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
 
     public DtlsHelloVerifyRequestProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
-        super.register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
-        super.register(TlsAnalyzedProperty.HAS_COOKIE_CHECKS);
-        super.register(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE);
-        super.register(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE);
-        super.register(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
-        super.register(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
-        super.register(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+        super.register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
+            TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+            TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+            TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override

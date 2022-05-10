@@ -52,11 +52,10 @@ public class DtlsMessageSequenceProbe extends TlsProbe<ServerScannerConfig, Serv
 
     public DtlsMessageSequenceProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
-        super.register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
-        super.register(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
-        super.register(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
-        super.register(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
-        super.register(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        super.register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+            TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+            TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+            TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override

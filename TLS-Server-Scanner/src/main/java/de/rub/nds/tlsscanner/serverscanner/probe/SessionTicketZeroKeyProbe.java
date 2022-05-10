@@ -107,8 +107,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     public SessionTicketZeroKeyProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
-        super.register(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+            TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
     }
 
     @Override

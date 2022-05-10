@@ -47,10 +47,10 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     public ECPointFormatProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, scannerConfig);
-        super.register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
+            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION);
     }
 
     @Override

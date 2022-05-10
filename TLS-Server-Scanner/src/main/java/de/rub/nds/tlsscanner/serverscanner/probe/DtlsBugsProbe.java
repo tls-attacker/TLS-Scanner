@@ -53,9 +53,8 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public DtlsBugsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
-        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
-        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
-        super.register(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+            TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override

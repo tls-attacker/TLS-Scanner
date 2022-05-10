@@ -67,8 +67,11 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
         return parallelExecutor;
     }
 
-    protected final void register(TlsAnalyzedProperty property) {
-        this.propertiesMap.put(property, TestResults.UNASSIGNED_ERROR);
+    protected final void register(TlsAnalyzedProperty... properties) {
+        if (properties.length > 0) {
+            for (int i = 0; i < properties.length; i++)
+                this.propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
+        }
     }
 
     protected final void put(TlsAnalyzedProperty aProp, TestResult result) {

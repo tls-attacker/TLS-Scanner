@@ -42,12 +42,9 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     public VersionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     protected Config getTls13Config() {

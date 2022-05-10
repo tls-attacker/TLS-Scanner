@@ -37,8 +37,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
     }
 
     @Override

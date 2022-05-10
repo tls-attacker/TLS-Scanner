@@ -91,44 +91,23 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
     public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
         this.protocolVersions = new LinkedList<>();
-        super.register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ANON);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXPORT);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DES);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SEED);
-        super.register(TlsAnalyzedProperty.SUPPORTS_IDEA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_RC2);
-        super.register(TlsAnalyzedProperty.SUPPORTS_RC4);
-        super.register(TlsAnalyzedProperty.SUPPORTS_3DES);
-        super.register(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM);
-        super.register(TlsAnalyzedProperty.SUPPORTS_AEAD);
-        super.register(TlsAnalyzedProperty.SUPPORTS_PFS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_AES);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CAMELLIA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ARIA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CHACHA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_RSA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ECDSA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_RSA_CERT);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DSS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_GOST);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SRP);
-        super.register(TlsAnalyzedProperty.SUPPORTS_KERBEROS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN);
-        super.register(TlsAnalyzedProperty.SUPPORTS_PSK_RSA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_PSK_DHE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_FORTEZZA);
-        super.register(TlsAnalyzedProperty.SUPPORTS_NEWHOPE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ECMQV);
-        super.register(TlsAnalyzedProperty.PREFERS_PFS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF);
+        super.register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
+            TlsAnalyzedProperty.SUPPORTS_EXPORT, TlsAnalyzedProperty.SUPPORTS_DES, TlsAnalyzedProperty.SUPPORTS_SEED,
+            TlsAnalyzedProperty.SUPPORTS_IDEA, TlsAnalyzedProperty.SUPPORTS_RC2, TlsAnalyzedProperty.SUPPORTS_RC4,
+            TlsAnalyzedProperty.SUPPORTS_3DES, TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+            TlsAnalyzedProperty.SUPPORTS_AEAD, TlsAnalyzedProperty.SUPPORTS_PFS, TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
+            TlsAnalyzedProperty.SUPPORTS_AES, TlsAnalyzedProperty.SUPPORTS_CAMELLIA, TlsAnalyzedProperty.SUPPORTS_ARIA,
+            TlsAnalyzedProperty.SUPPORTS_CHACHA, TlsAnalyzedProperty.SUPPORTS_RSA,
+            TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, TlsAnalyzedProperty.SUPPORTS_ECDSA,
+            TlsAnalyzedProperty.SUPPORTS_RSA_CERT, TlsAnalyzedProperty.SUPPORTS_DSS, TlsAnalyzedProperty.SUPPORTS_GOST,
+            TlsAnalyzedProperty.SUPPORTS_SRP, TlsAnalyzedProperty.SUPPORTS_KERBEROS,
+            TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, TlsAnalyzedProperty.SUPPORTS_PSK_RSA,
+            TlsAnalyzedProperty.SUPPORTS_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE,
+            TlsAnalyzedProperty.SUPPORTS_FORTEZZA, TlsAnalyzedProperty.SUPPORTS_NEWHOPE,
+            TlsAnalyzedProperty.SUPPORTS_ECMQV, TlsAnalyzedProperty.PREFERS_PFS,
+            TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
+            TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
+            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF);
     }
 
     @Override

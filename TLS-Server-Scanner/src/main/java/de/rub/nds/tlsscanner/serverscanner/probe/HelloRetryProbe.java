@@ -43,8 +43,7 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     public HelloRetryProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
-        super.register(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY);
-        super.register(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+        super.register(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
     }
 
     @Override

@@ -52,12 +52,10 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     public ExtensionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, config);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
-        super.register(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
+        super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
+            TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
     }
 
     @Override

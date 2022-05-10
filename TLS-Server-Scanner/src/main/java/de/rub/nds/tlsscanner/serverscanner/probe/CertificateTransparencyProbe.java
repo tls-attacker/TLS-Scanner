@@ -67,10 +67,8 @@ public class CertificateTransparencyProbe extends TlsProbe<ServerScannerConfig, 
 
     public CertificateTransparencyProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
+        super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
+            TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
     }
 
     @Override

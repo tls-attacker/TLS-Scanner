@@ -39,9 +39,8 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public AlpacaProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
-        super.register(TlsAnalyzedProperty.STRICT_SNI);
-        super.register(TlsAnalyzedProperty.STRICT_ALPN);
-        super.register(TlsAnalyzedProperty.ALPACA_MITIGATED);
+        super.register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.STRICT_ALPN,
+            TlsAnalyzedProperty.ALPACA_MITIGATED);
     }
 
     @Override

@@ -34,8 +34,8 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public DrownProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,
+            TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override

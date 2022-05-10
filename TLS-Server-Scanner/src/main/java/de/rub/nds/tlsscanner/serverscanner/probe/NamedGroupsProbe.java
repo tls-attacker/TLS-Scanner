@@ -69,10 +69,9 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public NamedGroupsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE);
-        super.register(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER);
-        super.register(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
+        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
+            TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
+            TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY);
     }
 
     @Override
