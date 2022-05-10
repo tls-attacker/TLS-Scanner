@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -21,6 +22,7 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
@@ -47,6 +49,7 @@ public class HandshakeSimulationProbe extends TlsProbe<ServerScannerConfig, Serv
 
     public HandshakeSimulationProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, config);
+        super.register(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT);
         simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
@@ -228,7 +231,7 @@ public class HandshakeSimulationProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setSimulatedClientList(this.simulatedClientList);
+    	super.put(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT, new ListResult<SimulatedClientResult>(this.simulatedClientList, "SIMULATED_CLIENT"));
     }
 
     @Override
