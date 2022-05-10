@@ -13,10 +13,11 @@ import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
+import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ScannerProbe<Report extends ScanReport> implements Runnable {
+public abstract class ScannerProbe<Report extends ScanReport> implements Callable {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -44,13 +45,14 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Runnabl
     public abstract void adjustConfig(Report report);
 
     @Override
-    public void run() {
+    public ScannerProbe call() {
         LOGGER.debug("Executing: {}", getProbeName());
         this.startTime = System.currentTimeMillis();
         executeTest();
         this.stopTime = System.currentTimeMillis();
 
         LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
+        return this;
     }
 
     /**
