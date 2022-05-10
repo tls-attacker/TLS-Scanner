@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -44,7 +45,8 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
         super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
         super.register(TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+            TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
     }
 
     protected Config getTls13Config() {
@@ -117,7 +119,6 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     @Override
     protected void mergeData(ClientReport report) {
         if (supportedProtocolVersions != null) {
-            report.setSupportedVersions(supportedProtocolVersions);
             for (ProtocolVersion version : supportedProtocolVersions) {
                 if (version == ProtocolVersion.SSL2)
                     super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
@@ -155,5 +156,6 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }
