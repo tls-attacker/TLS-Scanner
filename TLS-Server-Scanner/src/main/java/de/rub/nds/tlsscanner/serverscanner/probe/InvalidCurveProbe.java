@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -94,7 +95,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, config);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
             TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
+            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST,
+            TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
     }
 
     @Override
@@ -873,6 +875,6 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, this.vulnerableEphemeral);
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
-        report.setInvalidCurveResultList(this.responses);
+        super.put(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT, new ListResult<InvalidCurveResponse>(this.responses, "INVALIDCURVE_RESULT"));
     }
 }
