@@ -72,7 +72,7 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
     }
 
     protected final void put(TlsAnalyzedProperty aProp, TestResult result) {
-        if (!this.propertiesMap.containsKey(aProp))
+        if (this.propertiesMap.containsKey(aProp))
             this.propertiesMap.replace(aProp, result);
         else { // unregistered property
             LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registered!");
