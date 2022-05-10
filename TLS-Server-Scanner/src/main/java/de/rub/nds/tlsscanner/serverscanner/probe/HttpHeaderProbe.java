@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -66,7 +67,8 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
         super.register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
             TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
-            TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH);
+            TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
+            TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
     }
 
     @Override
@@ -138,7 +140,7 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.SUPPORTS_HTTPS, this.speaksHttps);
-        report.setHeaderList(this.headerList);
+        super.put(TlsAnalyzedProperty.LIST_HEADER, new ListResult<HttpsHeader>(this.headerList, "HEADER"));
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (this.headerList != null) {
@@ -236,8 +238,8 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         super.put(TlsAnalyzedProperty.SUPPORTS_HPKP, this.supportsHpkp);
         super.put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, this.supportsHpkpReportOnly);
         report.setHpkpMaxAge(this.hpkpMaxAge);
-        report.setNormalHpkpPins(pinList);
-        report.setReportOnlyHpkpPins(reportOnlyPinList);
+        super.put(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, new ListResult<HpkpPin>(pinList, "NORMAL_HPKPPINS"));
+        super.put(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS, new ListResult<HpkpPin>(reportOnlyPinList, "REPORT_ONLY_HPKPPINS"));
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, this.vulnerableBreach);
     }
 

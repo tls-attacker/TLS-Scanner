@@ -47,6 +47,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
 	LIST_OCSP_RESULTS(TlsAnalyzedPropertyCategory.LIST),
 	LIST_VERSIONSUITE_PAIRS(TlsAnalyzedPropertyCategory.LIST),
 	SET_CIPHERSUITES(TlsAnalyzedPropertyCategory.SET),
+	LIST_HEADER(TlsAnalyzedPropertyCategory.LIST),
 	LIST_NORMAL_HPKPPINS(TlsAnalyzedPropertyCategory.LIST),
 	LIST_REPORT_ONLY_HPKPPINS(TlsAnalyzedPropertyCategory.LIST),
 	MAP_EXTRACTED_VALUECONTAINTER(TlsAnalyzedPropertyCategory.MAP),
