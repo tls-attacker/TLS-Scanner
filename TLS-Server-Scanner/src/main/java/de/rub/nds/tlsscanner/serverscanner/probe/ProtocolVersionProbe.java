@@ -209,8 +209,6 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
     @Override
     protected void mergeData(ServerReport report) {
         if (this.supportedProtocolVersions != null) {
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-                new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
             for (ProtocolVersion version : this.supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
