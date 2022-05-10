@@ -17,6 +17,7 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -79,7 +80,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
             TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
             TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
+            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+            TlsAnalyzedProperty.LIST_OCSP_RESULTS);
     }
 
     @Override
@@ -302,8 +304,7 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setOcspResults(this.certResults);
-
+        super.put(TlsAnalyzedProperty.LIST_OCSP_RESULTS, new ListResult<OcspCertificateResult>(this.certResults, "OCSP_RESULTS"));
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
         super.put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
