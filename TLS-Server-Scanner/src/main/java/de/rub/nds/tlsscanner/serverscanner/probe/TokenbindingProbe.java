@@ -158,8 +158,7 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
             super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             List<ExtensionType> list = new LinkedList<ExtensionType>();
             list.add(ExtensionType.TOKEN_BINDING);
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-                new ListResult<ExtensionType>(list, "SUPPORTED_EXTENSIONS"));
+            super.addToList(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, list);
         } else
             super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
     }

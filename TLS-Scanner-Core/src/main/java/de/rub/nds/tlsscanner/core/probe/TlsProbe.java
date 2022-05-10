@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.core.probe;
 
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
@@ -80,6 +81,16 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
         else { // unregistered property
             LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registered!");
             this.propertiesMap.put(aProp, result);
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void addToList(TlsAnalyzedProperty aProp, List<?> result) {
+        if (this.propertiesMap.containsKey(aProp))
+            ((ListResult) this.propertiesMap.get(aProp)).getList().addAll(result);
+        else { // unregistered property
+            LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registered!");
+            this.propertiesMap.put(aProp, new ListResult<>(result));
         }
     }
 
