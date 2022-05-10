@@ -34,5 +34,8 @@ public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     EC,
     FFDHE,
     BEST_PRACTICES,
-    HELLO_VERIFY_REQUEST
+    HELLO_VERIFY_REQUEST,
+    LIST,
+	MAP,
+	SET;
 }
