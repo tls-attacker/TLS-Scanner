@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
-    BASIC_PROBE_RESULTS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS),
