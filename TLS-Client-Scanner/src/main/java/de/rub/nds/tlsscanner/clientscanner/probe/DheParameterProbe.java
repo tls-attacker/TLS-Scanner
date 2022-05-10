@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -37,183 +38,184 @@ import java.util.Random;
 
 public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
-    // Primes with less than two bits (i.e. less than two) don't exist
-    private static final int BITLENGTH_CUTOFF_LOWER_BOUND = 2;
-    // Performance gets too slow
-    private static final int BITLENGTH_CUTOFF_UPPER_BOUND = 8192;
+	// Primes with less than two bits (i.e. less than two) don't exist
+	private static final int BITLENGTH_CUTOFF_LOWER_BOUND = 2;
+	// Performance gets too slow
+	private static final int BITLENGTH_CUTOFF_UPPER_BOUND = 8192;
 
-    private Random random;
+	private Random random;
 
-    private List<SmallSubgroupResult> smallSubgroupResults;
-    private List<CompositeModulusResult> compositeModulusResultList;
-    private List<CipherSuite> supportedDheCipherSuites;
-    private Integer lowestDheModulusLength;
+	private List<SmallSubgroupResult> smallSubgroupResults;
+	private List<CompositeModulusResult> compositeModulusResultList;
+	private List<CipherSuite> supportedDheCipherSuites;
+	private Integer lowestDheModulusLength;
 
-    public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-        super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
-        this.random = new Random(0);
-    }
+	public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+		super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
+		super.register(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS, TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT);
+		this.random = new Random(0);
+	}
 
-    @Override
-    public void executeTest() {
-        this.lowestDheModulusLength = getLowestDhModSize();
-        this.smallSubgroupResults = createSmallSubgroupResultList();
-        this.compositeModulusResultList = createCompositeModulusResultList();
-    }
+	@Override
+	public void executeTest() {
+		this.lowestDheModulusLength = getLowestDhModSize();
+		this.smallSubgroupResults = createSmallSubgroupResultList();
+		this.compositeModulusResultList = createCompositeModulusResultList();
+	}
 
-    // Implement get highest value
-    public int getLowestDhModSize() {
-        int lowerBound = BITLENGTH_CUTOFF_LOWER_BOUND;
-        int upperBound = BITLENGTH_CUTOFF_UPPER_BOUND;
-        do {
-            int testValue = lowerBound + ((upperBound - lowerBound) / 2);
-            if (testModLength(testValue)) {
-                upperBound = testValue;
-            } else {
-                lowerBound = testValue;
-            }
-        } while (lowerBound != upperBound);
-        return lowerBound;
-    }
+	// Implement get highest value
+	public int getLowestDhModSize() {
+		int lowerBound = BITLENGTH_CUTOFF_LOWER_BOUND;
+		int upperBound = BITLENGTH_CUTOFF_UPPER_BOUND;
+		do {
+			int testValue = lowerBound + ((upperBound - lowerBound) / 2);
+			if (testModLength(testValue)) {
+				upperBound = testValue;
+			} else {
+				lowerBound = testValue;
+			}
+		} while (lowerBound != upperBound);
+		return lowerBound;
+	}
 
-    private boolean testModLength(int bitLength) {
+	private boolean testModLength(int bitLength) {
 
-        Config config = scannerConfig.createConfig();
-        config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-        config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
-        config.setDefaultServerDhModulus(BigInteger.probablePrime(bitLength, random));
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.SERVER);
-        trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to confirm
-                                                                 // success
-        State state = new State(config, trace);
-        executeState(state);
-        return trace.executedAsPlanned();
+		Config config = scannerConfig.createConfig();
+		config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+		config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
+		config.setDefaultServerDhModulus(BigInteger.probablePrime(bitLength, random));
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+				RunningModeType.SERVER);
+		trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to confirm
+		// success
+		State state = new State(config, trace);
+		executeState(state);
+		return trace.executedAsPlanned();
 
-    }
+	}
 
-    private List<CompositeModulusResult> createCompositeModulusResultList() {
-        List<CompositeModulusResult> compositeModulusResultList = new LinkedList<>();
-        for (CompositeModulusType compositeType : CompositeModulusType.values()) {
-            // TODO select proper config here
-            Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
-            switch (compositeType) {
-                case EVEN:
-                    config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
-                    break;
-                case MOD3:
-                    config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
-                    break;
-                default:
-                    throw new RuntimeException("Failed to generate modulus; unknown type " + compositeType);
-            }
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-            trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
-                                                                     // confirm success
-            State state = new State(config, trace);
-            executeState(state);
-            if (trace.executedAsPlanned()) {
-                compositeModulusResultList.add(new CompositeModulusResult(TestResults.TRUE, compositeType));
-            } else {
-                compositeModulusResultList.add(new CompositeModulusResult(TestResults.FALSE, compositeType));
-                // TODO add different results based on partial failure
-            }
-        }
-        return compositeModulusResultList;
-    }
+	private List<CompositeModulusResult> createCompositeModulusResultList() {
+		List<CompositeModulusResult> compositeModulusResultList = new LinkedList<>();
+		for (CompositeModulusType compositeType : CompositeModulusType.values()) {
+			// TODO select proper config here
+			Config config = scannerConfig.createConfig();
+			config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+			config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
+			switch (compositeType) {
+			case EVEN:
+				config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
+				break;
+			case MOD3:
+				config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
+				break;
+			default:
+				throw new RuntimeException("Failed to generate modulus; unknown type " + compositeType);
+			}
+			WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+					.createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
+			trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
+			// confirm success
+			State state = new State(config, trace);
+			executeState(state);
+			if (trace.executedAsPlanned()) {
+				compositeModulusResultList.add(new CompositeModulusResult(TestResults.TRUE, compositeType));
+			} else {
+				compositeModulusResultList.add(new CompositeModulusResult(TestResults.FALSE, compositeType));
+				// TODO add different results based on partial failure
+			}
+		}
+		return compositeModulusResultList;
+	}
 
-    protected BigInteger createModThreeModulus(int bitLength) {
-        BigInteger modulus = BigInteger.probablePrime(bitLength, random);
-        while (!modulus.mod(BigInteger.valueOf(3)).equals(BigInteger.ZERO)) {
-            modulus = modulus.add(BigInteger.valueOf(2));
-        }
-        return modulus;
-    }
+	protected BigInteger createModThreeModulus(int bitLength) {
+		BigInteger modulus = BigInteger.probablePrime(bitLength, random);
+		while (!modulus.mod(BigInteger.valueOf(3)).equals(BigInteger.ZERO)) {
+			modulus = modulus.add(BigInteger.valueOf(2));
+		}
+		return modulus;
+	}
 
-    protected BigInteger createEvenModulus(int bitLength) {
-        BigInteger modulus = BigInteger.probablePrime(bitLength, random);
-        // We xor here to ensure the modulus will be even (was odd) but keeps the same bitlength
-        // When adding one, the bitlength could (unlikely, but possible) increase
-        // sub would work too
-        modulus = modulus.xor(BigInteger.ONE);
-        return modulus;
-    }
+	protected BigInteger createEvenModulus(int bitLength) {
+		BigInteger modulus = BigInteger.probablePrime(bitLength, random);
+		// We xor here to ensure the modulus will be even (was odd) but keeps the same bitlength
+		// When adding one, the bitlength could (unlikely, but possible) increase
+		// sub would work too
+		modulus = modulus.xor(BigInteger.ONE);
+		return modulus;
+	}
 
-    private List<SmallSubgroupResult> createSmallSubgroupResultList() {
-        List<SmallSubgroupResult> smallSubgroupResultList = new LinkedList<>();
-        for (SmallSubgroupType smallSubgroupType : SmallSubgroupType.values()) {
-            // TODO select proper config here
-            Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
-            switch (smallSubgroupType) {
-                case GENERATOR_ONE:
-                    config.setDefaultServerDhGenerator(BigInteger.ONE);
-                    break;
-                case GENERATOR_ZERO:
-                    config.setDefaultServerDhGenerator(BigInteger.ZERO);
-                    break;
-                case MODULUS_ONE:
-                    config.setDefaultServerDhModulus(BigInteger.ONE);
-                    break;
-                case MODULUS_ZERO:
-                    config.setDefaultServerDhModulus(BigInteger.ZERO);
-                    break;
-                default:
-                    throw new RuntimeException("Failed to generate generator; unknown type " + smallSubgroupType);
-            }
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-            trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
-                                                                     // confirm success
-            State state = new State(config, trace);
-            executeState(state);
-            if (trace.executedAsPlanned()) {
-                smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.TRUE, smallSubgroupType));
-            } else {
-                smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.FALSE, smallSubgroupType));
-                // TODO add different results based on partial failure
-            }
-        }
-        return smallSubgroupResultList;
-    }
+	private List<SmallSubgroupResult> createSmallSubgroupResultList() {
+		List<SmallSubgroupResult> smallSubgroupResultList = new LinkedList<>();
+		for (SmallSubgroupType smallSubgroupType : SmallSubgroupType.values()) {
+			// TODO select proper config here
+			Config config = scannerConfig.createConfig();
+			config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+			config.setDefaultSelectedCipherSuite(supportedDheCipherSuites.get(0));
+			switch (smallSubgroupType) {
+			case GENERATOR_ONE:
+				config.setDefaultServerDhGenerator(BigInteger.ONE);
+				break;
+			case GENERATOR_ZERO:
+				config.setDefaultServerDhGenerator(BigInteger.ZERO);
+				break;
+			case MODULUS_ONE:
+				config.setDefaultServerDhModulus(BigInteger.ONE);
+				break;
+			case MODULUS_ZERO:
+				config.setDefaultServerDhModulus(BigInteger.ZERO);
+				break;
+			default:
+				throw new RuntimeException("Failed to generate generator; unknown type " + smallSubgroupType);
+			}
+			WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+					.createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
+			trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
+			// confirm success
+			State state = new State(config, trace);
+			executeState(state);
+			if (trace.executedAsPlanned()) {
+				smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.TRUE, smallSubgroupType));
+			} else {
+				smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.FALSE, smallSubgroupType));
+				// TODO add different results based on partial failure
+			}
+		}
+		return smallSubgroupResultList;
+	}
 
-    @Override
-    public DheParameterProbe getCouldNotExecuteResult() {
-        this.smallSubgroupResults = new LinkedList<>();
-        for (SmallSubgroupType type : SmallSubgroupType.values())
-            this.smallSubgroupResults.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));
-        this.compositeModulusResultList = new LinkedList<>();
-        for (CompositeModulusType type : CompositeModulusType.values())
-            this.compositeModulusResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type));
-        this.lowestDheModulusLength = null;
-        return this;
-    }
+	@Override
+	public DheParameterProbe getCouldNotExecuteResult() {
+		this.smallSubgroupResults = new LinkedList<>();
+		for (SmallSubgroupType type : SmallSubgroupType.values())
+			this.smallSubgroupResults.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));
+		this.compositeModulusResultList = new LinkedList<>();
+		for (CompositeModulusType type : CompositeModulusType.values())
+			this.compositeModulusResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type));
+		this.lowestDheModulusLength = null;
+		return this;
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {
-        List<CipherSuite> ciphers = report.getAdvertisedCipherSuites();
-        List<CipherSuite> dheCiphers = new LinkedList<>();
-        for (CipherSuite suite : ciphers) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().contains("_DHE_")) {
-                dheCiphers.add(suite);
-            }
-        }
-        this.supportedDheCipherSuites = dheCiphers;
-    }
+	@Override
+	public void adjustConfig(ClientReport report) {
+		List<CipherSuite> ciphers = report.getAdvertisedCipherSuites();
+		List<CipherSuite> dheCiphers = new LinkedList<>();
+		for (CipherSuite suite : ciphers) {
+			if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().contains("_DHE_")) {
+				dheCiphers.add(suite);
+			}
+		}
+		this.supportedDheCipherSuites = dheCiphers;
+	}
 
-    @Override
-    protected void mergeData(ClientReport report) {
-        report.setCompositeDheModulusResultList(this.compositeModulusResultList);
-        report.setSmallDheSubgroupResults(this.smallSubgroupResults);
-        report.setLowestPossibleDheModulusSize(this.lowestDheModulusLength);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		super.put(TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT, new ListResult<CompositeModulusResult>(this.compositeModulusResultList, "COMPOSITE_DHEMODULUS_RESULT"));
+		super.put(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS, new ListResult<SmallSubgroupResult>(this.smallSubgroupResults, "SMALL_DHESUBGROUP_RESULTS"));
+		report.setLowestPossibleDheModulusSize(this.lowestDheModulusLength);
+	}
 
-    @Override
-    protected Requirement getRequirements(ClientReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
-    }
+	@Override
+	protected Requirement getRequirements(ClientReport report) {
+		return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
+	}
 }
