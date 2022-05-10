@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -37,7 +38,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     @Override
     protected void mergeData(ServerReport report) {
         if (this.compressions != null) {
-            report.setSupportedCompressionMethods(this.compressions);
+        	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, new ListResult<CompressionMethod>(this.compressions, "COMPRESSION_METHODS"));
             if (this.compressions.contains(CompressionMethod.LZS)
                 || this.compressions.contains(CompressionMethod.DEFLATE)) {
                 super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
