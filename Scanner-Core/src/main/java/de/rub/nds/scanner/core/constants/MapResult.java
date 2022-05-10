@@ -16,26 +16,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MapResult<S, T> implements TestResult{
+public class MapResult<S, T> implements TestResult {
 
-	private String name="MapResult";
-	private final Map<S, T> map;
-	
-	public MapResult(Map<S, T> map){
-		this.map = map;
-	}
-	
-	public MapResult(Map<S, T> map, String name){
-		this.map = map;
-		this.name = name;
-	}
-	
-	public Map<S, T> getMap() {
-		return this.map;
-	}
-	
-	@Override
-	public String name() {
-		return this.name;
-	}
+    private String name = "MapResult";
+    private final Map<S, T> map;
+
+    public MapResult(Map<S, T> map) {
+        this.map = map;
+    }
+
+    public MapResult(Map<S, T> map, String name) {
+        this.map = map;
+        this.name = name;
+    }
+
+    public Map<S, T> getMap() {
+        return this.map;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
 }

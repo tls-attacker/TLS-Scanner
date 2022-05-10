@@ -38,7 +38,8 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
+            TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
     }
 
     @Override
@@ -113,7 +114,8 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     @Override
     protected void mergeData(ServerReport report) {
         if (this.compressions != null) {
-        	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, new ListResult<CompressionMethod>(this.compressions, "COMPRESSION_METHODS"));
+            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS,
+                new ListResult<CompressionMethod>(this.compressions, "COMPRESSION_METHODS"));
             if (this.compressions.contains(CompressionMethod.LZS)
                 || this.compressions.contains(CompressionMethod.DEFLATE)) {
                 super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);

@@ -43,7 +43,9 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION, TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
+        super.register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
+            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
     }
 
     @Override
@@ -147,13 +149,17 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION, new ListResult<TokenBindingVersion>(this.supportedTokenBindingVersion, "SUPPORTED_TOKENBINDINGVERSION"));
-    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS, new ListResult<TokenBindingKeyParameters>(this.supportedTokenBindingKeyParameters, "SUPPORTED_TOKENBINDING_KEYPARAMETERS"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
+            new ListResult<TokenBindingVersion>(this.supportedTokenBindingVersion, "SUPPORTED_TOKENBINDINGVERSION"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS,
+            new ListResult<TokenBindingKeyParameters>(this.supportedTokenBindingKeyParameters,
+                "SUPPORTED_TOKENBINDING_KEYPARAMETERS"));
         if (this.supportedTokenBindingVersion != null && !this.supportedTokenBindingVersion.isEmpty()) {
             super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             List<ExtensionType> list = new LinkedList<ExtensionType>();
             list.add(ExtensionType.TOKEN_BINDING);
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, new ListResult<ExtensionType>(list, "SUPPORTED_EXTENSIONS"));
+            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+                new ListResult<ExtensionType>(list, "SUPPORTED_EXTENSIONS"));
         } else
             super.put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
     }

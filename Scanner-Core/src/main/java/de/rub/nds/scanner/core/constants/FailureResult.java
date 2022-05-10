@@ -15,10 +15,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public enum FailureResult implements TestResult{
+public enum FailureResult implements TestResult {
 
-	MISSING_CLIENT_HELLO;
-	
+    MISSING_CLIENT_HELLO;
+
     private FailureResult() {
     }
 

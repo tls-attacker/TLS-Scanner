@@ -68,7 +68,8 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         super.register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
             TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
             TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-            TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
+            TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
+            TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
     }
 
     @Override
@@ -239,7 +240,8 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         super.put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, this.supportsHpkpReportOnly);
         report.setHpkpMaxAge(this.hpkpMaxAge);
         super.put(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, new ListResult<HpkpPin>(pinList, "NORMAL_HPKPPINS"));
-        super.put(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS, new ListResult<HpkpPin>(reportOnlyPinList, "REPORT_ONLY_HPKPPINS"));
+        super.put(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS,
+            new ListResult<HpkpPin>(reportOnlyPinList, "REPORT_ONLY_HPKPPINS"));
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, this.vulnerableBreach);
     }
 

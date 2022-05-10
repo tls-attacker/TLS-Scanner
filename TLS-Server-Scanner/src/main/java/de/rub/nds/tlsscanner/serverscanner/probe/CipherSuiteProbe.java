@@ -109,7 +109,8 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
             TlsAnalyzedProperty.SUPPORTS_ECMQV, TlsAnalyzedProperty.PREFERS_PFS,
             TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
             TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
-            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS, TlsAnalyzedProperty.SET_CIPHERSUITES);
+            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
+            TlsAnalyzedProperty.SET_CIPHERSUITES);
     }
 
     @Override
@@ -335,7 +336,7 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
                 this.adjustCipherType(suite);
                 this.adjustCertificate(suite);
             }
-            super.put(TlsAnalyzedProperty.SET_CIPHERSUITES, new SetResult<CipherSuite>(allSupported, "CIPHERSUITES") );
+            super.put(TlsAnalyzedProperty.SET_CIPHERSUITES, new SetResult<CipherSuite>(allSupported, "CIPHERSUITES"));
         } else {
             this.supportsAeadCiphers = TestResults.COULD_NOT_TEST;
             this.prefersPfsCiphers = TestResults.COULD_NOT_TEST;
@@ -534,6 +535,7 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
         super.put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, this.supportsLegacyPrf);
         super.put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, this.supportsSha256Prf);
         super.put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, this.supportsSha384Prf);
-        super.put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS, new ListResult<VersionSuiteListPair>(this.pairLists, "VERSIONSUITE_PAIRS"));
+        super.put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
+            new ListResult<VersionSuiteListPair>(this.pairLists, "VERSIONSUITE_PAIRS"));
     }
 }

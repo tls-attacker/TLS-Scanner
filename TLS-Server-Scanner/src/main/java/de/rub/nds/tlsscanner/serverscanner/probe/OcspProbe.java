@@ -80,8 +80,7 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
             TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
             TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
-            TlsAnalyzedProperty.LIST_OCSP_RESULTS);
+            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.LIST_OCSP_RESULTS);
     }
 
     @Override
@@ -304,7 +303,8 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_OCSP_RESULTS, new ListResult<OcspCertificateResult>(this.certResults, "OCSP_RESULTS"));
+        super.put(TlsAnalyzedProperty.LIST_OCSP_RESULTS,
+            new ListResult<OcspCertificateResult>(this.certResults, "OCSP_RESULTS"));
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         super.put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
         super.put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());

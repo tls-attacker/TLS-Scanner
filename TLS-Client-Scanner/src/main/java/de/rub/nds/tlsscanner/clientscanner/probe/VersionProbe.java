@@ -156,6 +156,7 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
+            new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }

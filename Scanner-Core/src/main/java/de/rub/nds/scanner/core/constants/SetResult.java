@@ -16,26 +16,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SetResult<T> implements TestResult{
+public class SetResult<T> implements TestResult {
 
-	private String name="SetResult";
-	private final Set<T> set;
-	
-	public SetResult(Set<T> set){
-		this.set = set;
-	}
-	
-	public SetResult(Set<T> set, String name){
-		this.set = set;
-		this.name = name;
-	}
-	
-	public Set<T> getSet() {
-		return this.set;
-	}
-	
-	@Override
-	public String name() {
-		return this.name;
-	}
+    private String name = "SetResult";
+    private final Set<T> set;
+
+    public SetResult(Set<T> set) {
+        this.set = set;
+    }
+
+    public SetResult(Set<T> set, String name) {
+        this.set = set;
+        this.name = name;
+    }
+
+    public Set<T> getSet() {
+        return this.set;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
 }

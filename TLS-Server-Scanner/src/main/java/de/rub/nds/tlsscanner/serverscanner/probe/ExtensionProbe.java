@@ -160,7 +160,8 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, new ListResult<ExtensionType>(this.allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+            new ListResult<ExtensionType>(this.allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
         if (this.allSupportedExtensions != null) {
             for (ExtensionType type : this.allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC)

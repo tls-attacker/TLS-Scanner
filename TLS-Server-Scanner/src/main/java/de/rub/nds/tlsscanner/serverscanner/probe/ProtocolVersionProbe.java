@@ -209,7 +209,8 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
     @Override
     protected void mergeData(ServerReport report) {
         if (this.supportedProtocolVersions != null) {
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
+                new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
             for (ProtocolVersion version : this.supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
@@ -261,6 +262,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.CANNOT_BE_TESTED);
             super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.CANNOT_BE_TESTED);
         }
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
+            new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }

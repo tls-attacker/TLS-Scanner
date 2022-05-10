@@ -49,7 +49,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
 
     public SignatureAndHashAlgorithmProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, config);
-        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE, TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
+        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE,
+            TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
     }
 
     @Override
@@ -229,7 +230,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
 
     @Override
     protected void mergeData(ServerReport report) {
-    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE, new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListSke, "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
-    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13, new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListTls13, "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE,
+            new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListSke,
+                "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13,
+            new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListTls13,
+                "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13"));
     }
 }

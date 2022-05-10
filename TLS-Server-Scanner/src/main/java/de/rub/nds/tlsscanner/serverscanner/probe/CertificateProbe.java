@@ -60,7 +60,8 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public CertificateProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
-        super.register(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
+        super.register(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
+            TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
     }
 
     @Override
@@ -456,10 +457,14 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
     @Override
     protected void mergeData(ServerReport report) {
         if (this.certificates != null)
-        	super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN, new ListResult<CertificateChain>(new LinkedList<>(this.certificates), "CERTIFICATE_CHAIN"));
+            super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
+                new ListResult<CertificateChain>(new LinkedList<>(this.certificates), "CERTIFICATE_CHAIN"));
         else
-        	super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN, new ListResult<CertificateChain>(new LinkedList<>(), "CERTIFICATE_CHAIN"));
-        super.put(TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, new ListResult<NamedGroup>(this.ecdsaPkGroupsStatic, "STATIC_ECDSA_PKGROUPS"));
-        super.put(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS, new ListResult<NamedGroup>(this.ecdsaPkGroupsEphemeral, "EPHEMERAL_ECDSA_PKGROUPS"));
+            super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
+                new ListResult<CertificateChain>(new LinkedList<>(), "CERTIFICATE_CHAIN"));
+        super.put(TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS,
+            new ListResult<NamedGroup>(this.ecdsaPkGroupsStatic, "STATIC_ECDSA_PKGROUPS"));
+        super.put(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
+            new ListResult<NamedGroup>(this.ecdsaPkGroupsEphemeral, "EPHEMERAL_ECDSA_PKGROUPS"));
     }
 }

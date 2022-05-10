@@ -128,6 +128,7 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS, new ListResult<String>(this.supportedAlpnProtocols, "SUPPORTED_ALPNS"));
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS,
+            new ListResult<String>(this.supportedAlpnProtocols, "SUPPORTED_ALPNS"));
     }
 }

@@ -57,7 +57,7 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     public DirectRaccoonProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, config);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
-        		TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
+            TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
     }
 
     @Override
@@ -195,7 +195,9 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT, new ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>(this.testResultList, "DIRECTRACCOON_TESTRESULT"));
+        super.put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT,
+            new ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>(this.testResultList,
+                "DIRECTRACCOON_TESTRESULT"));
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
     }
 }

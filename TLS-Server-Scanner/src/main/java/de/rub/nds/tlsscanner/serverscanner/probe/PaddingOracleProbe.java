@@ -53,7 +53,8 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, config);
         this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
         this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
+            TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
     }
 
     @Override
@@ -190,7 +191,8 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             }
         } else
             this.vulnerable = TestResults.ERROR_DURING_TEST;
-        super.put(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS, new ListResult<InformationLeakTest<PaddingOracleTestInfo>>(this.resultList, "PADDINGORACLE_TESTRESULTS"));
+        super.put(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS,
+            new ListResult<InformationLeakTest<PaddingOracleTestInfo>>(this.resultList, "PADDINGORACLE_TESTRESULTS"));
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, this.vulnerable);
     }
 }

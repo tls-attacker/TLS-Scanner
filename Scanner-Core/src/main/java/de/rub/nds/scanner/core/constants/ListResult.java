@@ -16,26 +16,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ListResult<T> implements TestResult{
+public class ListResult<T> implements TestResult {
 
-	private String name="ListResult";
-	private final List<T> list;
-	
-	public ListResult(List<T> list){
-		this.list = list;
-	}
-	
-	public ListResult(List<T> list, String name){
-		this.list = list;
-		this.name = name;
-	}
-	
-	public List<T> getList() {
-		return this.list;
-	}
-	
-	@Override
-	public String name() {
-		return this.name;
-	}
+    private String name = "ListResult";
+    private final List<T> list;
+
+    public ListResult(List<T> list) {
+        this.list = list;
+    }
+
+    public ListResult(List<T> list, String name) {
+        this.list = list;
+        this.name = name;
+    }
+
+    public List<T> getList() {
+        return this.list;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
 }

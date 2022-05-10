@@ -50,9 +50,13 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
-        super.register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS,
-        		TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
-        		TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS);
+        super.register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES,
+            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS,
+            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS,
+            TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS,
+            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS,
+            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
+            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS);
     }
 
     @Override
@@ -105,12 +109,20 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-    	super.put(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES, new ListResult<CipherSuite>(this.clientAdvertisedCipherSuites, "ADVERTISED_CIPHERSUITES"));
-    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, new ListResult<CompressionMethod>(this.clientAdvertisedCompressions, "CLIENT_ADVERTISED_COMPRESSIONS"));
-    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS, new ListResult<SignatureAndHashAlgorithm>(this.clientSupportedSignatureAndHashAlgorithms, "CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS"));
-    	super.put(TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS, new SetResult<ExtensionType>(this.clientAdvertisedExtensions, "CLIENT_ADVERTISED_EXTENSIONS"));
-    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS, new ListResult<NamedGroup>(this.clientAdvertisedNamedGroupsList, "CLIENT_ADVERTISED_NAMEDGROUPS"));
-    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS, new ListResult<NamedGroup>(this.clientKeyShareNamedGroupsList, "CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS"));
-    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS, new ListResult<ECPointFormat>(this.clientAdvertisedPointFormatsList, "CLIENT_ADVERTISED_POINTFORMATS"));
+        super.put(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES,
+            new ListResult<CipherSuite>(this.clientAdvertisedCipherSuites, "ADVERTISED_CIPHERSUITES"));
+        super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS,
+            new ListResult<CompressionMethod>(this.clientAdvertisedCompressions, "CLIENT_ADVERTISED_COMPRESSIONS"));
+        super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS,
+            new ListResult<SignatureAndHashAlgorithm>(this.clientSupportedSignatureAndHashAlgorithms,
+                "CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS"));
+        super.put(TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS,
+            new SetResult<ExtensionType>(this.clientAdvertisedExtensions, "CLIENT_ADVERTISED_EXTENSIONS"));
+        super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS,
+            new ListResult<NamedGroup>(this.clientAdvertisedNamedGroupsList, "CLIENT_ADVERTISED_NAMEDGROUPS"));
+        super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
+            new ListResult<NamedGroup>(this.clientKeyShareNamedGroupsList, "CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS"));
+        super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS,
+            new ListResult<ECPointFormat>(this.clientAdvertisedPointFormatsList, "CLIENT_ADVERTISED_POINTFORMATS"));
     }
 }
