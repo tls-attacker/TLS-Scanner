@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -58,7 +59,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, config);
         this.versionSuiteListPairsList = new LinkedList<>();
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS);
+        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, TlsAnalyzedProperty.LIST_CCA_TESTRESULT);
     }
 
     @Override
@@ -235,6 +236,6 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
-        report.setCcaTestResultList(this.resultList);
+        super.put(TlsAnalyzedProperty.LIST_CCA_TESTRESULT, new ListResult<CcaTestResult>(this.resultList, "CCA_TESTRESULT"));
     }
 }
