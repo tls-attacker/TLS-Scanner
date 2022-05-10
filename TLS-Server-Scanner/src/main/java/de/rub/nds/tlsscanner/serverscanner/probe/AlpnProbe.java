@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
@@ -20,6 +21,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
@@ -39,6 +41,7 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public AlpnProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ALPN, scannerConfig);
+        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
     }
 
     @Override
@@ -125,6 +128,6 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setSupportedAlpns(this.supportedAlpnProtocols);
+    	super.put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS, new ListResult<String>(this.supportedAlpnProtocols, "SUPPORTED_ALPNS"));
     }
 }
