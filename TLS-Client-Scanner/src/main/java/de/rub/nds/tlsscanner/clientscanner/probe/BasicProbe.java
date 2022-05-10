@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -30,6 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.LinkedList;
@@ -45,10 +47,12 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    private TestResult result;
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
+        super.register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS,
+        		TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS, TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
+        		TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS);
     }
 
     @Override
@@ -68,10 +72,6 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             this.clientAdvertisedNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
             this.clientAdvertisedPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             this.clientKeyShareNamedGroupsList = getKeyShareGroups(trace);
-//            this.result = new BasicProbeTestResult(this.clientAdvertisedCipherSuites, this.clientAdvertisedCompressions,
-//                this.clientSupportedSignatureAndHashAlgorithms, this.clientAdvertisedExtensions,
-//                this.clientAdvertisedNamedGroupsList, this.clientKeyShareNamedGroupsList,
-//                this.clientAdvertisedPointFormatsList);
         } else {
             getCouldNotExecuteResult();
         }
@@ -79,7 +79,6 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     public BasicProbe getCouldNotExecuteResult() {
-//        this.result = new MissingCHResult();
         return this;
     }
 
@@ -106,6 +105,12 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
 
     @Override
     protected void mergeData(ClientReport report) {
-//        super.put(TlsAnalyzedProperty.BASIC_PROBE_RESULTS, this.result);
+    	super.put(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES, new ListResult<CipherSuite>(this.clientAdvertisedCipherSuites, "ADVERTISED_CIPHERSUITES"));
+    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, new ListResult<CompressionMethod>(this.clientAdvertisedCompressions, "CLIENT_ADVERTISED_COMPRESSIONS"));
+    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS, new ListResult<SignatureAndHashAlgorithm>(this.clientSupportedSignatureAndHashAlgorithms, "CLIENT_ADVERTISED_SIGNATUREANDHASH_ALGORITHMS"));
+    	super.put(TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS, new SetResult<ExtensionType>(this.clientAdvertisedExtensions, "CLIENT_ADVERTISED_EXTENSIONS"));
+    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS, new ListResult<NamedGroup>(this.clientAdvertisedNamedGroupsList, "CLIENT_ADVERTISED_NAMEDGROUPS"));
+    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS, new ListResult<NamedGroup>(this.clientKeyShareNamedGroupsList, "CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS"));
+    	super.put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS, new ListResult<ECPointFormat>(this.clientAdvertisedPointFormatsList, "CLIENT_ADVERTISED_POINTFORMATS"));
     }
 }
