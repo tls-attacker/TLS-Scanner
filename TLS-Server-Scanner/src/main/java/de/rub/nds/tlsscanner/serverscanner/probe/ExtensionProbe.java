@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -55,7 +56,7 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
         super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
             TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
-            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
+            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
     }
 
     @Override
@@ -159,10 +160,7 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (report.getSupportedExtensions() == null)
-            report.setSupportedExtensions(this.allSupportedExtensions);
-        else
-            report.getSupportedExtensions().addAll(this.allSupportedExtensions);
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, new ListResult<ExtensionType>(this.allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
         if (this.allSupportedExtensions != null) {
             for (ExtensionType type : this.allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC)
