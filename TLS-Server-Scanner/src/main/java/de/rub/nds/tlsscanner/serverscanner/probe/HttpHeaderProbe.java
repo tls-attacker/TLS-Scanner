@@ -65,6 +65,7 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     public HttpHeaderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
         super.register(TlsAnalyzedProperty.SUPPORTS_HSTS);
+        super.register(TlsAnalyzedProperty.SUPPORTS_HTTPS);
         super.register(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
         super.register(TlsAnalyzedProperty.SUPPORTS_HPKP);
         super.register(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING);
