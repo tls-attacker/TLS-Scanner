@@ -260,6 +260,11 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
+        if (!getScannerConfig().getDtlsDelegate().isDTLS()) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.CANNOT_BE_TESTED);
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.CANNOT_BE_TESTED);
+        }
+
         report.setVersions(this.supportedProtocolVersions);
     }
 }
