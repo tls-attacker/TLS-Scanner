@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -60,7 +61,8 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
         super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2,
             TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+            TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
     }
 
     @Override
@@ -207,8 +209,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
     @Override
     protected void mergeData(ServerReport report) {
         if (this.supportedProtocolVersions != null) {
-            report.setVersions(this.supportedProtocolVersions);
-
+            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
             for (ProtocolVersion version : this.supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
@@ -260,7 +261,6 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.CANNOT_BE_TESTED);
             super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.CANNOT_BE_TESTED);
         }
-
-        report.setVersions(this.supportedProtocolVersions);
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }
