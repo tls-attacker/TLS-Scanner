@@ -154,8 +154,8 @@ public class ServerReport extends ScanReport {
     private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
 
-    private long closedAfterFinishedDelta;
-    private long closedAfterAppDataDelta;
+    private Long closedAfterFinishedDelta;
+    private Long closedAfterAppDataDelta;
 
     // Guidelines
     private List<GuidelineReport> guidelineReports = new ArrayList<>();
@@ -766,7 +766,7 @@ public class ServerReport extends ScanReport {
         this.guidelineReports = guidelineReports;
     }
 
-    public synchronized long getClosedAfterFinishedDelta() {
+    public synchronized Long getClosedAfterFinishedDelta() {
         return closedAfterFinishedDelta;
     }
 
@@ -774,7 +774,7 @@ public class ServerReport extends ScanReport {
         this.closedAfterFinishedDelta = closedAfterFinishedDelta;
     }
 
-    public synchronized long getClosedAfterAppDataDelta() {
+    public synchronized Long getClosedAfterAppDataDelta() {
         return closedAfterAppDataDelta;
     }
 
