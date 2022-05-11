@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
-import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
+import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
 
 public class IdentifierResponse {
 

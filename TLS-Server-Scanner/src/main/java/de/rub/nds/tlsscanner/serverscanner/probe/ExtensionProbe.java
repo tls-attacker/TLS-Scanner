@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -20,14 +21,11 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ExtensionResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,16 +34,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class ExtensionProbe extends TlsProbe {
+public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport, ExtensionResult> {
 
     private boolean supportsTls13;
 
     public ExtensionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EXTENSIONS, configSelector);
+        super(parallelExecutor, TlsProbeType.EXTENSIONS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ExtensionResult executeTest() {
         List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
         return new ExtensionResult(allSupportedExtensions);
     }
@@ -73,9 +71,9 @@ public class ExtensionProbe extends TlsProbe {
         Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig;
         if (highestVersion.isTLS13()) {
-            tlsConfig = getConfigSelector().getTls13BaseConfig();
+            tlsConfig = configSelector.getTls13BaseConfig();
         } else {
-            tlsConfig = getConfigSelector().getBaseConfig();
+            tlsConfig = configSelector.getBaseConfig();
         }
         tlsConfig.setHighestProtocolVersion(highestVersion);
         List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
@@ -110,7 +108,7 @@ public class ExtensionProbe extends TlsProbe {
         requestV2List.add(emptyRequest);
         tlsConfig.setStatusRequestV2RequestList(requestV2List);
         tlsConfig.setAddCertificateStatusRequestV2Extension(true);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
 
         State state = new State(tlsConfig);
         executeState(state);
@@ -123,17 +121,17 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
+    public void adjustConfig(ServerReport report) {
+        this.supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ExtensionResult getCouldNotExecuteResult() {
         return new ExtensionResult(null);
     }
 }

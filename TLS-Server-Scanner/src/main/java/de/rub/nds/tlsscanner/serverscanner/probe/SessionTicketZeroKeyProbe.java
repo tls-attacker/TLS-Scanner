@@ -10,13 +10,15 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -27,14 +29,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketZeroKeyResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -63,7 +62,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe extends TlsProbe {
+public class SessionTicketZeroKeyProbe
+    extends TlsServerProbe<ConfigSelector, ServerReport, SessionTicketZeroKeyResult> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -96,13 +96,13 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     public static final int SESSION_STATE_OFFSET = 34;
 
     public SessionTicketZeroKeyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
+        super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SessionTicketZeroKeyResult executeTest() {
         State state;
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAddSessionTicketTLSExtension(true);
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
@@ -114,7 +114,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         executeState(state);
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
         }
 
         byte[] ticket = null;
@@ -144,32 +144,32 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
             | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             LOGGER.debug(e);
-            return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
+            return new SessionTicketZeroKeyResult(TestResults.FALSE, TestResults.FALSE);
         }
         LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         TestResult hasDecryptableMasterSecret;
         TestResult hasGnuTlsMagicBytes;
 
         if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
-            hasDecryptableMasterSecret = TestResult.TRUE;
+            hasDecryptableMasterSecret = TestResults.TRUE;
         } else {
-            hasDecryptableMasterSecret = TestResult.FALSE;
+            hasDecryptableMasterSecret = TestResults.FALSE;
         }
 
         if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
-            hasGnuTlsMagicBytes = TestResult.TRUE;
+            hasGnuTlsMagicBytes = TestResults.TRUE;
 
         } else {
-            hasGnuTlsMagicBytes = TestResult.FALSE;
+            hasGnuTlsMagicBytes = TestResults.FALSE;
         }
 
         return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)
-            && report.getResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS) == TestResults.TRUE;
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -191,11 +191,11 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public SessionTicketZeroKeyResult getCouldNotExecuteResult() {
+        return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 }

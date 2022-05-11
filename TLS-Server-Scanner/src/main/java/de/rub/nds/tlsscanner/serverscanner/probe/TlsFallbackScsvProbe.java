@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -21,39 +22,36 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TlsFallbackScsvResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.TlsFallbackScsvResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TlsFallbackScsvProbe extends TlsProbe {
+public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport, TlsFallbackScsvResult> {
 
     private ProtocolVersion secondHighestVersion;
 
     public TlsFallbackScsvProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TLS_FALLBACK_SCSV, configSelector);
+        super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    public TlsFallbackScsvResult executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
         tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
 
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            return new TlsFallbackScsvResult(TestResult.TRUE);
+            return new TlsFallbackScsvResult(TestResults.TRUE);
         } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug("{}", state.getWorkflowTrace());
-            return new TlsFallbackScsvResult(TestResult.FALSE);
+            return new TlsFallbackScsvResult(TestResults.FALSE);
         }
     }
 
@@ -69,17 +67,17 @@ public class TlsFallbackScsvProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION) && report.getVersions().size() > 1;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION) && report.getVersions().size() > 1;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new TlsFallbackScsvResult(TestResult.COULD_NOT_TEST);
+    public TlsFallbackScsvResult getCouldNotExecuteResult() {
+        return new TlsFallbackScsvResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         List<ProtocolVersion> versions = new ArrayList<>(report.getVersions());
         Collections.sort(versions);
         this.secondHighestVersion = versions.get(versions.size() - 2);

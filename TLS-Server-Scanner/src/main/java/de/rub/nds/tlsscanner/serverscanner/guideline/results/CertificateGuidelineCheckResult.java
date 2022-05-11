@@ -9,9 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class CertificateGuidelineCheckResult extends GuidelineCheckResult {
     private final List<GuidelineCheckResult> results = new ArrayList<>();
 
     public CertificateGuidelineCheckResult() {
-        super(TestResult.UNCERTAIN);
+        super(TestResults.UNCERTAIN);
     }
 
     @Override

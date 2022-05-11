@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.core.workflow.action.EarlyCcsAction;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -22,54 +22,53 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeMasterSecretAction;
+import de.rub.nds.tlsattacker.core.workflow.action.EarlyCcsAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EarlyCcsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class EarlyCcsProbe extends TlsProbe {
+public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport, EarlyCcsResult> {
 
     public EarlyCcsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EARLY_CCS, configSelector);
+        super(parallelExecutor, TlsProbeType.EARLY_CCS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public EarlyCcsResult executeTest() {
         return new EarlyCcsResult(isVulnerable());
     }
 
     private EarlyCcsVulnerabilityType isVulnerable() {
-        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResult.TRUE) {
+        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
             return EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
-        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResult.TRUE) {
+        if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResults.TRUE) {
             return EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
         }
         return EarlyCcsVulnerabilityType.NOT_VULNERABLE;
     }
 
-    private TestResult checkTargetVersion(TargetVersion targetVersion) {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    private TestResults checkTargetVersion(TargetVersion targetVersion) {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setFiltersKeepUserSettings(false);
 
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
             LOGGER.debug("Not vulnerable (definitely), Alert message found");
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             LOGGER.debug("Vulnerable (definitely), Finished message found");
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
             LOGGER.debug("Not vulnerable (probably), No Finished message found, yet also no alert");
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -89,16 +88,16 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public EarlyCcsResult getCouldNotExecuteResult() {
         return new EarlyCcsResult(null);
     }
 

@@ -1,284 +1,281 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <guideline>
     <name>BSI TR-02102-2</name>
     <link>https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html</link>
-    <checks>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
-            <requirementLevel>MAY</requirementLevel>
-            <property>SUPPORTS_TLS_1_2</property>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
+        <requirementLevel>MAY</requirementLevel>
+        <property>SUPPORTS_TLS_1_2</property>
+        <result>TRUE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
+        <requirementLevel>MAY</requirementLevel>
+        <property>SUPPORTS_TLS_1_3</property>
+        <result>TRUE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>TLS 1.0 und TLS 1.1 werden nicht empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <property>SUPPORTS_TLS_1_0</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>TLS 1.0 und TLS 1.1 werden nicht empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <property>SUPPORTS_TLS_1_1</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>SSL v2 und SSL v3 werden nicht empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <property>SUPPORTS_SSL_2</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>SSL v2 und SSL v3 werden nicht empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <property>SUPPORTS_SSL_3</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <CipherSuiteGuidelineCheck>
+        <name>Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <versions>TLS12</versions>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CCM</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+    </CipherSuiteGuidelineCheck>
+    <NamedGroupsGuidelineCheck>
+        <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <recommendedGroups>SECP256R1</recommendedGroups>
+        <recommendedGroups>SECP384R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
+        <recommendedGroups>FFDHE2048</recommendedGroups>
+        <recommendedGroups>FFDHE3072</recommendedGroups>
+        <recommendedGroups>FFDHE4096</recommendedGroups>
+        <tls13>false</tls13>
+        <minGroupCount>2</minGroupCount>
+    </NamedGroupsGuidelineCheck>
+    <SignatureAlgorithmsGuidelineCheck>
+        <name>Die folgenden Signaturverfahren werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
             <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
-            <requirementLevel>MAY</requirementLevel>
-            <property>SUPPORTS_TLS_1_3</property>
+        </condition>
+        <recommendedAlgorithms>RSA</recommendedAlgorithms>
+        <recommendedAlgorithms>DSA</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
+    </SignatureAlgorithmsGuidelineCheck>
+    <HashAlgorithmsGuidelineCheck>
+        <name>Die folgenden Hashfunktionen werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
             <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>TLS 1.0 und TLS 1.1 werden nicht empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <property>SUPPORTS_TLS_1_0</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>TLS 1.0 und TLS 1.1 werden nicht empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <property>SUPPORTS_TLS_1_1</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>SSL v2 und SSL v3 werden nicht empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <property>SUPPORTS_SSL_2</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>SSL v2 und SSL v3 werden nicht empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <property>SUPPORTS_SSL_3</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <versions>TLS12</versions>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CCM</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="namedGroupsGuidelineCheck">
-            <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <recommendedGroups>SECP256R1</recommendedGroups>
-            <recommendedGroups>SECP384R1</recommendedGroups>
-            <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
-            <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
-            <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
-            <recommendedGroups>FFDHE2048</recommendedGroups>
-            <recommendedGroups>FFDHE3072</recommendedGroups>
-            <recommendedGroups>FFDHE4096</recommendedGroups>
-            <tls13>false</tls13>
-            <minGroupCount>2</minGroupCount>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAlgorithmsGuidelineCheck">
-            <name>Die folgenden Signaturverfahren werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <recommendedAlgorithms>RSA</recommendedAlgorithms>
-            <recommendedAlgorithms>DSA</recommendedAlgorithms>
-            <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hashAlgorithmsGuidelineCheck">
-            <name>Die folgenden Hashfunktionen werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <recommendedAlgorithms>SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>SHA512</recommendedAlgorithms>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
+        </condition>
+        <recommendedAlgorithms>SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA512</recommendedAlgorithms>
+    </HashAlgorithmsGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
             <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
-            <name>truncated_hmac sollte nicht unterstüzt werden.</name>
-            <requirementLevel>SHOULD_NOT</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <requiredExtension>TRUNCATED_HMAC</requiredExtension>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_TLS_COMPRESSION</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
+        </condition>
+        <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
+        <result>TRUE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
             <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
-            <name>Heartbeat sollte nicht unterstüzt werden.</name>
-            <requirementLevel>SHOULD_NOT</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <requiredExtension>HEARTBEAT</requiredExtension>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
+        </condition>
+        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
             <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_TLS13_0_RTT</property>
-            <result>FALSE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="namedGroupsGuidelineCheck">
-            <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <recommendedGroups>SECP256R1</recommendedGroups>
-            <recommendedGroups>SECP384R1</recommendedGroups>
-            <recommendedGroups>FFDHE2048</recommendedGroups>
-            <recommendedGroups>FFDHE3072</recommendedGroups>
-            <recommendedGroups>FFDHE4096</recommendedGroups>
-            <tls13>true</tls13>
-            <minGroupCount>2</minGroupCount>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAndHashAlgorithmsGuidelineCheck">
-            <name>Die folgenden Signaturverfahren werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
-            <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
-            <tls13>true</tls13>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAndHashAlgorithmsCertificateGuidelineCheck">
-            <name>Die folgenden Signaturverfahren werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <recommendedAlgorithms>RSA_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_SHA512</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
-            <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
-            <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
-            <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <versions>TLS13</versions>
-            <recommendedCipherSuites>TLS_AES_128_GCM_SHA256</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
-            <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">
-            <name>Schlüssellängen</name>
-            <requirementLevel>SHOULD</requirementLevel>
-            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
-            <minimumDsaKeyLength>2000</minimumDsaKeyLength>
-            <minimumRsaKeyLength>2000</minimumRsaKeyLength>
-            <minimumEcKeyLength>250</minimumEcKeyLength>
-            <minimumDhKeyLength>2000</minimumDhKeyLength>
-        </check>
-    </checks>
+        </condition>
+        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <ExtensionGuidelineCheck>
+        <name>truncated_hmac sollte nicht unterstüzt werden.</name>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <requiredExtension>TRUNCATED_HMAC</requiredExtension>
+    </ExtensionGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <property>SUPPORTS_TLS_COMPRESSION</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
+        <result>TRUE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <ExtensionGuidelineCheck>
+        <name>Heartbeat sollte nicht unterstüzt werden.</name>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <requiredExtension>HEARTBEAT</requiredExtension>
+    </ExtensionGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
+        <result>TRUE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <AnalyzedPropertyGuidelineCheck>
+        <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <property>SUPPORTS_TLS13_0_RTT</property>
+        <result>FALSE</result>
+    </AnalyzedPropertyGuidelineCheck>
+    <NamedGroupsGuidelineCheck>
+        <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <recommendedGroups>SECP256R1</recommendedGroups>
+        <recommendedGroups>SECP384R1</recommendedGroups>
+        <recommendedGroups>FFDHE2048</recommendedGroups>
+        <recommendedGroups>FFDHE3072</recommendedGroups>
+        <recommendedGroups>FFDHE4096</recommendedGroups>
+        <tls13>true</tls13>
+        <minGroupCount>2</minGroupCount>
+    </NamedGroupsGuidelineCheck>
+    <SignatureAndHashAlgorithmsGuidelineCheck>
+        <name>Die folgenden Signaturverfahren werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
+        <tls13>true</tls13>
+    </SignatureAndHashAlgorithmsGuidelineCheck>
+    <SignatureAndHashAlgorithmsCertificateGuidelineCheck>
+        <name>Die folgenden Signaturverfahren werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <result>TRUE</result>
+        </condition>
+        <recommendedAlgorithms>RSA_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
+    </SignatureAndHashAlgorithmsCertificateGuidelineCheck>
+    <CipherSuiteGuidelineCheck>
+        <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <versions>TLS13</versions>
+        <recommendedCipherSuites>TLS_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
+    </CipherSuiteGuidelineCheck>
+    <KeySizeCertGuidelineCheck>
+        <name>Schlüssellängen</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
+        <minimumDsaKeyLength>2000</minimumDsaKeyLength>
+        <minimumRsaKeyLength>2000</minimumRsaKeyLength>
+        <minimumEcKeyLength>250</minimumEcKeyLength>
+        <minimumDhKeyLength>2000</minimumDhKeyLength>
+    </KeySizeCertGuidelineCheck>
 </guideline>

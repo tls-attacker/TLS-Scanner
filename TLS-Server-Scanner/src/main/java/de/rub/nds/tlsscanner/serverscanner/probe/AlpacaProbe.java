@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -16,27 +18,25 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpacaResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class AlpacaProbe extends TlsProbe {
+public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport, AlpacaResult> {
 
     private boolean alpnSupported;
 
     public AlpacaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, configSelector);
+        super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public AlpacaResult executeTest() {
         TestResult strictSni = isSupportingStrictSni();
         TestResult strictAlpn;
         if (!alpnSupported) {
-            strictAlpn = TestResult.FALSE;
+            strictAlpn = TestResults.FALSE;
         } else {
             strictAlpn = isSupportingStrictAlpn();
         }
@@ -44,7 +44,7 @@ public class AlpacaProbe extends TlsProbe {
     }
 
     private TestResult isSupportingStrictSni() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.getDefaultClientConnection().setHostname("notarealtls-attackerhost.com");
@@ -52,14 +52,14 @@ public class AlpacaProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
     private TestResult isSupportingStrictAlpn() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddAlpnExtension(true);
@@ -67,25 +67,24 @@ public class AlpacaProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } else {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new AlpacaResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public AlpacaResult getCouldNotExecuteResult() {
+        return new AlpacaResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
-
 }

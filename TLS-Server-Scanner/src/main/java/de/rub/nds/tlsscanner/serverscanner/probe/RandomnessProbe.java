@@ -24,55 +24,53 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RandomnessResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.RandomnessResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
  */
-public class RandomnessProbe extends TlsProbe {
+public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport, RandomnessResult> {
 
     private ProtocolVersion bestVersion;
     private CipherSuite bestCipherSuite;
     private boolean supportsExtendedRandom;
 
     public RandomnessProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RANDOMNESS, configSelector);
+        super(parallelExecutor, TlsProbeType.RANDOMNESS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        collectData(getScannerConfig().getAdditionalRandomnessHandshakes());
+    public RandomnessResult executeTest() {
+        collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
         return new RandomnessResult();
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public RandomnessResult getCouldNotExecuteResult() {
         return new RandomnessResult();
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
         supportsExtendedRandom = report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
     }
 
-    private void chooseBestCipherAndVersion(SiteReport report) {
+    private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
         List<VersionSuiteListPair> versionSuitePairs = report.getVersionSuitePairs();
         for (VersionSuiteListPair pair : versionSuitePairs) {
@@ -102,19 +100,19 @@ public class RandomnessProbe extends TlsProbe {
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config config;
             if (bestVersion.isTLS13()) {
-                config = getConfigSelector().getTls13BaseConfig();
+                config = configSelector.getTls13BaseConfig();
             } else {
-                config = getConfigSelector().getBaseConfig();
+                config = configSelector.getBaseConfig();
             }
             config.setHighestProtocolVersion(bestVersion);
             config.setDefaultClientSupportedCipherSuites(bestCipherSuite);
             if (supportsExtendedRandom) {
                 config.setAddExtendedRandomExtension(true);
             }
-            getConfigSelector().repairConfig(config);
+            configSelector.repairConfig(config);
             WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
+            if (configSelector.getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
                 config.setHttpsParsingEnabled(true);
                 workflowTrace.addTlsAction(new SendAction(new HttpsRequestMessage(config)));
                 workflowTrace.addTlsAction(new ReceiveAction(new HttpsResponseMessage(config)));

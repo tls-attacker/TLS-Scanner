@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -22,26 +24,24 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsRetransmissionsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsRetransmissionsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsRetransmissionsProbe extends TlsProbe {
+public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsRetransmissionsResult> {
 
     public DtlsRetransmissionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_RETRANSMISSIONS, configSelector);
+        super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DtlsRetransmissionsResult executeTest() {
         return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
     }
 
     private TestResult doesRetransmissions() {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -57,14 +57,14 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     private TestResult processesRetransmissions() {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -80,24 +80,24 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (receiveTillAction.executedAsPlanned()) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public DtlsRetransmissionsResult getCouldNotExecuteResult() {
+        return new DtlsRetransmissionsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 }

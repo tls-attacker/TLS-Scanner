@@ -9,11 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
-import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
+import de.rub.nds.scanner.core.vector.VectorResponse;
+import de.rub.nds.scanner.core.vector.response.EqualityError;
+import de.rub.nds.scanner.core.vector.response.EqualityErrorTranslator;
+import de.rub.nds.scanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -23,13 +23,13 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.exceptions.AttackFailedException;
 import de.rub.nds.tlsscanner.serverscanner.exceptions.OracleUnstableException;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
+import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
 import de.rub.nds.tlsscanner.serverscanner.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.serverscanner.task.FingerprintTaskVectorPair;
-import de.rub.nds.tlsscanner.serverscanner.util.response.EqualityError;
-import de.rub.nds.tlsscanner.serverscanner.util.response.EqualityErrorTranslator;
-import de.rub.nds.tlsscanner.serverscanner.util.response.FingerPrintChecker;
-import de.rub.nds.tlsscanner.serverscanner.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.vector.VectorResponse;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,7 +170,7 @@ public class BleichenbacherAttacker {
                     continue;
                 }
                 EqualityError error =
-                    FingerPrintChecker.checkEquality(responseOne.getFingerprint(), responseTwo.getFingerprint());
+                    FingerprintChecker.checkEquality(responseOne.getFingerprint(), responseTwo.getFingerprint());
                 if (error != EqualityError.NONE) {
                     LOGGER.debug("Found an EqualityError: " + error);
                     LOGGER.debug("Fingerprint1: " + responseOne.getFingerprint().toString());

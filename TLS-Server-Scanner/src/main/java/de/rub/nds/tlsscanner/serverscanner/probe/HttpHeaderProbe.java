@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
@@ -17,24 +18,22 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpHeaderResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpHeaderProbe extends HttpsProbe {
+public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpHeaderResult> {
 
     public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, configSelector);
+        super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    public HttpHeaderResult executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setHttpsParsingEnabled(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
@@ -57,20 +56,20 @@ public class HttpHeaderProbe extends HttpsProbe {
         } else {
             headerList = new LinkedList<>();
         }
-        return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
+        return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
+    public HttpHeaderResult getCouldNotExecuteResult() {
+        return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
     }
 }

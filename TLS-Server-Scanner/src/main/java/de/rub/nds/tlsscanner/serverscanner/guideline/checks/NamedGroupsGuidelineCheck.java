@@ -9,20 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.NamedGroupsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class NamedGroupsGuidelineCheck extends GuidelineCheck {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     /**
      * Only these are allowed.
@@ -58,11 +62,11 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         List<NamedGroup> supportedGroups =
             this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.UNCERTAIN);
+            return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
@@ -73,11 +77,11 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
                 }
             }
             if (!found) {
-                return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, requiredGroups);
+                return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, requiredGroups);
             }
         }
         if (supportedGroups.size() < minGroupCount) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, supportedGroups.size());
+            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, supportedGroups.size());
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
@@ -86,9 +90,9 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
             }
         }
         if (nonRecommended.isEmpty()) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.TRUE);
+            return new NamedGroupsGuidelineCheckResult(TestResults.TRUE);
         } else {
-            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, nonRecommended);
+            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, nonRecommended);
         }
     }
 

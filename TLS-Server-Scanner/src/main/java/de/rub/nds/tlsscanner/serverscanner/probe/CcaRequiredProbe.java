@@ -9,57 +9,57 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaRequiredResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaRequiredResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class CcaRequiredProbe extends TlsProbe {
+public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRequiredResult> {
 
     public CcaRequiredProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA_SUPPORT, configSelector);
+        super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    public CcaRequiredResult executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAutoSelectCertificate(false);
-        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(getScannerConfig().getCcaDelegate());
+        CcaCertificateManager ccaCertificateManager =
+            new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
             CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return new CcaRequiredResult(TestResult.FALSE);
+            return new CcaRequiredResult(TestResults.FALSE);
         } else {
-            return new CcaRequiredResult(TestResult.TRUE);
+            return new CcaRequiredResult(TestResults.TRUE);
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
+    public CcaRequiredResult getCouldNotExecuteResult() {
+        return new CcaRequiredResult(TestResults.COULD_NOT_TEST);
     }
 }

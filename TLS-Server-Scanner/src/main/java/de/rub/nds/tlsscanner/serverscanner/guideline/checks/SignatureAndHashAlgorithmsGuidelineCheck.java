@@ -9,20 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
     private boolean tls13;
@@ -46,11 +50,11 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         List<SignatureAndHashAlgorithm> algorithms = tls13 ? report.getSupportedSignatureAndHashAlgorithmsTls13()
             : report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms == null) {
-            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.UNCERTAIN, null);
+            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -58,7 +62,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(notRecommended.isEmpty()),
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
             notRecommended);
     }
 

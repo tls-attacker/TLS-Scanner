@@ -17,10 +17,9 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TokenbindingResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.TokenbindingResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,14 +28,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe {
+public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport, TokenbindingResult> {
 
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TOKENBINDING, configSelector);
+        super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public TokenbindingResult executeTest() {
         List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
@@ -47,7 +46,7 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingVersion(version);
@@ -69,7 +68,7 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     private Set<TokenBindingVersion> getSupportedVersions() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingKeyParameters(TokenBindingKeyParameters.values());
@@ -91,16 +90,16 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public TokenbindingResult getCouldNotExecuteResult() {
         return new TokenbindingResult(null, null);
     }
 }

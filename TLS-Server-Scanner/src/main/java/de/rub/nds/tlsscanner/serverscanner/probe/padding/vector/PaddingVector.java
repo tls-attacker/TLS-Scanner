@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.padding.vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.record.Record;
-import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
+import de.rub.nds.scanner.core.vector.Vector;
 
 public abstract class PaddingVector implements Vector {
 

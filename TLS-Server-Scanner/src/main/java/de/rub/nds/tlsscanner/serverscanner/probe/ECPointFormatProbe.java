@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -18,28 +20,26 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ECPointFormatResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ECPointFormatResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsProbe {
+public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerReport, ECPointFormatResult> {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
 
     public ECPointFormatProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EC_POINT_FORMAT, configSelector);
+        super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ECPointFormatResult executeTest() {
         List<ECPointFormat> pointFormats = null;
         if (shouldTestPointFormats) {
             pointFormats = getSupportedPointFormats();
@@ -48,7 +48,7 @@ public class ECPointFormatProbe extends TlsProbe {
         if (shouldTestTls13) {
             tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
         } else {
-            tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
+            tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
         }
         if (pointFormats != null) {
             return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
@@ -92,13 +92,13 @@ public class ECPointFormatProbe extends TlsProbe {
             default: // will never occur as all enum types are caught
                 ;
         }
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setDefaultClientNamedGroups(groups);
         config.setEnforceSettings(true);
-        getConfigSelector().repairConfig(config);
+        configSelector.repairConfig(config);
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -112,7 +112,7 @@ public class ECPointFormatProbe extends TlsProbe {
             // implementations
             // might still accept compression
             List<NamedGroup> secpGroups = getSecpGroups();
-            Config tlsConfig = getConfigSelector().getTls13BaseConfig();
+            Config tlsConfig = configSelector.getTls13BaseConfig();
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
             tlsConfig.setDefaultClientKeyShareNamedGroups(secpGroups);
@@ -122,9 +122,9 @@ public class ECPointFormatProbe extends TlsProbe {
 
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             }
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -132,30 +132,30 @@ public class ECPointFormatProbe extends TlsProbe {
             } else {
                 LOGGER.error("Could not test for Tls13SecpCompression", e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResults.TRUE
+                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new ECPointFormatResult(null, TestResult.COULD_NOT_TEST);
+    public ECPointFormatResult getCouldNotExecuteResult() {
+        return new ECPointFormatResult(null, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
-        shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+    public void adjustConfig(ServerReport report) {
+        shouldTestPointFormats = report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE;
+        shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     private List<NamedGroup> getSecpGroups() {

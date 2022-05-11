@@ -9,28 +9,27 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PaddingOracleResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class PaddingOracleProbe extends TlsProbe {
+public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerReport, PaddingOracleResult> {
 
     private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
@@ -44,8 +43,8 @@ public class PaddingOracleProbe extends TlsProbe {
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PADDING_ORACLE, configSelector);
-        scanDetail = getConfigSelector().getScannerConfig().getScanDetail();
+        super(parallelExecutor, TlsProbeType.PADDING_ORACLE, configSelector);
+        scanDetail = configSelector.getScannerConfig().getScanDetail();
         numberOfIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ITERATIONS
             : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
         numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
@@ -53,7 +52,7 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public PaddingOracleResult executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
         List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
@@ -100,8 +99,8 @@ public class PaddingOracleProbe extends TlsProbe {
         PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType paddingRecordGeneratorType,
         int numberOfIterations, ProtocolVersion testedVersion, CipherSuite testedSuite) {
         PaddingOracleAttacker attacker =
-            new PaddingOracleAttacker(getConfigSelector().getBaseConfig(), getParallelExecutor(),
-                paddingRecordGeneratorType, vectorGeneratorType, numberOfIterations, testedVersion, testedSuite);
+            new PaddingOracleAttacker(configSelector.getBaseConfig(), getParallelExecutor(), paddingRecordGeneratorType,
+                vectorGeneratorType, numberOfIterations, testedVersion, testedSuite);
         if (scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
@@ -115,23 +114,23 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
+    public boolean canBeExecuted(ServerReport report) {
+        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
+            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResults.TRUE);
         } else {
             return false;
         }
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(TestResult.COULD_NOT_TEST);
+    public PaddingOracleResult getCouldNotExecuteResult() {
+        return new PaddingOracleResult(TestResults.COULD_NOT_TEST);
     }
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
@@ -145,7 +144,7 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     private boolean isPotentiallyVulnerable(List<InformationLeakTest<PaddingOracleTestInfo>> testResultList) {
-        for (InformationLeakTest fingerprint : testResultList) {
+        for (InformationLeakTest<?> fingerprint : testResultList) {
             if (fingerprint.isDistinctAnswers()) {
                 return true;
             }

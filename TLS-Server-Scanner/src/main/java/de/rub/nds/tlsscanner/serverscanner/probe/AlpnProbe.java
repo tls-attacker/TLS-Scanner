@@ -17,30 +17,27 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpnResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AlpnProbe extends TlsProbe {
+public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport, AlpnResult> {
 
     public AlpnProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.ALPN, configSelector);
+        super(parallelExecutor, TlsProbeType.ALPN, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public AlpnResult executeTest() {
         List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
         return new AlpnResult(supportedAlpnProtocols);
-
     }
 
     private List<String> getSupportedAlpnProtocols() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddAlpnExtension(true);
 
@@ -79,18 +76,18 @@ public class AlpnProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
             && report.getSupportedExtensions().contains(ExtensionType.ALPN);
 
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new AlpnResult(null);
+    public AlpnResult getCouldNotExecuteResult() {
+        return new AlpnResult(new LinkedList<>());
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 }

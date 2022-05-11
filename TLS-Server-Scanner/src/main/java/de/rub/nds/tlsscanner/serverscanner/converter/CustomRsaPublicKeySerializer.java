@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
-
 import java.io.IOException;
 
 public class CustomRsaPublicKeySerializer extends StdSerializer<CustomRsaPublicKey> {

@@ -9,22 +9,26 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private List<HashAlgorithm> recommendedAlgorithms;
 
@@ -45,9 +49,9 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            return new HashAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, Collections.emptySet());
+            return new HashAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, Collections.emptySet());
         }
         Set<HashAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
@@ -55,7 +59,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
                 nonRecommended.add(alg.getHashAlgorithm());
             }
         }
-        return new HashAlgorithmsGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

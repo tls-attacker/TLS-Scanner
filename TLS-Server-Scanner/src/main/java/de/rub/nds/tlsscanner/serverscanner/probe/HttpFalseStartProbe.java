@@ -9,12 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -25,23 +27,21 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HttpFalseStartProbe extends HttpsProbe {
+public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
 
     public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_FALSE_START, configSelector);
+        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    public HttpFalseStartResult executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setHttpsParsingEnabled(true);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
@@ -49,8 +49,8 @@ public class HttpFalseStartProbe extends HttpsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace
-            .addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this.getHttpsRequest()));
+        trace.addTlsAction(
+            new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(
             new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
 
@@ -64,7 +64,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-                    return new HttpFalseStartResult(TestResult.TRUE);
+                    return new HttpFalseStartResult(TestResults.TRUE);
                 } else if (message instanceof FinishedMessage) {
                     receivedServerFinishedMessage = true;
                 }
@@ -73,24 +73,24 @@ public class HttpFalseStartProbe extends HttpsProbe {
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
             // handshake
-            return new HttpFalseStartResult(TestResult.FALSE);
+            return new HttpFalseStartResult(TestResults.FALSE);
         }
         // received no http response -> maybe server did not understand
         // request
-        return new HttpFalseStartResult(TestResult.UNCERTAIN);
+        return new HttpFalseStartResult(TestResults.UNCERTAIN);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
+    public HttpFalseStartResult getCouldNotExecuteResult() {
+        return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
     }
 }

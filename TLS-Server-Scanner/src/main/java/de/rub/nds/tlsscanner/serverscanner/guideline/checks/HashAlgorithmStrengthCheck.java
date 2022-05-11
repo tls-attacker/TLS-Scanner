@@ -9,23 +9,26 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmStrengthCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-
 import java.util.Comparator;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Ordered according to NIST.SP.800-57pt1r5.
  *
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf">NIST.SP.800-57pt1r5</a>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
 
     private HashAlgorithm minimumStrength;
@@ -61,10 +64,10 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             HashAlgorithm hashAlgorithm = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                return new HashAlgorithmStrengthCheckResult(TestResult.FALSE, hashAlgorithm);
+                return new HashAlgorithmStrengthCheckResult(TestResults.FALSE, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(TestResult.TRUE, null);
+        return new HashAlgorithmStrengthCheckResult(TestResults.TRUE, null);
     }
 
     @Override

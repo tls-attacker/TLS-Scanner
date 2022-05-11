@@ -16,24 +16,23 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CompressionsResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CompressionsResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompressionsProbe extends TlsProbe {
+public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerReport, CompressionsResult> {
 
     public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMPRESSIONS, configSelector);
+        super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CompressionsResult executeTest() {
         List<CompressionMethod> compressions = getSupportedCompressionMethods();
         return new CompressionsResult(compressions);
     }
@@ -57,7 +56,7 @@ public class CompressionsProbe extends TlsProbe {
     }
 
     private CompressionMethod testCompressionMethods(List<CompressionMethod> compressionList) {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCompressionMethods(compressionList);
         State state = new State(tlsConfig);
@@ -71,16 +70,16 @@ public class CompressionsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CompressionsResult getCouldNotExecuteResult() {
         return new CompressionsResult(null);
     }
 }

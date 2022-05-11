@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
@@ -27,50 +29,48 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsFeaturesResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsFeaturesResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsFeaturesProbe extends TlsProbe {
+public class DtlsFeaturesProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsFeaturesResult> {
 
     public DtlsFeaturesProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_FEATURES, configSelector);
+        super(parallelExecutor, TlsProbeType.DTLS_FEATURES, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DtlsFeaturesResult executeTest() {
         return new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
     }
 
     private TestResult supportsFragmentation() {
-        if (supportsFragmentationDirectly() == TestResult.TRUE) {
-            return TestResult.TRUE;
-        } else if (supportsFragmentationWithExtension() == TestResult.TRUE) {
-            return TestResult.PARTIALLY;
+        if (supportsFragmentationDirectly() == TestResults.TRUE) {
+            return TestResults.TRUE;
+        } else if (supportsFragmentationWithExtension() == TestResults.TRUE) {
+            return TestResults.PARTIALLY;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     private TestResult supportsFragmentationDirectly() {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(100);
 
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     private TestResult supportsFragmentationWithExtension() {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddMaxFragmentLengthExtension(Boolean.TRUE);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -84,14 +84,14 @@ public class DtlsFeaturesProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     private TestResult supportsReordering() {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -104,24 +104,24 @@ public class DtlsFeaturesProbe extends TlsProbe {
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsFeaturesResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public DtlsFeaturesResult getCouldNotExecuteResult() {
+        return new DtlsFeaturesResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
 }

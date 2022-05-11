@@ -17,23 +17,22 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProtocolVersionResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ProtocolVersionResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProtocolVersionProbe extends TlsProbe {
+public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerReport, ProtocolVersionResult> {
 
     private List<ProtocolVersion> toTestList;
 
     public ProtocolVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, configSelector);
+        super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, configSelector);
         toTestList = new LinkedList<>();
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
             toTestList.add(ProtocolVersion.DTLS10);
             toTestList.add(ProtocolVersion.DTLS12);
         } else {
@@ -47,7 +46,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public ProtocolVersionResult executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
@@ -77,7 +76,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         Config tlsConfig;
         List<CipherSuite> cipherSuites = new LinkedList<>();
         if (!toTest.isTLS13()) {
-            tlsConfig = getConfigSelector().getBaseConfig();
+            tlsConfig = configSelector.getBaseConfig();
             if (intolerance) {
                 cipherSuites.addAll(CipherSuite.getImplemented());
             } else {
@@ -86,13 +85,13 @@ public class ProtocolVersionProbe extends TlsProbe {
                 cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             }
         } else {
-            tlsConfig = getConfigSelector().getTls13BaseConfig();
+            tlsConfig = configSelector.getTls13BaseConfig();
             cipherSuites.addAll(CipherSuite.getTls13CipherSuites());
         }
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -108,7 +107,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     private boolean isSSL2Supported() {
-        Config tlsConfig = getConfigSelector().getSSL2BaseConfig();
+        Config tlsConfig = configSelector.getSSL2BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SSL2_HELLO);
         State state = new State(tlsConfig);
         executeState(state);
@@ -116,16 +115,16 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ProtocolVersionResult getCouldNotExecuteResult() {
         return new ProtocolVersionResult(null, null);
     }
 

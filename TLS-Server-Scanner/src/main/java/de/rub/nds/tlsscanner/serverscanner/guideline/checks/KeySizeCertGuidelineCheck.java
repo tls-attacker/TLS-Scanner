@@ -9,20 +9,23 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
-import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Locale;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
 
     private Integer minimumDsaKeyLength;
@@ -124,20 +127,20 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             }
         }
         if (failedFlag) {
-            result.setResult(TestResult.FALSE);
+            result.setResult(TestResults.FALSE);
         } else if (uncertainFlag || !passFlag) {
-            result.setResult(TestResult.UNCERTAIN);
+            result.setResult(TestResults.UNCERTAIN);
         } else {
-            result.setResult(TestResult.TRUE);
+            result.setResult(TestResults.TRUE);
         }
         return result;
     }
 
     @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(TestResult.FALSE) {
+                return new GuidelineCheckResult(TestResults.FALSE) {
                     @Override
                     public String display() {
                         return String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(),

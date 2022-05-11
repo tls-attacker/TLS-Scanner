@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -24,12 +26,10 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.NamedGroupResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NamedGroupsProbe extends TlsProbe {
+public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerReport, NamedGroupResult> {
 
-    Set<CipherSuite> supportedCipherSuites;
+    private Set<CipherSuite> supportedCipherSuites;
 
     // curves used for ecdsa in key exchange
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
@@ -54,14 +54,14 @@ public class NamedGroupsProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    private TestResult ignoresEcdsaGroupDisparity = TestResult.FALSE;
+    private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS, configSelector);
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public NamedGroupResult executeTest() {
         Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
 
         addGroupsFound(overallSupported,
@@ -178,11 +178,11 @@ public class NamedGroupsProbe extends TlsProbe {
                 // remove groups that are not required by the server even
                 // if they are used for the certificate or KEX signature
                 if (!toTestList.contains(certificateGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateGroup = null;
                 }
                 if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateSigGroup = null;
                 }
 
@@ -207,7 +207,7 @@ public class NamedGroupsProbe extends TlsProbe {
 
     private TlsContext testGroups(List<NamedGroup> groupList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(groupList);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -242,13 +242,15 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return !(report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
-            || report.getCertificateChainList() == null || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION));
+            || report.getCertificateChainList() == null
+            || !report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION));
+
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
@@ -259,9 +261,9 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public NamedGroupResult getCouldNotExecuteResult() {
+        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {
@@ -273,16 +275,16 @@ public class NamedGroupsProbe extends TlsProbe {
         }
         List<CipherSuite> allEcCipherSuites = getAllEcCipherSuites();
         if (allEcCipherSuites.isEmpty()) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
 
         tlsConfig.setDefaultClientSupportedCipherSuites(allEcCipherSuites);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
 
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
-            return TestResult.UNCERTAIN;
+            return TestResults.UNCERTAIN;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
             state.getWorkflowTrace())) {
             HandshakeMessage skeMsg = WorkflowTraceUtil
@@ -290,16 +292,16 @@ public class NamedGroupsProbe extends TlsProbe {
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
-                    return TestResult.TRUE;
+                    return TestResults.TRUE;
                 }
             }
 
         }
-        return TestResult.FALSE;
+        return TestResults.FALSE;
     }
 
     private Config getBasicConfig() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         return tlsConfig;
     }
@@ -338,12 +340,12 @@ public class NamedGroupsProbe extends TlsProbe {
                 certificateSigGroup = context.getEcCertificateSignatureCurve();
 
                 if (!toTestList.contains(certificateGroup) && certificateGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateGroup = null;
                 }
 
                 if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
                     certificateSigGroup = null;
                 }
 
@@ -362,11 +364,11 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
-        Config tlsConfig = getConfigSelector().getTls13BaseConfig();
+        Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -421,8 +423,8 @@ public class NamedGroupsProbe extends TlsProbe {
         });
 
         if (foundMismatch) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
-        return TestResult.FALSE;
+        return TestResults.FALSE;
     }
 }

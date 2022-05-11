@@ -50,6 +50,7 @@ public class CertificateReport {
     private String sha256Fingerprint;
     private Boolean rocaVulnerable;
     private Boolean trustAnchor;
+    private Boolean customTrustAnchor;
     private Boolean selfSigned;
     private Boolean leafCertificate;
     private Boolean extendedKeyUsageServerAuth;
@@ -322,6 +323,14 @@ public class CertificateReport {
 
     public void setTrustAnchor(Boolean trustAnchor) {
         this.trustAnchor = trustAnchor;
+    }
+
+    public void setCustomTrustAnchor(Boolean customTrustAnchor) {
+        this.customTrustAnchor = customTrustAnchor;
+    }
+
+    public Boolean isCustomTrustAnchor() {
+        return customTrustAnchor;
     }
 
     public Boolean getLeafCertificate() {

@@ -9,50 +9,49 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaSupportResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class CcaSupportProbe extends TlsProbe {
+public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaSupportResult> {
 
     public CcaSupportProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA_SUPPORT, configSelector);
+        super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    public CcaSupportResult executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAutoSelectCertificate(false);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return new CcaSupportResult(TestResult.TRUE);
+            return new CcaSupportResult(TestResults.TRUE);
         } else {
-            return new CcaSupportResult(TestResult.FALSE);
+            return new CcaSupportResult(TestResults.FALSE);
         }
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CcaSupportResult(TestResult.COULD_NOT_TEST);
+    public CcaSupportResult getCouldNotExecuteResult() {
+        return new CcaSupportResult(TestResults.COULD_NOT_TEST);
     }
 }

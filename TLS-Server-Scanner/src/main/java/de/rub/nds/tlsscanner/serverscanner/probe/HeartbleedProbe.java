@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -24,36 +25,34 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HeartbleedProbe extends TlsProbe {
+public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport, HeartbleedResult> {
 
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HEARTBLEED, configSelector);
+        super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public HeartbleedResult executeTest() {
         return new HeartbleedResult(isVulnerable());
     }
 
-    private TestResult isVulnerable() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+    private TestResults isVulnerable() {
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAddHeartbeatExtension(true);
 
         State state = new State(tlsConfig, getTrace(tlsConfig));
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.UNCERTAIN;
+            return TestResults.UNCERTAIN;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -73,16 +72,16 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS) && !report.getSupportedExtensions().isEmpty();
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS) && !report.getSupportedExtensions().isEmpty();
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new HeartbleedResult(TestResult.COULD_NOT_TEST);
+    public HeartbleedResult getCouldNotExecuteResult() {
+        return new HeartbleedResult(TestResults.COULD_NOT_TEST);
     }
 }

@@ -10,6 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -26,31 +28,29 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.RenegotiationResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsProbe {
+public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerReport, RenegotiationResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInRenegotiation;
 
     public RenegotiationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RENEGOTIATION, configSelector);
+        super(parallelExecutor, TlsProbeType.RENEGOTIATION, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+    public RenegotiationResult executeTest() {
+        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
         } else {
-            supportsDtlsCookieExchangeInRenegotiation = TestResult.NOT_TESTED_YET;
+            supportsDtlsCookieExchangeInRenegotiation = TestResults.NOT_TESTED_YET;
         }
         return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
             supportsSecureClientRenegotiationCipherSuite(), supportsInsecureClientRenegotiation(),
@@ -69,16 +69,16 @@ public class RenegotiationProbe extends TlsProbe {
         trace.addTlsAction(new RenegotiationAction(true));
         trace.addTlsAction(new FlushSessionCacheAction());
         tlsConfig.setAddRenegotiationInfoExtension(addExtensionInSecondHandshake);
-        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResults.TRUE);
         trace.addTlsActions(new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode())
             .getTlsActions());
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private TestResult vulnerableToRenegotiationAttackCipherSuite(boolean addCipherSuiteInFirstHandshake,
@@ -93,7 +93,7 @@ public class RenegotiationProbe extends TlsProbe {
         trace.addTlsAction(new RenegotiationAction(true));
         trace.addTlsAction(new FlushSessionCacheAction());
         tlsConfig.setAddRenegotiationInfoExtension(addCipherSuiteInSecondHandshake);
-        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResults.TRUE);
         WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
         if (addCipherSuiteInSecondHandshake) {
@@ -103,9 +103,9 @@ public class RenegotiationProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private void addRenegotiationCipherSuiteToClientHello(Config tlsConfig, WorkflowTrace trace) {
@@ -125,14 +125,14 @@ public class RenegotiationProbe extends TlsProbe {
         State state = new State(tlsConfig);
         if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
             WorkflowTrace trace =
-                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResults.TRUE);
             state = new State(tlsConfig, trace);
         }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private TestResult supportsSecureClientRenegotiationCipherSuite() {
@@ -142,14 +142,14 @@ public class RenegotiationProbe extends TlsProbe {
         State state = new State(tlsConfig);
         if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
             WorkflowTrace trace =
-                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResults.TRUE);
             state = new State(tlsConfig, trace);
         }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private TestResult supportsInsecureClientRenegotiation() {
@@ -158,14 +158,14 @@ public class RenegotiationProbe extends TlsProbe {
         State state = new State(tlsConfig);
         if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
             WorkflowTrace trace =
-                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResults.TRUE);
             state = new State(tlsConfig, trace);
         }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private WorkflowTrace getDtlsRenegotiationTrace(Config tlsConfig, boolean renegotiationWithCookieExchange) {
@@ -192,47 +192,47 @@ public class RenegotiationProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.COULD_NOT_TEST;
+            return TestResults.COULD_NOT_TEST;
         }
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.FALSE : TestResult.TRUE;
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.FALSE : TestResults.TRUE;
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return (report.getCipherSuites() != null && (report.getCipherSuites().size() > 0 || supportsOnlyTls13(report)));
+    public boolean canBeExecuted(ServerReport report) {
+        return (report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty() || supportsOnlyTls13(report)));
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST);
+    public RenegotiationResult getCouldNotExecuteResult() {
+        return new RenegotiationResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     /**
      * Used to run the probe with empty CS list if we already know versions before TLS 1.3 are not supported, to avoid
      * stalling of probes that depend on this one
      */
-    private boolean supportsOnlyTls13(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.FALSE;
+    private boolean supportsOnlyTls13(ServerReport report) {
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.FALSE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.FALSE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.FALSE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.FALSE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.FALSE;
     }
 
     private Config getBaseConfig() {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
-        getConfigSelector().repairConfig(tlsConfig);
+        configSelector.repairConfig(tlsConfig);
         return tlsConfig;
     }
 }

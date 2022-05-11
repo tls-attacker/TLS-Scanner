@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -23,7 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ConfigSelector {
 
-    private ScannerConfig scannerConfig;
+    private ServerScannerConfig scannerConfig;
     private Config workingConfig;
 
     public static final String PATH = "/configs/";
@@ -42,7 +43,7 @@ public class ConfigSelector {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ConfigSelector(ScannerConfig scannerConfig) {
+    public ConfigSelector(ServerScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
     }
 
@@ -135,11 +136,11 @@ public class ConfigSelector {
         return config;
     }
 
-    public ScannerConfig getScannerConfig() {
+    public ServerScannerConfig getScannerConfig() {
         return scannerConfig;
     }
 
-    public void setScannerConfig(ScannerConfig scannerConfig) {
+    public void setScannerConfig(ServerScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
     }
 }

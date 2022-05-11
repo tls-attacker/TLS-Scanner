@@ -9,53 +9,52 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.GeneralDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.constans.DrownOracleType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DrownProbe extends TlsProbe {
+public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport, DrownResult> {
 
     public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DROWN, configSelector);
+        super(parallelExecutor, TlsProbeType.DROWN, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DrownResult executeTest() {
         return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
     }
 
-    private TestResult testForGeneralDrown() {
+    private TestResults testForGeneralDrown() {
         GeneralDrownAttacker attacker =
-            new GeneralDrownAttacker(getConfigSelector().getSSL2BaseConfig(), getParallelExecutor());
+            new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
         return attacker.isVulnerable();
     }
 
-    private TestResult testForExtraClearDrown() {
-        SpecialDrownAttacker attacker = new SpecialDrownAttacker(getConfigSelector().getSSL2BaseConfig(),
+    private TestResults testForExtraClearDrown() {
+        SpecialDrownAttacker attacker = new SpecialDrownAttacker(configSelector.getSSL2BaseConfig(),
             getParallelExecutor(), DrownOracleType.EXTRA_CLEAR);
         return attacker.isVulnerable();
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.getResult(AnalyzedProperty.SUPPORTS_SSL_2) == TestResult.TRUE;
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_2) == TestResults.TRUE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new DrownResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    public DrownResult getCouldNotExecuteResult() {
+        return new DrownResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 }

@@ -9,30 +9,30 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureHashAlgorithmOrderResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SignatureHashAlgorithmOrderResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
+public class SignatureHashAlgorithmOrderProbe
+    extends TlsServerProbe<ConfigSelector, ServerReport, SignatureHashAlgorithmOrderResult> {
 
     public SignatureHashAlgorithmOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
+        super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SignatureHashAlgorithmOrderResult executeTest() {
         List<SignatureAndHashAlgorithm> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         SignatureAndHashAlgorithm firstSelectedSignatureAndHashAlgorithm =
@@ -42,26 +42,26 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
             getSelectedSignatureAndHashAlgorithm(toTestList);
 
         return new SignatureHashAlgorithmOrderResult(
-            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResult.TRUE
-                : TestResult.FALSE);
+            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
+                : TestResults.FALSE);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return !report.isProbeAlreadyExecuted(ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
+    public boolean canBeExecuted(ServerReport report) {
+        return !report.isProbeAlreadyExecuted(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureHashAlgorithmOrderResult(TestResult.COULD_NOT_TEST);
+    public SignatureHashAlgorithmOrderResult getCouldNotExecuteResult() {
+        return new SignatureHashAlgorithmOrderResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
-        Config config = getConfigSelector().getBaseConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);

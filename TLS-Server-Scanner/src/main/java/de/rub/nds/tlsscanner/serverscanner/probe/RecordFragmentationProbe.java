@@ -15,21 +15,20 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.RecordFragmentationResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class RecordFragmentationProbe extends TlsProbe {
+public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, ServerReport, RecordFragmentationResult> {
 
     public RecordFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, configSelector);
+        super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        Config config = getConfigSelector().getBaseConfig();
+    public RecordFragmentationResult executeTest() {
+        Config config = configSelector.getBaseConfig();
         config.setDefaultMaxRecordData(50);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
@@ -39,16 +38,16 @@ public class RecordFragmentationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public RecordFragmentationResult getCouldNotExecuteResult() {
         return new RecordFragmentationResult(null);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 }

@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.task;
 
-import de.rub.nds.tlsscanner.serverscanner.vector.Vector;
-import de.rub.nds.tlsscanner.serverscanner.vector.VectorResponse;
+import de.rub.nds.scanner.core.vector.Vector;
+import de.rub.nds.scanner.core.vector.VectorResponse;
 
 public class FingerprintTaskVectorPair<T extends Vector> {
 

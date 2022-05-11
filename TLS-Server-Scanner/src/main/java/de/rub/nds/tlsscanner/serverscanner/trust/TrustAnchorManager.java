@@ -13,27 +13,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.PKIXParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+
+import java.io.*;
+import java.security.*;
+import java.security.cert.*;
+import java.util.*;
 import javax.security.auth.x500.X500Principal;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
@@ -44,6 +33,8 @@ public class TrustAnchorManager {
     private List<TrustPlatform> trustPlatformList;
 
     private HashMap<String, CertificateEntry> trustAnchors;
+
+    private HashMap<String, CertificateEntry> customTrustAnchors;
 
     private static TrustAnchorManager INSTANCE = null;
 
@@ -68,6 +59,7 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("apple.yaml"));
 
             trustAnchors = new HashMap<>();
+            customTrustAnchors = new HashMap<>();
             for (TrustPlatform platform : trustPlatformList) {
                 for (CertificateEntry entry : platform.getCertificateEntries()) {
                     if (!trustAnchors.containsKey(entry.getFingerprint())) {
@@ -80,8 +72,10 @@ public class TrustAnchorManager {
                     }
                 }
             }
+
             this.trustAnchorSet = getFullTrustAnchorSet();
             this.asn1CaCertificateSet = getFullCaCertificateSet();
+
         } catch (IOException | IllegalArgumentException ex) {
             trustAnchorSet = null;
             trustAnchors = null;
@@ -123,7 +117,6 @@ public class TrustAnchorManager {
         } else {
             return false;
         }
-
     }
 
     public boolean isTrustAnchor(X500Principal principal) {
@@ -136,6 +129,7 @@ public class TrustAnchorManager {
     }
 
     private Set<TrustAnchor> getFullTrustAnchorSet() {
+        Set<TrustAnchor> trustedAnchors = new HashSet<>();
         try {
             int i = 0;
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -147,6 +141,7 @@ public class TrustAnchorManager {
                     X509Certificate ca = (X509Certificate) CertificateFactory.getInstance("X.509")
                         .generateCertificate(new BufferedInputStream(resourceAsStream));
                     keyStore.setCertificateEntry("" + i, ca);
+
                 } catch (CertificateException ex) {
                     LOGGER.error("Could not load Certificate:" + entry.getSubjectName() + "/" + entry.getFingerprint(),
                         ex);
@@ -154,7 +149,9 @@ public class TrustAnchorManager {
                 i++;
             }
             PKIXParameters params = new PKIXParameters(keyStore);
-            return params.getTrustAnchors();
+            /* Converts the immutable trustAnchorSet (read only) to a set with write access */
+            trustedAnchors.addAll(params.getTrustAnchors());
+            return trustedAnchors;
 
         } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException
             | InvalidAlgorithmParameterException ex) {
@@ -203,5 +200,94 @@ public class TrustAnchorManager {
             }
         }
         return certificateSet;
+    }
+
+    private List<org.bouncycastle.crypto.tls.Certificate> getCustomCA(List<String> customCAPaths) {
+        List<org.bouncycastle.crypto.tls.Certificate> certX509List = new ArrayList<>();
+        for (String filepath : customCAPaths) {
+            try {
+                certX509List.add(PemUtil.readCertificate(new File(filepath)));
+            } catch (CertificateException | IOException ex) {
+                LOGGER.error("Could't load the CA: " + filepath, ex);
+            }
+        }
+        return certX509List;
+    }
+
+    public void addCustomCA(List<String> customCAPaths) {
+        List<org.bouncycastle.crypto.tls.Certificate> customCAList = getCustomCA(customCAPaths);
+        KeyStore keyStore = null;
+
+        // Initializes the keyStore
+        try {
+            keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException ex) {
+            throw new RuntimeException("Couldn't initialize keyStore,", ex);
+        }
+
+        for (int i = 0; i < customCAList.size(); i++) {
+            org.bouncycastle.crypto.tls.Certificate cert = customCAList.get(i);
+            // Converts each certificate in customCAList to a x.509 formatted certificate and adds it to the keystore.
+            try {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X509");
+                keyStore.setCertificateEntry("custom_" + i,
+                    certFactory.generateCertificate(new ByteArrayInputStream(cert.getCertificateAt(0).getEncoded())));
+            } catch (CertificateException | IOException | KeyStoreException ex) {
+                throw new RuntimeException("Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore",
+                    ex);
+            }
+
+            /*
+             * Creates a SHA256 fingerprint for each CA in customCAList. For each CA in customCAList the subject and
+             * fingerprint of each CA is stored in a certEntry. Each certEntry is then added to the trustAnchors and
+             * each CA is added to the asn1CaCertificateSet.
+             */
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] sha256Fingerprint = digest.digest(cert.getCertificateAt(0).getEncoded());
+                CertificateEntry certEntry = new CertificateEntry(cert.getCertificateAt(0).getSubject().toString(),
+                    sha256Fingerprint.toString());
+                this.trustAnchors.put(sha256Fingerprint.toString(), certEntry);
+                this.customTrustAnchors.put(sha256Fingerprint.toString(), certEntry);
+                this.asn1CaCertificateSet.add(cert.getCertificateAt(0));
+            } catch (NoSuchAlgorithmException | IOException ex) {
+                LOGGER.error(
+                    "Couldn't add CA " + customCAList.get(i) + "to either trustAnchor or asn1CaCertificateSet.", ex);
+            }
+        }
+
+        /*
+         * Adds all trusted CA's from the keyStore to the trustAnchorSet in a way that the resulting trustAnchorSet is
+         * mutable. Otherwise, the trustAnchorSet would be immutable so that adding further certificates to the
+         * trustAnchorSet would be impossible.
+         */
+        try {
+            PKIXParameters params = new PKIXParameters(keyStore);
+            for (TrustAnchor entry : params.getTrustAnchors()) {
+                this.trustAnchorSet.add(entry);
+            }
+        } catch (InvalidAlgorithmParameterException | KeyStoreException ex) {
+            LOGGER.error("The keyStore doesn't contain at least one trusted CA", ex);
+        }
+    }
+
+    public boolean hasCustomTrustAnchros() {
+        return customTrustAnchors.size() > 0;
+    }
+
+    public boolean isCustomTrustAnchor(CertificateReport report) {
+        if (customTrustAnchors.containsKey(report.getIssuer())) {
+            LOGGER.debug("Found a customTrustAnchor for Issuer report");
+            CertificateEntry entry = customTrustAnchors.get(report.getIssuer());
+            if (entry.getFingerprint().equals(report.getSHA256Fingerprint())) {
+                return true;
+            } else {
+                LOGGER.warn("CustomTrustAnchor hash does not match stored fingerprint");
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

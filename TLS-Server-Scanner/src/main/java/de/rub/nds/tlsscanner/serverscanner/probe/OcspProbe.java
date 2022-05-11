@@ -36,12 +36,11 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -52,7 +51,7 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsProbe {
+public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, OcspResult> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -63,11 +62,11 @@ public class OcspProbe extends TlsProbe {
     private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
     public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.OCSP, configSelector);
+        super(parallelExecutor, TlsProbeType.OCSP, configSelector);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public OcspResult executeTest() {
         List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
         for (CertificateChain serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
@@ -100,7 +99,7 @@ public class OcspProbe extends TlsProbe {
     }
 
     private void getStapledResponse(OcspCertificateResult certResult) {
-        Config tlsConfig = getConfigSelector().getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
         tlsConfig.setAddCertificateStatusRequestExtension(true);
@@ -201,14 +200,14 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         // We also need the tls13 groups to perform a tls13 handshake
         return report.getCertificateChainList() != null && !report.getCertificateChainList().isEmpty()
-            && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
+            && report.isProbeAlreadyExecuted(TlsProbeType.NAMED_GROUPS);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
         for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
@@ -218,7 +217,7 @@ public class OcspProbe extends TlsProbe {
 
     private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
         List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
-        Config tlsConfig = getConfigSelector().getTls13BaseConfig();
+        Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         List<PskKeyExchangeMode> pskKex = new LinkedList<>();
         pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
@@ -244,7 +243,7 @@ public class OcspProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public OcspResult getCouldNotExecuteResult() {
         return new OcspResult(null, null);
     }
 }
