@@ -9,8 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
-import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -59,16 +58,12 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private WorkflowTrace getTrace(Config tlsConfig) {
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendAction(getMalformedHeartbeatMessage()));
+        HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
+        heartbeatMessage.setPayload(Modifiable.explicit(new byte[] { 1, 3 }));
+        heartbeatMessage.setPayloadLength(Modifiable.explicit(20000));
+        trace.addTlsAction(new SendAction(heartbeatMessage));
         trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
         return trace;
-    }
-
-    private HeartbeatMessage getMalformedHeartbeatMessage() {
-        HeartbeatMessage message = new HeartbeatMessage();
-        message.getPayload().setModification(ByteArrayModificationFactory.explicitValue(new byte[] { 1, 3 }));
-        message.getPayloadLength().setModification(IntegerModificationFactory.explicitValue(20000));
-        return message;
     }
 
     @Override
