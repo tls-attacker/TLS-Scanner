@@ -177,7 +177,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
+        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>(tlsConfig.getDefaultClientNamedGroups()));
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
