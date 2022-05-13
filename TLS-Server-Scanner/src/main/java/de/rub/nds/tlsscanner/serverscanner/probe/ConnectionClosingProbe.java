@@ -22,12 +22,11 @@ import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
+import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
@@ -75,15 +74,13 @@ public class ConnectionClosingProbe extends TlsProbe<ServerScannerConfig, Server
     }
 
     private long evaluateClosingDelta(Config tlsConfig, WorkflowTrace workflowTrace) {
-        ReceivingAction receivingAction = workflowTrace.getLastReceivingAction();
         State state = new State(tlsConfig, workflowTrace);
         executeState(state);
         long delta = 0;
         SocketState socketState = null;
         do {
             try {
-                ResponseFingerprint responseFingerprint = ResponseExtractor.getFingerprint(state, receivingAction);
-                socketState = responseFingerprint.getSocketState();
+                socketState = (((TcpTransportHandler) (state.getTlsContext().getTransportHandler())).getSocketState());
                 switch (socketState) {
                     case CLOSED:
                     case IO_EXCEPTION:
