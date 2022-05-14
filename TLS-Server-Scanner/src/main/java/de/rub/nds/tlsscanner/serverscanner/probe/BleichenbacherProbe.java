@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -144,9 +145,10 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = report.getVersionSuitePairs();
+        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
     @Override

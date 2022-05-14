@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -27,6 +28,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -66,10 +68,11 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         return this;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        if (report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM)) {
+        if (((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(ExtensionType.EXTENDED_RANDOM)) {
             supportsExtendedRandom = true;
         } else {
             supportsExtendedRandom = false;
@@ -78,7 +81,8 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
-        List<VersionSuiteListPair> versionSuitePairs = report.getVersionSuitePairs();
+        @SuppressWarnings("unchecked")
+		List<VersionSuiteListPair> versionSuitePairs = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;

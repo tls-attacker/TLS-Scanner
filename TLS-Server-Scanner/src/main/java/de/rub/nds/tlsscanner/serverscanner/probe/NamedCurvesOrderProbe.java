@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -88,9 +89,10 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        supportedGroups = report.getSupportedNamedGroups();
+        supportedGroups = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name())).getList();
     }
 
     @Override

@@ -13,6 +13,8 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.SetResult;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
@@ -364,12 +366,14 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
-        if (report.getCipherSuites() != null) {
-
-            allSuiteList.addAll(report.getCipherSuites());
+        
+        TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        if (ciphersuitesResult != null) {
+            allSuiteList.addAll(((SetResult<CipherSuite>) ciphersuitesResult).getSet());
             suiteList = new LinkedList<>();
             for (CipherSuite suite : allSuiteList) {
                 if (suite.isUsingMac()) {

@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -70,10 +71,13 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
             .requireExtensionTyes(ExtensionType.HEARTBEAT);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
-            supportedCiphers = new ArrayList<>(report.getCipherSuites());
+    	
+    	TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+    	if (ciphersuitesResult != null && !((SetResult<CipherSuite>) ciphersuitesResult).getSet().isEmpty()) {
+            supportedCiphers = new ArrayList<>(((SetResult<CipherSuite>) ciphersuitesResult).getSet());
         } else {
             supportedCiphers = CipherSuite.getImplemented();
         }

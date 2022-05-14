@@ -41,6 +41,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     LIST_CERTIFICATE_CHAIN(TlsAnalyzedPropertyCategory.LIST),
     LIST_STATIC_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.LIST),
     LIST_EPHEMERAL_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.LIST),
+    LIST_TLS13_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.LIST),
     LIST_STATIC_ECDSA_SIGGROUPS(TlsAnalyzedPropertyCategory.LIST),
     LIST_EPHEMERAL_ECDSA_SIGGROUPS(TlsAnalyzedPropertyCategory.LIST),
     LIST_TLS13_ECDSA_SIGGROUPS(TlsAnalyzedPropertyCategory.LIST),

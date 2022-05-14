@@ -148,9 +148,10 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = report.getVersionSuitePairs();
+        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
     @Override

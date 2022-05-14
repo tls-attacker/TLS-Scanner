@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -215,9 +216,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         return this;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = new ArrayList<>(report.getCipherSuites());
+        supportedSuites = new ArrayList<>(((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet());
     }
 
     @Override

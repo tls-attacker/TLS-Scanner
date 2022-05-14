@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -257,14 +258,15 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
-        ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
-        ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
-        ecdsaCertSigGroupsEphemeral = report.getEcdsaSigGroupsStatic();
-        ecdsaCertSigGroupsTls13 = report.getEcdsaSigGroupsTls13();
-        supportedCipherSuites = report.getCipherSuites();
+        ecdsaPkGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS.name())).getList(); 
+        ecdsaPkGroupsTls13 = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS.name())).getList();
+        ecdsaCertSigGroupsStatic = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_STATIC_ECDSA_SIGGROUPS.name())).getList();
+        ecdsaCertSigGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_STATIC_ECDSA_SIGGROUPS.name())).getList();
+        ecdsaCertSigGroupsTls13 = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        supportedCipherSuites = ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getSet();
     }
 
     @Override

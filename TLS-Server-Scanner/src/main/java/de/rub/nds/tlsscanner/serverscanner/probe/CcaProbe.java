@@ -149,9 +149,10 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
+        this.versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList());
     }
 
     @Override

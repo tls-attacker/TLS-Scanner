@@ -182,9 +182,10 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             .orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = report.getVersionSuitePairs();
+        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
     @Override

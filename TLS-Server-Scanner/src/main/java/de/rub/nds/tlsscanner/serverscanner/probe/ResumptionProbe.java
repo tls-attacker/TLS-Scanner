@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -370,9 +371,10 @@ public class ResumptionProbe extends TlsProbe<ServerScannerConfig, ServerReport>
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = report.getCipherSuites();
+        supportedSuites = ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
