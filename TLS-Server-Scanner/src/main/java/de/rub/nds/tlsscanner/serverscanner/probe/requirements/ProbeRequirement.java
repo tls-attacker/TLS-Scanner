@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -38,11 +39,11 @@ public class ProbeRequirement implements Requirement {
     }
 
     public ProbeRequirement getMissingRequirements() {
-        ProbeRequirement missing = new ProbeRequirement(this.report);
+        ProbeRequirement missing = new ProbeRequirement(report);
 
-        if (this.requiredProbeTypes != null) {
+        if (requiredProbeTypes != null) {
             List<TlsProbeType> ptypes = new LinkedList<>();
-            for (TlsProbeType pt : this.requiredProbeTypes) {
+            for (TlsProbeType pt : requiredProbeTypes) {
                 if (report.isProbeAlreadyExecuted(pt) == false)
                     ptypes.add(pt);
             }
@@ -56,7 +57,7 @@ public class ProbeRequirement implements Requirement {
         if (this.requiredAnalyzedproperties != null) {
             List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
-            for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
+            for (TlsAnalyzedProperty ap : requiredAnalyzedproperties) {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE)
                     aprops.add(ap);
             }
@@ -67,13 +68,14 @@ public class ProbeRequirement implements Requirement {
             missing.requireAnalyzedProperties(tap);
         }
 
-        if (this.requiredProtocolVersions != null) {
-            List<ProtocolVersion> pvList = report.getVersions();
+        if (requiredProtocolVersions != null) {
+            @SuppressWarnings("unchecked")
+			List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
             if (pvList == null)
-                missing.requireProtocolVersions(this.requiredProtocolVersions);
+                missing.requireProtocolVersions(requiredProtocolVersions);
             else {
                 List<ProtocolVersion> pvers = new LinkedList<>();
-                for (ProtocolVersion pv : this.requiredProtocolVersions) {
+                for (ProtocolVersion pv : requiredProtocolVersions) {
                     if (!pvList.contains(pv))
                         pvers.add(pv);
                 }
@@ -85,10 +87,10 @@ public class ProbeRequirement implements Requirement {
             }
         }
 
-        if (this.requiredAnalyzedpropertiesNot != null) {
+        if (requiredAnalyzedpropertiesNot != null) {
             List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
-            for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
+            for (TlsAnalyzedProperty ap : requiredAnalyzedpropertiesNot) {
                 if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE)
                     aprops.add(ap);
             }
@@ -99,13 +101,14 @@ public class ProbeRequirement implements Requirement {
             missing.requireAnalyzedPropertiesNot(tap);
         }
 
-        if (this.requiredExtensionTypes != null) {
-            List<ExtensionType> etList = report.getSupportedExtensions();
+        if (requiredExtensionTypes != null) {
+            @SuppressWarnings("unchecked")
+			List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
             if (etList == null)
-                missing.requireExtensionTyes(this.requiredExtensionTypes);
+                missing.requireExtensionTyes(requiredExtensionTypes);
             else {
                 List<ExtensionType> etype = new LinkedList<>();
-                for (ExtensionType et : this.requiredExtensionTypes) {
+                for (ExtensionType et : requiredExtensionTypes) {
                     if (!etList.contains(et))
                         etype.add(et);
                 }
@@ -117,20 +120,20 @@ public class ProbeRequirement implements Requirement {
             }
         }
 
-        if (this.requiredOR != null) {
+        if (requiredOR != null) {
             boolean or = false;
-            for (ProbeRequirement pReq : this.requiredOR) {
+            for (ProbeRequirement pReq : requiredOR) {
                 if (pReq.evaluateRequirements()) {
                     or = true;
                     break;
                 }
             }
             if (!or)
-                missing.orRequirement(this.requiredOR);
+                missing.orRequirement(requiredOR);
         }
 
-        if (this.not != null && not.evaluateRequirements())
-            missing.notRequirement(this.not);
+        if (not != null && not.evaluateRequirements())
+            missing.notRequirement(not);
 
         return missing;
     }
@@ -176,9 +179,9 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean probeTypesFulfilled() {
-        if (this.requiredProbeTypes == null)
+        if (requiredProbeTypes == null)
             return true;
-        for (TlsProbeType pt : this.requiredProbeTypes) {
+        for (TlsProbeType pt : requiredProbeTypes) {
             if (report.isProbeAlreadyExecuted(pt) == false)
                 return false;
         }
@@ -186,10 +189,10 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean analyzedPropertiesFulfilled() {
-        if (this.requiredAnalyzedproperties == null)
+        if (requiredAnalyzedproperties == null)
             return true;
         Map<String, TestResult> apList = report.getResultMap();
-        for (TlsAnalyzedProperty ap : this.requiredAnalyzedproperties) {
+        for (TlsAnalyzedProperty ap : requiredAnalyzedproperties) {
             if (apList.containsKey(ap.toString())) {
                 if (apList.get(ap.toString()) != TestResults.TRUE)
                     return false;
@@ -200,12 +203,13 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean analyzedProtocolVersionsFulfilled() {
-        if (this.requiredProtocolVersions == null)
+        if (requiredProtocolVersions == null)
             return true;
-        List<ProtocolVersion> pvList = report.getVersions();
+        @SuppressWarnings("unchecked")
+		List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
         if (pvList == null)
             return false;
-        for (ProtocolVersion pv : this.requiredProtocolVersions) {
+        for (ProtocolVersion pv : requiredProtocolVersions) {
             if (!pvList.contains(pv))
                 return false;
         }
@@ -213,10 +217,10 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean analyzedPropertiesNotFulfilled() {
-        if (this.requiredAnalyzedpropertiesNot == null)
+        if (requiredAnalyzedpropertiesNot == null)
             return true;
         Map<String, TestResult> apList = report.getResultMap();
-        for (TlsAnalyzedProperty ap : this.requiredAnalyzedpropertiesNot) {
+        for (TlsAnalyzedProperty ap : requiredAnalyzedpropertiesNot) {
             if (apList.containsKey(ap.toString())) {
                 if (apList.get(ap.toString()) != TestResults.FALSE)
                     return false;
@@ -227,12 +231,13 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean extensionTypesFulfilled() {
-        if (this.requiredExtensionTypes == null)
+        if (requiredExtensionTypes == null)
             return true;
-        List<ExtensionType> etList = report.getSupportedExtensions();
+        @SuppressWarnings("unchecked")
+		List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
         if (etList == null)
             return false;
-        for (ExtensionType et : this.requiredExtensionTypes) {
+        for (ExtensionType et : requiredExtensionTypes) {
             if (!etList.contains(et))
                 return false;
         }
@@ -240,9 +245,9 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean orFulfilled() {
-        if (this.requiredOR == null)
+        if (requiredOR == null)
             return true;
-        for (ProbeRequirement pReq : this.requiredOR) {
+        for (ProbeRequirement pReq : requiredOR) {
             if (pReq.evaluateRequirements())
                 return true;
         }
@@ -250,9 +255,9 @@ public class ProbeRequirement implements Requirement {
     }
 
     private boolean notFulfilled() {
-        if (this.not == null)
+        if (not == null)
             return true;
-        return !this.not.evaluateRequirements();
+        return !not.evaluateRequirements();
     }
 
     /**
@@ -266,41 +271,41 @@ public class ProbeRequirement implements Requirement {
      * @return the requiredAnalyzedproperties
      */
     public TlsAnalyzedProperty[] getRequiredAnalyzedproperties() {
-        return this.requiredAnalyzedproperties;
+        return requiredAnalyzedproperties;
     }
 
     /**
      * @return the requiredAnalyzedpropertiesNot
      */
     public TlsAnalyzedProperty[] getRequiredAnalyzedpropertiesNot() {
-        return this.requiredAnalyzedpropertiesNot;
+        return requiredAnalyzedpropertiesNot;
     }
 
     /**
      * @return the requiredExtensionTypes
      */
     public ExtensionType[] getRequiredExtensionTypes() {
-        return this.requiredExtensionTypes;
+        return requiredExtensionTypes;
     }
 
     /**
      * @return the requiredProtocolVersions
      */
     public ProtocolVersion[] getRequiredProtocolVersions() {
-        return this.requiredProtocolVersions;
+        return requiredProtocolVersions;
     }
 
     /**
      * @return the or ProbeRequirements
      */
     public ProbeRequirement[] getORRequirements() {
-        return this.requiredOR;
+        return requiredOR;
     }
 
     /**
      * @return the inverted ProbeRequirement
      */
     public ProbeRequirement getNot() {
-        return this.not;
+        return not;
     }
 }
