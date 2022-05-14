@@ -228,9 +228,10 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet();
+        supportedSuites =
+            ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }

@@ -49,10 +49,11 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends Guideli
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm algorithm : ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name())).getList()) {
+        for (SignatureAndHashAlgorithm algorithm : ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name())).getList()) {
             if (!this.recommendedAlgorithms.contains(algorithm)) {
                 nonRecommended.add(algorithm);
             }

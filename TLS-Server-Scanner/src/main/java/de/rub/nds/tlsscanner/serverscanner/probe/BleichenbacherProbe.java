@@ -146,9 +146,10 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
     @Override

@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -23,7 +25,8 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.setSupportedExtensions(Collections.singletonList(ExtensionType.COOKIE));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+            new ListResult<>(Collections.singletonList(ExtensionType.COOKIE), "SUPPORTED_EXTENSIONS"));
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
@@ -33,7 +36,8 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.setSupportedExtensions(Collections.emptyList());
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+            new ListResult<>(Collections.emptyList(), "SUPPORTED_EXTENSIONS"));
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);

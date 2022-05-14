@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -128,8 +129,8 @@ public class ProbeRequirementTest {
         assertFalse(pReq.evaluateRequirements());
         List<ProtocolVersion> pList = new ArrayList<ProtocolVersion>();
         pList.add(pVer);
-        report.setVersions(pList);
-        ;
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
+            new ListResult<>(pList, "SUPPORTED_PROTOCOLVERSIONS"));
         assertTrue(pReq.evaluateRequirements());
 
         pReq.requireExtensionTyes(eType);
@@ -137,7 +138,8 @@ public class ProbeRequirementTest {
         assertTrue(pReq.getMissingRequirements().getRequiredExtensionTypes()[0] == eType);
         List<ExtensionType> etList = new ArrayList<ExtensionType>();
         etList.add(eType);
-        report.setSupportedExtensions(etList);
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+            new ListResult<>(etList, "SUPPORTED_EXTENSIONS"));
         assertTrue(pReq.evaluateRequirements());
 
         assertTrue(ProbeRequirement.NO_REQUIREMENT.evaluateRequirements());

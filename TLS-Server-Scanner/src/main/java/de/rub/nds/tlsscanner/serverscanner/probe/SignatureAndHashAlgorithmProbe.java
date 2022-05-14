@@ -212,10 +212,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
         this.versions = new ArrayList<>();
-        for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList()) {
+        for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
                 versions.add(version);
             }

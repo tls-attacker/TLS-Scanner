@@ -247,9 +247,10 @@ public class CertificateTransparencyProbe extends TlsProbe<ServerScannerConfig, 
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        serverCertChain = ((ListResult<CertificateChain>) report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList().get(0).getCertificate();
+        serverCertChain = ((ListResult<CertificateChain>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList().get(0).getCertificate();
     }
 
     @Override

@@ -34,50 +34,52 @@ import org.apache.logging.log4j.Logger;
 
 public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
-	
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @Override
     public void analyze(ServerReport report) {
         int isSuccessfulCounter = 0;
         int isInsecureCounter = 0;
-        
+
         TestResult simulatedclientsResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name());
         if (simulatedclientsResult != null) {
-        	@SuppressWarnings("unchecked")
-			List<SimulatedClientResult> simulatedclients = ((ListResult<SimulatedClientResult>) simulatedclientsResult).getList();
-	        if (simulatedclients != null) {
-	            for (SimulatedClientResult simulatedClient : simulatedclients) {
-	                if (simulatedClient.getReceivedAlert()) {
-	                    checkWhyAlert(report, simulatedClient);
-	                } else if (simulatedClient.getReceivedAllMandatoryMessages()) {
-	                    checkSelectedProtocolVersion(report, simulatedClient);
-	                    checkIfHandshakeWouldBeSuccessful(simulatedClient);
-	                    if (simulatedClient.getFailReasons().isEmpty()) {
-	                        simulatedClient.setHandshakeSuccessful(true);
-	                    }
-	                } else {
-	                    checkWhyMandatoryMessagesMissing(simulatedClient);
-	                }
-	                if (Objects.equals(simulatedClient.getHandshakeSuccessful(), Boolean.TRUE)) {
-	                    isSuccessfulCounter++;
-	                    checkIfConnectionIsInsecure(report, simulatedClient);
-	                    if (simulatedClient.getInsecureReasons().isEmpty()) {
-	                        simulatedClient.setConnectionInsecure(false);
-	                        checkIfConnectionIsRfc7918Secure(simulatedClient);
-	                    } else {
-	                        simulatedClient.setConnectionInsecure(true);
-	                        isInsecureCounter++;
-	                    }
-	                } else {
-	                    simulatedClient.setHandshakeSuccessful(false);
-	                }
-	            }
-	            report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
-	            report.setHandshakeFailedCounter(simulatedclients.size() - isSuccessfulCounter);
-	            report.setConnectionInsecureCounter(isInsecureCounter);
-	        }
-        } else 
-        	LOGGER.debug("property " + TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name() + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+            @SuppressWarnings("unchecked")
+            List<SimulatedClientResult> simulatedclients =
+                ((ListResult<SimulatedClientResult>) simulatedclientsResult).getList();
+            if (simulatedclients != null) {
+                for (SimulatedClientResult simulatedClient : simulatedclients) {
+                    if (simulatedClient.getReceivedAlert()) {
+                        checkWhyAlert(report, simulatedClient);
+                    } else if (simulatedClient.getReceivedAllMandatoryMessages()) {
+                        checkSelectedProtocolVersion(report, simulatedClient);
+                        checkIfHandshakeWouldBeSuccessful(simulatedClient);
+                        if (simulatedClient.getFailReasons().isEmpty()) {
+                            simulatedClient.setHandshakeSuccessful(true);
+                        }
+                    } else {
+                        checkWhyMandatoryMessagesMissing(simulatedClient);
+                    }
+                    if (Objects.equals(simulatedClient.getHandshakeSuccessful(), Boolean.TRUE)) {
+                        isSuccessfulCounter++;
+                        checkIfConnectionIsInsecure(report, simulatedClient);
+                        if (simulatedClient.getInsecureReasons().isEmpty()) {
+                            simulatedClient.setConnectionInsecure(false);
+                            checkIfConnectionIsRfc7918Secure(simulatedClient);
+                        } else {
+                            simulatedClient.setConnectionInsecure(true);
+                            isInsecureCounter++;
+                        }
+                    } else {
+                        simulatedClient.setHandshakeSuccessful(false);
+                    }
+                }
+                report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
+                report.setHandshakeFailedCounter(simulatedclients.size() - isSuccessfulCounter);
+                report.setConnectionInsecureCounter(isInsecureCounter);
+            }
+        } else
+            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name()
+                + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 
     private void checkWhyAlert(ServerReport report, SimulatedClientResult simulatedClient) {
@@ -87,49 +89,51 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private boolean isCipherSuiteMismatch(ServerReport report, SimulatedClientResult simulatedClient) {
-    	TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
-    	if (ciphersuiteResult != null) {
-    		@SuppressWarnings("unchecked")
-			Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
-	    	if (ciphersuites != null) {
-	            for (CipherSuite serverCipherSuite : ciphersuites) {
-	                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
-	                    if (serverCipherSuite.equals(clientCipherSuite)) {
-	                        return false;
-	                    }
-	                }
-	            }
-	        }
-    	} else 
-        	LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name() + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+        TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        if (ciphersuiteResult != null) {
+            @SuppressWarnings("unchecked")
+            Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+            if (ciphersuites != null) {
+                for (CipherSuite serverCipherSuite : ciphersuites) {
+                    for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
+                        if (serverCipherSuite.equals(clientCipherSuite)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        } else
+            LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name()
+                + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
         return true;
     }
 
     private void checkSelectedProtocolVersion(ServerReport report, SimulatedClientResult simulatedClient) {
         TestResult versionsuiteResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
-    	if (versionsuiteResult != null) {
-    		@SuppressWarnings("unchecked")
-			List<ProtocolVersion> versions = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
-	    	if (versions != null && simulatedClient.getSupportedVersionList() != null) {
-	            List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
-	            Collections.sort(versions);
-	            Collections.sort(simulatedClient.getSupportedVersionList());
-	            for (ProtocolVersion serverVersion : versions) {
-	                if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
-	                    commonProtocolVersions.add(serverVersion);
-	                }
-	            }
-	            Collections.sort(commonProtocolVersions);
-	            simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
-	            if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
-	                .equals(simulatedClient.getSelectedProtocolVersion())) {
-	                simulatedClient.setHighestPossibleProtocolVersionSelected(true);
-	            } else {
-	                simulatedClient.setHighestPossibleProtocolVersionSelected(false);
-	            }
-	        }
-    	}else 
-        	LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name() + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+        if (versionsuiteResult != null) {
+            @SuppressWarnings("unchecked")
+            List<ProtocolVersion> versions = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+            if (versions != null && simulatedClient.getSupportedVersionList() != null) {
+                List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
+                Collections.sort(versions);
+                Collections.sort(simulatedClient.getSupportedVersionList());
+                for (ProtocolVersion serverVersion : versions) {
+                    if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
+                        commonProtocolVersions.add(serverVersion);
+                    }
+                }
+                Collections.sort(commonProtocolVersions);
+                simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
+                if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
+                    .equals(simulatedClient.getSelectedProtocolVersion())) {
+                    simulatedClient.setHighestPossibleProtocolVersionSelected(true);
+                } else {
+                    simulatedClient.setHighestPossibleProtocolVersionSelected(false);
+                }
+            }
+        } else
+            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()
+                + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 
     private void checkIfHandshakeWouldBeSuccessful(SimulatedClientResult simulatedClient) {

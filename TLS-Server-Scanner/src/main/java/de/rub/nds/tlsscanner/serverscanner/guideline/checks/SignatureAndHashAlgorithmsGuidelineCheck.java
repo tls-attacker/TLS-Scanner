@@ -54,20 +54,23 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-    	List<SignatureAndHashAlgorithm> algorithms = null;
-    	if (tls13) 
-    		algorithms = ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13.name())).getList();
-    	else {
-    		algorithms = new LinkedList<>();
-        	TestResult samResult_cert = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
-    		if (samResult_cert != null)
-        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
-            TestResult samResult_ske = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
-        	if (samResult_ske != null)
-        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
-    	}
+        List<SignatureAndHashAlgorithm> algorithms = null;
+        if (tls13)
+            algorithms = ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13.name())).getList();
+        else {
+            algorithms = new LinkedList<>();
+            TestResult samResult_cert =
+                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
+            if (samResult_cert != null)
+                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
+            TestResult samResult_ske =
+                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
+            if (samResult_ske != null)
+                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
+        }
         if (algorithms == null || algorithms.isEmpty())
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();

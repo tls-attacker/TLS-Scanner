@@ -241,13 +241,16 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
-        for (CertificateChain chain : ((ListResult<CertificateChain>) report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList()) {
+        for (CertificateChain chain : ((ListResult<CertificateChain>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList()) {
             serverCertChains.add(chain);
         }
-        tls13NamedGroups = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList();
+        tls13NamedGroups =
+            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name()))
+                .getList();
     }
 
     private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {

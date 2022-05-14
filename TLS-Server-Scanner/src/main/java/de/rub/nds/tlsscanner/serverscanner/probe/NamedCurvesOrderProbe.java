@@ -90,9 +90,11 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        supportedGroups = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name())).getList();
+        supportedGroups =
+            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name()))
+                .getList();
     }
 
     @Override

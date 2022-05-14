@@ -133,7 +133,7 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
         supportsRenegotiation =
             (report.getResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
@@ -159,9 +159,11 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         }
 
         HashMap<ProtocolVersion, List<CipherSuite>> cipherSuitesMap = new HashMap<>();
-        TestResult versionsuitepairResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+        TestResult versionsuitepairResult =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
         if (versionsuitepairResult != null) {
-        	List<VersionSuiteListPair> versionsuitepairs = ((ListResult<VersionSuiteListPair>) versionsuitepairResult).getList();
+            List<VersionSuiteListPair> versionsuitepairs =
+                ((ListResult<VersionSuiteListPair>) versionsuitepairResult).getList();
             for (VersionSuiteListPair pair : versionsuitepairs) {
                 if (!cipherSuitesMap.containsKey(pair.getVersion())) {
                     cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
@@ -172,9 +174,9 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
                     }
                 }
             }
-        } else 
+        } else
             LOGGER.warn("Supported CipherSuites list has not been initialized");
-        
+
         List<ECPointFormat> fpPointFormats = new LinkedList<>();
         fpPointFormats.add(ECPointFormat.UNCOMPRESSED);
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) != TestResults.TRUE) {
@@ -204,7 +206,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         supportedTls13FpGroups = new LinkedList<>();
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
-            for (NamedGroup group : ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList()) {
+            for (NamedGroup group : ((ListResult<NamedGroup>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList()) {
                 if (NamedGroup.getImplemented().contains(group) && group.isCurve()
                     && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     supportedTls13FpGroups.add(group);
@@ -212,7 +215,8 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
             }
 
             List<CipherSuite> tls13CipherSuites = new LinkedList<>();
-            for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList()) {
+            for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList()) {
                 if (pair.getVersion().isTLS13()) {
                     for (CipherSuite cipherSuite : pair.getCipherSuiteList()) {
                         if (cipherSuite.isImplemented()) {
@@ -244,8 +248,10 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedECDHCipherSuites = cipherSuitesMap;
-        namedCurveWitnesses = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap().get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES.name())).getMap();
-        namedCurveWitnessesTls13 = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap().get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13.name())).getMap();
+        namedCurveWitnesses = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap()
+            .get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES.name())).getMap();
+        namedCurveWitnessesTls13 = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap()
+            .get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13.name())).getMap();
     }
 
     @Override

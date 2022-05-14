@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -24,7 +26,8 @@ public class NamedGroupsGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.setSupportedNamedGroups(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+            new ListResult<>(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1), "SUPPORTED_NAMEDGROUPS"));
 
         NamedGroupsGuidelineCheck check =
             new NamedGroupsGuidelineCheck(null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),
@@ -36,7 +39,8 @@ public class NamedGroupsGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.setSupportedNamedGroups(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+            new ListResult<>(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1), "SUPPORTED_NAMEDGROUPS"));
 
         NamedGroupsGuidelineCheck check =
             new NamedGroupsGuidelineCheck(null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),

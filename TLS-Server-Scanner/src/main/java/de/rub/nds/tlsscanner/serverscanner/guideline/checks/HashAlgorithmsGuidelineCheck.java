@@ -53,24 +53,26 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-    	TestResult samResult_cert = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
-    	TestResult samResult_ske = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
+        TestResult samResult_cert =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
+        TestResult samResult_ske =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
         if (samResult_cert != null || samResult_ske != null) {
-	        Set<HashAlgorithm> nonRecommended = new HashSet<>();
-	        List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-    		if (samResult_cert != null)
-        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
-        	if (samResult_ske != null)
-        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
-        	// can algorithm be empty? check required? TODO
-	        for (SignatureAndHashAlgorithm alg : algorithms) {
-	            if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
-	                nonRecommended.add(alg.getHashAlgorithm());
-	            }
-	        }
-	        return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+            Set<HashAlgorithm> nonRecommended = new HashSet<>();
+            List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
+            if (samResult_cert != null)
+                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
+            if (samResult_ske != null)
+                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
+            // can algorithm be empty? check required? TODO
+            for (SignatureAndHashAlgorithm alg : algorithms) {
+                if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
+                    nonRecommended.add(alg.getHashAlgorithm());
+                }
+            }
+            return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
         } else
             return new HashAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, Collections.emptySet());
     }

@@ -367,10 +367,10 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
-        
+
         TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
         if (ciphersuitesResult != null) {
             allSuiteList.addAll(((SetResult<CipherSuite>) ciphersuitesResult).getSet());

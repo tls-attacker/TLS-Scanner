@@ -22,29 +22,30 @@ import org.apache.logging.log4j.Logger;
 
 public class LogjamAfterProbe extends AfterProbe<ServerReport> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
-	
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @Override
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.FALSE;
         try {
-        	TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
-	        if (ciphersuiteResult != null) {   
-	        	@SuppressWarnings("unchecked")
-				Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
-        		if (ciphersuites != null) {
-	                for (CipherSuite suite : ciphersuites) {
-	                    if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
-	                        || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
-	                        || suite.name().contains("DHE_RSA_EXPORT")) {
-	                        vulnerable = TestResults.TRUE;
-	                    }
-	                }
-	            } else {
-	                vulnerable = TestResults.UNCERTAIN;
-	            }
-	        } else
-	        	LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name() + " requires a TestResult for the LogjamAfterProbe but has result null!");
+            TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+            if (ciphersuiteResult != null) {
+                @SuppressWarnings("unchecked")
+                Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+                if (ciphersuites != null) {
+                    for (CipherSuite suite : ciphersuites) {
+                        if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
+                            || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
+                            || suite.name().contains("DHE_RSA_EXPORT")) {
+                            vulnerable = TestResults.TRUE;
+                        }
+                    }
+                } else {
+                    vulnerable = TestResults.UNCERTAIN;
+                }
+            } else
+                LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name()
+                    + " requires a TestResult for the LogjamAfterProbe but has result null!");
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

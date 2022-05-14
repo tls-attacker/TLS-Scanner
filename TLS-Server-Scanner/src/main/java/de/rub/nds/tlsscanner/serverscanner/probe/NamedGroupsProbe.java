@@ -259,14 +259,24 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        ecdsaPkGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS.name())).getList(); 
-        ecdsaPkGroupsTls13 = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS.name())).getList();
-        ecdsaCertSigGroupsStatic = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_STATIC_ECDSA_SIGGROUPS.name())).getList();
-        ecdsaCertSigGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_SIGGROUPS.name())).getList();
-        ecdsaCertSigGroupsTls13 = ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_TLS13_ECDSA_SIGGROUPS.name())).getList();
-        supportedCipherSuites = ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getSet();
+        ecdsaPkGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS.name())).getList();
+        ecdsaPkGroupsTls13 =
+            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS.name()))
+                .getList();
+        ecdsaCertSigGroupsStatic =
+            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_STATIC_ECDSA_SIGGROUPS.name()))
+                .getList();
+        ecdsaCertSigGroupsEphemeral = ((ListResult<NamedGroup>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_SIGGROUPS.name())).getList();
+        ecdsaCertSigGroupsTls13 =
+            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_TLS13_ECDSA_SIGGROUPS.name()))
+                .getList();
+        supportedCipherSuites =
+            ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()))
+                .getSet();
     }
 
     @Override

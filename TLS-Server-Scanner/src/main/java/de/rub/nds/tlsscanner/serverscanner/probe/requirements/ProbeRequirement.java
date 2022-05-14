@@ -70,7 +70,8 @@ public class ProbeRequirement implements Requirement {
 
         if (requiredProtocolVersions != null) {
             @SuppressWarnings("unchecked")
-			List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
+            List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
             if (pvList == null)
                 missing.requireProtocolVersions(requiredProtocolVersions);
             else {
@@ -103,7 +104,8 @@ public class ProbeRequirement implements Requirement {
 
         if (requiredExtensionTypes != null) {
             @SuppressWarnings("unchecked")
-			List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
+            List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
             if (etList == null)
                 missing.requireExtensionTyes(requiredExtensionTypes);
             else {
@@ -206,7 +208,8 @@ public class ProbeRequirement implements Requirement {
         if (requiredProtocolVersions == null)
             return true;
         @SuppressWarnings("unchecked")
-		List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
+        List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList();
         if (pvList == null)
             return false;
         for (ProtocolVersion pv : requiredProtocolVersions) {
@@ -234,7 +237,8 @@ public class ProbeRequirement implements Requirement {
         if (requiredExtensionTypes == null)
             return true;
         @SuppressWarnings("unchecked")
-		List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
+        List<ExtensionType> etList = ((ListResult<ExtensionType>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList();
         if (etList == null)
             return false;
         for (ExtensionType et : requiredExtensionTypes) {

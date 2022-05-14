@@ -69,10 +69,12 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        if (((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(ExtensionType.EXTENDED_RANDOM)) {
+        if (((ListResult<ExtensionType>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList()
+                .contains(ExtensionType.EXTENDED_RANDOM)) {
             supportsExtendedRandom = true;
         } else {
             supportsExtendedRandom = false;
@@ -82,7 +84,8 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
         @SuppressWarnings("unchecked")
-		List<VersionSuiteListPair> versionSuitePairs = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        List<VersionSuiteListPair> versionSuitePairs = ((ListResult<VersionSuiteListPair>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;

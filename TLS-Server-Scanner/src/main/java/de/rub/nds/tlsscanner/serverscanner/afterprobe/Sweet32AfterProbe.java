@@ -24,20 +24,20 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.FALSE;
         try {
-        	TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
-        	if (ciphersuiteResult != null) {
-        		@SuppressWarnings("unchecked")
-				Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
-	            if (ciphersuites != null) {
-	                for (CipherSuite suite : ciphersuites) {
-	                    if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
-	                        vulnerable = TestResults.TRUE;
-	                    }
-	                }
-	            } else {
-	                vulnerable = TestResults.UNCERTAIN;
-	            }
-        	}
+            TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+            if (ciphersuiteResult != null) {
+                @SuppressWarnings("unchecked")
+                Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+                if (ciphersuites != null) {
+                    for (CipherSuite suite : ciphersuites) {
+                        if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
+                            vulnerable = TestResults.TRUE;
+                        }
+                    }
+                } else {
+                    vulnerable = TestResults.UNCERTAIN;
+                }
+            }
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

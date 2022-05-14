@@ -72,11 +72,11 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-    	
-    	TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
-    	if (ciphersuitesResult != null && !((SetResult<CipherSuite>) ciphersuitesResult).getSet().isEmpty()) {
+
+        TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        if (ciphersuitesResult != null && !((SetResult<CipherSuite>) ciphersuitesResult).getSet().isEmpty()) {
             supportedCiphers = new ArrayList<>(((SetResult<CipherSuite>) ciphersuitesResult).getSet());
         } else {
             supportedCiphers = CipherSuite.getImplemented();

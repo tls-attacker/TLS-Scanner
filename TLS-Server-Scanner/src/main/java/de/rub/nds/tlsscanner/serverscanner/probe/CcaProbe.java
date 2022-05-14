@@ -150,9 +150,10 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        this.versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList());
+        this.versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList());
     }
 
     @Override

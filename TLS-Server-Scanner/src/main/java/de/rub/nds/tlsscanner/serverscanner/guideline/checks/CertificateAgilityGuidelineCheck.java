@@ -51,7 +51,8 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         @SuppressWarnings("unchecked")
-		List<CertificateChain> chains = ((ListResult<CertificateChain>) report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList();
+        List<CertificateChain> chains = ((ListResult<CertificateChain>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList();
         if (chains == null || chains.size() < 2) {
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         }

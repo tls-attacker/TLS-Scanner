@@ -26,28 +26,30 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);
             if (ssl3Result == TestResults.TRUE) {
-            	TestResult versionsuiteResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
-            	if (versionsuiteResult != null) {
-	                for (VersionSuiteListPair versionSuitList : ((ListResult<VersionSuiteListPair>) versionsuiteResult).getList()) {
-	                    if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
-	                        for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
-	                            if (suite.isCBC()) {
-	                                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
-	                                return;
-	                            }
-	                        }
-	                    }
-	                }
-            	}
-                else {
+                TestResult versionsuiteResult =
+                    report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+                if (versionsuiteResult != null) {
+                    for (VersionSuiteListPair versionSuitList : ((ListResult<VersionSuiteListPair>) versionsuiteResult)
+                        .getList()) {
+                        if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
+                            for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
+                                if (suite.isCBC()) {
+                                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                } else {
                     vulnerable = TestResults.ERROR_DURING_TEST;
-                	LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name() + " requires a TestResult for the PoodleAfterProbe but has result null!");
+                    LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()
+                        + " requires a TestResult for the PoodleAfterProbe but has result null!");
                 }
             }
             report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);

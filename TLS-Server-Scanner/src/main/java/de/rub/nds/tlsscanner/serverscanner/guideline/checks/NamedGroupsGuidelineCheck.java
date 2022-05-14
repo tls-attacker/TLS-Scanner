@@ -66,8 +66,11 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         @SuppressWarnings("unchecked")
-		List<NamedGroup> supportedGroups =
-            tls13 ? ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList() : ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name())).getList();
+        List<NamedGroup> supportedGroups = tls13
+            ? ((ListResult<NamedGroup>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList()
+            : ((ListResult<NamedGroup>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name())).getList();
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }

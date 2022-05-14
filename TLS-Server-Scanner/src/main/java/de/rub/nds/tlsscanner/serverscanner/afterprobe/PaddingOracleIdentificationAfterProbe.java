@@ -26,7 +26,7 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
 
     private PaddingOracleAttributor attributor;
     private static final Logger LOGGER = LogManager.getLogger();
-    
+
     public PaddingOracleIdentificationAfterProbe() {
         attributor = new PaddingOracleAttributor();
     }
@@ -34,12 +34,16 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
     @Override
     public void analyze(ServerReport report) {
         if (Objects.equals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResults.TRUE)) {
-            try{@SuppressWarnings("unchecked")
-			KnownPaddingOracleVulnerability knownVulnerability =
-                attributor.getKnownVulnerability(((ListResult<InformationLeakTest<PaddingOracleTestInfo>>) report.getResultMap().get(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name())).getList());
-            report.setKnownVulnerability(knownVulnerability);
-            }catch (Exception e) {
-            	LOGGER.debug("property " + TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name() + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!" + e.getMessage());
+            try {
+                @SuppressWarnings("unchecked")
+                KnownPaddingOracleVulnerability knownVulnerability =
+                    attributor.getKnownVulnerability(((ListResult<InformationLeakTest<PaddingOracleTestInfo>>) report
+                        .getResultMap().get(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name())).getList());
+                report.setKnownVulnerability(knownVulnerability);
+            } catch (Exception e) {
+                LOGGER.debug("property " + TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name()
+                    + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
+                    + e.getMessage());
             }
         }
     }

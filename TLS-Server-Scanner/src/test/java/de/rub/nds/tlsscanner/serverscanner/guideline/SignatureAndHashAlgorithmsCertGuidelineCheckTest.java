@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -23,8 +25,9 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report
-            .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT,
+            new ListResult<>(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
+                "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
 
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
             new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
@@ -36,8 +39,9 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report
-            .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT,
+            new ListResult<>(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1),
+                "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
 
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
             new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,

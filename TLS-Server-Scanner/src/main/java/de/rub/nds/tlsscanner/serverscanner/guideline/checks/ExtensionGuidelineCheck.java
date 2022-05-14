@@ -45,11 +45,14 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResults.of(((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension)),
-            ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension), requiredExtension);
+            TestResults.of(((ListResult<ExtensionType>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension)),
+            ((ListResult<ExtensionType>) report.getResultMap()
+                .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension),
+            requiredExtension);
     }
 
     @Override

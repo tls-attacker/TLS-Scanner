@@ -217,9 +217,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = new ArrayList<>(((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet());
+        supportedSuites = new ArrayList<>(
+            ((SetResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name())).getSet());
     }
 
     @Override
