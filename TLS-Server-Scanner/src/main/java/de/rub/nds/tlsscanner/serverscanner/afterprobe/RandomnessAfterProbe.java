@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.scanner.core.vectorstatistics.StatisticalTests;
@@ -22,7 +23,11 @@ import de.rub.nds.tlsscanner.serverscanner.report.EntropyReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -110,7 +115,7 @@ public class RandomnessAfterProbe extends AfterProbe<ServerReport> {
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.setEntropyReportList(entropyReport);
+        report.putResult(TlsAnalyzedProperty.LIST_ENTROPY_REPORT, new ListResult<>(entropyReport, "ENTROPY_REPORT"));
     }
 
     public EntropyReport createEntropyReport(List<ComparableByteArray> byteArrayList, RandomType type) {

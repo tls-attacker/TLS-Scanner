@@ -10,30 +10,41 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FreakAfterProbe extends AfterProbe<ServerReport> {
 
-    @Override
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    @SuppressWarnings("unchecked")
+	@Override
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-            if (report.getCipherSuites() != null) {
-                for (CipherSuite suite : report.getCipherSuites()) {
-                    if (suite.name().contains("RSA_EXPORT")) {
-                        vulnerable = TestResults.TRUE;
-                    }
-                }
-                if (vulnerable != TestResults.TRUE) {
-                    vulnerable = TestResults.FALSE;
-                }
-            } else {
-                vulnerable = TestResults.UNCERTAIN;
-            }
+        	TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+	        if (ciphersuiteResult != null) {
+	        	Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+        		if (ciphersuites != null) {
+	                for (CipherSuite suite : ciphersuites) {
+	                    if (suite.name().contains("RSA_EXPORT")) 
+	                        vulnerable = TestResults.TRUE;
+	                }
+	                if (vulnerable != TestResults.TRUE) 
+	                    vulnerable = TestResults.FALSE;
+	            } else 
+	                vulnerable = TestResults.UNCERTAIN;
+	        } else {
+	            vulnerable = TestResults.ERROR_DURING_TEST;
+            	LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name() + " requires a TestResult for the FreakAfterProbe but has result null!");
+	        }
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

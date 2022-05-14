@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -67,7 +68,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
             BigInteger modulo = smallestByteSizeModuloMap.get(i);
             attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
         }
-        report.setRaccoonAttackProbabilities(attackProbabilityList);
+        report.putResult(TlsAnalyzedProperty.LIST_RACCOONATTACK_PROBABILITIES, new ListResult<>(attackProbabilityList, "RACCOONATTACK_PROBABILITIES"));
 
         TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
         if (reusesDhPublicKey == TestResults.TRUE) {
