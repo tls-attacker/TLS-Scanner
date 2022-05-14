@@ -9,7 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -17,6 +19,7 @@ import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.List;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -60,8 +63,10 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         boolean failFlag = false;
         boolean uncertainFlag = false;
         CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
-        for (int i = 0; i < report.getCertificateChainList().size(); i++) {
-            CertificateChain chain = report.getCertificateChainList().get(i);
+        @SuppressWarnings("unchecked")
+		List<CertificateChain> certchains = ((ListResult<CertificateChain>) report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList();
+        for (int i = 0; i < certchains.size(); i++) {
+            CertificateChain chain = certchains.get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
             if (Objects.equals(TestResults.TRUE, currentResult.getResult())) {

@@ -9,8 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -18,6 +21,7 @@ import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -49,13 +53,23 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         this.tls13 = tls13;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms = tls13 ? report.getSupportedSignatureAndHashAlgorithmsTls13()
-            : report.getSupportedSignatureAndHashAlgorithms();
-        if (algorithms == null) {
+    	List<SignatureAndHashAlgorithm> algorithms = null;
+    	if (tls13) 
+    		algorithms = ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13.name())).getList();
+    	else {
+    		algorithms = new LinkedList<>();
+        	TestResult samResult_cert = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
+    		if (samResult_cert != null)
+        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
+            TestResult samResult_ske = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
+        	if (samResult_ske != null)
+        		algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
+    	}
+        if (algorithms == null || algorithms.isEmpty())
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
-        }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
             if (!this.recommendedAlgorithms.contains(alg)) {

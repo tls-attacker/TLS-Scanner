@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -46,10 +48,11 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends Guideli
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsCert()) {
+        for (SignatureAndHashAlgorithm algorithm : ((ListResult<SignatureAndHashAlgorithm>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name())).getList()) {
             if (!this.recommendedAlgorithms.contains(algorithm)) {
                 nonRecommended.add(algorithm);
             }

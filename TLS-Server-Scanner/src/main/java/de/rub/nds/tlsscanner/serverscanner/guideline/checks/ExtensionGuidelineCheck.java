@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -42,11 +44,12 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
         this.requiredExtension = requiredExtension;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
-            report.getSupportedExtensions().contains(requiredExtension), requiredExtension);
+            TestResults.of(((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension)),
+            ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension), requiredExtension);
     }
 
     @Override

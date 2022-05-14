@@ -9,8 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -63,15 +65,16 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<NamedGroup> supportedGroups =
-            this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
+        @SuppressWarnings("unchecked")
+		List<NamedGroup> supportedGroups =
+            tls13 ? ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList() : ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name())).getList();
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
             for (NamedGroup group : supportedGroups) {
-                if (this.requiredGroups.contains(group)) {
+                if (requiredGroups.contains(group)) {
                     found = true;
                     break;
                 }
@@ -85,7 +88,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
-            if (this.recommendedGroups != null && !this.recommendedGroups.contains(group)) {
+            if (recommendedGroups != null && !recommendedGroups.contains(group)) {
                 nonRecommended.add(group);
             }
         }

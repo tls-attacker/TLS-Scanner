@@ -9,9 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -66,9 +68,10 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
         return "CipherSuite_" + getRequirementLevel() + "_" + versions + "_" + recommendedCipherSuites;
     }
 
-    private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
+    @SuppressWarnings("unchecked")
+	private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
         Set<CipherSuite> supported = new HashSet<>();
-        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+        for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList()) {
             if (versions.contains(pair.getVersion())) {
                 supported.addAll(pair.getCipherSuiteList());
             }
