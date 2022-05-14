@@ -127,6 +127,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         } else {
             super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, TestResults.COULD_NOT_TEST);
         }
     }
 }
