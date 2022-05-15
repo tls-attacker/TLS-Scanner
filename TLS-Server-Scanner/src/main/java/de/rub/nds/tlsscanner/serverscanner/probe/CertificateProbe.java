@@ -90,9 +90,8 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
             certificates.addAll(getTls13Certs());
         }
         if (certificates.isEmpty()) {
-        	certificates = null;
-            ecdsaPkGroupsStatic =
-                ecdsaPkGroupsEphemeral = ecdsaPkGroupsTls13 = ecdsaCertSigGroupsTls13 = null;
+            certificates = null;
+            ecdsaPkGroupsStatic = ecdsaPkGroupsEphemeral = ecdsaPkGroupsTls13 = ecdsaCertSigGroupsTls13 = null;
         }
     }
 

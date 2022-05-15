@@ -78,9 +78,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
             usesCompressionsInCookie = usesCompressionsInCookie();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            hasHvrRetransmissions =
-                checksCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
-                    usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
+            hasHvrRetransmissions = checksCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
+                usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
             cookieLength = -1;
         }
     }

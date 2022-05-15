@@ -46,8 +46,8 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe<ServerScannerConf
         Collections.reverse(toTestList);
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
             getSelectedSignatureAndHashAlgorithm(toTestList);
-        enforced = firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm
-            ? TestResults.TRUE : TestResults.FALSE;
+        enforced = firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
+            : TestResults.FALSE;
     }
 
     @Override

@@ -60,9 +60,6 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
-import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -226,16 +223,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
-        // TODO this recopying is weired
         TestResult raccoonResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT.name());
         if (raccoonResult != null) {
             @SuppressWarnings("unchecked")
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> raccoonResults =
-                ((ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>) raccoonResult).getList();
+            List<InformationLeakTest<?>> raccoonResults =
+                ((ListResult<InformationLeakTest<?>>) raccoonResult).getList();
             if (raccoonResults != null) {
-                List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
-                informationLeakTestList.addAll(raccoonResults);
-                appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
+                appendInformationLeakTestList(builder, raccoonResults, "Direct Raccoon Results");
             }
         }
     }
@@ -1005,7 +999,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendInformationLeakTestList(StringBuilder builder,
-        List<InformationLeakTest> informationLeakTestList, String heading) {
+        List<InformationLeakTest<?>> informationLeakTestList, String heading) {
         prettyAppendHeading(builder, heading);
         if (informationLeakTestList == null || informationLeakTestList.isEmpty()) {
             prettyAppend(builder, "No test results");
@@ -1094,14 +1088,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 report.getResultMap().get(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name());
             if (paddingoracleResult != null) {
                 @SuppressWarnings("unchecked")
-                List<InformationLeakTest<PaddingOracleTestInfo>> paddingResults =
-                    ((ListResult<InformationLeakTest<PaddingOracleTestInfo>>) paddingoracleResult).getList();
+                List<InformationLeakTest<?>> paddingResults =
+                    ((ListResult<InformationLeakTest<?>>) paddingoracleResult).getList();
                 if (paddingResults != null && !paddingResults.isEmpty()) {
                     prettyAppend(builder, "No vulnerability present to identify");
-                    // TODO this recopying is weird
-                    List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
-                    informationLeakTestList.addAll(paddingResults);
-                    appendInformationLeakTestList(builder, informationLeakTestList, "Padding Oracle Details");
+                    appendInformationLeakTestList(builder, paddingResults, "Padding Oracle Details");
                     return builder;
                 }
             }
@@ -1146,14 +1137,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppendHeading(builder, "Bleichenbacher response map");
             if (bleichenResult != null) {
                 @SuppressWarnings("unchecked")
-                List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenResults =
-                    ((ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>) bleichenResult).getList();
+                List<InformationLeakTest<?>> bleichenResults =
+                    ((ListResult<InformationLeakTest<?>>) bleichenResult).getList();
                 if (bleichenResults != null && !bleichenResults.isEmpty()) {
                     prettyAppend(builder, "No vulnerability present to identify");
-                    // TODO this recopying is weird
-                    List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
-                    informationLeakTestList.addAll(bleichenResults);
-                    appendInformationLeakTestList(builder, informationLeakTestList, "Bleichenbacher Details");
+                    appendInformationLeakTestList(builder, bleichenResults, "Bleichenbacher Details");
                     return builder;
                 }
             }

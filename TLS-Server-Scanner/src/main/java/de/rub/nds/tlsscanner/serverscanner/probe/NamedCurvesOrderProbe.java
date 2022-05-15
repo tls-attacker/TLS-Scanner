@@ -53,8 +53,8 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
-        enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1
-            ? TestResults.TRUE : TestResults.FALSE;
+        enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
+            : TestResults.FALSE;
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {

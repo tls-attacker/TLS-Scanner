@@ -65,8 +65,8 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             isAcceptingUnencryptedFinished = isEarlyFinished();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            isEarlyFinished = isAcceptingUnencryptedAppData =
-                isAcceptingUnencryptedFinished = TestResults.ERROR_DURING_TEST;
+            isEarlyFinished =
+                isAcceptingUnencryptedAppData = isAcceptingUnencryptedFinished = TestResults.ERROR_DURING_TEST;
         }
     }
 

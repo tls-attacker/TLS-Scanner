@@ -110,8 +110,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         if (compressions != null) {
             super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS,
                 new ListResult<CompressionMethod>(compressions, "COMPRESSION_METHODS"));
-            if (compressions.contains(CompressionMethod.LZS)
-                || compressions.contains(CompressionMethod.DEFLATE)) {
+            if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
                 super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
                 super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {

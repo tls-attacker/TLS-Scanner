@@ -642,8 +642,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
         super.put(TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, emptyLastExtensionIntolerance);
         super.put(TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, onlySecondCipherSuiteByteEvaluated);
         super.put(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
-        super.put(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
-            namedSignatureAndHashAlgorithmIntolerance);
+        super.put(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
         super.put(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, ignoresCipherSuiteOffering);
         super.put(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, reflectsCipherSuiteOffering);
         super.put(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
