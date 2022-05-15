@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -130,7 +131,8 @@ public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     @Override
     public void adjustConfig(ClientReport report) {
         rsaCipherSuites = new LinkedList<>();
-        List<VersionSuiteListPair> versionSuitPairs = report.getVersionSuitePairs();
+        @SuppressWarnings("unchecked")
+		List<VersionSuiteListPair> versionSuitPairs = ((ListResult<VersionSuiteListPair>) report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
         for (VersionSuiteListPair suitePair : versionSuitPairs) {
             for (CipherSuite suite : suitePair.getCipherSuiteList()) {
                 if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
