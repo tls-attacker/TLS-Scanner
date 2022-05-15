@@ -87,12 +87,12 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final void addToList(TlsAnalyzedProperty aProp, List<?> result) {
         if (propertiesMap.containsKey(aProp)) {
-        	if (propertiesMap.get(aProp).getClass().equals(ListResult.class))
-        		((ListResult) propertiesMap.get(aProp)).getList().addAll(result);
-        	else
-        		put(aProp, new ListResult<>(result, aProp.name().substring(5))); // assuming that list result properties begin with LIST_
-        }
-        else { // unregistered property
+            if (propertiesMap.get(aProp).getClass().equals(ListResult.class))
+                ((ListResult) propertiesMap.get(aProp)).getList().addAll(result);
+            else
+                put(aProp, new ListResult<>(result, aProp.name().substring(5))); // assuming that list result properties
+                                                                                 // begin with LIST_
+        } else { // unregistered property
             LOGGER.error(aProp.name() + " was set in " + getClass() + " but had not been registered!");
             propertiesMap.put(aProp, new ListResult<>(result));
         }

@@ -537,7 +537,6 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
         super.put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         super.put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         super.put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
-        super.put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
-            new ListResult<>(pairLists, "VERSIONSUITE_PAIRS"));
+        super.put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS, new ListResult<>(pairLists, "VERSIONSUITE_PAIRS"));
     }
 }

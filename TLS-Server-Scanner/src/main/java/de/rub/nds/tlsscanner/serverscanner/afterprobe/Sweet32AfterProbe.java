@@ -30,7 +30,7 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
                 Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
                 if (ciphersuites != null) {
                     for (CipherSuite suite : ciphersuites) {
-                        if (suite.name().contains("3DES") || suite.name().contains("IDEA")) 
+                        if (suite.name().contains("3DES") || suite.name().contains("IDEA"))
                             vulnerable = TestResults.TRUE;
                     }
                 }

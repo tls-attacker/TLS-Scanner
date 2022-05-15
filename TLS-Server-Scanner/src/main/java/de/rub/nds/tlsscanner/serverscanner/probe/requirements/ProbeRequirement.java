@@ -69,23 +69,24 @@ public class ProbeRequirement implements Requirement {
         }
 
         if (requiredProtocolVersions != null) {
-        	TestResult versionsuiteResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+            TestResult versionsuiteResult =
+                report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
             if (versionsuiteResult != null) {
-	            @SuppressWarnings("unchecked")
-	    		List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
-	            if (pvList != null && !pvList.isEmpty()) {
-	                List<ProtocolVersion> pvers = new LinkedList<>();
-	                for (ProtocolVersion pv : requiredProtocolVersions) {
-	                    if (!pvList.contains(pv))
-	                        pvers.add(pv);
-	                }
-	                ProtocolVersion[] pva = new ProtocolVersion[pvers.size()];
-	                Iterator<ProtocolVersion> it = pvers.iterator();
-	                for (int i = 0; i < pvers.size(); i++)
-	                    pva[i] = it.next();
-	                missing.requireProtocolVersions(pva);
-	            } else
-	                missing.requireProtocolVersions(requiredProtocolVersions);
+                @SuppressWarnings("unchecked")
+                List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+                if (pvList != null && !pvList.isEmpty()) {
+                    List<ProtocolVersion> pvers = new LinkedList<>();
+                    for (ProtocolVersion pv : requiredProtocolVersions) {
+                        if (!pvList.contains(pv))
+                            pvers.add(pv);
+                    }
+                    ProtocolVersion[] pva = new ProtocolVersion[pvers.size()];
+                    Iterator<ProtocolVersion> it = pvers.iterator();
+                    for (int i = 0; i < pvers.size(); i++)
+                        pva[i] = it.next();
+                    missing.requireProtocolVersions(pva);
+                } else
+                    missing.requireProtocolVersions(requiredProtocolVersions);
             } else
                 missing.requireProtocolVersions(requiredProtocolVersions);
         }
@@ -105,23 +106,24 @@ public class ProbeRequirement implements Requirement {
         }
 
         if (requiredExtensionTypes != null) {
-        	TestResult extensionResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
+            TestResult extensionResult =
+                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
             if (extensionResult != null) {
-            @SuppressWarnings("unchecked")
-    		List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
-            if (etList != null && !etList.isEmpty()) {
-                List<ExtensionType> etype = new LinkedList<>();
-                for (ExtensionType et : requiredExtensionTypes) {
-                    if (!etList.contains(et))
-                        etype.add(et);
-                }
-                ExtensionType[] eta = new ExtensionType[etype.size()];
-                Iterator<ExtensionType> it = etype.iterator();
-                for (int i = 0; i < etype.size(); i++)
-                    eta[i] = it.next();
-                missing.requireExtensionTyes(eta);
-            } else
-                missing.requireExtensionTyes(requiredExtensionTypes);
+                @SuppressWarnings("unchecked")
+                List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
+                if (etList != null && !etList.isEmpty()) {
+                    List<ExtensionType> etype = new LinkedList<>();
+                    for (ExtensionType et : requiredExtensionTypes) {
+                        if (!etList.contains(et))
+                            etype.add(et);
+                    }
+                    ExtensionType[] eta = new ExtensionType[etype.size()];
+                    Iterator<ExtensionType> it = etype.iterator();
+                    for (int i = 0; i < etype.size(); i++)
+                        eta[i] = it.next();
+                    missing.requireExtensionTyes(eta);
+                } else
+                    missing.requireExtensionTyes(requiredExtensionTypes);
             } else
                 missing.requireExtensionTyes(requiredExtensionTypes);
         }
@@ -211,16 +213,17 @@ public class ProbeRequirement implements Requirement {
     private boolean analyzedProtocolVersionsFulfilled() {
         if (requiredProtocolVersions == null)
             return true;
-        TestResult versionsuiteResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name());
+        TestResult versionsuiteResult =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name());
         if (versionsuiteResult != null) {
-        @SuppressWarnings("unchecked")
-		List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
-        if (pvList != null && !pvList.isEmpty()) {
-        	for (ProtocolVersion pv : requiredProtocolVersions) {
-            	if (pvList.contains(pv))
-                return true;
-        }
-        }
+            @SuppressWarnings("unchecked")
+            List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+            if (pvList != null && !pvList.isEmpty()) {
+                for (ProtocolVersion pv : requiredProtocolVersions) {
+                    if (pvList.contains(pv))
+                        return true;
+                }
+            }
         }
         return false;
     }
@@ -244,14 +247,14 @@ public class ProbeRequirement implements Requirement {
             return true;
         TestResult extensionResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
         if (extensionResult != null) {
-        @SuppressWarnings("unchecked")
-		List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
-        if (etList != null && !etList.isEmpty()) {
-	        for (ExtensionType et : requiredExtensionTypes) {
-	            if (etList.contains(et))
-	                return true;
-	        }
-        }
+            @SuppressWarnings("unchecked")
+            List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
+            if (etList != null && !etList.isEmpty()) {
+                for (ExtensionType et : requiredExtensionTypes) {
+                    if (etList.contains(et))
+                        return true;
+                }
+            }
         }
         return false;
     }

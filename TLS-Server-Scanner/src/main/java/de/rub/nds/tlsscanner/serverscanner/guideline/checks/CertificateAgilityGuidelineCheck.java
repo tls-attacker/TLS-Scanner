@@ -51,12 +51,12 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-    	TestResult certResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name());
-    	if (certResult == null)
+        TestResult certResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name());
+        if (certResult == null)
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
-    	@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
         List<CertificateChain> chains = ((ListResult<CertificateChain>) certResult).getList();
-        if (chains == null || chains.size() < 2) 
+        if (chains == null || chains.size() < 2)
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
