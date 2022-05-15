@@ -54,14 +54,14 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
         super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
         super.register(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
             TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT);
-        this.random = new Random(0);
+        random = new Random(0);
     }
 
     @Override
     public void executeTest() {
-        this.lowestDheModulusLength = getLowestDhModSize();
-        this.smallSubgroupResults = createSmallSubgroupResultList();
-        this.compositeModulusResultList = createCompositeModulusResultList();
+        lowestDheModulusLength = getLowestDhModSize();
+        smallSubgroupResults = createSmallSubgroupResultList();
+        compositeModulusResultList = createCompositeModulusResultList();
     }
 
     // Implement get highest value
@@ -185,18 +185,6 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
     }
 
     @Override
-    public DheParameterProbe getCouldNotExecuteResult() {
-        this.smallSubgroupResults = new LinkedList<>();
-        for (SmallSubgroupType type : SmallSubgroupType.values())
-            this.smallSubgroupResults.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));
-        this.compositeModulusResultList = new LinkedList<>();
-        for (CompositeModulusType type : CompositeModulusType.values())
-            this.compositeModulusResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type));
-        this.lowestDheModulusLength = null;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {
         @SuppressWarnings("unchecked")
         List<CipherSuite> ciphers = ((ListResult<CipherSuite>) report.getResultMap()
@@ -207,16 +195,16 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
                 dheCiphers.add(suite);
             }
         }
-        this.supportedDheCipherSuites = dheCiphers;
+        supportedDheCipherSuites = dheCiphers;
     }
 
     @Override
     protected void mergeData(ClientReport report) {
         super.put(TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT,
-            new ListResult<CompositeModulusResult>(this.compositeModulusResultList, "COMPOSITE_DHEMODULUS_RESULT"));
+            new ListResult<CompositeModulusResult>(compositeModulusResultList, "COMPOSITE_DHEMODULUS_RESULT"));
         super.put(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
-            new ListResult<SmallSubgroupResult>(this.smallSubgroupResults, "SMALL_DHESUBGROUP_RESULTS"));
-        report.setLowestPossibleDheModulusSize(this.lowestDheModulusLength);
+            new ListResult<SmallSubgroupResult>(smallSubgroupResults, "SMALL_DHESUBGROUP_RESULTS"));
+        report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
     }
 
     @Override

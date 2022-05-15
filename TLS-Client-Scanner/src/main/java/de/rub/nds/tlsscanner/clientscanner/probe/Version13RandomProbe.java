@@ -48,7 +48,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
         boolean tls10Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS10);
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
-        this.hasDowngradeProtection =
+        hasDowngradeProtection =
             tls10Rejected && tls11Rejected && tls12Rejected ? TestResults.TRUE : TestResults.FALSE;
     }
 
@@ -79,12 +79,6 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     }
 
     @Override
-    public Version13RandomProbe getCouldNotExecuteResult() {
-        this.hasDowngradeProtection = TestResults.CANNOT_BE_TESTED;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {
     }
 
@@ -96,6 +90,6 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.put(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, this.hasDowngradeProtection);
+        super.put(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, hasDowngradeProtection);
     }
 }

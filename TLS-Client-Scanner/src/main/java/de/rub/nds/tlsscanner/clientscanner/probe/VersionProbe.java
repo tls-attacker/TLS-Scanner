@@ -65,8 +65,8 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     public void executeTest() {
         ProtocolVersion[] versionsToTest = { ProtocolVersion.SSL3, ProtocolVersion.TLS10, ProtocolVersion.TLS11,
             ProtocolVersion.TLS12, ProtocolVersion.TLS13 };
-        this.supportedProtocolVersions = new LinkedList<>();
-        this.unsupportedProtocolVersions = new LinkedList<>();
+        supportedProtocolVersions = new LinkedList<>();
+        unsupportedProtocolVersions = new LinkedList<>();
         for (ProtocolVersion version : versionsToTest) {
             LOGGER.debug("Testing version {}", version);
             Config config;
@@ -94,22 +94,16 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             State state = new State(config, trace);
             executeState(state);
             if (state.getWorkflowTrace().executedAsPlanned())
-                this.supportedProtocolVersions.add(version);
+                supportedProtocolVersions.add(version);
             else
-                this.unsupportedProtocolVersions.add(version);
+                unsupportedProtocolVersions.add(version);
         }
-    }
-
-    @Override
-    public VersionProbe getCouldNotExecuteResult() {
-        this.supportedProtocolVersions = this.unsupportedProtocolVersions = null;
-        return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ClientReport report) {
-        this.clientAdvertisedCipherSuites = ((ListResult<CipherSuite>) report.getResultMap()
+        clientAdvertisedCipherSuites = ((ListResult<CipherSuite>) report.getResultMap()
             .get(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList();
     }
 
@@ -159,6 +153,6 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+            new ListResult<ProtocolVersion>(supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }

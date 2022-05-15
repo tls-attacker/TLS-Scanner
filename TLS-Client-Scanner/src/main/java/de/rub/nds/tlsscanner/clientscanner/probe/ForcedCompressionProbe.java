@@ -49,13 +49,7 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
         workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, workflowTrace);
         executeState(state);
-        this.result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    @Override
-    public ForcedCompressionProbe getCouldNotExecuteResult() {
-        this.result = TestResults.COULD_NOT_TEST;
-        return this;
+        result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -69,6 +63,6 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.put(TlsAnalyzedProperty.FORCED_COMPRESSION, this.result);
+        super.put(TlsAnalyzedProperty.FORCED_COMPRESSION, result);
     }
 }

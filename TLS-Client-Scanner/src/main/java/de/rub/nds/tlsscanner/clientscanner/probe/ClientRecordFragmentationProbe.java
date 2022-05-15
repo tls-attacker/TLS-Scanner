@@ -49,13 +49,7 @@ public class ClientRecordFragmentationProbe extends TlsProbe<ClientScannerConfig
 
         executeState(state);
 
-        this.result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    @Override
-    public ClientRecordFragmentationProbe getCouldNotExecuteResult() {
-        this.result = TestResults.COULD_NOT_TEST;
-        return this;
+        result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -65,7 +59,7 @@ public class ClientRecordFragmentationProbe extends TlsProbe<ClientScannerConfig
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, this.result);
+        super.put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
     }
 
     @Override

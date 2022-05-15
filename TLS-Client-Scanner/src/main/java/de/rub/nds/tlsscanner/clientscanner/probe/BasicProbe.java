@@ -76,14 +76,7 @@ public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             this.clientAdvertisedNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
             this.clientAdvertisedPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             this.clientKeyShareNamedGroupsList = getKeyShareGroups(trace);
-        } else {
-            getCouldNotExecuteResult();
-        }
-    }
-
-    @Override
-    public BasicProbe getCouldNotExecuteResult() {
-        return this;
+        } 
     }
 
     @Override
