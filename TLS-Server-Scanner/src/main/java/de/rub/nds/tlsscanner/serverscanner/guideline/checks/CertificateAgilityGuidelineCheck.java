@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
@@ -50,12 +51,13 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        @SuppressWarnings("unchecked")
-        List<CertificateChain> chains = ((ListResult<CertificateChain>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList();
-        if (chains == null || chains.size() < 2) {
+    	TestResult certResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name());
+    	if (certResult == null)
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
-        }
+    	@SuppressWarnings("unchecked")
+        List<CertificateChain> chains = ((ListResult<CertificateChain>) certResult).getList();
+        if (chains == null || chains.size() < 2) 
+            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
         Integer firstKey = null;

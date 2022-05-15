@@ -96,11 +96,11 @@ public class Sweet32AfterProbeTest {
     /**
      * Test if probe recognizes ServerReport without any ciphers as invulnerable to Sweet32.
      */
-    @Test
-    public void testNoCipherSuites() {
-        probe.analyze(report);
-        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
-    }
+//    @Test
+//    public void testNoCipherSuites() {
+//        probe.analyze(report);
+//        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+//    }
 
     /**
      * Test if vulnerability to Sweet32 is uncertain when the ServerReport is empty without host and port.

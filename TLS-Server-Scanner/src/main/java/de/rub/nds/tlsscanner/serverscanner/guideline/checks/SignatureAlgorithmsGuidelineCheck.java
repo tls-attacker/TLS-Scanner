@@ -62,9 +62,9 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
         if (samResult_cert != null || samResult_ske != null) {
             Set<SignatureAlgorithm> notRecommended = new HashSet<>();
             List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-            if (samResult_cert != null)
+            if (samResult_cert != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList() != null)
                 algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
-            if (samResult_ske != null)
+            if (samResult_ske != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList() != null)
                 algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
             // can algorithm be empty? check required? TODO
             for (SignatureAndHashAlgorithm alg : algorithms) {

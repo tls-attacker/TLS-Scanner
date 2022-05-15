@@ -1945,9 +1945,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
         if (samResult_cert != null || samResult_ske != null) {
             List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-            if (samResult_cert != null)
+            if (samResult_cert != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList() != null)
                 algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
-            if (samResult_ske != null)
+            if (samResult_ske != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList() != null)
                 algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
             // can algorithm be empty? check required? TODO
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
@@ -2097,7 +2097,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
-
         if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
             prettyAppend(builder, "Has GnuTls magic bytes:", TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);

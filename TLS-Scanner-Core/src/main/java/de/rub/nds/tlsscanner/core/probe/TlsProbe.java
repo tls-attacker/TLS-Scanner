@@ -71,26 +71,30 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
     protected final void register(TlsAnalyzedProperty... properties) {
         if (properties.length > 0) {
             for (int i = 0; i < properties.length; i++)
-                this.propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
+                propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
         }
     }
 
     protected final void put(TlsAnalyzedProperty aProp, TestResult result) {
-        if (this.propertiesMap.containsKey(aProp))
-            this.propertiesMap.replace(aProp, result);
+        if (propertiesMap.containsKey(aProp))
+            propertiesMap.replace(aProp, result);
         else { // unregistered property
-            LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registered!");
-            this.propertiesMap.put(aProp, result);
+            LOGGER.error(aProp.name() + " was set in " + getClass() + " but had not been registered!");
+            propertiesMap.put(aProp, result);
         }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final void addToList(TlsAnalyzedProperty aProp, List<?> result) {
-        if (this.propertiesMap.containsKey(aProp))
-            ((ListResult) this.propertiesMap.get(aProp)).getList().addAll(result);
+        if (propertiesMap.containsKey(aProp)) {
+        	if (propertiesMap.get(aProp).getClass().equals(ListResult.class))
+        		((ListResult) propertiesMap.get(aProp)).getList().addAll(result);
+        	else
+        		put(aProp, new ListResult<>(result, aProp.name().substring(5))); // assuming that list result properties begin with LIST_
+        }
         else { // unregistered property
-            LOGGER.error(aProp.name() + " was set in " + this.getClass() + " but had not been registered!");
-            this.propertiesMap.put(aProp, new ListResult<>(result));
+            LOGGER.error(aProp.name() + " was set in " + getClass() + " but had not been registered!");
+            propertiesMap.put(aProp, new ListResult<>(result));
         }
     }
 
@@ -98,15 +102,15 @@ public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends 
 
     public final void merge(Report report) {
         // merge data
-        if (this.startTime != 0 && this.stopTime != 0)
-            report.getPerformanceList().add(new PerformanceData(super.getType(), this.startTime, this.stopTime));
-        this.mergeData(report);
+        if (startTime != 0 && stopTime != 0)
+            report.getPerformanceList().add(new PerformanceData(super.getType(), startTime, stopTime));
+        mergeData(report);
         TestResult result;
-        for (TlsAnalyzedProperty prop : this.propertiesMap.keySet()) {
-            result = this.propertiesMap.get(prop);
+        for (TlsAnalyzedProperty prop : propertiesMap.keySet()) {
+            result = propertiesMap.get(prop);
             report.putResult(prop, result);
             if (result == TestResults.UNASSIGNED_ERROR)
-                LOGGER.error(prop.name() + " in " + this.getClass() + " had not been assigned!");
+                LOGGER.error(prop.name() + " in " + getClass() + " had not been assigned!");
         }
     }
 }
