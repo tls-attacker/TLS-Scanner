@@ -56,8 +56,8 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public void executeTest() {
-        this.supportsFragmentation = supportsFragmentation();
-        this.supportsReordering = supportsReordering();
+        supportsFragmentation = supportsFragmentation();
+        supportsReordering = supportsReordering();
     }
 
     private TestResult supportsFragmentation() {
@@ -149,12 +149,6 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     @Override
-    public DtlsFeaturesProbe getCouldNotExecuteResult() {
-        this.supportsFragmentation = this.supportsReordering = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
@@ -165,7 +159,7 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, this.supportsFragmentation);
-        super.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, this.supportsReordering);
+        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, supportsFragmentation);
+        super.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
     }
 }

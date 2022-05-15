@@ -69,19 +69,19 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
     @Override
     public void executeTest() {
         try {
-            this.hasHvrRetransmissions = hasHvrRetransmissions();
-            this.checksCookie = checksCookie();
-            this.usesVersionInCookie = usesVersionInCookie();
-            this.usesRandomInCookie = usesRandomInCookie();
-            this.usesSessionIdInCookie = usesSessionIdInCookie();
-            this.usesCiphersuitesInCookie = usesCiphersuitesInCookie();
-            this.usesCompressionsInCookie = usesCompressionsInCookie();
+            hasHvrRetransmissions = hasHvrRetransmissions();
+            checksCookie = checksCookie();
+            usesVersionInCookie = usesVersionInCookie();
+            usesRandomInCookie = usesRandomInCookie();
+            usesSessionIdInCookie = usesSessionIdInCookie();
+            usesCiphersuitesInCookie = usesCiphersuitesInCookie();
+            usesCompressionsInCookie = usesCompressionsInCookie();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            this.hasHvrRetransmissions =
-                this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie = this.usesSessionIdInCookie =
-                    this.usesCiphersuitesInCookie = this.usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
-            this.cookieLength = -1;
+            hasHvrRetransmissions =
+                checksCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
+                    usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
+            cookieLength = -1;
         }
     }
 
@@ -249,15 +249,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
     }
 
     @Override
-    public DtlsHelloVerifyRequestProbe getCouldNotExecuteResult() {
-        this.hasHvrRetransmissions =
-            this.checksCookie = this.usesVersionInCookie = this.usesRandomInCookie = this.usesSessionIdInCookie =
-                this.usesCiphersuitesInCookie = this.usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
-        this.cookieLength = -1;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
@@ -268,13 +259,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe<ServerScannerConfig, S
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, this.hasHvrRetransmissions);
-        super.put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, this.checksCookie);
-        super.put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, this.usesVersionInCookie);
-        super.put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, this.usesRandomInCookie);
-        super.put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, this.usesSessionIdInCookie);
-        super.put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, this.usesCiphersuitesInCookie);
-        super.put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, this.usesCompressionsInCookie);
-        report.setCookieLength(this.cookieLength);
+        super.put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
+        super.put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
+        super.put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
+        super.put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
+        super.put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
+        super.put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        super.put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
+        report.setCookieLength(cookieLength);
     }
 }

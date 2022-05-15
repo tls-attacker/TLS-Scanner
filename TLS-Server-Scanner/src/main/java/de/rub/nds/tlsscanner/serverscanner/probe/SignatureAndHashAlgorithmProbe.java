@@ -57,21 +57,21 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
     public void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
-        for (ProtocolVersion version : this.versions) {
+        for (ProtocolVersion version : versions) {
             if (version.isTLS13())
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
             else
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
         }
-        this.signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
-        this.signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
+        signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
+        signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
         Set<SignatureAndHashAlgorithm> found = new HashSet<>();
         Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
 
-        Config tlsConfig = version.isTLS13() ? getTls13Config() : this.getBasicConfig();
+        Config tlsConfig = version.isTLS13() ? getTls13Config() : getBasicConfig();
         tlsConfig.setHighestProtocolVersion(version);
         tlsConfig.getDefaultClientSupportedCipherSuites().removeIf(predicate.negate());
 
@@ -214,7 +214,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        this.versions = new ArrayList<>();
+        versions = new ArrayList<>();
         for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report.getResultMap()
             .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
@@ -224,19 +224,12 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerScannerConfig
     }
 
     @Override
-    public SignatureAndHashAlgorithmProbe getCouldNotExecuteResult() {
-        this.signatureAndHashAlgorithmListSke = null;
-        this.signatureAndHashAlgorithmListTls13 = null;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE,
-            new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListSke,
+            new ListResult<SignatureAndHashAlgorithm>(signatureAndHashAlgorithmListSke,
                 "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13,
-            new ListResult<SignatureAndHashAlgorithm>(this.signatureAndHashAlgorithmListTls13,
+            new ListResult<SignatureAndHashAlgorithm>(signatureAndHashAlgorithmListTls13,
                 "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13"));
     }
 }

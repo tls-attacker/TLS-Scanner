@@ -46,7 +46,7 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public void executeTest() {
-        this.supportedAlpnProtocols = getSupportedAlpnProtocols();
+        supportedAlpnProtocols = getSupportedAlpnProtocols();
     }
 
     private List<String> getSupportedAlpnProtocols() {
@@ -117,18 +117,12 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     @Override
-    public AlpnProbe getCouldNotExecuteResult() {
-        this.supportedAlpnProtocols = new LinkedList<>();
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS,
-            new ListResult<String>(this.supportedAlpnProtocols, "SUPPORTED_ALPNS"));
+            new ListResult<String>(supportedAlpnProtocols, "SUPPORTED_ALPNS"));
     }
 }

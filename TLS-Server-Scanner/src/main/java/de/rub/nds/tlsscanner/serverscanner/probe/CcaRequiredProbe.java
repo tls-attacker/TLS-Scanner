@@ -47,20 +47,14 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace()))
-            this.requiresCca = TestResults.FALSE;
+            requiresCca = TestResults.FALSE;
         else
-            this.requiresCca = TestResults.TRUE;
+            requiresCca = TestResults.TRUE;
     }
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_CCA);
-    }
-
-    @Override
-    public CcaRequiredProbe getCouldNotExecuteResult() {
-        this.requiresCca = TestResults.COULD_NOT_TEST;
-        return this;
     }
 
     @Override
@@ -80,6 +74,6 @@ public class CcaRequiredProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.REQUIRES_CCA, this.requiresCca);
+        super.put(TlsAnalyzedProperty.REQUIRES_CCA, requiresCca);
     }
 }

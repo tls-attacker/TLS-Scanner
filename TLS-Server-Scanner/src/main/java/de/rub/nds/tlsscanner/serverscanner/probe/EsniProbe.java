@@ -52,7 +52,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getClientSupportedCipherSuites());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
             SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
@@ -70,8 +70,8 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCipherSuites());
-        tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
+        tlsConfig.setClientSupportedEsniCipherSuites(getClientSupportedCipherSuites());
+        tlsConfig.getClientSupportedEsniNamedGroups().addAll(getImplementedGroups());
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
@@ -85,23 +85,17 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            this.receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
+            receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
             return;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            this.receivedCorrectNonce = TestResults.TRUE;
+            receivedCorrectNonce = TestResults.TRUE;
             return;
         } else
-            this.receivedCorrectNonce = TestResults.FALSE;
+            receivedCorrectNonce = TestResults.FALSE;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-    }
-
-    @Override
-    public EsniProbe getCouldNotExecuteResult() {
-        this.receivedCorrectNonce = TestResults.COULD_NOT_TEST;
-        return this;
     }
 
     @Override
@@ -150,6 +144,6 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_ESNI, this.receivedCorrectNonce);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
     }
 }

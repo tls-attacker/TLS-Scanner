@@ -140,7 +140,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         executeState(state);
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
+            hasDecryptableMasterSecret = hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
             return;
         }
 
@@ -171,19 +171,19 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
             | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             LOGGER.debug(e);
-            this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.FALSE;
+            hasDecryptableMasterSecret = hasGnuTlsMagicBytes = TestResults.FALSE;
             return;
         }
         LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
 
         if (checkForMasterSecret(decryptedSessionState, state.getTlsContext()))
-            this.hasDecryptableMasterSecret = TestResults.TRUE;
+            hasDecryptableMasterSecret = TestResults.TRUE;
         else
-            this.hasDecryptableMasterSecret = TestResults.FALSE;
+            hasDecryptableMasterSecret = TestResults.FALSE;
         if (checkForGnuTlsMagicBytes(decryptedSessionState))
-            this.hasGnuTlsMagicBytes = TestResults.TRUE;
+            hasGnuTlsMagicBytes = TestResults.TRUE;
         else
-            this.hasGnuTlsMagicBytes = TestResults.FALSE;
+            hasGnuTlsMagicBytes = TestResults.FALSE;
     }
 
     @Override
@@ -210,12 +210,6 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         return true;
     }
 
-    @Override
-    public SessionTicketZeroKeyProbe getCouldNotExecuteResult() {
-        this.hasDecryptableMasterSecret = this.hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
@@ -225,7 +219,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, this.hasDecryptableMasterSecret);
-        super.put(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, hasDecryptableMasterSecret);
+        super.put(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, hasGnuTlsMagicBytes);
     }
 }

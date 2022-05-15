@@ -58,12 +58,6 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     }
 
     @Override
-    public HelloRetryProbe getCouldNotExecuteResult() {
-        this.sendsHelloRetryRequest = this.issuesCookie = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
     }
 
@@ -105,14 +99,14 @@ public class HelloRetryProbe extends TlsProbe<ServerScannerConfig, ServerReport>
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.issuesCookie != null)
-            super.put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, this.issuesCookie);
+        if (issuesCookie != null)
+            super.put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
         else
             super.put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
         if (sendsHelloRetryRequest != null)
-            super.put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, this.sendsHelloRetryRequest);
+            super.put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
         else
             super.put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
-        report.setHelloRetryRequestSelectedNamedGroup(this.serversChosenGroup);
+        report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
     }
 }

@@ -67,29 +67,29 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
 
     @Override
     public void executeTest() {
-        this.supportedProtocolVersions = new LinkedList<>();
-        this.unsupportedProtocolVersions = new LinkedList<>();
+        supportedProtocolVersions = new LinkedList<>();
+        unsupportedProtocolVersions = new LinkedList<>();
 
         for (ProtocolVersion version : toTestList) {
             if (isProtocolVersionSupported(version, false))
-                this.supportedProtocolVersions.add(version);
+                supportedProtocolVersions.add(version);
             else
-                this.unsupportedProtocolVersions.add(version);
+                unsupportedProtocolVersions.add(version);
         }
-        if (this.supportedProtocolVersions.isEmpty()) {
-            this.unsupportedProtocolVersions = new LinkedList<>();
+        if (supportedProtocolVersions.isEmpty()) {
+            unsupportedProtocolVersions = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
                 if (isProtocolVersionSupported(version, true))
-                    this.supportedProtocolVersions.add(version);
+                    supportedProtocolVersions.add(version);
                 else
-                    this.unsupportedProtocolVersions.add(version);
+                    unsupportedProtocolVersions.add(version);
             }
         }
         if (!getScannerConfig().getDtlsDelegate().isDTLS()) {
             if (isTls13Supported())
-                this.supportedProtocolVersions.add(ProtocolVersion.TLS13);
+                supportedProtocolVersions.add(ProtocolVersion.TLS13);
             else
-                this.unsupportedProtocolVersions.add(ProtocolVersion.TLS13);
+                unsupportedProtocolVersions.add(ProtocolVersion.TLS13);
         }
     }
 
@@ -159,13 +159,6 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
     }
 
     @Override
-    public ProtocolVersionProbe getCouldNotExecuteResult() {
-        this.supportedProtocolVersions = null;
-        this.unsupportedProtocolVersions = null;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
@@ -208,8 +201,8 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.supportedProtocolVersions != null) {
-            for (ProtocolVersion version : this.supportedProtocolVersions) {
+        if (supportedProtocolVersions != null) {
+            for (ProtocolVersion version : supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS12)
@@ -228,7 +221,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
                     super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
             }
 
-            for (ProtocolVersion version : this.unsupportedProtocolVersions) {
+            for (ProtocolVersion version : unsupportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS12)
@@ -261,6 +254,6 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
             super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.CANNOT_BE_TESTED);
         }
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<ProtocolVersion>(this.supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+            new ListResult<ProtocolVersion>(supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
     }
 }

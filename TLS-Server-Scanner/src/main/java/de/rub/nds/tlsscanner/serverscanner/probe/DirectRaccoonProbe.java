@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -62,15 +61,15 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public void executeTest() {
-        this.testResultList = new LinkedList<>();
-        for (VersionSuiteListPair pair : this.serverSupportedSuites) {
+        testResultList = new LinkedList<>();
+        for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                             createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
                                 DirectRaccoonWorkflowType.CKE_CCS_FIN);
-                        this.testResultList.add(informationLeakTest);
+                        testResultList.add(informationLeakTest);
                     }
                 }
             }
@@ -137,7 +136,7 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             initialClientDhSecret = initialClientDhSecret.add(new BigInteger("" + 20000));
             taskList.add(fingerPrintTask);
         }
-        this.getParallelExecutor().bulkExecuteTasks(taskList);
+        getParallelExecutor().bulkExecuteTasks(taskList);
         List<VectorResponse> responseList = new LinkedList<>();
         for (TlsTask task : taskList) {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
@@ -190,16 +189,10 @@ public class DirectRaccoonProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     @Override
-    public DirectRaccoonProbe getCouldNotExecuteResult() {
-        this.vulnerable = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT,
-            new ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>(this.testResultList,
+            new ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>(testResultList,
                 "DIRECTRACCOON_TESTRESULT"));
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 }

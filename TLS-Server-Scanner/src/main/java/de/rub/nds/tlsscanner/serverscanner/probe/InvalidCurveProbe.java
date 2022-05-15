@@ -254,13 +254,6 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
             .get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13.name())).getMap();
     }
 
-    @Override
-    public InvalidCurveProbe getCouldNotExecuteResult() {
-        this.vulnerableClassic = this.vulnerableEphemeral = this.vulnerableTwist = TestResults.COULD_NOT_TEST;
-        this.responses = null;
-        return this;
-    }
-
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion,
         List<CipherSuite> cipherSuites, NamedGroup group, List<NamedGroup> ecdsaRequiredGroups) {
         ClientDelegate delegate = (ClientDelegate) attackConfig.getDelegate(ClientDelegate.class);
@@ -879,10 +872,10 @@ public class InvalidCurveProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, this.vulnerableClassic);
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, this.vulnerableEphemeral);
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, this.vulnerableTwist);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
         super.put(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT,
-            new ListResult<InvalidCurveResponse>(this.responses, "INVALIDCURVE_RESULT"));
+            new ListResult<InvalidCurveResponse>(responses, "INVALIDCURVE_RESULT"));
     }
 }

@@ -75,15 +75,15 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     public void executeTest() {
-        this.correctFingerprint = getCorrectAppDataFingerprint();
-        if (this.correctFingerprint != null) {
-            LOGGER.debug("Correct fingerprint: " + this.correctFingerprint.toString());
-            if (receivedAppdata(this.correctFingerprint))
-                this.appPattern = getCheckPattern(Check.APPDATA);
+        correctFingerprint = getCorrectAppDataFingerprint();
+        if (correctFingerprint != null) {
+            LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
+            if (receivedAppdata(correctFingerprint))
+                appPattern = getCheckPattern(Check.APPDATA);
             else
-                this.appPattern = null;
-            this.finishedPattern = getCheckPattern(Check.FINISHED);
-            this.verifyPattern = getCheckPattern(Check.VERIFY_DATA);
+                appPattern = null;
+            finishedPattern = getCheckPattern(Check.FINISHED);
+            verifyPattern = getCheckPattern(Check.VERIFY_DATA);
         }
     }
 
@@ -386,15 +386,9 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     @Override
-    public MacProbe getCouldNotExecuteResult() {
-        this.appPattern = this.finishedPattern = this.verifyPattern = null;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
-        report.setMacCheckPatternAppData(this.appPattern);
-        report.setMacCheckPatternFinished(this.finishedPattern);
-        report.setVerifyCheckPattern(this.verifyPattern);
+        report.setMacCheckPatternAppData(appPattern);
+        report.setMacCheckPatternFinished(finishedPattern);
+        report.setVerifyCheckPattern(verifyPattern);
     }
 }

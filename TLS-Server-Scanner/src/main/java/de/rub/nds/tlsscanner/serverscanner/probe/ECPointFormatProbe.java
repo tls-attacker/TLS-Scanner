@@ -55,13 +55,13 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     public void executeTest() {
-        if (this.shouldTestPointFormats)
-            this.supportedFormats = getSupportedPointFormats();
-        if (this.shouldTestTls13)
-            this.tls13SecpCompression = getTls13SecpCompressionSupported();
+        if (shouldTestPointFormats)
+            supportedFormats = getSupportedPointFormats();
+        if (shouldTestTls13)
+            tls13SecpCompression = getTls13SecpCompressionSupported();
         else
-            this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
-        if (this.supportedFormats != null)
+            tls13SecpCompression = TestResults.COULD_NOT_TEST;
+        if (supportedFormats != null)
             return;
         else
             LOGGER.debug("Unable to determine supported point formats");
@@ -181,13 +181,6 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     @Override
-    public ECPointFormatProbe getCouldNotExecuteResult() {
-        this.tls13SecpCompression = TestResults.COULD_NOT_TEST;
-        this.supportedFormats = null;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
         shouldTestPointFormats = report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE
             || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE
@@ -219,32 +212,32 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.supportedFormats != null) {
-            for (ECPointFormat format : this.supportedFormats) {
+        if (supportedFormats != null) {
+            for (ECPointFormat format : supportedFormats) {
                 switch (format) {
                     case UNCOMPRESSED:
-                        this.supportsUncompressedPoint = TestResults.TRUE;
+                        supportsUncompressedPoint = TestResults.TRUE;
                         break;
                     case ANSIX962_COMPRESSED_PRIME:
-                        this.supportsANSIX962CompressedPrime = TestResults.TRUE;
+                        supportsANSIX962CompressedPrime = TestResults.TRUE;
                         break;
                     case ANSIX962_COMPRESSED_CHAR2:
-                        this.supportsANSIX962CompressedChar2 = TestResults.TRUE;
+                        supportsANSIX962CompressedChar2 = TestResults.TRUE;
                         break;
                     default:
                         ; // will never occur as all enum types are caught
                 }
             }
         } else {
-            this.supportsUncompressedPoint = TestResults.COULD_NOT_TEST;
-            this.supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
-            this.supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
+            supportsUncompressedPoint = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
-        super.put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, this.supportsUncompressedPoint);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, this.supportsANSIX962CompressedPrime);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, this.supportsANSIX962CompressedChar2);
+        super.put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
         if (tls13SecpCompression != null)
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, this.tls13SecpCompression);
+            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         else
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
     }

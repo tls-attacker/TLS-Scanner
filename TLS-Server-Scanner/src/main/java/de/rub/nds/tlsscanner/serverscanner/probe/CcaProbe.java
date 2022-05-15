@@ -58,7 +58,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, config);
-        this.versionSuiteListPairsList = new LinkedList<>();
+        versionSuiteListPairsList = new LinkedList<>();
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, TlsAnalyzedProperty.LIST_CCA_TESTRESULT);
     }
 
@@ -152,15 +152,8 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        this.versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap()
+        versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap()
             .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList());
-    }
-
-    @Override
-    public CcaProbe getCouldNotExecuteResult() {
-        this.vulnerable = TestResults.COULD_NOT_TEST;
-        this.resultList = null;
-        return this;
     }
 
     private Config generateConfig() {
@@ -180,7 +173,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<VersionSuiteListPair> getVersionSuitePairList(List<ProtocolVersion> desiredVersions) {
         List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
-        for (VersionSuiteListPair versionSuiteListPair : this.versionSuiteListPairsList) {
+        for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairsList) {
             if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
                 versionSuiteListPairs.add(versionSuiteListPair);
             }
@@ -237,8 +230,8 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
         super.put(TlsAnalyzedProperty.LIST_CCA_TESTRESULT,
-            new ListResult<CcaTestResult>(this.resultList, "CCA_TESTRESULT"));
+            new ListResult<CcaTestResult>(resultList, "CCA_TESTRESULT"));
     }
 }

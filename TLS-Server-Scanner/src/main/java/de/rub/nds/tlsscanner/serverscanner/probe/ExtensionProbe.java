@@ -61,7 +61,7 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     public void executeTest() {
-        this.allSupportedExtensions = getSupportedExtensions();
+        allSupportedExtensions = getSupportedExtensions();
     }
 
     public List<ExtensionType> getSupportedExtensions() {
@@ -74,7 +74,7 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
         if (commonExtensions != null) {
             allSupportedExtensions.addAll(commonExtensions);
         }
-        if (this.supportsTls13) {
+        if (supportsTls13) {
             commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
@@ -149,47 +149,41 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport> 
 
     @Override
     public void adjustConfig(ServerReport report) {
-        this.supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-    }
-
-    @Override
-    public ExtensionProbe getCouldNotExecuteResult() {
-        this.allSupportedExtensions = null;
-        return this;
+        supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            new ListResult<ExtensionType>(this.allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
-        if (this.allSupportedExtensions != null) {
-            for (ExtensionType type : this.allSupportedExtensions) {
+            new ListResult<ExtensionType>(allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
+        if (allSupportedExtensions != null) {
+            for (ExtensionType type : allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC)
-                    this.encryptThenMac = TestResults.TRUE;
+                    encryptThenMac = TestResults.TRUE;
                 if (type == ExtensionType.EXTENDED_MASTER_SECRET)
-                    this.extendedMasterSecret = TestResults.TRUE;
+                    extendedMasterSecret = TestResults.TRUE;
                 if (type == ExtensionType.RENEGOTIATION_INFO)
-                    this.secureRenegotiation = TestResults.TRUE;
+                    secureRenegotiation = TestResults.TRUE;
                 if (type == ExtensionType.SESSION_TICKET)
-                    this.sessionTickets = TestResults.TRUE;
+                    sessionTickets = TestResults.TRUE;
                 if (type == ExtensionType.STATUS_REQUEST)
-                    this.certStatusRequest = TestResults.TRUE;
+                    certStatusRequest = TestResults.TRUE;
                 if (type == ExtensionType.STATUS_REQUEST_V2)
-                    this.certStatusRequestV2 = TestResults.TRUE;
+                    certStatusRequestV2 = TestResults.TRUE;
             }
         } else {
-            this.encryptThenMac = TestResults.COULD_NOT_TEST;
-            this.extendedMasterSecret = TestResults.COULD_NOT_TEST;
-            this.secureRenegotiation = TestResults.COULD_NOT_TEST;
-            this.sessionTickets = TestResults.COULD_NOT_TEST;
-            this.certStatusRequest = TestResults.COULD_NOT_TEST;
-            this.certStatusRequestV2 = TestResults.COULD_NOT_TEST;
+            encryptThenMac = TestResults.COULD_NOT_TEST;
+            extendedMasterSecret = TestResults.COULD_NOT_TEST;
+            secureRenegotiation = TestResults.COULD_NOT_TEST;
+            sessionTickets = TestResults.COULD_NOT_TEST;
+            certStatusRequest = TestResults.COULD_NOT_TEST;
+            certStatusRequestV2 = TestResults.COULD_NOT_TEST;
         }
-        super.put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, this.extendedMasterSecret);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, this.encryptThenMac);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, this.secureRenegotiation);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, this.sessionTickets);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, this.certStatusRequest);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, this.certStatusRequestV2);
+        super.put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
+        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
     }
 }

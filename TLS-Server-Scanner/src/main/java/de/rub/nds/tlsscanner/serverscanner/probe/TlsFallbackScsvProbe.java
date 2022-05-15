@@ -52,11 +52,11 @@ public class TlsFallbackScsvProbe extends TlsProbe<ServerScannerConfig, ServerRe
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new ArrayList<>(CipherSuite.getImplemented());
         cipherSuites.add(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setDefaultSelectedProtocolVersion(this.secondHighestVersion);
-        tlsConfig.setDefaultHighestClientProtocolVersion(this.secondHighestVersion);
+        tlsConfig.setDefaultSelectedProtocolVersion(secondHighestVersion);
+        tlsConfig.setDefaultHighestClientProtocolVersion(secondHighestVersion);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
+        tlsConfig.setHighestProtocolVersion(secondHighestVersion);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -71,11 +71,11 @@ public class TlsFallbackScsvProbe extends TlsProbe<ServerScannerConfig, ServerRe
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            this.result = TestResults.TRUE;
+            result = TestResults.TRUE;
         } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug("{}", state.getWorkflowTrace());
-            this.result = TestResults.FALSE;
+            result = TestResults.FALSE;
         }
     }
 
@@ -96,22 +96,16 @@ public class TlsFallbackScsvProbe extends TlsProbe<ServerScannerConfig, ServerRe
     }
 
     @Override
-    public TlsFallbackScsvProbe getCouldNotExecuteResult() {
-        this.result = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
         @SuppressWarnings("unchecked")
         List<ProtocolVersion> versions = new ArrayList<>(((ListResult<ProtocolVersion>) report.getResultMap()
             .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList());
         Collections.sort(versions);
-        this.secondHighestVersion = versions.get(versions.size() - 2);
+        secondHighestVersion = versions.get(versions.size() - 2);
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, this.result);
+        super.put(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
     }
 }

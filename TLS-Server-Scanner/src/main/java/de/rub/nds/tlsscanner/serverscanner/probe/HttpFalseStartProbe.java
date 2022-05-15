@@ -77,7 +77,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
                     // if http response was received the server handled the
                     // false start
 
-                    this.supportsFalseStart = TestResults.TRUE;
+                    supportsFalseStart = TestResults.TRUE;
                     return;
                 } else if (message instanceof FinishedMessage)
                     receivedServerFinishedMessage = true;
@@ -86,18 +86,18 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
             // handshake
-            this.supportsFalseStart = TestResults.FALSE;
+            supportsFalseStart = TestResults.FALSE;
             return;
         }
         // received no http response -> maybe server did not understand
         // request
-        this.supportsFalseStart = TestResults.UNCERTAIN;
+        supportsFalseStart = TestResults.UNCERTAIN;
     }
 
     private Config getConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(this.getCipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getCipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -131,13 +131,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
     }
 
     @Override
-    public HttpFalseStartProbe getCouldNotExecuteResult() {
-        this.supportsFalseStart = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
+        super.put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
     }
 }

@@ -62,7 +62,7 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
             cipherSuiteDelegate.setCipherSuites(supportedCiphers);
         }
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
-        this.vulnerable = Objects.equals(attacker.isVulnerable(), Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE;
+        vulnerable = Objects.equals(attacker.isVulnerable(), Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
@@ -84,13 +84,7 @@ public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     }
 
     @Override
-    public HeartbleedProbe getCouldNotExecuteResult() {
-        this.vulnerable = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, this.vulnerable);
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
     }
 }

@@ -44,7 +44,7 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public void executeTest() {
-        this.compressions = getSupportedCompressionMethods();
+        compressions = getSupportedCompressionMethods();
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {
@@ -101,23 +101,17 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     @Override
-    public CompressionsProbe getCouldNotExecuteResult() {
-        this.compressions = null;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.compressions != null) {
+        if (compressions != null) {
             super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS,
-                new ListResult<CompressionMethod>(this.compressions, "COMPRESSION_METHODS"));
-            if (this.compressions.contains(CompressionMethod.LZS)
-                || this.compressions.contains(CompressionMethod.DEFLATE)) {
+                new ListResult<CompressionMethod>(compressions, "COMPRESSION_METHODS"));
+            if (compressions.contains(CompressionMethod.LZS)
+                || compressions.contains(CompressionMethod.DEFLATE)) {
                 super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
                 super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {

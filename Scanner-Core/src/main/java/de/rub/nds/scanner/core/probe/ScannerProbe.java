@@ -69,8 +69,6 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
         return getRequirements(report).evaluateRequirements();
     }
 
-    public abstract ScannerProbe<?> getCouldNotExecuteResult();
-
     public StatsWriter getWriter() {
         return writer;
     }

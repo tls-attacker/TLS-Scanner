@@ -47,7 +47,7 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        this.enforced = (firstSelectedCipherSuite == secondSelectedCipherSuite) ? TestResults.TRUE : TestResults.FALSE;
+        enforced = (firstSelectedCipherSuite == secondSelectedCipherSuite) ? TestResults.TRUE : TestResults.FALSE;
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -75,18 +75,12 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
     }
 
     @Override
-    public CipherSuiteOrderProbe getCouldNotExecuteResult() {
-        this.enforced = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, this.enforced);
+        super.put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
     }
 }

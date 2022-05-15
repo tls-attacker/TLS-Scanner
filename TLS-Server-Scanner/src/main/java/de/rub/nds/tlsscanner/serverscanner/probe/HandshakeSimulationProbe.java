@@ -224,15 +224,9 @@ public class HandshakeSimulationProbe extends TlsProbe<ServerScannerConfig, Serv
     }
 
     @Override
-    public HandshakeSimulationProbe getCouldNotExecuteResult() {
-        this.simulatedClientList = null;
-        return this;
-    }
-
-    @Override
     protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT,
-            new ListResult<SimulatedClientResult>(this.simulatedClientList, "SIMULATED_CLIENT"));
+            new ListResult<SimulatedClientResult>(simulatedClientList, "SIMULATED_CLIENT"));
     }
 
     @Override

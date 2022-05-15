@@ -49,11 +49,11 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
 
     @Override
     public void executeTest() {
-        List<NamedGroup> toTestList = new LinkedList<>(this.supportedGroups);
+        List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
-        this.enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1
+        enforced = firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1
             ? TestResults.TRUE : TestResults.FALSE;
     }
 
@@ -78,12 +78,6 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
     }
 
     @Override
-    public NamedCurvesOrderProbe getCouldNotExecuteResult() {
-        this.enforced = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
@@ -99,6 +93,6 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, this.enforced);
+        super.put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
     }
 }

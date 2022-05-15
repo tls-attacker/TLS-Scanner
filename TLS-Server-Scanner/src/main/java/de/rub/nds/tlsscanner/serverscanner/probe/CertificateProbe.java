@@ -89,8 +89,11 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
         if (scanForTls13) {
             certificates.addAll(getTls13Certs());
         }
-        if (certificates.isEmpty())
-            getCouldNotExecuteResult();
+        if (certificates.isEmpty()) {
+        	certificates = null;
+            ecdsaPkGroupsStatic =
+                ecdsaPkGroupsEphemeral = ecdsaPkGroupsTls13 = ecdsaCertSigGroupsTls13 = null;
+        }
     }
 
     @Override
@@ -115,14 +118,6 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
-    }
-
-    @Override
-    public CertificateProbe getCouldNotExecuteResult() {
-        this.certificates = null;
-        this.ecdsaPkGroupsStatic =
-            this.ecdsaPkGroupsEphemeral = this.ecdsaPkGroupsTls13 = this.ecdsaCertSigGroupsTls13 = null;
-        return this;
     }
 
     private List<CertificateChain> getRsaCerts() {
@@ -456,15 +451,15 @@ public class CertificateProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.certificates != null)
+        if (certificates != null)
             super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
-                new ListResult<CertificateChain>(new LinkedList<>(this.certificates), "CERTIFICATE_CHAIN"));
+                new ListResult<CertificateChain>(new LinkedList<>(certificates), "CERTIFICATE_CHAIN"));
         else
             super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
                 new ListResult<CertificateChain>(new LinkedList<>(), "CERTIFICATE_CHAIN"));
         super.put(TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS,
-            new ListResult<NamedGroup>(this.ecdsaPkGroupsStatic, "STATIC_ECDSA_PKGROUPS"));
+            new ListResult<NamedGroup>(ecdsaPkGroupsStatic, "STATIC_ECDSA_PKGROUPS"));
         super.put(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
-            new ListResult<NamedGroup>(this.ecdsaPkGroupsEphemeral, "EPHEMERAL_ECDSA_PKGROUPS"));
+            new ListResult<NamedGroup>(ecdsaPkGroupsEphemeral, "EPHEMERAL_ECDSA_PKGROUPS"));
     }
 }

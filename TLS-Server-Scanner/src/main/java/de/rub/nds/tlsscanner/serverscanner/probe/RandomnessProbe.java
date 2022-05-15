@@ -63,11 +63,6 @@ public class RandomnessProbe extends TlsProbe<ServerScannerConfig, ServerReport>
             TlsProbeType.EXTENSIONS);
     }
 
-    @Override
-    public RandomnessProbe getCouldNotExecuteResult() {
-        return this;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {

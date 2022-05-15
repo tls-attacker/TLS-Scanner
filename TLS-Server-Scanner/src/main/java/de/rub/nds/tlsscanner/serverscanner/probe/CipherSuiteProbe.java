@@ -93,7 +93,7 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
-        this.protocolVersions = new LinkedList<>();
+        protocolVersions = new LinkedList<>();
         super.register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
             TlsAnalyzedProperty.SUPPORTS_EXPORT, TlsAnalyzedProperty.SUPPORTS_DES, TlsAnalyzedProperty.SUPPORTS_SEED,
             TlsAnalyzedProperty.SUPPORTS_IDEA, TlsAnalyzedProperty.SUPPORTS_RC2, TlsAnalyzedProperty.SUPPORTS_RC4,
@@ -302,12 +302,6 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
         }
-    }
-
-    @Override
-    public CipherSuiteProbe getCouldNotExecuteResult() {
-        pairLists = null;
-        return this;
     }
 
     @Override

@@ -51,8 +51,8 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     public PaddingOracleProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+        numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
             TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
     }
@@ -61,7 +61,7 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     public void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-        this.resultList = new LinkedList<>();
+        resultList = new LinkedList<>();
         for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
@@ -70,17 +70,17 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
                             PaddingOracleCommandConfig paddingOracleConfig =
                                 createPaddingOracleCommandConfig(pair.getVersion(), suite);
                             paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                            this.resultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
+                            resultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
                         }
                     }
                 }
             }
         }
         LOGGER.debug("Finished evaluation");
-        if (isPotentiallyVulnerable(this.resultList)
+        if (isPotentiallyVulnerable(resultList)
             || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
-            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : this.resultList) {
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : resultList) {
                 if (fingerprint.isDistinctAnswers()
                     || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
@@ -155,12 +155,6 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
-    @Override
-    public PaddingOracleProbe getCouldNotExecuteResult() {
-        this.vulnerable = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
         int numberOfAdditionalIterations) {
         PaddingOracleCommandConfig paddingOracleCommandConfig = createPaddingOracleCommandConfig(
@@ -185,16 +179,16 @@ public class PaddingOracleProbe extends TlsProbe<ServerScannerConfig, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.resultList != null) {
-            this.vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<?> informationLeakTest : this.resultList) {
+        if (resultList != null) {
+            vulnerable = TestResults.FALSE;
+            for (InformationLeakTest<?> informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers())
-                    this.vulnerable = TestResults.TRUE;
+                    vulnerable = TestResults.TRUE;
             }
         } else
-            this.vulnerable = TestResults.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         super.put(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS,
-            new ListResult<InformationLeakTest<PaddingOracleTestInfo>>(this.resultList, "PADDINGORACLE_TESTRESULTS"));
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, this.vulnerable);
+            new ListResult<InformationLeakTest<PaddingOracleTestInfo>>(resultList, "PADDINGORACLE_TESTRESULTS"));
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 }

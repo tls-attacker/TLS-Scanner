@@ -50,8 +50,8 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     public BleichenbacherProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.BLEICHENBACHER, config);
-        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
-        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
+        numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
     }
 
@@ -59,9 +59,9 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
     public void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
-        this.testResultList = new LinkedList<>();
+        testResultList = new LinkedList<>();
         for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
-            for (VersionSuiteListPair pair : this.serverSupportedSuites) {
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
                         if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
@@ -69,7 +69,7 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
                             BleichenbacherCommandConfig bleichenbacherConfig =
                                 createBleichenbacherCommandConfig(pair.getVersion(), suite);
                             bleichenbacherConfig.setWorkflowType(workflowType);
-                            this.testResultList.add(getBleichenbacherOracleInformationLeakTest(bleichenbacherConfig));
+                            testResultList.add(getBleichenbacherOracleInformationLeakTest(bleichenbacherConfig));
                         }
                     }
                 }
@@ -77,11 +77,11 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
         }
         LOGGER.debug("Finished evaluation");
         if (isPotentiallyVulnerable(testResultList)
-            || this.scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
-            for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : this.testResultList) {
+            for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
                 if (fingerprint.isDistinctAnswers()
-                    || this.scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                 }
             }
@@ -152,12 +152,6 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
             .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
-    @Override
-    public BleichenbacherProbe getCouldNotExecuteResult() {
-        this.vulnerable = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,
         int numberOfAdditionalIterations) {
         BleichenbacherCommandConfig bleichenbacherConfig = createBleichenbacherCommandConfig(
@@ -181,14 +175,14 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (this.testResultList != null) {
-            this.vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<?> informationLeakTest : this.testResultList) {
+        if (testResultList != null) {
+            vulnerable = TestResults.FALSE;
+            for (InformationLeakTest<?> informationLeakTest : testResultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers())
-                    this.vulnerable = TestResults.TRUE;
+                    vulnerable = TestResults.TRUE;
             }
         } else
-            this.vulnerable = TestResults.ERROR_DURING_TEST;
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, this.vulnerable);
+            vulnerable = TestResults.ERROR_DURING_TEST;
+        super.put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
     }
 }

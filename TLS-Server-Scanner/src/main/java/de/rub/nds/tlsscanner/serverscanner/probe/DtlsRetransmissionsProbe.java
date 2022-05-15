@@ -51,8 +51,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
 
     @Override
     public void executeTest() {
-        this.sendsRetransmissions = doesRetransmissions();
-        this.processesRetransmissions = processesRetransmissions();
+        sendsRetransmissions = doesRetransmissions();
+        processesRetransmissions = processesRetransmissions();
     }
 
     private TestResult doesRetransmissions() {
@@ -126,19 +126,13 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
     }
 
     @Override
-    public DtlsRetransmissionsProbe getCouldNotExecuteResult() {
-        this.sendsRetransmissions = this.processesRetransmissions = TestResults.COULD_NOT_TEST;
-        return this;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, this.sendsRetransmissions);
-        super.put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, this.processesRetransmissions);
+        super.put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
+        super.put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
     }
 
     @Override
