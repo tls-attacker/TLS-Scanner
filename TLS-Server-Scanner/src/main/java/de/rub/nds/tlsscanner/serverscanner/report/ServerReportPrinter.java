@@ -1660,7 +1660,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         TestResult dhvalueResult = report.getResultMap().get(TlsAnalyzedProperty.SET_USED_COMMON_DHVALUE.name());
         if (dhvalueResult != null) {
             @SuppressWarnings("unchecked")
-            List<CommonDhValues> dhValues = ((ListResult<CommonDhValues>) dhvalueResult).getList();
+            Set<CommonDhValues> dhValues = ((SetResult<CommonDhValues>) dhvalueResult).getSet();
             if (dhValues != null && dhValues.size() != 0) {
                 for (CommonDhValues value : dhValues)
                     prettyAppend(builder, "\t" + value.getName(), AnsiColor.YELLOW);
