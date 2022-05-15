@@ -82,7 +82,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     private void updateSiteReportWithNotExecutedProbes(Report report) {
         for (ScannerProbe probe : notScheduledTasks) {
-            probe.getCouldNotExecuteResult().merge(report);
+            probe.merge(report);
         }
     }
 
