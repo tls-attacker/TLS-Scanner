@@ -199,7 +199,8 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
     @Override
     public void adjustConfig(ClientReport report) {
         @SuppressWarnings("unchecked")
-		List<CipherSuite> ciphers = ((ListResult<CipherSuite>) report.getResultMap().get(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList();
+        List<CipherSuite> ciphers = ((ListResult<CipherSuite>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList();
         List<CipherSuite> dheCiphers = new LinkedList<>();
         for (CipherSuite suite : ciphers) {
             if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().contains("_DHE_")) {
