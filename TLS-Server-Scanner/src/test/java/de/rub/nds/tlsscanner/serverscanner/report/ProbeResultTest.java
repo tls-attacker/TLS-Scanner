@@ -59,7 +59,7 @@ public class ProbeResultTest {
                         TlsProbe probe = (TlsProbe) c.newInstance(new ServerScannerConfig(new GeneralDelegate()),
                             new ParallelExecutor(1, 1));
                         ServerReport report = new ServerReport("somehost", 443);
-                        probe.getCouldNotExecuteResult().merge(report);
+                        probe.merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");
                         ServerReportPrinter printer = new ServerReportPrinter(report, ScannerDetail.ALL,
