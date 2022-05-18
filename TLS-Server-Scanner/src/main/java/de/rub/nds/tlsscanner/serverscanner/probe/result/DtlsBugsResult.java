@@ -18,21 +18,17 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 public class DtlsBugsResult extends ProbeResult<ServerReport> {
 
     private TestResult isEarlyFinished;
-    private TestResult isAcceptingUnencryptedAppData;
     private TestResult isAcceptingUnencryptedFinished;
 
-    public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isAcceptingUnencryptedAppData,
-        TestResult isEarlyFinished) {
+    public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isEarlyFinished) {
         super(TlsProbeType.DTLS_COMMON_BUGS);
         this.isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished;
-        this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
-        report.putResult(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
         report.putResult(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 
