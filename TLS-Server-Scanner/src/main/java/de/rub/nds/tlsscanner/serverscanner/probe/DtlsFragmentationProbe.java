@@ -42,11 +42,11 @@ import java.util.List;
 
 public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, ServerReport, DtlsFragmentationResult> {
 
-    private static int waitTime;
+    private static int individualTransportPacketCooldown;
 
     public DtlsFragmentationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_FRAGMENTATION, scannerConfig);
-        this.waitTime = 200;
+        this.individualTransportPacketCooldown = 200;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
         config.setDtlsMaximumFragmentLength(150);
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setWaitTime(waitTime);
+            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
         }
 
         State state = new State(config);
@@ -83,7 +83,7 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
         Config config = getConfig();
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setWaitTime(waitTime);
+            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
         }
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -109,7 +109,7 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setWaitTime(waitTime);
+            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
         }
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
