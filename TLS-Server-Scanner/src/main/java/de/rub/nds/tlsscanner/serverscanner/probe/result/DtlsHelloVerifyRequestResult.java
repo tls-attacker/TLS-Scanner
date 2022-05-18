@@ -20,6 +20,8 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
     private TestResult hasHvrRetransmissions;
     private TestResult checksCookie;
     private Integer cookieLength;
+    private TestResult usesIpAdressInCookie;
+    private TestResult usesPortInCookie;
     private TestResult usesVersionInCookie;
     private TestResult usesRandomInCookie;
     private TestResult usesSessionIdInCookie;
@@ -27,12 +29,15 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
     private TestResult usesCompressionsInCookie;
 
     public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, Integer cookieLength,
-        TestResult usesVersionInCookie, TestResult usesRandomInCookie, TestResult usesSessionIdInCookie,
-        TestResult usesCiphersuitesInCookie, TestResult usesCompressionsInCookie) {
+        TestResult usesIpAdressInCookie, TestResult usesPortInCookie, TestResult usesVersionInCookie,
+        TestResult usesRandomInCookie, TestResult usesSessionIdInCookie, TestResult usesCiphersuitesInCookie,
+        TestResult usesCompressionsInCookie) {
         super(TlsProbeType.DTLS_HELLO_VERIFY_REQUEST);
         this.hasHvrRetransmissions = hasHvrRetransmissions;
         this.checksCookie = checksCookie;
         this.cookieLength = cookieLength;
+        this.usesIpAdressInCookie = usesIpAdressInCookie;
+        this.usesPortInCookie = usesPortInCookie;
         this.usesVersionInCookie = usesVersionInCookie;
         this.usesRandomInCookie = usesRandomInCookie;
         this.usesSessionIdInCookie = usesSessionIdInCookie;
@@ -45,6 +50,8 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
         report.putResult(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
         report.putResult(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
         report.setCookieLength(cookieLength);
+        report.putResult(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
+        report.putResult(TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, usesPortInCookie);
         report.putResult(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
         report.putResult(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
         report.putResult(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
