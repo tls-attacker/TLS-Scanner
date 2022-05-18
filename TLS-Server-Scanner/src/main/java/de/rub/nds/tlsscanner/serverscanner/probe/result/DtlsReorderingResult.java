@@ -15,20 +15,17 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsFeaturesResult extends ProbeResult<ServerReport> {
+public class DtlsReorderingResult extends ProbeResult<ServerReport> {
 
-    private TestResult supportsFragmentation;
     private TestResult supportsReordering;
 
-    public DtlsFeaturesResult(TestResult supportsFragmentation, TestResult supportsReordering) {
-        super(TlsProbeType.DTLS_FEATURES);
-        this.supportsFragmentation = supportsFragmentation;
+    public DtlsReorderingResult(TestResult supportsReordering) {
+        super(TlsProbeType.DTLS_REORDERING);
         this.supportsReordering = supportsReordering;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, supportsFragmentation);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
     }
 

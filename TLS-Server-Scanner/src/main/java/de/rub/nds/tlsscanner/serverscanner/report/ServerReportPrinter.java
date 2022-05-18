@@ -53,6 +53,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
@@ -168,8 +169,28 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (report.getResult(TlsAnalyzedProperty.CHANGES_PORT) == TestResults.TRUE) {
             prettyAppend(builder, "-To random ports", TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS);
         }
-        prettyAppend(builder, "Supports fragmentation", TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
         prettyAppend(builder, "Supports reordering", TlsAnalyzedProperty.SUPPORTS_REORDERING);
+
+        prettyAppendHeading(builder, "DTLS Fragmentation");
+        prettyAppend(builder, "Supports fragmentation", TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION) == TestResults.PARTIALLY) {
+            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION) == TestResults.TRUE) {
+                prettyAppend(builder, "-Requires Max Fragment Length extension");
+            } else {
+                prettyAppend(builder, "-After cookie exchange");
+            }
+        }
+        prettyAppend(builder, "Supports fragmentation with individual transport packets",
+            TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS)
+            == TestResults.PARTIALLY) {
+            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION)
+                == TestResults.TRUE) {
+                prettyAppend(builder, "-Requires Max Fragment Length extension");
+            } else {
+                prettyAppend(builder, "-After cookie exchange");
+            }
+        }
 
         prettyAppendHeading(builder, "DTLS Hello Verify Request");
         prettyAppend(builder, "HVR Retransmissions", TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
@@ -180,6 +201,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         prettyAppend(builder, "Checks cookie", TlsAnalyzedProperty.HAS_COOKIE_CHECKS);
         prettyAppend(builder, "Cookie is influenced by");
+        prettyAppend(builder, "-ip", TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
+        prettyAppend(builder, "-port", TlsAnalyzedProperty.USES_PORT_FOR_COOKIE);
         prettyAppend(builder, "-version", TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE);
         prettyAppend(builder, "-random", TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE);
         prettyAppend(builder, "-session id", TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
@@ -210,6 +233,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Accepts Finished with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
         prettyAppend(builder, "Accepts App Data with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+
+        if (report.getSupportedApplications() != null) {
+            prettyAppendHeading(builder, "Supported Applications");
+            for (ApplicationProtocol application : report.getSupportedApplications()) {
+                builder.append(application).append("\n");
+            }
+        }
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

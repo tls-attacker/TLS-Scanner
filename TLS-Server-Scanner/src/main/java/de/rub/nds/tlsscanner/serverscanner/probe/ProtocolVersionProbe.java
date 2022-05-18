@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -43,6 +44,7 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
         super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            toTestList.add(ProtocolVersion.DTLS10_DRAFT);
             toTestList.add(ProtocolVersion.DTLS10);
             toTestList.add(ProtocolVersion.DTLS12);
         } else {
@@ -116,15 +118,27 @@ public class ProtocolVersionProbe extends TlsProbe<ServerScannerConfig, ServerRe
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            LOGGER.debug("Did not receive ServerHello Message");
-            LOGGER.debug(state.getWorkflowTrace().toString());
+
+        if (toTest == ProtocolVersion.DTLS10_DRAFT) {
+            Record record = (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
+            if (record != null) {
+                ProtocolVersion version = ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
+                if (version != null) {
+                    return version == ProtocolVersion.DTLS10_DRAFT;
+                }
+            }
             return false;
         } else {
-            LOGGER.debug("Received ServerHelloMessage");
-            LOGGER.debug(state.getWorkflowTrace().toString());
-            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
-            return state.getTlsContext().getSelectedProtocolVersion() == toTest;
+            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                LOGGER.debug("Did not receive ServerHello Message");
+                LOGGER.debug(state.getWorkflowTrace().toString());
+                return false;
+            } else {
+                LOGGER.debug("Received ServerHelloMessage");
+                LOGGER.debug(state.getWorkflowTrace().toString());
+                LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+                return state.getTlsContext().getSelectedProtocolVersion() == toTest;
+            }
         }
     }
 

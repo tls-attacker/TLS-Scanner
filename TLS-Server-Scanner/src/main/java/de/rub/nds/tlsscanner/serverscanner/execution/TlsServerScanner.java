@@ -62,10 +62,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFeaturesProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
@@ -211,11 +213,13 @@ public final class TlsServerScanner extends TlsScanner {
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
-            addProbeToProbeList(new DtlsFeaturesProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsReorderingProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsFragmentationProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsBugsProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsMessageSequenceProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsRetransmissionsProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsApplicationFingerprintProbe(config, parallelExecutor));
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {
