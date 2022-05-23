@@ -56,14 +56,26 @@ public class DtlsApplicationFingerprintProbe
     public DtlsApplicationFingerprintResult executeTest() {
         supportedApplications = new ArrayList<>();
         isAcceptingUnencryptedAppData = TestResults.NOT_TESTED_YET;
-        supportsVPN();
-        isStunSupported();
-        isTurnSupported();
-        isCoapSupported();
+        if (!isEchoServer()) {
+            isVpnSupported();
+            isStunSupported();
+            isTurnSupported();
+            isCoapSupported();
+        }
         return new DtlsApplicationFingerprintResult(supportedApplications, isAcceptingUnencryptedAppData);
     }
 
-    private void supportsVPN() {
+    private boolean isEchoServer() {
+        byte[] appData = ArrayConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
+        byte[] data = isProtocolSupported(appData);
+        if (Bytes.indexOf(data, appData) != -1) {
+            supportedApplications.add(ApplicationProtocol.ECHO);
+            return true;
+        }
+        return false;
+    }
+
+    private void isVpnSupported() {
         byte[] length = ArrayConverter.hexStringToByteArray("0118");
         byte[] string = ArrayConverter.hexStringToByteArray("0047467479706500636c7468656c6c6f005356504e434f4f4b494500");
         byte[] cookie = ArrayConverter.hexStringToByteArray("34626a384f64735a486a6f644e736859512b59");
