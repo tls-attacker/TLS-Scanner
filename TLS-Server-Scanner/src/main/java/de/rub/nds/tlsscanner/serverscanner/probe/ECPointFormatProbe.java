@@ -48,7 +48,7 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     @Override
     public ECPointFormatResult executeTest() {
         List<ECPointFormat> pointFormats = null;
-        TestResult completedWithUndefined = TestResult.CANNOT_BE_TESTED;
+        TestResult completedWithUndefined = TestResults.CANNOT_BE_TESTED;
         if (shouldTestPointFormats) {
             pointFormats = getSupportedPointFormats();
             completedWithUndefined = canHandshakeWithUndefinedFormat();
@@ -85,9 +85,9 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             .getExtension(ECPointFormatExtensionMessage.class).setPointFormats(Modifiable.explicit(UNDEFINED_FORMAT));
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         }
-        return TestResult.FALSE;
+        return TestResults.FALSE;
     }
 
     private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
