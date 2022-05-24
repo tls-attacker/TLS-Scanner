@@ -273,10 +273,11 @@ public final class TlsServerScanner extends TlsScanner {
             if (isConnectable()) {
                 isConnectable = true;
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if (speaksProtocol(protocolType)) {
+                configSelector.findWorkingConfig();
+                if (configSelector.isSpeaksProtocol()) {
                     speaksProtocol = true;
                     LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
-                    if (configSelector.findWorkingConfig()) {
+                    if (configSelector.isIsHandshaking()) {
                         isHandshaking = true;
                         LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
 
@@ -358,27 +359,6 @@ public final class TlsServerScanner extends TlsScanner {
             return checker.isConnectable();
         } catch (Exception e) {
             LOGGER.warn("Could not test if we can connect to the server", e);
-            return false;
-        }
-    }
-
-    private boolean speaksProtocol(ProtocolType type) {
-        try {
-            // TODO: change to config selector?
-            Config tlsConfig = config.createConfig();
-            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-            switch (type) {
-                case TLS:
-                    return checker.speaksTls(tlsConfig);
-                case DTLS:
-                    return checker.speaksDtls(tlsConfig);
-                case STARTTLS:
-                    return checker.speaksStartTls(tlsConfig);
-                default:
-                    return false;
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Could not test if the server speaks " + type.getName() + ". Probably could not connect.");
             return false;
         }
     }

@@ -9,29 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.connectivity;
 
-import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.record.Record;
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.AsciiAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAsciiAction;
-import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.transport.Connection;
 import de.rub.nds.tlsattacker.transport.TransportHandler;
 import de.rub.nds.tlsattacker.transport.TransportHandlerFactory;
@@ -77,79 +55,5 @@ public class ConnectivityChecker {
         } else {
             return false;
         }
-    }
-
-    public boolean speaksTls(Config config) {
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
-        trace.removeTlsAction(trace.getTlsActions().size() - 1);
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage());
-        trace.addTlsAction(receiveTillAction);
-        State state = new State(config, trace);
-        WorkflowExecutor executor =
-            WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
-        executor.executeWorkflow();
-        if (receiveTillAction.getRecords().size() > 0) {
-            if (receiveTillAction.getRecords().get(0) instanceof Record) {
-                return true;
-            } else {
-                for (ProtocolMessage message : receiveTillAction.getReceivedMessages()) {
-                    if (message instanceof ServerHelloMessage || message instanceof ServerHelloDoneMessage
-                        || message instanceof SSL2ServerHelloMessage) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public boolean speaksDtls(Config config) {
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        ReceiveAction reveiceAction = new ReceiveAction(new HelloVerifyRequestMessage(config));
-        trace.addTlsAction(reveiceAction);
-        State state = new State(config, trace);
-        WorkflowExecutor executor =
-            WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
-        executor.executeWorkflow();
-        if (reveiceAction.getRecords().size() > 0) {
-            if (reveiceAction.getRecords().get(0) instanceof Record) {
-                return true;
-            } else {
-                for (ProtocolMessage message : reveiceAction.getReceivedMessages()) {
-                    if (message instanceof HelloVerifyRequestMessage || message instanceof ServerHelloMessage) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public boolean speaksStartTls(Config config) {
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        State state = new State(config, trace);
-        WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
-        executor.executeWorkflow();
-        if (trace.allActionsExecuted()) {
-            for (TlsAction action : trace.getTlsActions()) {
-                if (action instanceof AsciiAction && !(action instanceof SendAsciiAction)) {
-                    AsciiAction asciiAction = (AsciiAction) action;
-                    if (asciiAction.getAsciiText() != null) {
-                        if (asciiAction.getAsciiText().contains(config.getStarttlsType().getNegotiatationString())) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 }

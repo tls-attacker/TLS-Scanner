@@ -13,7 +13,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -65,8 +64,6 @@ public class ServerScannerConfig extends ScannerConfig {
     private CallbackDelegate callbackDelegate;
 
     private List<ProbeType> probes = null;
-
-    private Config baseConfig = null;
 
     public ServerScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -164,14 +161,6 @@ public class ServerScannerConfig extends ScannerConfig {
 
     public void setCustomCAPathList(List<String> customCAPathList) {
         this.customCAPathList = customCAPathList;
-    }
-
-    public Config getBaseConfig() {
-        return baseConfig;
-    }
-
-    public void setBaseConfig(Config baseConfig) {
-        this.baseConfig = baseConfig;
     }
 
 }

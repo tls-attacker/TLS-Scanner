@@ -18,6 +18,8 @@ import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsattacker.core.record.AbstractRecord;
+import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
@@ -45,6 +47,9 @@ public class ConfigSelector {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private boolean speaksProtocol = false;
+    private boolean isHandshaking = false;
+
     public ConfigSelector(ServerScannerConfig scannerConfig) {
         this.scannerConfig = scannerConfig;
     }
@@ -59,6 +64,7 @@ public class ConfigSelector {
             repairConfig(config);
             if (configWorks(config)) {
                 workingConfig = config.createCopy();
+                isHandshaking = true;
                 return true;
             }
         }
@@ -72,6 +78,11 @@ public class ConfigSelector {
         WorkflowExecutor executor =
             WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
         executor.executeWorkflow();
+
+        List<AbstractRecord> reveicedRecords = state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
+        if (reveicedRecords != null && reveicedRecords.size() > 0 && reveicedRecords.get(0) instanceof Record) {
+            speaksProtocol = true;
+        }
         return trace.executedAsPlanned();
     }
 
@@ -167,11 +178,15 @@ public class ConfigSelector {
         return config;
     }
 
-    public ServerScannerConfig getScannerConfig() {
-        return scannerConfig;
+    public boolean isIsHandshaking() {
+        return isHandshaking;
     }
 
-    public void setScannerConfig(ServerScannerConfig scannerConfig) {
-        this.scannerConfig = scannerConfig;
+    public boolean isSpeaksProtocol() {
+        return speaksProtocol;
+    }
+
+    public ServerScannerConfig getScannerConfig() {
+        return scannerConfig;
     }
 }
