@@ -120,7 +120,7 @@ public final class TlsServerScanner extends TlsScanner {
             new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
 
         setCallbacks();
-        fillDefaultProbeLists();
+        fillProbeLists();
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -129,7 +129,7 @@ public final class TlsServerScanner extends TlsScanner {
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
-        fillDefaultProbeLists();
+        fillProbeLists();
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor, List<ScannerProbe> probeList,
@@ -164,7 +164,7 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     @Override
-    protected void fillDefaultProbeLists() {
+    protected void fillProbeLists() {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
         }
@@ -196,7 +196,7 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
-        addProbeToProbeList(new ConnectionClosingProbe(config, parallelExecutor));
+        addProbeToProbeList(new ConnectionClosingProbe(config, parallelExecutor), false);
         // Init StatsWriter
 
         afterList.add(new Sweet32AfterProbe());
