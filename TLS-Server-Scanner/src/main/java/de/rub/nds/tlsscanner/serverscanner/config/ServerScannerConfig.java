@@ -18,12 +18,9 @@ import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import org.bouncycastle.util.IPAddress;
 import java.util.List;
 
 public class ServerScannerConfig extends ScannerConfig {
@@ -153,38 +150,20 @@ public class ServerScannerConfig extends ScannerConfig {
         this.additionalRandomnessHandshakes = additionalRandomnessHandshakes;
     }
 
-    // TODO: remove or use in config selector
-    @Override
-    public Config createConfig() {
-        if (baseConfig != null) {
-            return baseConfig.createCopy();
-        }
-
-        Config config = super.createConfig(Config.createConfig());
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-            || clientDelegate.getSniHostname() != null) {
-            config.setAddServerNameIndicationExtension(true);
-        } else {
-            config.setAddServerNameIndicationExtension(false);
-        }
-
-        if (this.customCAPathList != null) {
-            TrustAnchorManager.getInstance().addCustomCA(this.customCAPathList);
-        }
-
-        config.getDefaultClientConnection().setTimeout(timeout);
-        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
-            config.getDefaultClientConnection().setFirstTimeout(timeout);
-        }
-        return config;
-    }
-
     public int getTimeout() {
         return timeout;
     }
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public List<String> getCustomCAPathList() {
+        return customCAPathList;
+    }
+
+    public void setCustomCAPathList(List<String> customCAPathList) {
+        this.customCAPathList = customCAPathList;
     }
 
     public Config getBaseConfig() {

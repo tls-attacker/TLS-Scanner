@@ -9,9 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -25,11 +25,13 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
 
@@ -52,6 +54,8 @@ public class ConfigSelector {
             Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
             applyDelegates(config);
             applyPerformanceParamters(config);
+            applyScannerConfigParameters(config);
+            repairSni(config);
             repairConfig(config);
             if (configWorks(config)) {
                 workingConfig = config.createCopy();
@@ -86,6 +90,27 @@ public class ConfigSelector {
     private void applyDelegates(Config config) throws ConfigurationException {
         for (Delegate delegate : scannerConfig.getDelegateList()) {
             delegate.applyDelegate(config);
+        }
+    }
+
+    private void applyScannerConfigParameters(Config config) {
+        if (scannerConfig.getCustomCAPathList() != null) {
+            TrustAnchorManager.getInstance().addCustomCA(scannerConfig.getCustomCAPathList());
+        }
+
+        int timeout = scannerConfig.getTimeout();
+        config.getDefaultClientConnection().setTimeout(timeout);
+        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
+            config.getDefaultClientConnection().setFirstTimeout(timeout);
+        }
+    }
+
+    private void repairSni(Config config) {
+        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
+            || scannerConfig.getClientDelegate().getSniHostname() != null) {
+            config.setAddServerNameIndicationExtension(true);
+        } else {
+            config.setAddServerNameIndicationExtension(false);
         }
     }
 
@@ -126,6 +151,9 @@ public class ConfigSelector {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + SSL2_CONFIG));
         applyDelegates(config);
         applyPerformanceParamters(config);
+        applyScannerConfigParameters(config);
+        repairSni(config);
+        repairConfig(config);
         return config;
     }
 
@@ -133,6 +161,9 @@ public class ConfigSelector {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
         applyDelegates(config);
         applyPerformanceParamters(config);
+        applyScannerConfigParameters(config);
+        repairSni(config);
+        repairConfig(config);
         return config;
     }
 
