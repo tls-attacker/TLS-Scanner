@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -42,7 +42,7 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         return new CipherSuiteOrderResult(
-            firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
+            firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResults.TRUE : TestResults.FALSE);
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -76,6 +76,6 @@ public class CipherSuiteOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
 
     @Override
     public CipherSuiteOrderResult getCouldNotExecuteResult() {
-        return new CipherSuiteOrderResult(TestResult.COULD_NOT_TEST);
+        return new CipherSuiteOrderResult(TestResults.COULD_NOT_TEST);
     }
 }

@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -127,11 +127,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             }
         }
         if (failedFlag) {
-            result.setResult(TestResult.FALSE);
+            result.setResult(TestResults.FALSE);
         } else if (uncertainFlag || !passFlag) {
-            result.setResult(TestResult.UNCERTAIN);
+            result.setResult(TestResults.UNCERTAIN);
         } else {
-            result.setResult(TestResult.TRUE);
+            result.setResult(TestResults.TRUE);
         }
         return result;
     }
@@ -140,7 +140,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(TestResult.FALSE) {
+                return new GuidelineCheckResult(TestResults.FALSE) {
                     @Override
                     public String display() {
                         return String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(),

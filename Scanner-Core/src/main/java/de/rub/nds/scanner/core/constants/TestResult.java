@@ -9,20 +9,6 @@
 
 package de.rub.nds.scanner.core.constants;
 
-public enum TestResult {
-    TRUE,
-    FALSE,
-    PARTIALLY,
-    CANNOT_BE_TESTED,
-    COULD_NOT_TEST,
-    ERROR_DURING_TEST,
-    UNCERTAIN,
-    UNSUPPORTED,
-    NOT_TESTED_YET,
-    TIMEOUT;
-
-    public static TestResult of(boolean value) {
-        return value ? TRUE : FALSE;
-    }
-
+public interface TestResult {
+    public abstract String name();
 }

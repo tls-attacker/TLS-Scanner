@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
@@ -47,7 +47,13 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ServerReport extends ScanReport {
 
@@ -564,11 +570,11 @@ public class ServerReport extends ScanReport {
     }
 
     public synchronized Boolean getCcaSupported() {
-        return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+        return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
     }
 
     public synchronized Boolean getCcaRequired() {
-        return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
+        return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {

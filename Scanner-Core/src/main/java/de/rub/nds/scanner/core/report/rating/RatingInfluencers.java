@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "ratingInfluencers")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RatingInfluencers implements Serializable {
 

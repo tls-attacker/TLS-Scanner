@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -22,35 +21,38 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.ForcedCompressionResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.ClientRecordFragmentationResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport, ForcedCompressionResult> {
+public class ClientRecordFragmentationProbe
+    extends TlsProbe<ClientScannerConfig, ClientReport, ClientRecordFragmentationResult> {
 
-    public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
+    public ClientRecordFragmentationProbe(ClientScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
     }
 
     @Override
-    public ForcedCompressionResult executeTest() {
+    public ClientRecordFragmentationResult executeTest() {
         Config config = getScannerConfig().createConfig();
-        config.setEnforceSettings(true);
-        config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
-        config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
+        config.setDefaultMaxRecordData(50);
+
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, workflowTrace);
+
         executeState(state);
+
         TestResult result;
         if (state.getWorkflowTrace().executedAsPlanned()) {
             result = TestResults.TRUE;
         } else {
             result = TestResults.FALSE;
         }
-        return new ForcedCompressionResult(result);
+
+        return new ClientRecordFragmentationResult(result);
     }
 
     @Override
@@ -59,11 +61,13 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
     }
 
     @Override
-    public ForcedCompressionResult getCouldNotExecuteResult() {
-        return new ForcedCompressionResult(TestResults.COULD_NOT_TEST);
+    public ClientRecordFragmentationResult getCouldNotExecuteResult() {
+        return new ClientRecordFragmentationResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override
     public void adjustConfig(ClientReport report) {
+
     }
+
 }

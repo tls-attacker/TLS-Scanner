@@ -11,7 +11,10 @@ package de.rub.nds.tlsscanner.core.guideline;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.util.ConsoleLogger;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class GuidelineCheck<Report extends ScanReport> {
 
     private String name;

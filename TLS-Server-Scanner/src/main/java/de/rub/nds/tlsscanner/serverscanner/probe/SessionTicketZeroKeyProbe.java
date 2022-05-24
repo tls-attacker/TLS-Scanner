@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -133,7 +134,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         executeState(state);
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
         }
 
         byte[] ticket = null;
@@ -163,23 +164,23 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
         } catch (InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException
             | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             LOGGER.debug(e);
-            return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
+            return new SessionTicketZeroKeyResult(TestResults.FALSE, TestResults.FALSE);
         }
         LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         TestResult hasDecryptableMasterSecret;
         TestResult hasGnuTlsMagicBytes;
 
         if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
-            hasDecryptableMasterSecret = TestResult.TRUE;
+            hasDecryptableMasterSecret = TestResults.TRUE;
         } else {
-            hasDecryptableMasterSecret = TestResult.FALSE;
+            hasDecryptableMasterSecret = TestResults.FALSE;
         }
 
         if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
-            hasGnuTlsMagicBytes = TestResult.TRUE;
+            hasGnuTlsMagicBytes = TestResults.TRUE;
 
         } else {
-            hasGnuTlsMagicBytes = TestResult.FALSE;
+            hasGnuTlsMagicBytes = TestResults.FALSE;
         }
 
         return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
@@ -188,7 +189,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty())
-            && Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResult.TRUE);
+            && Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResults.TRUE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -211,7 +212,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     @Override
     public SessionTicketZeroKeyResult getCouldNotExecuteResult() {
-        return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new SessionTicketZeroKeyResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

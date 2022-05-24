@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -170,8 +171,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -179,7 +180,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -192,8 +193,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -201,7 +202,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -225,8 +226,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
-                : TestResult.FALSE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResults.TRUE
+                : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -234,7 +235,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -261,9 +262,9 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
                 LOGGER.debug("Received a SH for invalid NamedGroup, server selected: "
                     + state.getTlsContext().getSelectedGroup().name());
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             }
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -271,7 +272,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -289,15 +290,15 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             if (receivedShd) {
                 if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
                     new byte[] { (byte) 0xEE, (byte) 0xCC })) {
-                    reflectsCipherSuiteOffering = TestResult.TRUE;
-                    ignoresCipherSuiteOffering = TestResult.FALSE;
+                    reflectsCipherSuiteOffering = TestResults.TRUE;
+                    ignoresCipherSuiteOffering = TestResults.FALSE;
                 } else {
-                    reflectsCipherSuiteOffering = TestResult.FALSE;
-                    ignoresCipherSuiteOffering = TestResult.TRUE;
+                    reflectsCipherSuiteOffering = TestResults.FALSE;
+                    ignoresCipherSuiteOffering = TestResults.TRUE;
                 }
             } else {
-                reflectsCipherSuiteOffering = TestResult.FALSE;
-                ignoresCipherSuiteOffering = TestResult.FALSE;
+                reflectsCipherSuiteOffering = TestResults.FALSE;
+                ignoresCipherSuiteOffering = TestResults.FALSE;
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
@@ -306,8 +307,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            reflectsCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
-            ignoresCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
+            reflectsCipherSuiteOffering = TestResults.ERROR_DURING_TEST;
+            ignoresCipherSuiteOffering = TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -331,8 +332,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -340,7 +341,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -370,9 +371,9 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
                 state = new State(config, trace);
                 executeState(state);
                 receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-                return !receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
+                return !receivedShd == true ? TestResults.TRUE : TestResults.FALSE;
             } else {
-                return TestResult.FALSE;
+                return TestResults.FALSE;
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
@@ -381,7 +382,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -404,7 +405,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            return receivedShd ? TestResult.TRUE : TestResult.FALSE;
+            return receivedShd ? TestResults.TRUE : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -412,7 +413,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -425,8 +426,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -434,7 +435,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -446,8 +447,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -455,7 +456,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -467,8 +468,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -476,7 +477,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -492,8 +493,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -501,7 +502,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -513,8 +514,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -522,7 +523,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -540,8 +541,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -549,7 +550,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -569,8 +570,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -578,7 +579,7 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -609,8 +610,8 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                ? TestResults.FALSE : TestResults.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -618,16 +619,18 @@ public class CommonBugProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
     @Override
     public CommonBugProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new CommonBugProbeResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 }

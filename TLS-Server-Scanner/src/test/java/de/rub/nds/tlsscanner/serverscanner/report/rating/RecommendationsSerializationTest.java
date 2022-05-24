@@ -9,7 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import static org.junit.Assert.assertEquals;
+
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
@@ -24,7 +26,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class RecommendationsSerializationTest {
         original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
         PropertyResultRecommendation r =
-            new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
+            new PropertyResultRecommendation(TestResults.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
 
         propertyRecommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SSL_2, recommendations));

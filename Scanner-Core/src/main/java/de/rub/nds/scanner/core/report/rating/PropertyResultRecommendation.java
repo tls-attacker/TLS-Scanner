@@ -10,14 +10,19 @@
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
+@XmlRootElement
+@XmlSeeAlso({ TestResults.class })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private String shortDescription;

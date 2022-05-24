@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
@@ -138,7 +138,7 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
     public boolean canBeExecuted(ServerReport report) {
         if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA), TestResult.TRUE);
+            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA), TestResults.TRUE);
         } else {
             return false;
         }
@@ -151,7 +151,7 @@ public class BleichenbacherProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     @Override
     public BleichenbacherResult getCouldNotExecuteResult() {
-        return new BleichenbacherResult(TestResult.COULD_NOT_TEST);
+        return new BleichenbacherResult(TestResults.COULD_NOT_TEST);
     }
 
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,

@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -22,22 +23,21 @@ public class EcPublicKeyAfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         TestResult reuse;
         try {
-            ExtractedValueContainer valueContainer =
+            ExtractedValueContainer<?> valueContainer =
                 report.getExtractedValueContainerMap().get(TrackableValueType.ECDHE_PUBKEY);
             if (valueContainer.getNumberOfExtractedValues() >= 2) {
                 if (!valueContainer.areAllValuesDifferent()) {
-                    reuse = TestResult.TRUE;
+                    reuse = TestResults.TRUE;
                 } else {
-                    reuse = TestResult.FALSE;
+                    reuse = TestResults.FALSE;
                 }
             } else {
-                reuse = TestResult.COULD_NOT_TEST;
+                reuse = TestResults.COULD_NOT_TEST;
             }
         } catch (Exception e) {
-            reuse = TestResult.ERROR_DURING_TEST;
+            reuse = TestResults.ERROR_DURING_TEST;
         }
 
         report.putResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);
     }
-
 }

@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -79,11 +79,11 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport, EsniR
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new EsniResult(TestResult.ERROR_DURING_TEST);
+            return new EsniResult(TestResults.ERROR_DURING_TEST);
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            return (new EsniResult(TestResult.TRUE));
+            return (new EsniResult(TestResults.TRUE));
         } else {
-            return (new EsniResult(TestResult.FALSE));
+            return (new EsniResult(TestResults.FALSE));
         }
     }
 
@@ -98,7 +98,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport, EsniR
 
     @Override
     public EsniResult getCouldNotExecuteResult() {
-        return new EsniResult(TestResult.COULD_NOT_TEST);
+        return new EsniResult(TestResults.COULD_NOT_TEST);
     }
 
     private List<CipherSuite> getClientSupportedCipherSuites() {
@@ -139,5 +139,4 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport, EsniR
         list.add(NamedGroup.SECT571R1);
         return list;
     }
-
 }

@@ -11,9 +11,11 @@ package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -22,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
+    @XmlElement(type = TestResults.class, name = "result")
     private TestResult result;
 
     private Integer influence;
@@ -31,6 +34,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
     @XmlAnyElement(lax = true)
     private AnalyzedProperty referencedProperty;
 
+    @XmlElement(type = TestResults.class, name = "referencedPropertyResult")
     private TestResult referencedPropertyResult;
 
     public PropertyResultRatingInfluencer() {

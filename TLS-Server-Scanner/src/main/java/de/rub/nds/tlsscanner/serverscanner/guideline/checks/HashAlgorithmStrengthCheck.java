@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -64,10 +64,10 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             HashAlgorithm hashAlgorithm = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                return new HashAlgorithmStrengthCheckResult(TestResult.FALSE, hashAlgorithm);
+                return new HashAlgorithmStrengthCheckResult(TestResults.FALSE, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(TestResult.TRUE, null);
+        return new HashAlgorithmStrengthCheckResult(TestResults.TRUE, null);
     }
 
     @Override

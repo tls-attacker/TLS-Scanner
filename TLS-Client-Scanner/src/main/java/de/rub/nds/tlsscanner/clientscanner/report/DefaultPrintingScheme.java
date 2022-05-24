@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.clientscanner.report;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -24,43 +25,43 @@ public class DefaultPrintingScheme {
 
     public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
-        textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
-        textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
-        textEncodingMap.put(TestResult.FALSE, "false");
-        textEncodingMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
-        textEncodingMap.put(TestResult.TIMEOUT, "timeout");
-        textEncodingMap.put(TestResult.TRUE, "true");
-        textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
-        textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test");
+        textEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
+        textEncodingMap.put(TestResults.FALSE, "false");
+        textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        textEncodingMap.put(TestResults.TIMEOUT, "timeout");
+        textEncodingMap.put(TestResults.TRUE, "true");
+        textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
+        textEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by tls-scanner");
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
-        ansiColorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.BLUE);
-        ansiColorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
-        ansiColorMap.put(TestResult.FALSE, AnsiColor.DEFAULT_COLOR);
-        ansiColorMap.put(TestResult.NOT_TESTED_YET, AnsiColor.WHITE);
-        ansiColorMap.put(TestResult.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
-        ansiColorMap.put(TestResult.TRUE, AnsiColor.DEFAULT_COLOR);
-        ansiColorMap.put(TestResult.UNCERTAIN, AnsiColor.YELLOW_BACKGROUND);
-        ansiColorMap.put(TestResult.UNSUPPORTED, AnsiColor.CYAN);
+        ansiColorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
+        ansiColorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        ansiColorMap.put(TestResults.FALSE, AnsiColor.DEFAULT_COLOR);
+        ansiColorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
+        ansiColorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
+        ansiColorMap.put(TestResults.TRUE, AnsiColor.DEFAULT_COLOR);
+        ansiColorMap.put(TestResults.UNCERTAIN, AnsiColor.YELLOW_BACKGROUND);
+        ansiColorMap.put(TestResults.UNSUPPORTED, AnsiColor.CYAN);
 
         HashMap<TestResult, String> attackEncodingMap = new HashMap<>();
-        attackEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test (not vulnerable)");
-        attackEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
-        attackEncodingMap.put(TestResult.FALSE, "not vulnerable");
-        attackEncodingMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
-        attackEncodingMap.put(TestResult.TIMEOUT, "timeout");
-        attackEncodingMap.put(TestResult.TRUE, "vulnerable");
-        attackEncodingMap.put(TestResult.UNCERTAIN, "uncertain - requires manual testing");
-        attackEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by TLS-Scanner");
+        attackEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test (not vulnerable)");
+        attackEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
+        attackEncodingMap.put(TestResults.FALSE, "not vulnerable");
+        attackEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        attackEncodingMap.put(TestResults.TIMEOUT, "timeout");
+        attackEncodingMap.put(TestResults.TRUE, "vulnerable");
+        attackEncodingMap.put(TestResults.UNCERTAIN, "uncertain - requires manual testing");
+        attackEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by TLS-Scanner");
 
         HashMap<TestResult, String> freshnessMap = new HashMap<>();
-        freshnessMap.put(TestResult.COULD_NOT_TEST, "could not test (no)");
-        freshnessMap.put(TestResult.ERROR_DURING_TEST, "error");
-        freshnessMap.put(TestResult.FALSE, "false");
-        freshnessMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
-        freshnessMap.put(TestResult.TIMEOUT, "timeout");
-        freshnessMap.put(TestResult.TRUE, "true");
-        freshnessMap.put(TestResult.UNCERTAIN, "uncertain - requires manual testing");
-        freshnessMap.put(TestResult.UNSUPPORTED, "unsupported by TLS-Scanner");
+        freshnessMap.put(TestResults.COULD_NOT_TEST, "could not test (no)");
+        freshnessMap.put(TestResults.ERROR_DURING_TEST, "error");
+        freshnessMap.put(TestResults.FALSE, "false");
+        freshnessMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        freshnessMap.put(TestResults.TIMEOUT, "timeout");
+        freshnessMap.put(TestResults.TRUE, "true");
+        freshnessMap.put(TestResults.UNCERTAIN, "uncertain - requires manual testing");
+        freshnessMap.put(TestResults.UNSUPPORTED, "unsupported by TLS-Scanner");
 
         ColorEncoding attacks = getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN);
 
@@ -308,29 +309,29 @@ public class DefaultPrintingScheme {
 
     private static TestResultTextEncoder getAlpacaTextEncoding() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
-        textEncodingMap.put(TestResult.CANNOT_BE_TESTED, "cannot be tested");
-        textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
-        textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
-        textEncodingMap.put(TestResult.FALSE, "not mitigated");
-        textEncodingMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
-        textEncodingMap.put(TestResult.TIMEOUT, "timeout");
-        textEncodingMap.put(TestResult.TRUE, "true");
-        textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
-        textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
-        textEncodingMap.put(TestResult.PARTIALLY, "partially");
+        textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
+        textEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test");
+        textEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
+        textEncodingMap.put(TestResults.FALSE, "not mitigated");
+        textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        textEncodingMap.put(TestResults.TIMEOUT, "timeout");
+        textEncodingMap.put(TestResults.TRUE, "true");
+        textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
+        textEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResults.PARTIALLY, "partially");
         return new TestResultTextEncoder(textEncodingMap);
     }
 
     private static ColorEncoding getDefaultColorEncoding(AnsiColor trueColor, AnsiColor falseColor) {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
-        colorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.BLUE);
-        colorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
-        colorMap.put(TestResult.FALSE, falseColor);
-        colorMap.put(TestResult.NOT_TESTED_YET, AnsiColor.WHITE);
-        colorMap.put(TestResult.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
-        colorMap.put(TestResult.TRUE, trueColor);
-        colorMap.put(TestResult.UNCERTAIN, AnsiColor.YELLOW_BACKGROUND);
-        colorMap.put(TestResult.UNSUPPORTED, AnsiColor.CYAN);
+        colorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
+        colorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        colorMap.put(TestResults.FALSE, falseColor);
+        colorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
+        colorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
+        colorMap.put(TestResults.TRUE, trueColor);
+        colorMap.put(TestResults.UNCERTAIN, AnsiColor.YELLOW_BACKGROUND);
+        colorMap.put(TestResults.UNSUPPORTED, AnsiColor.CYAN);
         return new ColorEncoding(colorMap);
     }
 }

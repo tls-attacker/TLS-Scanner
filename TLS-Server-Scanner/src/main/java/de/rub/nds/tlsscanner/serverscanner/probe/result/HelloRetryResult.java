@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -34,13 +35,13 @@ public class HelloRetryResult extends ProbeResult<ServerReport> {
         if (sentCookie != null) {
             report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, sentCookie);
         } else {
-            report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResult.ERROR_DURING_TEST);
+            report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
         }
 
         if (sentHelloRetryRequest != null) {
             report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sentHelloRetryRequest);
         } else {
-            report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResult.ERROR_DURING_TEST);
+            report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
         }
 
         report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);

@@ -9,15 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
-import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -73,7 +71,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
                 if (message instanceof HttpsResponseMessage) {
                     // if http response was received the server handled the
                     // false start
-                    return new HttpFalseStartResult(TestResult.TRUE);
+                    return new HttpFalseStartResult(TestResults.TRUE);
                 } else if (message instanceof FinishedMessage) {
                     receivedServerFinishedMessage = true;
                 }
@@ -82,11 +80,11 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
         if (!receivedServerFinishedMessage) {
             // server sent no finished message, false start messed up the
             // handshake
-            return new HttpFalseStartResult(TestResult.FALSE);
+            return new HttpFalseStartResult(TestResults.FALSE);
         }
         // received no http response -> maybe server did not understand
         // request
-        return new HttpFalseStartResult(TestResult.UNCERTAIN);
+        return new HttpFalseStartResult(TestResults.UNCERTAIN);
     }
 
     private Config getConfig() {
@@ -118,7 +116,7 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
     }
 
     @Override
@@ -127,6 +125,6 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
 
     @Override
     public HttpFalseStartResult getCouldNotExecuteResult() {
-        return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
+        return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
     }
 }

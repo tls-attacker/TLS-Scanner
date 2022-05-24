@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -66,7 +66,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         List<NamedGroup> supportedGroups =
             this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.UNCERTAIN);
+            return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
@@ -77,11 +77,11 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 }
             }
             if (!found) {
-                return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, requiredGroups);
+                return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, requiredGroups);
             }
         }
         if (supportedGroups.size() < minGroupCount) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, supportedGroups.size());
+            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, supportedGroups.size());
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
@@ -90,9 +90,9 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
             }
         }
         if (nonRecommended.isEmpty()) {
-            return new NamedGroupsGuidelineCheckResult(TestResult.TRUE);
+            return new NamedGroupsGuidelineCheckResult(TestResults.TRUE);
         } else {
-            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, nonRecommended);
+            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, nonRecommended);
         }
     }
 

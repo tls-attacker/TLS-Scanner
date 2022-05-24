@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -60,9 +61,9 @@ public class DtlsHelloVerifyRequestProbe
                 usesCompressionsInCookie());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsHelloVerifyRequestResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, -1,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+            return new DtlsHelloVerifyRequestResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, -1,
+                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
+                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST);
         }
     }
 
@@ -81,12 +82,12 @@ public class DtlsHelloVerifyRequestProbe
             state.getWorkflowTrace());
         if (message != null) {
             if (message.isRetransmission()) {
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             } else {
-                return TestResult.FALSE;
+                return TestResults.FALSE;
             }
         } else {
-            return TestResult.CANNOT_BE_TESTED;
+            return TestResults.CANNOT_BE_TESTED;
         }
     }
 
@@ -99,11 +100,11 @@ public class DtlsHelloVerifyRequestProbe
             if (state.getTlsContext().getDtlsCookie() != null) {
                 cookieLength = state.getTlsContext().getDtlsCookie().length;
                 if (cookieLength == 0) {
-                    return TestResult.CANNOT_BE_TESTED;
+                    return TestResults.CANNOT_BE_TESTED;
                 }
             }
         } else {
-            return TestResult.ERROR_DURING_TEST;
+            return TestResults.ERROR_DURING_TEST;
         }
         config = getConfig();
         WorkflowTrace trace =
@@ -197,12 +198,12 @@ public class DtlsHelloVerifyRequestProbe
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                return TestResult.FALSE;
+                return TestResults.FALSE;
             } else {
-                return TestResult.TRUE;
+                return TestResults.TRUE;
             }
         } else {
-            return TestResult.CANNOT_BE_TESTED;
+            return TestResults.CANNOT_BE_TESTED;
         }
     }
 
@@ -236,9 +237,9 @@ public class DtlsHelloVerifyRequestProbe
 
     @Override
     public DtlsHelloVerifyRequestResult getCouldNotExecuteResult() {
-        return new DtlsHelloVerifyRequestResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, -1,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST);
+        return new DtlsHelloVerifyRequestResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, -1,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

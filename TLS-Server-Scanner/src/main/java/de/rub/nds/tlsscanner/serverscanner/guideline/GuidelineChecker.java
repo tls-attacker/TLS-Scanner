@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
@@ -36,7 +36,7 @@ public class GuidelineChecker {
         for (GuidelineCheck check : this.guideline.getChecks()) {
             GuidelineCheckResult result;
             if (!check.passesCondition(report)) {
-                result = new GuidelineCheckResult(TestResult.COULD_NOT_TEST) {
+                result = new GuidelineCheckResult(TestResults.COULD_NOT_TEST) {
                     @Override
                     public String display() {
                         return "Condition was not met => Check is skipped.";
@@ -52,7 +52,7 @@ public class GuidelineChecker {
                 result = check.evaluate(report);
             } catch (Throwable throwable) {
                 LOGGER.debug("Failed evaluating check: ", throwable);
-                result = new GuidelineCheckResult(TestResult.ERROR_DURING_TEST) {
+                result = new GuidelineCheckResult(TestResults.ERROR_DURING_TEST) {
                     @Override
                     public String display() {
                         return throwable.getLocalizedMessage();
@@ -65,13 +65,13 @@ public class GuidelineChecker {
                 continue;
             }
             if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MAY)) {
-                result.setResult(TestResult.TRUE);
+                result.setResult(TestResults.TRUE);
             } else if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MUST_NOT)
                 || Objects.equals(check.getRequirementLevel(), RequirementLevel.SHOULD_NOT)) {
-                if (result.getResult().equals(TestResult.TRUE)) {
-                    result.setResult(TestResult.FALSE);
-                } else if (result.getResult().equals(TestResult.FALSE)) {
-                    result.setResult(TestResult.TRUE);
+                if (result.getResult().equals(TestResults.TRUE)) {
+                    result.setResult(TestResults.FALSE);
+                } else if (result.getResult().equals(TestResults.FALSE)) {
+                    result.setResult(TestResults.TRUE);
                 }
             }
             result.setName(check.getName());

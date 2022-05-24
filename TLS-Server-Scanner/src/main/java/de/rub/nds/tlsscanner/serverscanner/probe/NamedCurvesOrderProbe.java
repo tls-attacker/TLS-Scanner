@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -48,8 +48,8 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
 
         return new NamedGroupOrderResult(
-            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResult.TRUE
-                : TestResult.FALSE);
+            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResults.TRUE
+                : TestResults.FALSE);
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
@@ -81,7 +81,7 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
 
     @Override
     public NamedGroupOrderResult getCouldNotExecuteResult() {
-        return new NamedGroupOrderResult(TestResult.COULD_NOT_TEST);
+        return new NamedGroupOrderResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

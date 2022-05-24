@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -19,22 +20,22 @@ public class FreakAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        TestResult vulnerable = TestResult.NOT_TESTED_YET;
+        TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
                     if (suite.name().contains("RSA_EXPORT")) {
-                        vulnerable = TestResult.TRUE;
+                        vulnerable = TestResults.TRUE;
                     }
                 }
-                if (vulnerable != TestResult.TRUE) {
-                    vulnerable = TestResult.FALSE;
+                if (vulnerable != TestResults.TRUE) {
+                    vulnerable = TestResults.FALSE;
                 }
             } else {
-                vulnerable = TestResult.UNCERTAIN;
+                vulnerable = TestResults.UNCERTAIN;
             }
         } catch (Exception e) {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
     }

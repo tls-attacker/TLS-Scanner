@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -35,9 +35,9 @@ public class CcaSupportProbe extends TlsProbe<ServerScannerConfig, ServerReport,
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return new CcaSupportResult(TestResult.TRUE);
+            return new CcaSupportResult(TestResults.TRUE);
         } else {
-            return new CcaSupportResult(TestResult.FALSE);
+            return new CcaSupportResult(TestResults.FALSE);
         }
     }
 
@@ -52,7 +52,7 @@ public class CcaSupportProbe extends TlsProbe<ServerScannerConfig, ServerReport,
 
     @Override
     public CcaSupportResult getCouldNotExecuteResult() {
-        return new CcaSupportResult(TestResult.COULD_NOT_TEST);
+        return new CcaSupportResult(TestResults.COULD_NOT_TEST);
     }
 
     private Config generateConfig() {

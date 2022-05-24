@@ -34,7 +34,7 @@ public class ProbeResultTest {
     }
 
     /**
-     * Test of getFlawString method, of class TestResult.
+     * Test of getFlawString method, of class TestResults.
      */
     @Test
     public void testResultMerge() throws Exception {

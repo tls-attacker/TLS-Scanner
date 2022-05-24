@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -39,14 +40,14 @@ public class PaddingOracleResult extends ProbeResult<ServerReport> {
         super(TlsProbeType.PADDING_ORACLE);
         this.resultList = resultList;
         if (this.resultList != null) {
-            vulnerable = TestResult.FALSE;
+            vulnerable = TestResults.FALSE;
             for (InformationLeakTest informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResult.TRUE;
+                    vulnerable = TestResults.TRUE;
                 }
             }
         } else {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
     }
 

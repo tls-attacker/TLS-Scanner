@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -31,15 +31,15 @@ public class CompressionsResult extends ProbeResult<ServerReport> {
         if (compressions != null) {
             report.setSupportedCompressionMethods(compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
-                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
-                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.TRUE);
+                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
+                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
-                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
-                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE);
+                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
+                report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.COULD_NOT_TEST);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
+            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
     }
 

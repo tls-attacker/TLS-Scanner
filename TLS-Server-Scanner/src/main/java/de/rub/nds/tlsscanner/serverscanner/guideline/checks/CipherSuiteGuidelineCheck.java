@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
@@ -58,7 +58,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
-        return new CipherSuiteGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
+        return new CipherSuiteGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

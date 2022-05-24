@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -54,18 +54,19 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
         switch (keyAlgorithm) {
             case "EC":
                 return new CertificateSignatureCheckResult(
-                    TestResult.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)), keyAlgorithm,
+                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)), keyAlgorithm,
                     signatureAlgorithm);
             case "DH":
                 return new CertificateSignatureCheckResult(
-                    TestResult.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm, signatureAlgorithm);
+                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)), keyAlgorithm,
+                    signatureAlgorithm);
             case "RSA":
             case "DSA":
                 return new CertificateSignatureCheckResult(
-                    TestResult.of(signatureAlgorithm.equals(SignatureAlgorithm.valueOf(keyAlgorithm))), keyAlgorithm,
+                    TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.valueOf(keyAlgorithm))), keyAlgorithm,
                     signatureAlgorithm);
         }
-        return new CertificateSignatureCheckResult(TestResult.UNCERTAIN, keyAlgorithm, signatureAlgorithm);
+        return new CertificateSignatureCheckResult(TestResults.UNCERTAIN, keyAlgorithm, signatureAlgorithm);
     }
 
     @Override

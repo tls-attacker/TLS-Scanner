@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -54,7 +54,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends Guideli
                 nonRecommended.add(algorithm);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()),
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()),
             nonRecommended);
     }
 

@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,8 +21,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType;
-import static de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType.EVEN;
-import static de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType.MOD3;
 import de.rub.nds.tlsscanner.clientscanner.constants.SmallSubgroupType;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.DheParameterResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
@@ -121,9 +119,9 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
             State state = new State(config, trace);
             executeState(state);
             if (trace.executedAsPlanned()) {
-                compositeModulusResultList.add(new CompositeModulusResult(TestResult.TRUE, compositeType));
+                compositeModulusResultList.add(new CompositeModulusResult(TestResults.TRUE, compositeType));
             } else {
-                compositeModulusResultList.add(new CompositeModulusResult(TestResult.FALSE, compositeType));
+                compositeModulusResultList.add(new CompositeModulusResult(TestResults.FALSE, compositeType));
                 // TODO add different results based on partial failure
             }
         }
@@ -177,9 +175,9 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
             State state = new State(config, trace);
             executeState(state);
             if (trace.executedAsPlanned()) {
-                smallSubgroupResultList.add(new SmallSubgroupResult(TestResult.TRUE, smallSubgroupType));
+                smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.TRUE, smallSubgroupType));
             } else {
-                smallSubgroupResultList.add(new SmallSubgroupResult(TestResult.FALSE, smallSubgroupType));
+                smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.FALSE, smallSubgroupType));
                 // TODO add different results based on partial failure
             }
         }
@@ -188,18 +186,18 @@ public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientRepor
 
     @Override
     public boolean canBeExecuted(ClientReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE) == TestResult.TRUE;
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE) == TestResults.TRUE;
     }
 
     @Override
     public DheParameterResult getCouldNotExecuteResult() {
         List<SmallSubgroupResult> subgroupResultList = new LinkedList<>();
         for (SmallSubgroupType type : SmallSubgroupType.values()) {
-            subgroupResultList.add(new SmallSubgroupResult(TestResult.CANNOT_BE_TESTED, type));
+            subgroupResultList.add(new SmallSubgroupResult(TestResults.CANNOT_BE_TESTED, type));
         }
         List<CompositeModulusResult> compositeResultList = new LinkedList<>();
         for (CompositeModulusType type : CompositeModulusType.values()) {
-            compositeResultList.add(new CompositeModulusResult(TestResult.CANNOT_BE_TESTED, type));
+            compositeResultList.add(new CompositeModulusResult(TestResults.CANNOT_BE_TESTED, type));
         }
         return new DheParameterResult(null, subgroupResultList, compositeResultList);
     }

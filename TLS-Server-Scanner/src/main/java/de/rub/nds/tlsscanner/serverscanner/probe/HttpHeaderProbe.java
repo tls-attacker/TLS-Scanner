@@ -9,15 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
-import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -103,7 +101,7 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport,
         } else {
             headerList = new LinkedList<>();
         }
-        return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
+        return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override
@@ -117,6 +115,6 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport,
 
     @Override
     public HttpHeaderResult getCouldNotExecuteResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
+        return new HttpHeaderResult(TestResults.COULD_NOT_TEST, null);
     }
 }

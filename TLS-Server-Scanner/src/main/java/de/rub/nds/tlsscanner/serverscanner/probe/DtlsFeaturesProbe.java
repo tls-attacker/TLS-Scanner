@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -53,12 +54,12 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     private TestResult supportsFragmentation() {
-        if (supportsFragmentationDirectly() == TestResult.TRUE) {
-            return TestResult.TRUE;
-        } else if (supportsFragmentationWithExtension() == TestResult.TRUE) {
-            return TestResult.PARTIALLY;
+        if (supportsFragmentationDirectly() == TestResults.TRUE) {
+            return TestResults.TRUE;
+        } else if (supportsFragmentationWithExtension() == TestResults.TRUE) {
+            return TestResults.PARTIALLY;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -70,9 +71,9 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -91,9 +92,9 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -111,9 +112,9 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            return TestResults.TRUE;
         } else {
-            return TestResult.FALSE;
+            return TestResults.FALSE;
         }
     }
 
@@ -147,7 +148,7 @@ public class DtlsFeaturesProbe extends TlsProbe<ServerScannerConfig, ServerRepor
 
     @Override
     public DtlsFeaturesResult getCouldNotExecuteResult() {
-        return new DtlsFeaturesResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsFeaturesResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override

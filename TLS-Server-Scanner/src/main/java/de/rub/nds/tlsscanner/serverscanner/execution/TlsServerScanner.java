@@ -99,6 +99,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
@@ -134,10 +135,13 @@ public final class TlsServerScanner extends TlsScanner {
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor, List<ScannerProbe> probeList,
         List<AfterProbe> afterList) {
-        super(config.getProbes());
+        super(probeList.stream().map(ScannerProbe::getType).collect(Collectors.toList()));
+        this.probeList.addAll(probeList);
+        this.afterList.addAll(afterList);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         closeAfterFinishParallel = false;
+        setDefaultProbeWriter();
         setCallbacks();
     }
 
@@ -232,7 +236,10 @@ public final class TlsServerScanner extends TlsScanner {
             addProbeToProbeList(new DrownProbe(config, parallelExecutor));
             afterList.add(new PoodleAfterProbe());
         }
+        setDefaultProbeWriter();
+    }
 
+    private void setDefaultProbeWriter() {
         for (ScannerProbe probe : probeList) {
             StatsWriter statsWriter = new StatsWriter();
             statsWriter.addExtractor(new CookieExtractor());
@@ -245,7 +252,6 @@ public final class TlsServerScanner extends TlsScanner {
             statsWriter.addExtractor(new DestinationPortExtractor());
             probe.setWriter(statsWriter);
         }
-
     }
 
     public ServerReport scan() {
@@ -290,10 +296,7 @@ public final class TlsServerScanner extends TlsScanner {
                     long scanEndTime = System.currentTimeMillis();
                     serverReport.setScanStartTime(scanStartTime);
                     serverReport.setScanEndTime(scanEndTime);
-                    return serverReport;
                 }
-            } else {
-                isConnectable = false;
             }
             serverReport.setServerIsAlive(isConnectable);
             serverReport.setSpeaksProtocol(speaksProtocol);

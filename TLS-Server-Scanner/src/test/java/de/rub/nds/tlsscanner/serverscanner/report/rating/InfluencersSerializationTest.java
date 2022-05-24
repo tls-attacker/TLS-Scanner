@@ -9,7 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import static org.junit.Assert.assertEquals;
+
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
@@ -20,7 +22,6 @@ import java.util.LinkedList;
 import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,13 +40,13 @@ public class InfluencersSerializationTest {
         original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 500));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.FALSE, 50));
         influencers.add(i);
 
         i = new RatingInfluencer();
         i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, 100));
         influencers.add(i);
 
         original.setRatingInfluencers(influencers);

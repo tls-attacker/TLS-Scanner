@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -217,25 +217,25 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     @Override
     public void adjustConfig(ServerReport report) {
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS10);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.DTLS12);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.SSL3);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS10);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS11);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
         }
     }

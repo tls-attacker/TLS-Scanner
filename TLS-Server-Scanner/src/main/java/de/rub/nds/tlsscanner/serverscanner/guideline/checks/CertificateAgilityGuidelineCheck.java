@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
@@ -50,7 +50,7 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<CertificateChain> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
+            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
@@ -62,15 +62,15 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
             CertificateChain chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
+                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
             }
             if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
                 if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
+                    return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
                 }
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
+        return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
     }
 
     @Override

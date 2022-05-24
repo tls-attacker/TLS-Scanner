@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -19,19 +20,19 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        TestResult vulnerable = TestResult.FALSE;
+        TestResult vulnerable = TestResults.FALSE;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
                     if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
-                        vulnerable = TestResult.TRUE;
+                        vulnerable = TestResults.TRUE;
                     }
                 }
             } else {
-                vulnerable = TestResult.UNCERTAIN;
+                vulnerable = TestResults.UNCERTAIN;
             }
         } catch (Exception e) {
-            vulnerable = TestResult.ERROR_DURING_TEST;
+            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, vulnerable);
     }
