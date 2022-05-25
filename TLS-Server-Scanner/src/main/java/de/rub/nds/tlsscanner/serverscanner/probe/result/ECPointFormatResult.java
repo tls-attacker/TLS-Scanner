@@ -23,14 +23,17 @@ public class ECPointFormatResult extends ProbeResult<ServerReport> {
     private TestResult supportsUncompressedPoint = TestResults.FALSE;
     private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
     private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
+    private TestResult completesHandshakeWithUndefined = TestResults.FALSE;
 
     private final List<ECPointFormat> supportedFormats;
     private final TestResult tls13SecpCompression;
 
-    public ECPointFormatResult(List<ECPointFormat> formats, TestResult tls13SecpCompression) {
+    public ECPointFormatResult(List<ECPointFormat> formats, TestResult tls13SecpCompression,
+        TestResult completesHandshakeWithUndefined) {
         super(TlsProbeType.EC_POINT_FORMAT);
         this.supportedFormats = formats;
         this.tls13SecpCompression = tls13SecpCompression;
+        this.completesHandshakeWithUndefined = completesHandshakeWithUndefined;
     }
 
     @Override
@@ -59,6 +62,7 @@ public class ECPointFormatResult extends ProbeResult<ServerReport> {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
+        report.putResult(TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT, completesHandshakeWithUndefined);
         if (tls13SecpCompression != null) {
             report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         } else {

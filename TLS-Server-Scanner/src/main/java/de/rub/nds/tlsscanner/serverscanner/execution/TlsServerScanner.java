@@ -60,6 +60,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
@@ -122,7 +123,7 @@ public final class TlsServerScanner extends TlsScanner {
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
             new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         setCallbacks();
-        fillDefaultProbeLists();
+        fillProbeLists();
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -132,7 +133,7 @@ public final class TlsServerScanner extends TlsScanner {
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
-        fillDefaultProbeLists();
+        fillProbeLists();
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor, List<ScannerProbe> probeList,
@@ -171,7 +172,7 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     @Override
-    protected void fillDefaultProbeLists() {
+    protected void fillProbeLists() {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(configSelector, parallelExecutor));
         }
@@ -203,7 +204,6 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(configSelector, parallelExecutor));
-        // Init StatsWriter
 
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -236,8 +236,10 @@ public final class TlsServerScanner extends TlsScanner {
                 addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
             }
             addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
             afterList.add(new PoodleAfterProbe());
         }
+        // Init StatsWriter
         setDefaultProbeWriter();
     }
 
