@@ -52,7 +52,7 @@ public enum TlsProbeType implements ProbeType {
     DIRECT_RACCOON("Direct RACCOON"),
     EC_POINT_FORMAT("EC point formats"),
     RACCOON_ATTACK("RACCOON attack"),
-    DTLS_IP_ADDRESS_IN_COOKIE("DTLS uses ip address in cookie"),
+    DTLS_IP_ADDRESS_IN_COOKIE("DTLS ip address in cookie"),
     DTLS_HELLO_VERIFY_REQUEST("DTLS hello verify request"),
     DTLS_COMMON_BUGS("DTLS common bugs"),
     DTLS_REORDERING("DTLS reordering"),
