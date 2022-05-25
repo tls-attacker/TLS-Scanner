@@ -204,8 +204,6 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
-        // Init StatsWriter
 
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -238,8 +236,10 @@ public final class TlsServerScanner extends TlsScanner {
                 addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
             }
             addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
             afterList.add(new PoodleAfterProbe());
         }
+        // Init StatsWriter
         setDefaultProbeWriter();
     }
 
