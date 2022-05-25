@@ -599,6 +599,9 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
             new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
             new PropertyResultRatingInfluencer(TestResults.FALSE, -100)));
+        influencers.add(new RatingInfluencer(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+            new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResults.FALSE, -100)));
         influencers.add(new RatingInfluencer(TlsAnalyzedProperty.SUPPORTS_REORDERING,
             new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
             new PropertyResultRatingInfluencer(TestResults.FALSE, -100)));

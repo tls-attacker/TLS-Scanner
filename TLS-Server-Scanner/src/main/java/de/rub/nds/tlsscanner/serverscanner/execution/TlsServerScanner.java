@@ -63,10 +63,13 @@ import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFeaturesProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsIpAddressInCookieProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
@@ -215,11 +218,14 @@ public final class TlsServerScanner extends TlsScanner {
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
-            addProbeToProbeList(new DtlsFeaturesProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new DtlsReorderingProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new DtlsFragmentationProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsHelloVerifyRequestProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsBugsProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsMessageSequenceProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsRetransmissionsProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {

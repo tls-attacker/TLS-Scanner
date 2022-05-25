@@ -36,6 +36,9 @@ public class ProtocolVersionResult extends ProbeResult<ServerReport> {
             report.setVersions(supportedProtocolVersions);
 
             for (ProtocolVersion version : supportedProtocolVersions) {
+                if (version == ProtocolVersion.DTLS10_DRAFT) {
+                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.TRUE);
+                }
                 if (version == ProtocolVersion.DTLS10) {
                     report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 }
@@ -63,6 +66,9 @@ public class ProtocolVersionResult extends ProbeResult<ServerReport> {
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
+                if (version == ProtocolVersion.DTLS10_DRAFT) {
+                    report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.FALSE);
+                }
                 if (version == ProtocolVersion.DTLS10) {
                     report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 }
@@ -89,6 +95,7 @@ public class ProtocolVersionResult extends ProbeResult<ServerReport> {
                 }
             }
         } else {
+            report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
             report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
             report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
             report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);

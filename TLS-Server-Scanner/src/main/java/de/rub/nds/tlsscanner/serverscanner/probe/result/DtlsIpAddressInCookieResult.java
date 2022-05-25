@@ -15,21 +15,18 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class DtlsBugsResult extends ProbeResult<ServerReport> {
+public class DtlsIpAddressInCookieResult extends ProbeResult<ServerReport> {
 
-    private TestResult isEarlyFinished;
-    private TestResult isAcceptingUnencryptedFinished;
+    private TestResult usesIpAdressInCookie;
 
-    public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isEarlyFinished) {
-        super(TlsProbeType.DTLS_COMMON_BUGS);
-        this.isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished;
-        this.isEarlyFinished = isEarlyFinished;
+    public DtlsIpAddressInCookieResult(TestResult usesIpAdressInCookie) {
+        super(TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE);
+        this.usesIpAdressInCookie = usesIpAdressInCookie;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.putResult(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
-        report.putResult(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+        report.putResult(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
     }
 
 }
