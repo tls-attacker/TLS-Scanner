@@ -30,6 +30,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -137,8 +138,12 @@ public class ConfigSelector {
             List<NamedGroup> tls13groups =
                 config.getDefaultClientNamedGroups().stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
             config.setDefaultClientNamedGroups(tls13groups);
-            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
-                .filter(tls13groups::contains).collect(Collectors.toList()));
+            if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
+                config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(tls13groups));
+            } else {
+                config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
+                    .filter(tls13groups::contains).collect(Collectors.toList()));
+            }
         } else {
             boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
                 .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
