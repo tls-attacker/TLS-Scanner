@@ -33,12 +33,11 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.ConnectionClosingResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Determines when the server closes the connection. It's meant for tests in the lab so we limit the probe.
+ * Determines when the server closes the connection. It's meant for tests in the lab so we limit the probe. Note that
+ * NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server didn't close the connection within
+ * our limit or the probe could not be executed.
  */
 public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport, ConnectionClosingResult> {
 
