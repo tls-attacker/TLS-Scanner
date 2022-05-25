@@ -67,6 +67,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsIpAddressInCookieProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
@@ -224,6 +225,7 @@ public final class TlsServerScanner extends TlsScanner {
             addProbeToProbeList(new DtlsMessageSequenceProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsRetransmissionsProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {
