@@ -31,6 +31,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsIpAddressInCookieRes
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
+/**
+ * Determines whether the server uses the client IP address for the DTLS cookie generation. It requires a proxy so we
+ * limit the probe.
+ */
 public class DtlsIpAddressInCookieProbe
     extends TlsServerProbe<ConfigSelector, ServerReport, DtlsIpAddressInCookieResult> {
 
