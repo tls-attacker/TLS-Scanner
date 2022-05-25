@@ -232,9 +232,9 @@ public class InvalidCurveAttacker {
                     && WorkflowTraceUtil.getLastReceivedMessage(trace) instanceof HandshakeMessage
                     && ((HandshakeMessage) WorkflowTraceUtil.getLastReceivedMessage(trace)).getHandshakeMessageType()
                         == HandshakeMessageType.FINISHED)) {
-                    LOGGER.info("Received no finished Message using secret" + task.getAppliedSecret());
+                    LOGGER.debug("Received no finished Message using secret" + task.getAppliedSecret());
                 } else {
-                    LOGGER.info("Received a finished Message using secret: " + task.getAppliedSecret()
+                    LOGGER.debug("Received a finished Message using secret: " + task.getAppliedSecret()
                         + "! Server is vulnerable!");
                     finishedKeys.add(task.getReceivedEcKey());
                     foundServerFinished = true;
