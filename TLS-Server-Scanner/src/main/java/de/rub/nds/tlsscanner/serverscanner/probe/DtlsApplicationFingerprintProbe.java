@@ -34,6 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsApplicationFingerpri
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DtlsApplicationFingerprintProbe
@@ -62,7 +63,7 @@ public class DtlsApplicationFingerprintProbe
     private boolean isEchoServer() {
         byte[] appData = ArrayConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
         byte[] data = isProtocolSupported(appData);
-        if (Bytes.indexOf(data, appData) != -1) {
+        if (Arrays.equals(data, appData)) {
             supportedApplications.add(ApplicationProtocol.ECHO);
             return true;
         }
