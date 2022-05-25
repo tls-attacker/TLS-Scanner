@@ -77,6 +77,7 @@ public class ConfigFilter {
             case NAMEDGROUP_DEPRECATED:
                 reducedNamedGroups =
                     reducedNamedGroups.stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
+                break;
             default:
                 throw new IllegalArgumentException("No behavior defined for filter " + filterType);
         }

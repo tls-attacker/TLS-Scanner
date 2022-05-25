@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.ConfigIO;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -29,7 +30,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -40,7 +40,7 @@ import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
 
-    private ServerScannerConfig scannerConfig;
+    private final ServerScannerConfig scannerConfig;
     private Config workingConfig;
     private Config workingTl13Config;
 
@@ -159,14 +159,11 @@ public class ConfigSelector {
         if (config.getHighestProtocolVersion().isTLS13()) {
             config.setAddEllipticCurveExtension(true);
             config.setAddECPointFormatExtension(false);
-            List<NamedGroup> tls13groups =
-                config.getDefaultClientNamedGroups().stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
-            config.setDefaultClientNamedGroups(tls13groups);
             if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
-                config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(tls13groups));
+                config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(config.getDefaultClientNamedGroups()));
             } else {
                 config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
-                    .filter(tls13groups::contains).collect(Collectors.toList()));
+                    .filter(config.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
             }
         } else {
             boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
@@ -192,9 +189,7 @@ public class ConfigSelector {
     }
 
     public Config getTls13BaseConfig() {
-        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
-        prepareBaseConfig(config);
-        return config;
+        return workingTl13Config.createCopy();
     }
 
     public boolean isIsHandshaking() {
