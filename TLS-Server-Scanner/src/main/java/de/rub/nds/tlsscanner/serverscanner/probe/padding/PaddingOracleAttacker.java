@@ -70,6 +70,8 @@ public class PaddingOracleAttacker {
         this.recordGeneratorType = recordGeneratorType;
         this.vectorGeneratorType = vectorGeneratorType;
         this.numberOfIterations = numberOfIterations;
+        this.testedVersion = testedVersion;
+        this.testedSuite = testedSuite;
     }
 
     public Boolean isVulnerable() {
