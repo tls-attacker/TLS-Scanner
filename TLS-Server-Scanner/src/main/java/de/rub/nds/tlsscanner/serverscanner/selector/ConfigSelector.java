@@ -42,11 +42,12 @@ public class ConfigSelector {
 
     private ServerScannerConfig scannerConfig;
     private Config workingConfig;
+    private Config workingTl13Config;
 
     public static final String PATH = "/configs/";
     public static final String SSL2_CONFIG = "ssl2Only.config";
-    public static final String TLS13_CONFIG = "tls13Only.config";
-    public static final List<String> CONFIGS = Arrays.asList("default.config", "nice.config");
+    public static final String TLS13_CONFIG = "tls13rich.config";
+    public static final String DEFAULT_CONFIG = "default.config";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -58,20 +59,43 @@ public class ConfigSelector {
     }
 
     public boolean findWorkingConfig() {
-        for (String resource : CONFIGS) {
-            Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
-            applyDelegates(config);
-            applyPerformanceParamters(config);
-            applyScannerConfigParameters(config);
-            repairSni(config);
-            repairConfig(config);
-            if (configWorks(config)) {
-                workingConfig = config.createCopy();
+        for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls12ConfigProfiles()) {
+            Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + DEFAULT_CONFIG));
+            ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
+            prepareBaseConfig(baseConfig);
+            if (configWorks(baseConfig)) {
+                LOGGER.info("Using config " + configProfile.getIdentifier() + " for scan.");
+                workingConfig = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean findWorkingTls13Config() {
+        for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
+            Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
+            ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
+            prepareBaseConfig(baseConfig);
+            if (configWorks(baseConfig)) {
+                LOGGER.info("Using config " + configProfile.getIdentifier() + " for TLS 1.3 scans.");
+                workingTl13Config = baseConfig.createCopy();
+                isHandshaking = true;
+                return true;
+            }
+        }
+        LOGGER.info("Found no suitable Config for TLS 1.3 - will use default config");
+        workingTl13Config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
+        return false;
+    }
+
+    public void prepareBaseConfig(Config baseConfig) throws ConfigurationException {
+        applyDelegates(baseConfig);
+        applyPerformanceParamters(baseConfig);
+        applyScannerConfigParameters(baseConfig);
+        repairSni(baseConfig);
+        repairConfig(baseConfig);
     }
 
     private boolean configWorks(Config config) {
@@ -163,21 +187,13 @@ public class ConfigSelector {
 
     public Config getSSL2BaseConfig() {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + SSL2_CONFIG));
-        applyDelegates(config);
-        applyPerformanceParamters(config);
-        applyScannerConfigParameters(config);
-        repairSni(config);
-        repairConfig(config);
+        prepareBaseConfig(config);
         return config;
     }
 
     public Config getTls13BaseConfig() {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
-        applyDelegates(config);
-        applyPerformanceParamters(config);
-        applyScannerConfigParameters(config);
-        repairSni(config);
-        repairConfig(config);
+        prepareBaseConfig(config);
         return config;
     }
 
