@@ -33,6 +33,8 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsApplicationFingerprintResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,8 +143,15 @@ public class DtlsApplicationFingerprintProbe
         State state = new State(config, trace);
         executeState(state);
         if (receiveAction.getReceivedRecords() != null && !receiveAction.getReceivedRecords().isEmpty()) {
-            AbstractRecord record = receiveAction.getReceivedRecords().get(0);
-            return record.getCleanProtocolMessageBytes().getValue();
+            ByteArrayOutputStream receivedAppData = new ByteArrayOutputStream();
+            try {
+                for (AbstractRecord record : receiveAction.getReceivedRecords()) {
+                    receivedAppData.write(record.getCleanProtocolMessageBytes().getValue());
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Could not write cleanProtocolMessageBytes to receivedAppData");
+            }
+            return receivedAppData.toByteArray();
         } else {
             return new byte[0];
         }
