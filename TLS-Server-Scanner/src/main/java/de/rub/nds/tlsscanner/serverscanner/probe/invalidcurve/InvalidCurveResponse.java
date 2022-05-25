@@ -11,8 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.vector.VectorResponse;
-import de.rub.nds.scanner.core.vector.response.FingerprintSecretPair;
+import de.rub.nds.tlsscanner.core.vector.VectorResponse;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;

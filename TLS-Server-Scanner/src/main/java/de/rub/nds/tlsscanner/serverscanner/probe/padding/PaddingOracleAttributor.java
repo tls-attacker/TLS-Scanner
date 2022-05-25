@@ -9,11 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
-import de.rub.nds.scanner.core.vector.response.EqualityError;
-import de.rub.nds.scanner.core.vector.response.FingerprintChecker;
-import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.scanner.core.vector.statistics.InformationLeakTest;
-import de.rub.nds.scanner.core.vector.statistics.VectorContainer;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;

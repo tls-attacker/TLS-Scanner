@@ -1,5 +1,5 @@
 /**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+ * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.scanner.core.vector.statistics;
+package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.scanner.core.constants.RandomnessConstants;
 import static java.lang.Math.*;

@@ -10,8 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.vector.VectorResponse;
-import de.rub.nds.scanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.vector.VectorResponse;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;

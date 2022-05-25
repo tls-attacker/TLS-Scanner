@@ -1,5 +1,5 @@
 /**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+ * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,9 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.scanner.core.vector;
+package de.rub.nds.tlsscanner.core.vector;
 
-import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 
 public class VectorResponse {
 

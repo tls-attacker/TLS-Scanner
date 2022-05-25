@@ -9,8 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.task;
 
-import de.rub.nds.scanner.core.vector.response.ResponseExtractor;
-import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
