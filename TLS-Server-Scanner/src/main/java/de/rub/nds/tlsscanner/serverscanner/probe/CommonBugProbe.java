@@ -270,7 +270,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport,
         extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
         message.addExtension(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
-        return getResult(config, trace, false);
+        return getResult(config, trace, true);
     }
 
     private TestResult hasNamedGroupIntolerance() {
@@ -289,7 +289,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport,
         extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
         message.addExtension(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
-        return getResult(config, trace, false);
+        return getResult(config, trace, true);
     }
 
     private TestResult hasOnlySecondCipherSuiteByteEvaluatedBug() {
