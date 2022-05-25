@@ -65,6 +65,7 @@ public enum TlsProbeType implements ProbeType {
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),
     RANDOMNESS("Randomness"),
     TLS_FALLBACK_SCSV("TLS Fallback SCSV"),
+    CONNECTION_CLOSING_DELTA("Connection Closing Delta"),
     // CLIENT SPECIFIC PROBES
     FORCED_COMPRESSION("Forced Compression"),
     FREAK("Freak"),

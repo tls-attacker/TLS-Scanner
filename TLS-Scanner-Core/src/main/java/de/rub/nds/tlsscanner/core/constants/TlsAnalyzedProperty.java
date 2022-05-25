@@ -130,6 +130,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_UNCOMPRESSED_POINT(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_PRIME(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_CHAR2(TlsAnalyzedPropertyCategory.EC),
+    HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_TLS13_SECP_COMPRESSION(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_PRIME_CURVE(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_CHAR2_CURVE(TlsAnalyzedPropertyCategory.EC),
