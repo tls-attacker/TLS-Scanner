@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
@@ -24,13 +24,15 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.IPAddress;
@@ -80,7 +82,9 @@ public class ConfigSelector {
         executor.executeWorkflow();
 
         List<AbstractRecord> reveicedRecords = state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
-        if (reveicedRecords != null && reveicedRecords.size() > 0 && reveicedRecords.get(0) instanceof Record) {
+        if ((reveicedRecords != null && !reveicedRecords.isEmpty() && reveicedRecords.get(0) instanceof Record)
+            || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
+            || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
             speaksProtocol = true;
         }
         return trace.executedAsPlanned();
@@ -129,28 +133,21 @@ public class ConfigSelector {
         if (config.getHighestProtocolVersion().isTLS13()) {
             config.setAddEllipticCurveExtension(true);
             config.setAddECPointFormatExtension(false);
-            Iterator iterator = config.getDefaultClientNamedGroups().iterator();
-            while (iterator.hasNext()) {
-                NamedGroup group = (NamedGroup) iterator.next();
-                if (!group.isTls13()) {
-                    iterator.remove();
-                }
-            }
+            List<NamedGroup> tls13groups =
+                config.getDefaultClientNamedGroups().stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
+            config.setDefaultClientNamedGroups(tls13groups);
+            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
+                .filter(tls13groups::contains).collect(Collectors.toList()));
         } else {
-            boolean containsEc = false;
-            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
-                try {
-                    KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-                    if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.isEC()) {
-                        containsEc = true;
-                        break;
-                    }
-                } catch (UnsupportedOperationException ex) {
-                }
-            }
+            boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
+                .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
+                .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
             config.setAddEllipticCurveExtension(containsEc);
             config.setAddECPointFormatExtension(containsEc);
         }
+        CipherSuite defaultSelectedCipherSuite = config.getDefaultClientSupportedCipherSuites().stream()
+            .filter(CipherSuite::isRealCipherSuite).findFirst().orElse(config.getDefaultSelectedCipherSuite());
+        config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
         return config;
     }
 
