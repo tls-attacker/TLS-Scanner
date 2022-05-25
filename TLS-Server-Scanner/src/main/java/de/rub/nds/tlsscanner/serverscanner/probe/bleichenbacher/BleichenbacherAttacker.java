@@ -70,6 +70,8 @@ public class BleichenbacherAttacker {
         this.scanType = scanType;
         this.workflowType = workflowType;
         this.numberOfIterations = numberOfIterations;
+        this.testedVersion = testedVersion;
+        this.testedSuite = testedSuite;
     }
 
     public Boolean isVulnerable() {
