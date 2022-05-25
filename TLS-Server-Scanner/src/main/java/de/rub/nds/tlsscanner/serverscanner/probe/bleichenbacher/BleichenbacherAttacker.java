@@ -9,11 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
-import de.rub.nds.scanner.core.vector.VectorResponse;
-import de.rub.nds.scanner.core.vector.response.EqualityError;
-import de.rub.nds.scanner.core.vector.response.EqualityErrorTranslator;
-import de.rub.nds.scanner.core.vector.response.FingerprintChecker;
-import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.VectorResponse;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityErrorTranslator;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;

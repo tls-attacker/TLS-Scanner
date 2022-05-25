@@ -7,9 +7,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.scanner.core.vector.statistics;
+package de.rub.nds.tlsscanner.core.vector.statistics;
 
-import de.rub.nds.scanner.core.vector.VectorResponse;
+import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;

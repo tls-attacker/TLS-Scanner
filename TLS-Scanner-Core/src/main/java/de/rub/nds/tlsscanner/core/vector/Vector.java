@@ -7,10 +7,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.scanner.core.vector.statistics;
+package de.rub.nds.tlsscanner.core.vector;
 
-public enum NondeterminismType {
-    CONNECTION,
-    HETEROGENEOUS,
-    MIXED
+public interface Vector {
+
+    @Override
+    public boolean equals(Object vector);
+
+    public String getName();
 }

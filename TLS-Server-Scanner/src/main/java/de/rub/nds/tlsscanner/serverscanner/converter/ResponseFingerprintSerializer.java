@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.converter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.rub.nds.scanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import java.io.IOException;
 
