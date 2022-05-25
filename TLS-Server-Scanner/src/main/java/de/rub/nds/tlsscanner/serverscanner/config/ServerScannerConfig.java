@@ -13,20 +13,13 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-
-import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import org.bouncycastle.util.IPAddress;
-
-import java.util.Arrays;
 import java.util.List;
 
 public class ServerScannerConfig extends ScannerConfig {
@@ -71,8 +64,6 @@ public class ServerScannerConfig extends ScannerConfig {
     private CallbackDelegate callbackDelegate;
 
     private List<ProbeType> probes = null;
-
-    private Config baseConfig = null;
 
     public ServerScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -156,31 +147,6 @@ public class ServerScannerConfig extends ScannerConfig {
         this.additionalRandomnessHandshakes = additionalRandomnessHandshakes;
     }
 
-    @Override
-    public Config createConfig() {
-        if (baseConfig != null) {
-            return baseConfig.createCopy();
-        }
-
-        Config config = super.createConfig(Config.createConfig());
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-            || clientDelegate.getSniHostname() != null) {
-            config.setAddServerNameIndicationExtension(true);
-        } else {
-            config.setAddServerNameIndicationExtension(false);
-        }
-
-        if (this.customCAPathList != null) {
-            TrustAnchorManager.getInstance().addCustomCA(this.customCAPathList);
-        }
-
-        config.getDefaultClientConnection().setTimeout(timeout);
-        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
-            config.getDefaultClientConnection().setFirstTimeout(timeout);
-        }
-        return config;
-    }
-
     public int getTimeout() {
         return timeout;
     }
@@ -189,24 +155,12 @@ public class ServerScannerConfig extends ScannerConfig {
         this.timeout = timeout;
     }
 
-    public Config getBaseConfig() {
-        return baseConfig;
+    public List<String> getCustomCAPathList() {
+        return customCAPathList;
     }
 
-    public void setBaseConfig(Config baseConfig) {
-        this.baseConfig = baseConfig;
-    }
-
-    public List<ProbeType> getProbes() {
-        return probes;
-    }
-
-    public void setProbes(List<ProbeType> probes) {
-        this.probes = probes;
-    }
-
-    public void setProbes(ProbeType... probes) {
-        this.probes = Arrays.asList(probes);
+    public void setCustomCAPathList(List<String> customCAPathList) {
+        this.customCAPathList = customCAPathList;
     }
 
 }

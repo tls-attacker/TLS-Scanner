@@ -29,12 +29,11 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.BasicProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport, BasicProbeResult> {
+public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, BasicProbeResult> {
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);

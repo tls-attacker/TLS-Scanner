@@ -39,6 +39,12 @@ public class SimulationRequest {
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopTraceAfterUnexpected(true);
+        config.setStopReceivingAfterWarning(false);
+        config.setStopActionsAfterWarning(false);
+        config.setEnforceSettings(false);
+
         WorkflowTrace trace = new WorkflowTrace();
 
         if (tlsClientConfig.getIsSSL2CompatibleClientHello()) {

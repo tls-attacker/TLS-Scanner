@@ -16,7 +16,6 @@ import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
@@ -24,7 +23,6 @@ import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -34,23 +32,19 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport, CertificateTransparencyResult> {
+    extends TlsServerProbe<ConfigSelector, ServerReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
-    private OCSPResponse stapledOcspResponse;
 
     private boolean supportsPrecertificateSCTs;
     private boolean supportsHandshakeSCTs;
@@ -60,21 +54,14 @@ public class CertificateTransparencyProbe
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
+    public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
     }
 
     @Override
     public CertificateTransparencyResult executeTest() {
-        Config tlsConfig = initTlsConfig();
-
-        if (serverCertChain == null) {
-            LOGGER.warn("Couldn't fetch certificate chain from server!");
-            return getCouldNotExecuteResult();
-        }
-
         getPrecertificateSCTs();
-        getTlsHandshakeSCTs(tlsConfig);
+        getTlsHandshakeSCTs();
         evaluateChromeCtPolicy();
 
         TestResult supportsPrecertificateSCTsResult =
@@ -84,26 +71,6 @@ public class CertificateTransparencyProbe
         TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
         return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
             supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
-    }
-
-    private Config initTlsConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-
-        tlsConfig.setAddSignedCertificateTimestampExtension(true);
-
-        return tlsConfig;
     }
 
     private void getPrecertificateSCTs() {
@@ -138,13 +105,16 @@ public class CertificateTransparencyProbe
         }
     }
 
-    private void getTlsHandshakeSCTs(Config tlsConfig) {
+    private void getTlsHandshakeSCTs() {
         supportsHandshakeSCTs = false;
 
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        tlsConfig.setAddSignedCertificateTimestampExtension(true);
         State state = new State(tlsConfig);
         executeState(state);
-        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
+        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
         if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
@@ -171,7 +141,6 @@ public class CertificateTransparencyProbe
      * detailed information about Chrome's CT Policy.
      */
     private void evaluateChromeCtPolicy() {
-
         if (!supportsPrecertificateSCTs) {
             List<SignedCertificateTimestamp> combinedSctList = new ArrayList<>();
             if (supportsHandshakeSCTs) {
@@ -180,7 +149,6 @@ public class CertificateTransparencyProbe
             if (supportsOcspSCTs) {
                 combinedSctList.addAll(ocspSctList.getCertificateTimestampList());
             }
-
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);
         } else if (precertificateSctList != null) {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
@@ -229,9 +197,9 @@ public class CertificateTransparencyProbe
         return hasGoogleSct && hasNonGoogleSct;
     }
 
-    @Override
     public boolean canBeExecuted(ServerReport report) {
-        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
+        return report.isProbeAlreadyExecuted(TlsProbeType.CERTIFICATE) && report.getCertificateChainList() != null
+            && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
     }
 
     @Override

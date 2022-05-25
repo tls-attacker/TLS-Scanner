@@ -23,12 +23,11 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.Version13RandomResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientReport, Version13RandomResult> {
+public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, Version13RandomResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -54,7 +53,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setHighestProtocolVersion(version);
         config.setDefaultSelectedProtocolVersion(version);
 

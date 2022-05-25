@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

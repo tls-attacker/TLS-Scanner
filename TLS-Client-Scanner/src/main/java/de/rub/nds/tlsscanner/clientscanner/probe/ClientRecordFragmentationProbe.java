@@ -24,10 +24,9 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ClientRecordFragmentationResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
 public class ClientRecordFragmentationProbe
-    extends TlsProbe<ClientScannerConfig, ClientReport, ClientRecordFragmentationResult> {
+    extends TlsClientProbe<ClientScannerConfig, ClientReport, ClientRecordFragmentationResult> {
 
     public ClientRecordFragmentationProbe(ClientScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
@@ -35,7 +34,7 @@ public class ClientRecordFragmentationProbe
 
     @Override
     public ClientRecordFragmentationResult executeTest() {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setDefaultMaxRecordData(50);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);

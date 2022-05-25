@@ -28,7 +28,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientReport, DheParameterResult> {
+public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, DheParameterResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
