@@ -22,7 +22,6 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -34,7 +33,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsHelloVerifyRequestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -54,14 +52,13 @@ public class DtlsHelloVerifyRequestProbe
     public DtlsHelloVerifyRequestResult executeTest() {
         try {
             return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
-                usesIpAdressInCookie(), usesPortInCookie(), usesVersionInCookie(), usesRandomInCookie(),
-                usesSessionIdInCookie(), usesCiphersuitesInCookie(), usesCompressionsInCookie());
+                usesPortInCookie(), usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(),
+                usesCiphersuitesInCookie(), usesCompressionsInCookie());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsHelloVerifyRequestResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, null,
                 TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST);
+                TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST);
         }
     }
 
@@ -117,41 +114,6 @@ public class DtlsHelloVerifyRequestProbe
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         state = new State(config, trace);
         return getResult(state);
-    }
-
-    private TestResult usesIpAdressInCookie() {
-        Config config = configSelector.getBaseConfig();
-        config.getDefaultClientConnection().setTransportHandlerType(TransportHandlerType.UDP_PROXY);
-        config.getDefaultClientConnection().setProxyControlHostname("195.37.190.89");
-        config.getDefaultClientConnection().setProxyControlPort(5555);
-        config.getDefaultClientConnection().setProxyDataHostname("195.37.190.89");
-        config.getDefaultClientConnection().setProxyDataPort(4444);
-        WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        State state = new State(config, trace);
-        TlsContext oldContext = state.getTlsContext();
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
-            config = configSelector.getBaseConfig();
-            config.getDefaultClientConnection().setSourcePort(3333);
-            trace = new WorkflowConfigurationFactory(config)
-                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-            state = new State(config, trace);
-            state.getTlsContext().setClientRandom(oldContext.getClientRandom());
-            state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
-            executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                return TestResults.FALSE;
-            } else {
-                return TestResults.TRUE;
-            }
-        } else {
-            return TestResults.CANNOT_BE_TESTED;
-        }
     }
 
     private TestResult usesPortInCookie() {
@@ -262,8 +224,7 @@ public class DtlsHelloVerifyRequestProbe
     public DtlsHelloVerifyRequestResult getCouldNotExecuteResult() {
         return new DtlsHelloVerifyRequestResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, null,
             TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST);
+            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
