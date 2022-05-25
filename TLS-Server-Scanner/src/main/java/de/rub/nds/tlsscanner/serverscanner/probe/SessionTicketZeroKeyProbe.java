@@ -13,9 +13,7 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -33,19 +31,15 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketZeroKeyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -68,7 +62,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, ServerReport, SessionTicketZeroKeyResult> {
+public class SessionTicketZeroKeyProbe
+    extends TlsServerProbe<ConfigSelector, ServerReport, SessionTicketZeroKeyResult> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -100,30 +95,15 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
      */
     public static final int SESSION_STATE_OFFSET = 34;
 
-    private List<CipherSuite> supportedSuites;
-
-    public SessionTicketZeroKeyProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
+    public SessionTicketZeroKeyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
     }
 
     @Override
     public SessionTicketZeroKeyResult executeTest() {
         State state;
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(supportedSuites);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
-        tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAddSessionTicketTLSExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(false);
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -188,8 +168,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty())
-            && Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResults.TRUE);
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS) == TestResults.TRUE;
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -217,7 +197,5 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<ServerScannerConfig, Ser
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = new ArrayList<>(report.getCipherSuites());
     }
-
 }

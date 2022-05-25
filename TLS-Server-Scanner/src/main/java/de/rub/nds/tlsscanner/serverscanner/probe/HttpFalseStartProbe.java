@@ -11,9 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -30,26 +27,22 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerReport, HttpFalseStartResult> {
+public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
 
-    public HttpFalseStartProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
+    public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
     }
 
     @Override
     public HttpFalseStartResult executeTest() {
-        Config tlsConfig = getConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setHttpsParsingEnabled(true);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
@@ -85,33 +78,6 @@ public class HttpFalseStartProbe extends TlsProbe<ServerScannerConfig, ServerRep
         // received no http response -> maybe server did not understand
         // request
         return new HttpFalseStartResult(TestResults.UNCERTAIN);
-    }
-
-    private Config getConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(this.getCipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setHttpsParsingEnabled(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        return tlsConfig;
-    }
-
-    private List<CipherSuite> getCipherSuites() {
-        List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        return cipherSuites;
     }
 
     @Override

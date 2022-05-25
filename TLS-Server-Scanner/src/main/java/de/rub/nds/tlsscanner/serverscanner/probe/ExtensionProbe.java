@@ -15,7 +15,6 @@ import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.statusrequestv2.RequestItemV2;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -24,10 +23,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,12 +34,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport, ExtensionResult> {
+public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport, ExtensionResult> {
 
     private boolean supportsTls13;
 
-    public ExtensionProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.EXTENSIONS, config);
+    public ExtensionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.EXTENSIONS, configSelector);
     }
 
     @Override
@@ -71,19 +69,20 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
 
     private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion,
         Predicate<CipherSuite> cipherSuitePredicate) {
-        Config tlsConfig = getScannerConfig().createConfig();
+        Config tlsConfig;
+        if (highestVersion.isTLS13()) {
+            tlsConfig = configSelector.getTls13BaseConfig();
+        } else {
+            tlsConfig = configSelector.getBaseConfig();
+        }
+        tlsConfig.setHighestProtocolVersion(highestVersion);
         List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
         cipherSuites.removeIf(cipherSuitePredicate.negate());
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        // Don't send extensions if we are in SSLv2
+
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddHeartbeatExtension(true);
@@ -103,21 +102,14 @@ public class ExtensionProbe extends TlsProbe<ServerScannerConfig, ServerReport, 
         tlsConfig.setAddTruncatedHmacExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
-
         // Certificate Status v2 shenanigans
         RequestItemV2 emptyRequest = new RequestItemV2(2, 0, 0, 0, new byte[0]);
         List<RequestItemV2> requestV2List = new LinkedList<>();
         requestV2List.add(emptyRequest);
         tlsConfig.setStatusRequestV2RequestList(requestV2List);
         tlsConfig.setAddCertificateStatusRequestV2Extension(true);
+        configSelector.repairConfig(tlsConfig);
 
-        if (highestVersion.isTLS13()) {
-            tlsConfig.setAddSupportedVersionsExtension(true);
-            tlsConfig.setAddKeyShareExtension(true);
-        }
-
-        List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(nameGroups);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

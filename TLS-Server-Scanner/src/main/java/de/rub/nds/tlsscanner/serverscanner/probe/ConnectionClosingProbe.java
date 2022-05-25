@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ConnectionClosingResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -39,21 +40,24 @@ import java.util.List;
 /**
  * Determines when the server closes the connection. It's meant for tests in the lab so we limit the probe.
  */
-public class ConnectionClosingProbe extends TlsProbe<ServerScannerConfig, ServerReport, ConnectionClosingResult> {
+public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport, ConnectionClosingResult> {
 
     public static final long NO_RESULT = -1;
     private static final long LIMIT = 5000;
 
     private boolean useHttpAppData = false;
 
-    public ConnectionClosingProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, scannerConfig);
+    public ConnectionClosingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, configSelector);
     }
 
     @Override
     public ConnectionClosingResult executeTest() {
-        Config tlsConfig = getConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
+        configSelector.repairConfig(tlsConfig);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
         tlsConfig.setWorkflowExecutorShouldClose(false);
+
         WorkflowTrace handshakeOnly = getWorkflowTrace(tlsConfig);
         WorkflowTrace handshakeWithAppData = getWorkflowTrace(tlsConfig);
         if (useHttpAppData) {
@@ -103,33 +107,6 @@ public class ConnectionClosingProbe extends TlsProbe<ServerScannerConfig, Server
             state.getTlsContext().getTransportHandler().closeConnection();
         } catch (IOException ignored) {
         }
-    }
-
-    public Config getConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setHttpsParsingEnabled(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        tlsConfig.setStopActionsAfterIOException(true);
-        // Don't send extensions if we are in SSLv2
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        List<NamedGroup> namedGroups = NamedGroup.getImplemented();
-        namedGroups.remove(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        return tlsConfig;
     }
 
     @Override

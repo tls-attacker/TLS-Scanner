@@ -16,20 +16,19 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.SignatureHashAlgorithmOrderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SignatureHashAlgorithmOrderProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport, SignatureHashAlgorithmOrderResult> {
+    extends TlsServerProbe<ConfigSelector, ServerReport, SignatureHashAlgorithmOrderResult> {
 
-    public SignatureHashAlgorithmOrderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, scannerConfig);
+    public SignatureHashAlgorithmOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
     }
 
     @Override
@@ -62,19 +61,10 @@ public class SignatureHashAlgorithmOrderProbe
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
-        Config config = getScannerConfig().createConfig();
-
+        Config config = configSelector.getBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setEnforceSettings(true);
-        config.setQuickReceive(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
-
         State state = new State(config);
         executeState(state);
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
