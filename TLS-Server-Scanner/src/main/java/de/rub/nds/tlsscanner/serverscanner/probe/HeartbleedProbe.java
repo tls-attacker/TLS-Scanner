@@ -9,78 +9,70 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.CipherSuiteDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.HeartbeatMessage;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HeartbleedProbe extends TlsProbe<ServerScannerConfig, ServerReport, HeartbleedResult> {
+public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport, HeartbleedResult> {
 
-    private List<CipherSuite> supportedCiphers;
-
-    public HeartbleedProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.HEARTBLEED, config);
+    public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
     }
 
     @Override
     public HeartbleedResult executeTest() {
-        HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            ProtocolVersionDelegate protocolVersionDelegate =
-                (ProtocolVersionDelegate) heartbleedConfig.getDelegate(ProtocolVersionDelegate.class);
-            protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
+        return new HeartbleedResult(isVulnerable());
+    }
+
+    private TestResults isVulnerable() {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setAddHeartbeatExtension(true);
+
+        State state = new State(tlsConfig, getTrace(tlsConfig));
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
+            return TestResults.TRUE;
+        } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResults.UNCERTAIN;
+        } else {
+            return TestResults.FALSE;
         }
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        if (supportedCiphers != null) {
-            CipherSuiteDelegate cipherSuiteDelegate =
-                (CipherSuiteDelegate) heartbleedConfig.getDelegate(CipherSuiteDelegate.class);
-            cipherSuiteDelegate.setCipherSuites(supportedCiphers);
-        }
-        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResults.TRUE : TestResults.FALSE);
+    }
+
+    private WorkflowTrace getTrace(Config tlsConfig) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
+        heartbeatMessage.setPayload(Modifiable.explicit(new byte[] { 1, 3 }));
+        heartbeatMessage.setPayloadLength(Modifiable.explicit(20000));
+        trace.addTlsAction(new SendAction(heartbeatMessage));
+        trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
+        return trace;
     }
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        if (report.getSupportedExtensions() != null) {
-            for (ExtensionType type : report.getSupportedExtensions()) {
-                if (type == ExtensionType.HEARTBEAT) {
-                    return true;
-                }
-            }
-        } else {
-            return true;
-        }
-        return false;
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS) && !report.getSupportedExtensions().isEmpty();
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
-            supportedCiphers = new ArrayList<>(report.getCipherSuites());
-        } else {
-            supportedCiphers = CipherSuite.getImplemented();
-        }
     }
 
     @Override

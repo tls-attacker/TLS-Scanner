@@ -15,7 +15,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
-import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -63,6 +63,7 @@ public class ServerReport extends ScanReport {
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
+    private Boolean isHandshaking = null;
     private ProtocolType protocolType = null;
 
     // Application
@@ -378,6 +379,14 @@ public class ServerReport extends ScanReport {
 
     public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
         this.speaksProtocol = speaksProtocol;
+    }
+
+    public Boolean getIsHandshaking() {
+        return isHandshaking;
+    }
+
+    public void setIsHandshaking(Boolean isHandshaking) {
+        this.isHandshaking = isHandshaking;
     }
 
     public synchronized Integer getCookieLength() {

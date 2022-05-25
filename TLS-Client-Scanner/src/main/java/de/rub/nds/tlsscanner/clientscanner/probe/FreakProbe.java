@@ -37,7 +37,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.FreakResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -47,7 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 // see https://www.smacktls.com/smack.pdf section V-D
-public class FreakProbe extends TlsProbe<ClientScannerConfig, ClientReport, FreakResult> {
+public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, FreakResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 

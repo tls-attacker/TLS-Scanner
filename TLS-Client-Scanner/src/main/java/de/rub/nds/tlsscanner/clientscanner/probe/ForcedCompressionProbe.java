@@ -25,9 +25,8 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.ForcedCompressionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport, ForcedCompressionResult> {
+public class ForcedCompressionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, ForcedCompressionResult> {
 
     public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
@@ -35,7 +34,7 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     public ForcedCompressionResult executeTest() {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setEnforceSettings(true);
         config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);

@@ -15,9 +15,6 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
@@ -32,24 +29,21 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsApplicationFingerprintResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DtlsApplicationFingerprintProbe
-    extends TlsProbe<ServerScannerConfig, ServerReport, DtlsApplicationFingerprintResult> {
+    extends TlsServerProbe<ConfigSelector, ServerReport, DtlsApplicationFingerprintResult> {
 
     private List<ApplicationProtocol> supportedApplications;
     private TestResult isAcceptingUnencryptedAppData;
 
-    public DtlsApplicationFingerprintProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, scannerConfig);
+    public DtlsApplicationFingerprintProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
     }
 
     @Override
@@ -137,7 +131,7 @@ public class DtlsApplicationFingerprintProbe
     }
 
     private byte[] isProtocolSupported(byte[] data) {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ApplicationMessage(config, data)));
@@ -154,7 +148,7 @@ public class DtlsApplicationFingerprintProbe
     }
 
     private void isAcceptingUnencryptedAppData(byte[] data) {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ApplicationMessage(config, data)));
@@ -178,29 +172,6 @@ public class DtlsApplicationFingerprintProbe
             .equals(receivedMessageModified.getCompleteResultingMessage())) {
             isAcceptingUnencryptedAppData = TestResults.TRUE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        return config;
     }
 
     @Override

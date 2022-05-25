@@ -13,10 +13,7 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -31,33 +28,23 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsBugsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport, DtlsBugsResult> {
+public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsBugsResult> {
 
-    public DtlsBugsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
+    public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
     }
 
     @Override
     public DtlsBugsResult executeTest() {
-        try {
-            return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsBugsResult(TestResults.ERROR_DURING_TEST, TestResults.ERROR_DURING_TEST);
-        }
+        return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
     }
 
     private TestResult isAcceptingUnencryptedFinished() {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -78,7 +65,7 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport, D
     }
 
     private TestResult isEarlyFinished() {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -91,29 +78,6 @@ public class DtlsBugsProbe extends TlsProbe<ServerScannerConfig, ServerReport, D
         } else {
             return TestResults.FALSE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        return config;
     }
 
     @Override

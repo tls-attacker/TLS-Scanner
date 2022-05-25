@@ -9,9 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.util.Objects;
 
 public class DirectRaccoonVector implements Vector {

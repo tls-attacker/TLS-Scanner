@@ -11,12 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
-import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
-import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
-import de.rub.nds.tlsattacker.attacks.task.CcaTask;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -29,38 +23,42 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaTaskVectorPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.tlsscanner.serverscanner.task.CcaTask;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaResult> {
+public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaResult> {
 
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
-    private final boolean increasingTimeout = false;
+    private static final boolean INCREASING_TIMEOUT = false;
 
-    private final long additionalTimeout = 10000;
+    private static final long ADDITIONAL_TIMEOUT = 10000;
 
-    private final long additionalTcpTimeout = 1000;
+    private static final long ADDITIONAL_TCP_TIMEOUT = 1000;
 
-    private final int reexecutions = 3;
+    private static final int REEXECUTIONS = 3;
 
-    public CcaProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.CCA, config);
+    public CcaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CCA, configSelector);
         versionSuiteListPairsList = new LinkedList<>();
     }
 
     @Override
     public CcaResult executeTest() {
-
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
-        CcaDelegate ccaDelegate = getScannerConfig().getCcaDelegate();
+        CcaDelegate ccaDelegate = configSelector.getScannerConfig().getCcaDelegate();
 
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 
@@ -96,15 +94,14 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
-
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
                             ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-
-                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
-                            increasingTimeout, reexecutions, additionalTcpTimeout);
+                        configSelector.repairConfig(tlsConfig);
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, ADDITIONAL_TIMEOUT,
+                            INCREASING_TIMEOUT, REEXECUTIONS, ADDITIONAL_TCP_TIMEOUT);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
@@ -153,17 +150,10 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
     }
 
     private Config generateConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setAutoSelectCertificate(false);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+        Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setAutoSelectCertificate(false);
         config.setClientAuthentication(true);
-
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-
         return config;
     }
 
@@ -206,7 +196,7 @@ public class CcaProbe extends TlsProbe<ServerScannerConfig, ServerReport, CcaRes
     private List<VersionSuiteListPair> getNonDetailedVersionSuitePairList(
         List<VersionSuiteListPair> versionSuiteListPairs, List<CipherSuite> implementedCipherSuites) {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
-        if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (configSelector.getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                 List<CipherSuite> cipherSuites = new LinkedList<>();
                 for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {

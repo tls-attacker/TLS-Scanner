@@ -12,11 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.DtlsHandshakeMessageFragment;
@@ -31,22 +28,16 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsFragmentationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, ServerReport, DtlsFragmentationResult> {
+public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsFragmentationResult> {
 
-    private static int individualTransportPacketCooldown;
+    private static final int INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN = 200;
 
-    public DtlsFragmentationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_FRAGMENTATION, scannerConfig);
-        this.individualTransportPacketCooldown = 200;
+    public DtlsFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_FRAGMENTATION, configSelector);
     }
 
     @Override
@@ -62,12 +53,12 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
     }
 
     private TestResult supportsFragmentationDirectly(boolean individualTransportPackets) {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(150);
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
         State state = new State(config);
@@ -80,10 +71,10 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
     }
 
     private TestResult supportsFragmentationAfterCookieExchange(boolean individualTransportPackets) {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -104,12 +95,12 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
     }
 
     private TestResult supportsFragmentationWithExtension(boolean individualTransportPackets) {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddMaxFragmentLengthExtension(true);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         if (individualTransportPackets) {
             config.setCreateIndividualTransportPackets(true);
-            config.setIndividualTransportPacketCooldown(individualTransportPacketCooldown);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -127,29 +118,6 @@ public class DtlsFragmentationProbe extends TlsProbe<ServerScannerConfig, Server
         } else {
             return TestResults.FALSE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        return config;
     }
 
     @Override
