@@ -93,17 +93,17 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     public CommonBugProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMMON_BUGS, configSelector);
         super.register(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
-                TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
-                TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
-                TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
+            TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+            TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
+            TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+            TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override

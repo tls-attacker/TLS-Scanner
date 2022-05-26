@@ -37,8 +37,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  * Determines whether the server uses the client IP address for the DTLS cookie generation. It requires a proxy so we
  * limit the probe.
  */
-public class DtlsIpAddressInCookieProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private final static String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
     private final static int PROXY_CONTROL_PORT = 5555;
@@ -78,23 +77,25 @@ public class DtlsIpAddressInCookieProbe
             state.getTlsContext().setClientRandom(oldContext.getClientRandom());
             state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
             executeState(state);
-            usesIpAdressInCookie = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) ? TestResults.TRUE : TestResults.FALSE;
-        } else 
-        	usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
+            usesIpAdressInCookie =
+                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+                    ? TestResults.TRUE : TestResults.FALSE;
+        } else
+            usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
-	}
+    }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return ProbeRequirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return ProbeRequirement.NO_REQUIREMENT;
+    }
 
 }

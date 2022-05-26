@@ -33,14 +33,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	private TestResult vulnerable;
-	
-	private static final int NUMBER_OF_ITERATIONS = 3;
+    private TestResult vulnerable;
+
+    private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
     private static final int NUMBER_OF_ADDTIONAL_ITERATIONS = 7;
     private static final int NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE = 9;
@@ -60,7 +59,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
         numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
             : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
-                TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
+            TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
     }
 
     @Override
@@ -76,8 +75,8 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
                             PaddingRecordGeneratorType recordGeneratorType =
                                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? PaddingRecordGeneratorType.SHORT
                                     : PaddingRecordGeneratorType.VERY_SHORT;
-                            resultList.add(getPaddingOracleInformationLeakTest(vectorGeneratorType,
-                                recordGeneratorType, numberOfIterations, pair.getVersion(), suite));
+                            resultList.add(getPaddingOracleInformationLeakTest(vectorGeneratorType, recordGeneratorType,
+                                numberOfIterations, pair.getVersion(), suite));
                         }
                     }
                 }

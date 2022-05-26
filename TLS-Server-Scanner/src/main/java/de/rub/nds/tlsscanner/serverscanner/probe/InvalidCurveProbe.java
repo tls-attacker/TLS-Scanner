@@ -86,8 +86,8 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, configSelector);
         scanDetail = configSelector.getScannerConfig().getScanDetail();
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
-                TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-                TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
+            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
+            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-        	requiresSni = TestResults.FALSE;
+            requiresSni = TestResults.FALSE;
             return;
         }
         // Test if we can get a hello with SNI
@@ -49,7 +49,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-        	requiresSni = TestResults.TRUE;
+            requiresSni = TestResults.TRUE;
             return;
         }
         // We cannot get a ServerHello from this Server...

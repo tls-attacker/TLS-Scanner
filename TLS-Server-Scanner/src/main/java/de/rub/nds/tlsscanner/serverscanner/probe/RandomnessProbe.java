@@ -49,14 +49,13 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
         super(parallelExecutor, TlsProbeType.RANDOMNESS, configSelector);
     }
 
-
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION,
             TlsProbeType.EXTENSIONS);
     }
-    
-	@Override
+
+    @Override
     public void executeTest() {
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
     }
@@ -65,7 +64,9 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        supportsExtendedRandom = ((ListResult<ExtensionType>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(ExtensionType.EXTENDED_RANDOM);
+        supportsExtendedRandom = ((ListResult<ExtensionType>) report.getResultMap()
+            .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList()
+                .contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(ServerReport report) {

@@ -110,15 +110,15 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
         useHttpAppData = report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-	       report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
-	       report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);		
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
+        report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);
+    }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.HTTP_HEADER);
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.HTTP_HEADER);
+    }
 
 }

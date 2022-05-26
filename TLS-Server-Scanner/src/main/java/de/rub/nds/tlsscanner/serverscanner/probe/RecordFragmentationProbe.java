@@ -27,7 +27,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult supported;
-    
+
     public RecordFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);

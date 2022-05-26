@@ -57,7 +57,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public CertificateProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, configSelector);
         super.register(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
-                TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
+            TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
     }
 
     @Override

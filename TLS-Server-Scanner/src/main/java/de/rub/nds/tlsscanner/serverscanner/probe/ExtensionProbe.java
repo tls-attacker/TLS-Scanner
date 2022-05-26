@@ -36,11 +36,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-        
+
 public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private boolean supportsTls13;
-    
+
     private List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResults.FALSE;
     private TestResult encryptThenMac = TestResults.FALSE;
@@ -52,9 +52,9 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     public ExtensionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
-                TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
-                TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
+            TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
     }
 
     @Override

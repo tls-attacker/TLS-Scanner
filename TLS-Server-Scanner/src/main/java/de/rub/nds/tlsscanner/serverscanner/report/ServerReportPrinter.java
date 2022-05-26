@@ -167,7 +167,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     @SuppressWarnings("unchecked")
-	private void appendDtlsSpecificResults(StringBuilder builder) {
+    private void appendDtlsSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS Features");
         prettyAppend(builder, "Server changes port", TlsAnalyzedProperty.CHANGES_PORT);
         if (report.getResult(TlsAnalyzedProperty.CHANGES_PORT) == TestResults.TRUE) {
@@ -244,16 +244,18 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Accepts App Data with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
 
-        TestResult supportedApplications = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS.name());
-	    if (supportedApplications != null) {
-	    	List<ApplicationProtocol> applications = ((ListResult<ApplicationProtocol>) supportedApplications).getList();
-        	if (applications != null) {
-	            prettyAppendHeading(builder, "Supported Applications");
-	            for (ApplicationProtocol application : applications) {
-	                builder.append(application).append("\n");
-	            }
-	        }
-	    }
+        TestResult supportedApplications =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS.name());
+        if (supportedApplications != null) {
+            List<ApplicationProtocol> applications =
+                ((ListResult<ApplicationProtocol>) supportedApplications).getList();
+            if (applications != null) {
+                prettyAppendHeading(builder, "Supported Applications");
+                for (ApplicationProtocol application : applications) {
+                    builder.append(application).append("\n");
+                }
+            }
+        }
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

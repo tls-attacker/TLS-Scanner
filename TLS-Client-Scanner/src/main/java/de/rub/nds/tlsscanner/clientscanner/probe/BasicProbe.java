@@ -39,14 +39,14 @@ import java.util.Set;
 
 public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private List<CipherSuite> clientAdvertisedCipherSuites;
+    private List<CipherSuite> clientAdvertisedCipherSuites;
     private List<CompressionMethod> clientAdvertisedCompressions;
     private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
     private Set<ExtensionType> clientAdvertisedExtensions;
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    
+
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
         super.register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES,

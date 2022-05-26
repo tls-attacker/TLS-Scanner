@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-       
 public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CompressionMethod> compressions;
@@ -37,7 +36,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
-                TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
+            TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * Probe that checks if server enforces the order of named groups sent by the client
  *
  */
-    
+
 public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Collection<NamedGroup> supportedGroups;

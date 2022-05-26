@@ -36,7 +36,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult vulnerable;
-    
+
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
@@ -49,12 +49,12 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
         State state = new State(tlsConfig, getTrace(tlsConfig));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) 
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace()))
             vulnerable = TestResults.TRUE;
-        else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) 
-        	vulnerable = TestResults.UNCERTAIN;
-         else 
-        	vulnerable = TestResults.FALSE;
+        else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace()))
+            vulnerable = TestResults.UNCERTAIN;
+        else
+            vulnerable = TestResults.FALSE;
     }
 
     private WorkflowTrace getTrace(Config tlsConfig) {
@@ -72,7 +72,7 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
     public void adjustConfig(ServerReport report) {
 
     }
-    
+
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.EXTENSIONS)

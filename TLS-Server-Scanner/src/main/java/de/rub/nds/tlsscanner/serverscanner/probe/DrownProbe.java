@@ -26,11 +26,11 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult generalDrown;
     private TestResult extraClear;
-    
+
     public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,
-                TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+            TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
@@ -57,7 +57,8 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
     }
 
     @Override

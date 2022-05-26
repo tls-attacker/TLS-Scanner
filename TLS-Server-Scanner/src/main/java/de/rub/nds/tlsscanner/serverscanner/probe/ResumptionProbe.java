@@ -68,12 +68,12 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
-                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
-                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override

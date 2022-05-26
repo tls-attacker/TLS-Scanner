@@ -70,10 +70,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
-                TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
-                TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
-                TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
-                TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
+            TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
+            TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+            TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
+            TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
     }
 
     @Override

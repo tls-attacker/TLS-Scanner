@@ -38,10 +38,9 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class SignatureAndHashAlgorithmProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private List<ProtocolVersion> versions;
+    private List<ProtocolVersion> versions;
 
     private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
     private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
@@ -49,7 +48,7 @@ public class SignatureAndHashAlgorithmProbe
     public SignatureAndHashAlgorithmProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, configSelector);
         super.register(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE,
-                TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
+            TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
     }
 
     @Override

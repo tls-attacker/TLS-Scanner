@@ -27,9 +27,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 
-
-public class ClientRecordFragmentationProbe
-    extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class ClientRecordFragmentationProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private TestResult result;
 

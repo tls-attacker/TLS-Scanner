@@ -45,8 +45,7 @@ import java.util.Date;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class CertificateTransparencyProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Certificate serverCertChain;
 
@@ -67,7 +66,7 @@ public class CertificateTransparencyProbe
     public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
-                TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
+            TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
     }
 
     @Override
@@ -76,8 +75,7 @@ public class CertificateTransparencyProbe
         getTlsHandshakeSCTs();
         evaluateChromeCtPolicy();
 
-        supportsPrecertificateSCTsResult =
-            (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
         supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
         supportsOcspSCTsResult = (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
         meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);

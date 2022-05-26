@@ -42,15 +42,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DtlsApplicationFingerprintProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<ApplicationProtocol> supportedApplications;
     private TestResult isAcceptingUnencryptedAppData;
 
     public DtlsApplicationFingerprintProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
-        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS,
+            TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
     }
 
     @Override
@@ -191,15 +191,16 @@ public class DtlsApplicationFingerprintProbe
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, new ListResult<>(supportedApplications, "SUPPORTED_APPLICATIONS"));
+    @Override
+    protected void mergeData(ServerReport report) {
+        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS,
+            new ListResult<>(supportedApplications, "SUPPORTED_APPLICATIONS"));
         super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
-	}
+    }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return ProbeRequirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return ProbeRequirement.NO_REQUIREMENT;
+    }
 
 }

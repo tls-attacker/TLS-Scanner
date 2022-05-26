@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -33,14 +42,15 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
     private TestResult supportsAfterCookieExchangeIndPackets;
     private TestResult supportsWithExtension;
     private TestResult supportsWithExtensionIndPackets;
-    
+
     private static final int INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN = 200;
 
     public DtlsFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_FRAGMENTATION, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
-        		TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
-        		TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+            TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+            TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION);
     }
 
     @Override
@@ -132,39 +142,36 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
 
     @Override
     protected void mergeData(ServerReport report) {
-		if (supportsDirectly == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.TRUE);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
-	    } else if (supportsAfterCookieExchange == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
-	    } else if (supportsWithExtension == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.TRUE);
-	    } else {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.FALSE);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
-	    }
-	
-	    if (supportsDirectlyIndPackets == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.TRUE);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
-	            TestResults.FALSE);
-	    } else if (supportsAfterCookieExchangeIndPackets == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
-	            TestResults.PARTIALLY);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
-	            TestResults.FALSE);
-	    } else if (supportsWithExtensionIndPackets == TestResults.TRUE) {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
-	            TestResults.PARTIALLY);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
-	            TestResults.TRUE);
-	    } else {
-	        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
-	            TestResults.FALSE);
-	        super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
-	            TestResults.FALSE);
-	    }
-	}
+        if (supportsDirectly == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.TRUE);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
+        } else if (supportsAfterCookieExchange == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
+        } else if (supportsWithExtension == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.TRUE);
+        } else {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.FALSE);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
+        }
+
+        if (supportsDirectlyIndPackets == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.TRUE);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                TestResults.FALSE);
+        } else if (supportsAfterCookieExchangeIndPackets == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.PARTIALLY);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                TestResults.FALSE);
+        } else if (supportsWithExtensionIndPackets == TestResults.TRUE) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.PARTIALLY);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                TestResults.TRUE);
+        } else {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.FALSE);
+            super.put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                TestResults.FALSE);
+        }
+    }
 }

@@ -52,12 +52,12 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) 
-        	receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
-        else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) 
-        	receivedCorrectNonce = TestResults.TRUE;
-        else 
-        	receivedCorrectNonce = TestResults.FALSE;
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
+            receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
+        else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce)
+            receivedCorrectNonce = TestResults.TRUE;
+        else
+            receivedCorrectNonce = TestResults.FALSE;
     }
 
     @Override
@@ -66,7 +66,8 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION)
+            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override

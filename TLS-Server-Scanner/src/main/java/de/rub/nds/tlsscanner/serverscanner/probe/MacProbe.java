@@ -67,7 +67,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     private CheckPattern appPattern;
     private CheckPattern finishedPattern;
     private CheckPattern verifyPattern;
-    
+
     public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, configSelector);
     }

@@ -36,8 +36,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private TestResult supportsReordering;
-	
+    private TestResult supportsReordering;
+
     public DtlsReorderingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_REORDERING, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
@@ -57,21 +57,23 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
         State state = new State(config, trace);
         executeState(state);
-        supportsReordering = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace()) ? TestResults.TRUE : TestResults.FALSE;
+        supportsReordering =
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())
+                ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
     }
 
-	@Override
-	protected void mergeData(ServerReport report) {
+    @Override
+    protected void mergeData(ServerReport report) {
         super.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
-	}
+    }
 
-	@Override
-	protected Requirement getRequirements(ServerReport report) {
-		return ProbeRequirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements(ServerReport report) {
+        return ProbeRequirement.NO_REQUIREMENT;
+    }
 
 }

@@ -42,29 +42,28 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
     private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
     private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
     private TestResult completesHandshakeWithUndefined = TestResults.FALSE;
-    
+
     private List<ECPointFormat> supportedFormats;
     private TestResult tls13SecpCompression;
 
     public ECPointFormatProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
-                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
-                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, 
-                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT);
+            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
+            TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT);
     }
 
     @Override
     public void executeTest() {
         completesHandshakeWithUndefined = TestResults.CANNOT_BE_TESTED;
         if (shouldTestPointFormats) {
-        	supportedFormats = getSupportedPointFormats();
-        	completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
+            supportedFormats = getSupportedPointFormats();
+            completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
         }
         tls13SecpCompression = shouldTestTls13 ? getTls13SecpCompressionSupported() : TestResults.COULD_NOT_TEST;
-        if (supportedFormats == null)    
-        	LOGGER.debug("Unable to determine supported point formats");
+        if (supportedFormats == null)
+            LOGGER.debug("Unable to determine supported point formats");
     }
 
     private List<ECPointFormat> getSupportedPointFormats() {

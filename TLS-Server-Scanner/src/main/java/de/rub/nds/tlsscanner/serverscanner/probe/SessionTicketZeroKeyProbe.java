@@ -63,8 +63,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -96,12 +95,13 @@ public class SessionTicketZeroKeyProbe
      */
     public static final int SESSION_STATE_OFFSET = 34;
 
-	private TestResult hasDecryptableMasterSecret;
-	private TestResult hasGnuTlsMagicBytes;
+    private TestResult hasDecryptableMasterSecret;
+    private TestResult hasGnuTlsMagicBytes;
+
     public SessionTicketZeroKeyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
-                TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+            TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
     }
 
     @Override

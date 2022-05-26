@@ -47,10 +47,10 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     @Override
     public void executeTest() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
-        	earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+            earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResults.TRUE) {
-        	earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
+            earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
         }
         earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.NOT_VULNERABLE;
     }
@@ -115,7 +115,7 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     protected Requirement getRequirements(ServerReport report) {
         return ProbeRequirement.NO_REQUIREMENT;
     }
-    
+
     private enum TargetVersion {
         OPENSSL_1_0_0,
         OPENSSL_1_0_1

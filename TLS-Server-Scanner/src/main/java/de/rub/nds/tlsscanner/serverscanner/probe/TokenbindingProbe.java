@@ -34,14 +34,14 @@ import java.util.Set;
 
 public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private List<TokenBindingVersion> supportedTokenBindingVersion;
+    private List<TokenBindingVersion> supportedTokenBindingVersion;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
-    
+
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-                TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
-                TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
+            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
+            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
     }
 
     @Override

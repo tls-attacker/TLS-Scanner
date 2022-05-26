@@ -27,8 +27,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SignatureHashAlgorithmOrderProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult enforced;
 

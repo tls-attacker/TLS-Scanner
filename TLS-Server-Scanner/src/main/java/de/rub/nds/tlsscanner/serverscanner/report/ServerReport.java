@@ -31,7 +31,6 @@ public class ServerReport extends ScanReport {
     private Boolean isHandshaking = null;
     private ProtocolType protocolType = null;
 
-
     // Attacks
     private KnownPaddingOracleVulnerability knownVulnerability = null;
 

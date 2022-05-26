@@ -51,11 +51,11 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             toTestList.add(ProtocolVersion.TLS12);
             toTestList.add(ProtocolVersion.TLS13);
         }
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2,
-            TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-            TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
+        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TlsAnalyzedProperty.SUPPORTS_SSL_2,
+            TlsAnalyzedProperty.SUPPORTS_SSL_3, TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
     protected void mergeData(ServerReport report) {
         if (supportedProtocolVersions != null) {
             for (ProtocolVersion version : supportedProtocolVersions) {
-            	if (version == ProtocolVersion.DTLS10_DRAFT)
+                if (version == ProtocolVersion.DTLS10_DRAFT)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
@@ -171,9 +171,9 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
-            	if (version == ProtocolVersion.DTLS10_DRAFT)
+                if (version == ProtocolVersion.DTLS10_DRAFT)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.FALSE);
-            	if (version == ProtocolVersion.DTLS10)
+                if (version == ProtocolVersion.DTLS10)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS12)
                     super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
@@ -200,6 +200,11 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+        }
+        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
         }
         super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
             new ListResult<ProtocolVersion>(supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));

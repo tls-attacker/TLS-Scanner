@@ -41,26 +41,25 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 
-public class DtlsHelloVerifyRequestProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private TestResult hasHvrRetransmissions;
+    private TestResult hasHvrRetransmissions;
     private TestResult checksCookie;
-	private TestResult usesPortInCookie;
+    private TestResult usesPortInCookie;
     private TestResult usesVersionInCookie;
     private TestResult usesRandomInCookie;
     private TestResult usesSessionIdInCookie;
     private TestResult usesCiphersuitesInCookie;
     private TestResult usesCompressionsInCookie;
-    
+
     private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, configSelector);
         super.register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
-        		TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, 
-        		TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, 
-        		TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+            TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
+            TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+            TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override
@@ -76,8 +75,9 @@ public class DtlsHelloVerifyRequestProbe
             usesCompressionsInCookie = usesCompressionsInCookie();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            hasHvrRetransmissions = checksCookie = usesPortInCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
-                usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
+            hasHvrRetransmissions =
+                checksCookie = usesPortInCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
+                    usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
             cookieLength = -1;
         }
     }

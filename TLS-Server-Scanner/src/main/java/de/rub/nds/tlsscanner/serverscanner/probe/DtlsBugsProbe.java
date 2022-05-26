@@ -38,11 +38,10 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     private TestResult isEarlyFinished;
     private TestResult isAcceptingUnencryptedFinished;
-    
+
     public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
-        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
-                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
