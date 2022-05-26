@@ -36,7 +36,7 @@ public class ProbeRequirementTest {
      * Implementation of ScanReport
      */
     private class TestReport extends ScanReport {
-        
+
         private static final long serialVersionUID = 1L;
 
         public TestReport() {
