@@ -1,3 +1,12 @@
+/**
+ * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import static org.junit.Assert.assertFalse;
@@ -23,22 +32,23 @@ public class ProbeRequirementTest {
     private ProtocolVersion pVer = ProtocolVersion.DTLS10;
     private ScanReport report;
 
-    private class TestReport extends ScanReport{
-    	
-    	/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+    /**
+     * Implementation of ScanReport
+     */
+    private class TestReport extends ScanReport {
+        
+        private static final long serialVersionUID = 1L;
 
-		public TestReport() {
-    		super();
-    	}
+        public TestReport() {
+            super();
+        }
 
-		@Override
-		public String getFullReport(ScannerDetail detail, boolean printColorful) {
-			return null;
-		}
+        @Override
+        public String getFullReport(ScannerDetail detail, boolean printColorful) {
+            return null;
+        }
     }
+
     /**
      * Set up of testing
      */
