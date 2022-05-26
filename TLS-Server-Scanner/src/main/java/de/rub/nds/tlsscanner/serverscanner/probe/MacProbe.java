@@ -53,7 +53,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.IOException;
 import java.util.LinkedList;

@@ -49,7 +49,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashMap;
 import java.util.HashSet;
