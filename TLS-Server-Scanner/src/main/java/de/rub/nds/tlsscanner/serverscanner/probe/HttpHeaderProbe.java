@@ -14,44 +14,28 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Arrays;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
     private List<HttpsHeader> headerList;
     private TestResult speaksHttps;
@@ -62,54 +46,25 @@ public class HttpHeaderProbe extends TlsProbe<ServerScannerConfig, ServerReport>
     private TestResult supportsHpkp = TestResults.FALSE;
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
-
-    public HttpHeaderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.HTTP_HEADER, scannerConfig);
+    
+    public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
-            TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
-            TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-            TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
-            TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
+                TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
+                TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
+                TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
+                TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
     }
 
     @Override
     public void executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setHttpsParsingEnabled(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        tlsConfig.setStopActionsAfterIOException(true);
-        // Don't send extensions if we are in SSLv2
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-
-        List<NamedGroup> namedGroups = NamedGroup.getImplemented();
-        namedGroups.remove(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new HttpsRequestMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
-        State state = new State(tlsConfig, trace);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
+        State state = new State(tlsConfig);
         executeState(state);
-        ReceivingAction action = trace.getLastReceivingAction();
+
+        ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
         HttpsResponseMessage responseMessage = null;
         if (action.getReceivedMessages() != null) {
             for (ProtocolMessage message : action.getReceivedMessages()) {

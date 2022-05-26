@@ -15,11 +15,8 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -35,14 +32,13 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
 
@@ -55,21 +51,21 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     private TestResult vulnerableRenegotiationAttackCipherSuiteV1;
     private TestResult vulnerableRenegotiationAttackCipherSuiteV2;
 
-    public RenegotiationProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.RENEGOTIATION, scannerConfig);
+    public RenegotiationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.RENEGOTIATION, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
-            TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
-            TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-            TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
-            TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
-            TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
-            TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
-            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
+                TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+                TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
+                TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+                TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+                TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+                TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
     }
 
     @Override
     public void executeTest() {
-        if (getScannerConfig().getDtlsDelegate().isDTLS())
+        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) 
             supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
         else
             supportsDtlsCookieExchangeInRenegotiation = TestResults.NOT_TESTED_YET;
@@ -237,32 +233,10 @@ public class RenegotiationProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     }
 
     private Config getBaseConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
-        tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
-        boolean containsEc = false;
-        for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
-            KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-            if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
-                containsEc = true;
-                break;
-            }
-        }
-        tlsConfig.setAddECPointFormatExtension(containsEc);
-        tlsConfig.setAddEllipticCurveExtension(containsEc);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopReceivingAfterWarning(true);
-        tlsConfig.setStopActionsAfterWarning(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setQuickReceive(true);
+        configSelector.repairConfig(tlsConfig);
         return tlsConfig;
     }
 

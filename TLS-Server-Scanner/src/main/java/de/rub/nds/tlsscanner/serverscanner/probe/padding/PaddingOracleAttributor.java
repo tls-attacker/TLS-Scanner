@@ -9,12 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
-import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
-import de.rub.nds.scanner.core.vectorstatistics.VectorContainer;
-import de.rub.nds.tlsattacker.attacks.padding.vector.PaddingVector;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -22,6 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.vector.PaddingVector;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;

@@ -23,8 +23,6 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -34,11 +32,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Set<CipherSuite> supportedCipherSuites;
 
@@ -70,13 +67,13 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
     private TestResult groupsDependOnCipherSuite;
     private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
 
-    public NamedGroupsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
+    public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
-            TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
-            TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
-            TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
+                TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
+                TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+                TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
+                TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
     }
 
     @Override
@@ -220,6 +217,7 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
     private TlsContext testGroups(List<NamedGroup> groupList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(groupList);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -299,6 +297,7 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
         }
 
         tlsConfig.setDefaultClientSupportedCipherSuites(allEcCipherSuites);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
 
@@ -319,19 +318,8 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
     }
 
     private Config getBasicConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-
         return tlsConfig;
     }
 
@@ -392,27 +380,11 @@ public class NamedGroupsProbe extends TlsProbe<ServerScannerConfig, ServerReport
     }
 
     public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms());
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

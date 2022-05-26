@@ -22,14 +22,13 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import java.util.Random;
 
-public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
+public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private static final byte[] SERVER_RANDOM_12_POSTFIX = { 0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x01 };
     private static final byte[] SERVER_RANDOM_PRE_12_POSTFIX = { 0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00 };
@@ -52,7 +51,7 @@ public class Version13RandomProbe extends TlsProbe<ClientScannerConfig, ClientRe
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setHighestProtocolVersion(version);
         config.setDefaultSelectedProtocolVersion(version);
 

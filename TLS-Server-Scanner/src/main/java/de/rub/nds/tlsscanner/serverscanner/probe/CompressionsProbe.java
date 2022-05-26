@@ -13,33 +13,31 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+       
+public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CompressionMethod> compressions;
 
-    public CompressionsProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
+    public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
-            TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
+                TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
     }
 
     @Override
@@ -48,30 +46,11 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
-        List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-
         CompressionMethod selectedCompressionMethod;
         List<CompressionMethod> supportedCompressionMethods = new LinkedList<>();
+        List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         do {
-            selectedCompressionMethod = testCompressionMethods(toTestList, tlsConfig);
+            selectedCompressionMethod = testCompressionMethods(toTestList);
             if (!toTestList.contains(selectedCompressionMethod)) {
                 LOGGER.debug("Server chose a CompressionMethod we did not offer!");
                 break;
@@ -84,7 +63,9 @@ public class CompressionsProbe extends TlsProbe<ServerScannerConfig, ServerRepor
         return supportedCompressionMethods;
     }
 
-    private CompressionMethod testCompressionMethods(List<CompressionMethod> compressionList, Config tlsConfig) {
+    private CompressionMethod testCompressionMethods(List<CompressionMethod> compressionList) {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCompressionMethods(compressionList);
         State state = new State(tlsConfig);
         executeState(state);

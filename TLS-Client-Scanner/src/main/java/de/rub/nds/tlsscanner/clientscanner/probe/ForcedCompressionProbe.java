@@ -23,15 +23,13 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 
-public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
-
-    private TestResult result;
+public class ForcedCompressionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+private TestResult result;
 
     public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
@@ -40,7 +38,7 @@ public class ForcedCompressionProbe extends TlsProbe<ClientScannerConfig, Client
 
     @Override
     public void executeTest() {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setEnforceSettings(true);
         config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);

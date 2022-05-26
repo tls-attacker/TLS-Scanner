@@ -12,30 +12,25 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
-import de.rub.nds.tlsattacker.attacks.config.SpecialDrownCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
-import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.GeneralDrownAttacker;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.SpecialDrownAttacker;
+import de.rub.nds.tlsscanner.serverscanner.probe.drown.constans.DrownOracleType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Objects;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult generalDrown;
     private TestResult extraClear;
-
-    public DrownProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
+    
+    public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DROWN, configSelector);
         super.register(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,
-            TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+                TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
@@ -44,51 +39,16 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         extraClear = testForExtraClearDrown();
     }
 
-    private TestResult testForGeneralDrown() {
-        GeneralDrownCommandConfig drownCommandConfig =
-            new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        GeneralDrownAttacker attacker = new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
-        Boolean generalDrown = attacker.isVulnerable();
-        if (Objects.equals(generalDrown, Boolean.TRUE)) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
+    private TestResults testForGeneralDrown() {
+        GeneralDrownAttacker attacker =
+            new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
+        return attacker.isVulnerable();
     }
 
-    private TestResult testForExtraClearDrown() {
-        try {
-            SpecialDrownCommandConfig drownCommandConfig =
-                new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-
-            ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(scannerConfig.getClientDelegate().getHost());
-            delegate.setSniHostname(scannerConfig.getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate =
-                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            SpecialDrownAttacker attacker =
-                new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
-            Boolean generalDrown = attacker.isVulnerable();
-            if (Objects.equals(generalDrown, Boolean.TRUE)) {
-                return TestResults.TRUE;
-            } else {
-                return TestResults.FALSE;
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-                throw new RuntimeException(e);
-            } else {
-                LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), e);
-            }
-            return TestResults.ERROR_DURING_TEST;
-        }
+    private TestResults testForExtraClearDrown() {
+        SpecialDrownAttacker attacker = new SpecialDrownAttacker(configSelector.getSSL2BaseConfig(),
+            getParallelExecutor(), DrownOracleType.EXTRA_CLEAR);
+        return attacker.isVulnerable();
     }
 
     @Override
@@ -97,7 +57,7 @@ public class DrownProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return ProbeRequirement.NO_REQUIREMENT;
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
     }
 
     @Override

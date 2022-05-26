@@ -13,9 +13,6 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
@@ -30,22 +27,17 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAct
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult sendsRetransmissions;
     private TestResult processesRetransmissions;
-
-    public DtlsRetransmissionsProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+    
+    public DtlsRetransmissionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, configSelector);
         super.register(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
@@ -56,7 +48,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
     }
 
     private TestResult doesRetransmissions() {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -79,7 +71,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
     }
 
     private TestResult processesRetransmissions() {
-        Config config = getConfig();
+        Config config = configSelector.getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
@@ -99,30 +91,6 @@ public class DtlsRetransmissionsProbe extends TlsProbe<ServerScannerConfig, Serv
         } else {
             return TestResults.FALSE;
         }
-    }
-
-    private Config getConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setDtlsMaximumFragmentLength(2000);
-        return config;
     }
 
     @Override

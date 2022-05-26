@@ -47,8 +47,4 @@ public class DirectRaccoonWorkflowGenerator {
         return trace;
     }
 
-    private DirectRaccoonWorkflowGenerator() {
-
-    }
-
 }

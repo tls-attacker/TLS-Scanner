@@ -22,13 +22,14 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 
-public class ClientRecordFragmentationProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
+
+public class ClientRecordFragmentationProbe
+    extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private TestResult result;
 
@@ -39,7 +40,7 @@ public class ClientRecordFragmentationProbe extends TlsProbe<ClientScannerConfig
 
     @Override
     public void executeTest() {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         config.setDefaultMaxRecordData(50);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);

@@ -14,34 +14,28 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private boolean alpnSupported;
     private TestResult strictSni;
     private TestResult strictAlpn;
 
-    public AlpacaProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
+    public AlpacaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, configSelector);
         super.register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.STRICT_ALPN,
-            TlsAnalyzedProperty.ALPACA_MITIGATED);
+                TlsAnalyzedProperty.ALPACA_MITIGATED);
     }
 
     @Override
@@ -53,33 +47,9 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
             strictAlpn = isSupportingStrictAlpn();
     }
 
-    private Config getBaseConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddAlpnExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(nameGroups);
-        return tlsConfig;
-    }
-
     private TestResult isSupportingStrictSni() {
-        Config tlsConfig = getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.getDefaultClientConnection().setHostname("notarealtls-attackerhost.com");
         tlsConfig.setAddAlpnExtension(false);
@@ -93,11 +63,11 @@ public class AlpacaProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     private TestResult isSupportingStrictAlpn() {
-        Config tlsConfig = getBaseConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddAlpnExtension(true);
         tlsConfig.setDefaultProposedAlpnProtocols("NOT an ALPN protocol");
-
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

@@ -52,6 +52,12 @@
             <artifactId>TLS-Scanner-Core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.rub.nds.tlsscanner</groupId>
+            <artifactId>Scanner-Core</artifactId>
+            <version>4.2.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

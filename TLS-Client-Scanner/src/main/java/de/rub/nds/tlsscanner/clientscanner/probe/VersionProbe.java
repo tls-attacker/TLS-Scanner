@@ -22,18 +22,17 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
+public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -50,7 +49,7 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
     }
 
     protected Config getTls13Config() {
-        Config config = getScannerConfig().createConfig();
+        Config config = scannerConfig.createConfig();
         // no need to set CipherSuites; this is done in executeTest
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
@@ -73,7 +72,7 @@ public class VersionProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
             if (version.isTLS13()) {
                 config = getTls13Config();
             } else {
-                config = getScannerConfig().createConfig();
+                config = scannerConfig.createConfig();
             }
             List<CipherSuite> suitableCiphersuites = clientAdvertisedCipherSuites.stream()
                 .filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());

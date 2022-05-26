@@ -21,10 +21,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,14 +35,15 @@ import java.util.stream.Collectors;
  * Probe that checks if server enforces the order of named groups sent by the client
  *
  */
-public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+    
+public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Collection<NamedGroup> supportedGroups;
 
     private TestResult enforced;
 
-    public NamedCurvesOrderProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.NAMED_GROUPS_ORDER, scannerConfig);
+    public NamedCurvesOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS_ORDER, configSelector);
         super.register(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
     }
 
@@ -58,20 +58,14 @@ public class NamedCurvesOrderProbe extends TlsProbe<ServerScannerConfig, ServerR
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setEarlyStop(true);
+        Config tlsConfig = configSelector.getBaseConfig();
         List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
             .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setEnforceSettings(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setDefaultClientNamedGroups(toTestList);
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         return state.getTlsContext().getSelectedGroup();

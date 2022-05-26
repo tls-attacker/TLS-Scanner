@@ -13,85 +13,51 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
-public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult receivedCorrectNonce;
 
-    public EsniProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.ESNI, scannerConfig);
+    public EsniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.ESNI, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_ESNI);
     }
 
     @Override
     public void executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(getClientSupportedCipherSuites());
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
-        List<NamedGroup> keyShareGroupList = new LinkedList<>();
-        keyShareGroupList.add(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCipherSuites(getClientSupportedCipherSuites());
-        tlsConfig.getClientSupportedEsniNamedGroups().addAll(getImplementedGroups());
+        Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
-
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
-            RunningModeType.CLIENT);
-        State state = new State(tlsConfig, trace);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        // ESNI stuff is in a bad state and only works with X25519 on our end
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.ECDH_X25519);
+        State state = new State(tlsConfig);
         executeState(state);
 
         TlsContext context = state.getTlsContext();
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
             && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
-            return;
-        } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            receivedCorrectNonce = TestResults.TRUE;
-            return;
-        } else
-            receivedCorrectNonce = TestResults.FALSE;
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) 
+        	receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
+        else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) 
+        	receivedCorrectNonce = TestResults.TRUE;
+        else 
+        	receivedCorrectNonce = TestResults.FALSE;
     }
 
     @Override
@@ -100,46 +66,7 @@ public class EsniProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return ProbeRequirement.NO_REQUIREMENT;
-    }
-
-    private List<CipherSuite> getClientSupportedCipherSuites() {
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);
-        return cipherSuites;
-    }
-
-    private List<NamedGroup> getImplementedGroups() {
-        List<NamedGroup> list = new LinkedList<>();
-        list.add(NamedGroup.ECDH_X25519);
-        list.add(NamedGroup.ECDH_X448);
-        list.add(NamedGroup.SECP160K1);
-        list.add(NamedGroup.SECP160R1);
-        list.add(NamedGroup.SECP160R2);
-        list.add(NamedGroup.SECP192K1);
-        list.add(NamedGroup.SECP192R1);
-        list.add(NamedGroup.SECP224K1);
-        list.add(NamedGroup.SECP224R1);
-        list.add(NamedGroup.SECP256K1);
-        list.add(NamedGroup.SECP256R1);
-        list.add(NamedGroup.SECP384R1);
-        list.add(NamedGroup.SECP521R1);
-        list.add(NamedGroup.SECT163K1);
-        list.add(NamedGroup.SECT163R1);
-        list.add(NamedGroup.SECT163R2);
-        list.add(NamedGroup.SECT193R1);
-        list.add(NamedGroup.SECT193R2);
-        list.add(NamedGroup.SECT233K1);
-        list.add(NamedGroup.SECT233R1);
-        list.add(NamedGroup.SECT239K1);
-        list.add(NamedGroup.SECT283K1);
-        list.add(NamedGroup.SECT283R1);
-        list.add(NamedGroup.SECT409K1);
-        list.add(NamedGroup.SECT409R1);
-        list.add(NamedGroup.SECT571K1);
-        list.add(NamedGroup.SECT571R1);
-        return list;
+        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 
     @Override

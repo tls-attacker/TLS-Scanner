@@ -24,19 +24,18 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType;
 import de.rub.nds.tlsscanner.clientscanner.constants.SmallSubgroupType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class DheParameterProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
+public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     // Primes with less than two bits (i.e. less than two) don't exist
     private static final int BITLENGTH_CUTOFF_LOWER_BOUND = 2;

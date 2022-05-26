@@ -26,13 +26,6 @@ import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
-import de.rub.nds.scanner.core.vectorstatistics.ResponseCounter;
-import de.rub.nds.scanner.core.vectorstatistics.VectorContainer;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
@@ -56,10 +49,18 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
+import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -165,14 +166,35 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder.toString();
     }
 
-    private void appendDtlsSpecificResults(StringBuilder builder) {
+    @SuppressWarnings("unchecked")
+	private void appendDtlsSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS Features");
         prettyAppend(builder, "Server changes port", TlsAnalyzedProperty.CHANGES_PORT);
         if (report.getResult(TlsAnalyzedProperty.CHANGES_PORT) == TestResults.TRUE) {
             prettyAppend(builder, "-To random ports", TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS);
         }
-        prettyAppend(builder, "Supports fragmentation", TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
         prettyAppend(builder, "Supports reordering", TlsAnalyzedProperty.SUPPORTS_REORDERING);
+
+        prettyAppendHeading(builder, "DTLS Fragmentation");
+        prettyAppend(builder, "Supports fragmentation", TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION) == TestResults.PARTIALLY) {
+            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION) == TestResults.TRUE) {
+                prettyAppend(builder, "-Requires Max Fragment Length extension");
+            } else {
+                prettyAppend(builder, "-After cookie exchange");
+            }
+        }
+        prettyAppend(builder, "Supports fragmentation with individual transport packets",
+            TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS)
+            == TestResults.PARTIALLY) {
+            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION)
+                == TestResults.TRUE) {
+                prettyAppend(builder, "-Requires Max Fragment Length extension");
+            } else {
+                prettyAppend(builder, "-After cookie exchange");
+            }
+        }
 
         prettyAppendHeading(builder, "DTLS Hello Verify Request");
         prettyAppend(builder, "HVR Retransmissions", TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
@@ -183,6 +205,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         prettyAppend(builder, "Checks cookie", TlsAnalyzedProperty.HAS_COOKIE_CHECKS);
         prettyAppend(builder, "Cookie is influenced by");
+        prettyAppend(builder, "-ip", TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
+        prettyAppend(builder, "-port", TlsAnalyzedProperty.USES_PORT_FOR_COOKIE);
         prettyAppend(builder, "-version", TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE);
         prettyAppend(builder, "-random", TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE);
         prettyAppend(builder, "-session id", TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
@@ -207,7 +231,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         TestResult countersResult = report.getResultMap().get(TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS.name());
 
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && countersResult != null) {
-            @SuppressWarnings("unchecked")
             Map<HandshakeMessageType, Integer> counters =
                 ((MapResult<HandshakeMessageType, Integer>) countersResult).getMap();
             if (counters != null && !counters.isEmpty())
@@ -220,6 +243,17 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Accepts Finished with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
         prettyAppend(builder, "Accepts App Data with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+
+        TestResult supportedApplications = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS.name());
+	    if (supportedApplications != null) {
+	    	List<ApplicationProtocol> applications = ((ListResult<ApplicationProtocol>) supportedApplications).getList();
+        	if (applications != null) {
+	            prettyAppendHeading(builder, "Supported Applications");
+	            for (ApplicationProtocol application : applications) {
+	                builder.append(application).append("\n");
+	            }
+	        }
+	    }
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

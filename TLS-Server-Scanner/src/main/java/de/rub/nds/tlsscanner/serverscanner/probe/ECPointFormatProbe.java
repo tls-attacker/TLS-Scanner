@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -17,23 +18,22 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.ECPointFormatExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Arrays;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+    private static final byte[] UNDEFINED_FORMAT = new byte[] { (byte) 0xE4, (byte) 0x04 };
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
@@ -41,30 +41,30 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
     private TestResult supportsUncompressedPoint = TestResults.FALSE;
     private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
     private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
-
+    private TestResult completesHandshakeWithUndefined = TestResults.FALSE;
+    
     private List<ECPointFormat> supportedFormats;
     private TestResult tls13SecpCompression;
 
-    public ECPointFormatProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, scannerConfig);
+    public ECPointFormatProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
-            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
-            TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION);
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, 
+                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT);
     }
 
     @Override
     public void executeTest() {
-        if (shouldTestPointFormats)
-            supportedFormats = getSupportedPointFormats();
-        if (shouldTestTls13)
-            tls13SecpCompression = getTls13SecpCompressionSupported();
-        else
-            tls13SecpCompression = TestResults.COULD_NOT_TEST;
-        if (supportedFormats != null)
-            return;
-        else
-            LOGGER.debug("Unable to determine supported point formats");
+        completesHandshakeWithUndefined = TestResults.CANNOT_BE_TESTED;
+        if (shouldTestPointFormats) {
+        	supportedFormats = getSupportedPointFormats();
+        	completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
+        }
+        tls13SecpCompression = shouldTestTls13 ? getTls13SecpCompressionSupported() : TestResults.COULD_NOT_TEST;
+        if (supportedFormats == null)    
+        	LOGGER.debug("Unable to determine supported point formats");
     }
 
     private List<ECPointFormat> getSupportedPointFormats() {
@@ -75,52 +75,72 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         return supportedFormats;
     }
 
+    private TestResult canHandshakeWithUndefinedFormat() {
+        ECPointFormat dummyFormat = ECPointFormat.UNCOMPRESSED;
+        List<CipherSuite> ourECDHCipherSuites = getCipherSuitesForTest();
+        List<NamedGroup> groups = getGroupsForTest(dummyFormat);
+        State state = getState(ourECDHCipherSuites, dummyFormat, groups);
+        state.getWorkflowTrace().getFirstSendMessage(ClientHelloMessage.class)
+            .getExtension(ECPointFormatExtensionMessage.class).setPointFormats(Modifiable.explicit(UNDEFINED_FORMAT));
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
+    }
+
     private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
+        List<CipherSuite> ourECDHCipherSuites = getCipherSuitesForTest();
+
+        List<NamedGroup> groups = getGroupsForTest(format);
+        State state = getState(ourECDHCipherSuites, format, groups);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            supportedFormats.add(format);
+        }
+    }
+
+    public List<CipherSuite> getCipherSuitesForTest() {
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.name().contains("TLS_ECDH")) {
                 ourECDHCipherSuites.add(cipherSuite);
             }
         }
+        return ourECDHCipherSuites;
+    }
 
+    public List<NamedGroup> getGroupsForTest(ECPointFormat format) {
         List<NamedGroup> groups = null;
         switch (format) {
             case UNCOMPRESSED:
                 groups = new LinkedList<>();
-                groups.addAll(Arrays.asList(NamedGroup.values()));
+                groups.addAll(configSelector.getBaseConfig().getDefaultClientNamedGroups());
                 groups.remove(NamedGroup.ECDH_X25519);
                 groups.remove(NamedGroup.ECDH_X448);
                 break;
             case ANSIX962_COMPRESSED_PRIME:
-                groups = getSecpGroups();
+                groups = getSpecificGroups("SECP");
                 break;
             case ANSIX962_COMPRESSED_CHAR2:
-                groups = getSectGroups();
+                groups = getSpecificGroups("SECT");
                 break;
-            default:
-                ; // will never occur as all enum types are caught
         }
-        Config config = getScannerConfig().createConfig();
+        return groups;
+    }
+
+    public State getState(List<CipherSuite> ourECDHCipherSuites, ECPointFormat format, List<NamedGroup> groups) {
+        Config config = configSelector.getBaseConfig();
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
-        config.setEnforceSettings(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-        config.setQuickReceive(true);
-        config.setDefaultSelectedPointFormat(format);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
+        configSelector.repairConfig(config);
+        config.setDefaultSelectedPointFormat(format);
+        config.setEnforceSettings(true);
+
         State state = new State(config);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            supportedFormats.add(format);
-        }
+        return state;
     }
 
     private TestResult getTls13SecpCompressionSupported() {
@@ -128,28 +148,11 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
             // SECP curves in TLS 1.3 don't use compression, some
             // implementations
             // might still accept compression
-            List<NamedGroup> secpGroups = getSecpGroups();
-            Config tlsConfig = getScannerConfig().createConfig();
-            tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-            tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-            tlsConfig.setEnforceSettings(false);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(true);
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+            List<NamedGroup> secpGroups = getSpecificGroups("SECP");
+            Config tlsConfig = configSelector.getTls13BaseConfig();
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
             tlsConfig.setDefaultClientKeyShareNamedGroups(secpGroups);
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-            tlsConfig.setAddSupportedVersionsExtension(true);
-            tlsConfig.setAddKeyShareExtension(true);
-            tlsConfig.setAddCertificateStatusRequestExtension(true);
-            tlsConfig.setUseFreshRandom(true);
-            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
@@ -190,24 +193,14 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
-    private List<NamedGroup> getSecpGroups() {
+    private List<NamedGroup> getSpecificGroups(String identifier) {
         List<NamedGroup> secpGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.getImplemented()) {
-            if (group.name().contains("SECP")) {
+        for (NamedGroup group : configSelector.getBaseConfig().getDefaultClientNamedGroups()) {
+            if (group.name().contains(identifier)) {
                 secpGroups.add(group);
             }
         }
         return secpGroups;
-    }
-
-    private List<NamedGroup> getSectGroups() {
-        List<NamedGroup> sectGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.getImplemented()) {
-            if (group.name().contains("SECT")) {
-                sectGroups.add(group);
-            }
-        }
-        return sectGroups;
     }
 
     @Override
@@ -236,6 +229,7 @@ public class ECPointFormatProbe extends TlsProbe<ServerScannerConfig, ServerRepo
         super.put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
         super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
+        super.put(TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT, completesHandshakeWithUndefined);
         if (tls13SecpCompression != null)
             super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         else

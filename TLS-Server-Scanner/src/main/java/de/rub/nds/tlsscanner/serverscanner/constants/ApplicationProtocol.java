@@ -10,6 +10,12 @@
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
 public enum ApplicationProtocol {
+    ECHO,
+    STUN,
+    TURN,
+    VPN_CITRIX,
+    VPN_FORTINET,
+    COAP,
     HTTP,
     FTP,
     SMTP,

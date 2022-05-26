@@ -20,12 +20,9 @@ import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -33,11 +30,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<ProtocolVersion> protocolVersions;
 
@@ -91,8 +87,8 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
     private TestResult supportsSha256Prf = TestResults.FALSE;
     private TestResult supportsSha384Prf = TestResults.FALSE;
 
-    public CipherSuiteProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.CIPHER_SUITE, config);
+    public CipherSuiteProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CIPHER_SUITE, configSelector);
         protocolVersions = new LinkedList<>();
         super.register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
             TlsAnalyzedProperty.SUPPORTS_EXPORT, TlsAnalyzedProperty.SUPPORTS_DES, TlsAnalyzedProperty.SUPPORTS_SEED,
@@ -169,28 +165,10 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
     }
 
     private CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -216,32 +194,13 @@ public class CipherSuiteProbe extends TlsProbe<ServerScannerConfig, ServerReport
 
         boolean supportsMore = false;
         do {
-            Config config = getScannerConfig().createConfig();
+            Config config = configSelector.getBaseConfig();
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
             config.setDefaultClientSupportedCipherSuites(listWeSupport);
             config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
-            boolean containsEc = false;
-            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
-                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-                if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
-                    containsEc = true;
-                    break;
-                }
-            }
-            config.setAddEllipticCurveExtension(containsEc);
-            config.setAddECPointFormatExtension(containsEc);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            config.setAddRenegotiationInfoExtension(true);
-            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            config.setStopReceivingAfterFatal(true);
-            config.setStopActionsAfterIOException(true);
-            config.setStopActionsAfterFatal(true);
-            List<NamedGroup> namedGroup = new LinkedList<>();
-            namedGroup.addAll(Arrays.asList(NamedGroup.values()));
-            config.setDefaultClientNamedGroups(namedGroup);
+            configSelector.repairConfig(config);
             State state = new State(config);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

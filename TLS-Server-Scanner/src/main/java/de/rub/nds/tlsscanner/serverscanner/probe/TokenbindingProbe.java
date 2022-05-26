@@ -13,10 +13,7 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
@@ -25,10 +22,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,16 +32,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private List<TokenBindingVersion> supportedTokenBindingVersion;
+	private List<TokenBindingVersion> supportedTokenBindingVersion;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
-
-    public TokenbindingProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
+    
+    public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
+                TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
+                TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
     }
 
     @Override
@@ -59,30 +55,10 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        // Don't send extensions if we are in SSLv2
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddExtendedMasterSecretExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingVersion(version);
-        List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(nameGroups);
         List<TokenBindingKeyParameters> supportedParameters = new LinkedList<>();
         List<TokenBindingKeyParameters> toTestList = new ArrayList<>(Arrays.asList(TokenBindingKeyParameters.values()));
 
@@ -101,28 +77,10 @@ public class TokenbindingProbe extends TlsProbe<ServerScannerConfig, ServerRepor
     }
 
     private Set<TokenBindingVersion> getSupportedVersions() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        // Don't send extensions if we are in SSLv2
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddExtendedMasterSecretExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingKeyParameters(TokenBindingKeyParameters.values());
-        List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(nameGroups);
         Set<TokenBindingVersion> supportedVersions = new HashSet<>();
         for (TokenBindingVersion version : TokenBindingVersion.values()) {
             try {

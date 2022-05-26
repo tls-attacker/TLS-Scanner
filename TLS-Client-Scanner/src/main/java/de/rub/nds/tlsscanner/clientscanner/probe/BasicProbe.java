@@ -29,25 +29,24 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BasicProbe extends TlsProbe<ClientScannerConfig, ClientReport> {
+public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private List<CipherSuite> clientAdvertisedCipherSuites;
+	private List<CipherSuite> clientAdvertisedCipherSuites;
     private List<CompressionMethod> clientAdvertisedCompressions;
     private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
     private Set<ExtensionType> clientAdvertisedExtensions;
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-
+    
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
         super.register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES,

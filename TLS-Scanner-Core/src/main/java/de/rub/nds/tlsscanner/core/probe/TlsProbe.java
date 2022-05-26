@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.core.probe;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -28,26 +27,19 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsProbe<ScanConfig extends ScannerConfig, Report extends ScanReport>
+public abstract class TlsProbe<Report extends ScanReport>
     extends ScannerProbe<Report> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
-
-    protected final ScanConfig scannerConfig;
 
     private final ParallelExecutor parallelExecutor;
 
     private Map<TlsAnalyzedProperty, TestResult> propertiesMap;
 
-    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScanConfig scannerConfig) {
+    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type) {
         super(type);
-        this.scannerConfig = scannerConfig;
         this.parallelExecutor = parallelExecutor;
         this.propertiesMap = new HashMap<>();
-    }
-
-    public final ScanConfig getScannerConfig() {
-        return scannerConfig;
     }
 
     public final void executeState(State... states) {

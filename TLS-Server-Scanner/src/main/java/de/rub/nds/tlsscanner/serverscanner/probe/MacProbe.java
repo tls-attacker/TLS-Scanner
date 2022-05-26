@@ -16,10 +16,6 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintChecker;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseExtractor;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -47,19 +43,22 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CipherSuite> suiteList;
 
@@ -68,9 +67,9 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private CheckPattern appPattern;
     private CheckPattern finishedPattern;
     private CheckPattern verifyPattern;
-
-    public MacProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.MAC, scannerConfig);
+    
+    public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.MAC, configSelector);
     }
 
     @Override
@@ -98,19 +97,16 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     private ResponseFingerprint getCorrectAppDataFingerprint() {
-        Config config = scannerConfig.createConfig();
-        config.setStopActionsAfterIOException(true);
-        config.setAddRenegotiationInfoExtension(true);
+        Config config = configSelector.getBaseConfig();
         config.setHttpsParsingEnabled(true);
-        config.setQuickReceive(true);
         if (suiteList != null) {
             config.setDefaultClientSupportedCipherSuites(suiteList.get(0));
-            config.setDefaultSelectedCipherSuite(suiteList.get(0));
         }
         config.setWorkflowExecutorShouldClose(false);
+        configSelector.repairConfig(config);
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
@@ -148,8 +144,8 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
@@ -181,8 +177,8 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     private WorkflowTrace getVerifyDataTrace(Config config, int xorPosition) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         FinishedMessage lastSendMessage =
             (FinishedMessage) WorkflowTraceUtil.getLastSendMessage(HandshakeMessageType.FINISHED, trace);
         lastSendMessage.setVerifyData(Modifiable.xor(new byte[] { 01 }, xorPosition));
@@ -191,8 +187,8 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
         VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
         Record r = new Record();
         r.prepareComputations();
@@ -248,11 +244,9 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         CipherSuite suite = suiteList.get(0);
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[12];
         List<State> stateList = new LinkedList<>();
-        Config config = scannerConfig.createConfig();
-        config.setAddRenegotiationInfoExtension(true);
-        config.setQuickReceive(true);
+        Config config = configSelector.getBaseConfig();
         config.setDefaultClientSupportedCipherSuites(suite);
-        config.setDefaultSelectedCipherSuite(suite);
+        configSelector.repairConfig(config);
         config.setWorkflowExecutorShouldClose(false);
         List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < 12; i++) {
@@ -294,13 +288,12 @@ public class MacProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize(); // TODO
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();
-        Config config = scannerConfig.createConfig();
-        config.setAddRenegotiationInfoExtension(true);
-        config.setQuickReceive(true);
+        Config config = configSelector.getBaseConfig();
         config.setDefaultClientSupportedCipherSuites(suite);
         config.setDefaultSelectedCipherSuite(suite);
         config.setWorkflowExecutorShouldClose(false);
         config.setHttpsParsingEnabled(true);
+        configSelector.repairConfig(config);
         List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < macSize; i++) {
             WorkflowTrace trace;

@@ -13,34 +13,26 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Arrays;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<String> supportedAlpnProtocols;
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    public AlpnProbe(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.ALPN, scannerConfig);
+    public AlpnProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.ALPN, configSelector);
         super.register(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
     }
 
@@ -50,39 +42,17 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     }
 
     private List<String> getSupportedAlpnProtocols() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
+        Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
         tlsConfig.setAddAlpnExtension(true);
-        List<String> alpnProtocols = new LinkedList<>();
-        for (AlpnProtocol protocol : AlpnProtocol.values()) {
-            if (!protocol.isGrease()) {
-                alpnProtocols.add(protocol.getConstant());
-            }
-        }
-        tlsConfig.setDefaultProposedAlpnProtocols(alpnProtocols);
 
         String selectedAlpnProtocol;
         List<String> supportedAlpnProtocols = new LinkedList<>();
         List<String> toTestList = new LinkedList<>();
         for (AlpnProtocol protocol : AlpnProtocol.values()) {
-            toTestList.add(protocol.getConstant());
+            if (!protocol.isGrease()) {
+                toTestList.add(protocol.getConstant());
+            }
         }
         do {
             selectedAlpnProtocol = testAlpns(toTestList, tlsConfig);
@@ -94,7 +64,7 @@ public class AlpnProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
                 supportedAlpnProtocols.add(selectedAlpnProtocol);
                 toTestList.remove(selectedAlpnProtocol);
             }
-        } while (selectedAlpnProtocol != null || toTestList.size() > 0);
+        } while (selectedAlpnProtocol != null || !toTestList.isEmpty());
         return supportedAlpnProtocols;
     }
 

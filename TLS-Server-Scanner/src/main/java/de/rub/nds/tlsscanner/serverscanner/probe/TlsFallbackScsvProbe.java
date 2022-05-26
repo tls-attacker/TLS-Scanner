@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -28,45 +27,28 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TlsFallbackScsvProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private ProtocolVersion secondHighestVersion;
     private TestResult result;
 
-    public TlsFallbackScsvProbe(ParallelExecutor parallelExecutor, ServerScannerConfig scannerConfig) {
-        super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, scannerConfig);
+    public TlsFallbackScsvProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
     }
 
     @Override
     public void executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new ArrayList<>(CipherSuite.getImplemented());
-        cipherSuites.add(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setDefaultSelectedProtocolVersion(secondHighestVersion);
-        tlsConfig.setDefaultHighestClientProtocolVersion(secondHighestVersion);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(secondHighestVersion);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
+        tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
 
         State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
         executeState(state);

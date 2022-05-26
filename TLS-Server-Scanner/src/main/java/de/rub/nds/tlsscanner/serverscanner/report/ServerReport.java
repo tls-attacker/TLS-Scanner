@@ -28,7 +28,9 @@ public class ServerReport extends ScanReport {
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
+    private Boolean isHandshaking = null;
     private ProtocolType protocolType = null;
+
 
     // Attacks
     private KnownPaddingOracleVulnerability knownVulnerability = null;
@@ -76,6 +78,9 @@ public class ServerReport extends ScanReport {
     // CCA
     private Boolean ccaSupported = null;
     private Boolean ccaRequired = null;
+
+    private Long closedAfterFinishedDelta;
+    private Long closedAfterAppDataDelta;
 
     private int performedTcpConnections = 0;
 
@@ -152,6 +157,14 @@ public class ServerReport extends ScanReport {
 
     public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
         this.speaksProtocol = speaksProtocol;
+    }
+
+    public Boolean getIsHandshaking() {
+        return isHandshaking;
+    }
+
+    public void setIsHandshaking(Boolean isHandshaking) {
+        this.isHandshaking = isHandshaking;
     }
 
     public synchronized Integer getCookieLength() {
@@ -347,5 +360,21 @@ public class ServerReport extends ScanReport {
 
     public synchronized void setHelloRetryRequestSelectedNamedGroup(NamedGroup helloRetryRequestSelectedNamedGroup) {
         this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
+    }
+
+    public synchronized Long getClosedAfterFinishedDelta() {
+        return closedAfterFinishedDelta;
+    }
+
+    public synchronized void setClosedAfterFinishedDelta(long closedAfterFinishedDelta) {
+        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
+    }
+
+    public synchronized Long getClosedAfterAppDataDelta() {
+        return closedAfterAppDataDelta;
+    }
+
+    public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
+        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 }

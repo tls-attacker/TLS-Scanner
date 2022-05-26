@@ -42,11 +42,11 @@ public final class TlsClientScanner extends TlsScanner {
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
         parallelExecutor.setDefaultBeforeTransportInitCallback(clientAfterPreInitCallback);
         parallelExecutor.setDefaultBeforeTransportPreInitCallback(createConnectionHook());
-        fillDefaultProbeLists();
+        fillProbeLists();
     }
 
     @Override
-    protected void fillDefaultProbeLists() {
+    protected void fillProbeLists() {
         addProbeToProbeList(new BasicProbe(parallelExecutor, config));
         addProbeToProbeList(new DheParameterProbe(parallelExecutor, config));
         addProbeToProbeList(new ForcedCompressionProbe(parallelExecutor, config));

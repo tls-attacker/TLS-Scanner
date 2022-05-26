@@ -27,13 +27,10 @@ import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseParser;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.cert.CertificateEntry;
@@ -45,23 +42,21 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
+public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -74,28 +69,23 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
     private static final long STAPLED_NONCE_RANDOM_SEED = 42;
     private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
-    public OcspProbe(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.OCSP, config);
+    public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.OCSP, configSelector);
         super.register(TlsAnalyzedProperty.SUPPORTS_OCSP, TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
-            TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
-            TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
-            TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.LIST_OCSP_RESULTS);
+                TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
+                TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
+                TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.LIST_OCSP_RESULTS);
     }
 
     @Override
     public void executeTest() {
-        Config tlsConfig = initTlsConfig();
-        if (serverCertChains == null) {
-            LOGGER.warn("Couldn't fetch certificate chains from server!");
-            return;
-        }
-        certResults = new LinkedList<>();
+    	certResults = new LinkedList<>();
         for (CertificateChain serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
             getMustStaple(serverCertChain.getCertificate(), certResult);
-            getStapledResponse(tlsConfig, certResult);
+            getStapledResponse(certResult);
             performRequest(serverCertChain.getCertificate(), certResult);
 
             certResults.add(certResult);
@@ -118,7 +108,12 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         }
     }
 
-    private void getStapledResponse(Config tlsConfig, OcspCertificateResult certResult) {
+    private void getStapledResponse(OcspCertificateResult certResult) {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
+
         State state = new State(tlsConfig);
         executeState(state);
         List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
@@ -214,27 +209,6 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
         return asn1Encoder.encode();
     }
 
-    private Config initTlsConfig() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-
-        tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-
-        return tlsConfig;
-    }
-
     @Override
     protected Requirement getRequirements(ServerReport report) {
         return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
@@ -255,33 +229,15 @@ public class OcspProbe extends TlsProbe<ServerScannerConfig, ServerReport> {
 
     private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
         List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setDefaultClientNamedGroups(tls13NamedGroups);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(tls13NamedGroups);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-        State state = new State(tlsConfig);
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         List<PskKeyExchangeMode> pskKex = new LinkedList<>();
         pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
         pskKex.add(PskKeyExchangeMode.PSK_KE);
         tlsConfig.setPSKKeyExchangeModes(pskKex);
         tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+
+        State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
             CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
     // server report lists, maps, sets
+    LIST_SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.LIST),
     LIST_BLEICHENBACHER_TESTRESULTS(TlsAnalyzedPropertyCategory.LIST),
     LIST_PADDINGORACLE_TESTRESULTS(TlsAnalyzedPropertyCategory.LIST),
     LIST_DIRECTRACCOON_TESTRESULT(TlsAnalyzedPropertyCategory.LIST),
@@ -97,6 +98,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS_1_3_DRAFT_26(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_3_DRAFT_27(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_3_DRAFT_28(TlsAnalyzedPropertyCategory.VERSIONS),
+    SUPPORTS_DTLS_1_0_DRAFT(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_DTLS_1_0(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_DTLS_1_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_DTLS_1_3(TlsAnalyzedPropertyCategory.VERSIONS),
@@ -184,6 +186,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_UNCOMPRESSED_POINT(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_PRIME(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_CHAR2(TlsAnalyzedPropertyCategory.EC),
+    HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_TLS13_SECP_COMPRESSION(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_PRIME_CURVE(TlsAnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_CHAR2_CURVE(TlsAnalyzedPropertyCategory.EC),
@@ -333,9 +336,14 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
      * DTLS
      */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
+    DTLS_FRAGMENTATION_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS(TlsAnalyzedPropertyCategory.QUIRKS),
+    DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_REORDERING(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_HVR_RETRANSMISSIONS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     HAS_COOKIE_CHECKS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_IP_ADDRESS_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_PORT_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_VERSION_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_RANDOM_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_SESSION_ID_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
