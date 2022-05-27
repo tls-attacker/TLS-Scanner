@@ -69,8 +69,8 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
     }
 
     public static DefaultConfigProfile[] getTls13ConfigProfiles() {
-        return new DefaultConfigProfile[] { RICH_TLS_13, CLEAN_NAMEDGROUPS_TLS_13, CLEAN_SIGNATUREALGORITHMS_TLS_13,
-            CLEAN_TLS_13 };
+        return new DefaultConfigProfile[] { RICH_TLS_13, SLIGHTLY_REDUCED_NAMEDGROUPS, MODERATELY_REDUCED_NAMEDGROUPS,
+            CLEAN_NAMEDGROUPS_TLS_13, CLEAN_SIGNATUREALGORITHMS_TLS_13, CLEAN_TLS_13 };
     }
 
 }

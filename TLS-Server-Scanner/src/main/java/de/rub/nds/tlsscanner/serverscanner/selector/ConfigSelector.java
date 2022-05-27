@@ -40,14 +40,25 @@ import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
 
+    public String getConfigProfileIdentifier() {
+        return configProfileIdentifier;
+    }
+
+    public String getConfigProfileIdentifierTls13() {
+        return configProfileIdentifierTls13;
+    }
+
     private final ServerScannerConfig scannerConfig;
     private Config workingConfig;
+    private String configProfileIdentifier;
     private Config workingTl13Config;
+    private String configProfileIdentifierTls13;
 
     public static final String PATH = "/configs/";
     public static final String SSL2_CONFIG = "ssl2Only.config";
     public static final String TLS13_CONFIG = "tls13rich.config";
     public static final String DEFAULT_CONFIG = "default.config";
+    private static final int COOLDOWN_TIMEOUT_MULTIPLIER = 5;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -58,13 +69,18 @@ public class ConfigSelector {
         this.scannerConfig = scannerConfig;
     }
 
+    public boolean findWorkingConfigs() {
+        findWorkingConfig();
+        findWorkingTls13Config();
+        return workingConfig != null || workingTl13Config != null;
+    }
+
     public boolean findWorkingConfig() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls12ConfigProfiles()) {
-            Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + DEFAULT_CONFIG));
-            ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
-            prepareBaseConfig(baseConfig);
+            Config baseConfig = getConfigForProfile(DEFAULT_CONFIG, configProfile);
             if (configWorks(baseConfig)) {
-                LOGGER.info("Using config " + configProfile.getIdentifier() + " for scan.");
+                reportLimitation(configProfile, "TLS 1.2");
+                configProfileIdentifier = configProfile.getIdentifier();
                 workingConfig = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
@@ -73,20 +89,36 @@ public class ConfigSelector {
         return false;
     }
 
+    public Config getConfigForProfile(String startingConfigFile, ConfigFilterProfile configProfile)
+        throws ConfigurationException {
+        if (scannerConfig.isConfigSearchCooldown()) {
+            pauseSearch();
+        }
+        Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
+        ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
+        prepareBaseConfig(baseConfig);
+        return baseConfig;
+    }
+
+    public void reportLimitation(ConfigFilterProfile configProfile, String versionText) {
+        if (configProfile.getConfigFilterTypes().length > 0) {
+            LOGGER.warn(
+                "Unable to perform handshake with extensive Config for {}.\nScanning with reduced Config ({}), which may affect the extent of some probes.",
+                versionText, configProfile.getIdentifier());
+        }
+    }
+
     public boolean findWorkingTls13Config() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
-            Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
-            ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
-            prepareBaseConfig(baseConfig);
+            Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
             if (configWorks(baseConfig)) {
-                LOGGER.info("Using config " + configProfile.getIdentifier() + " for TLS 1.3 scans.");
+                configProfileIdentifierTls13 = configProfile.getIdentifier();
+                reportLimitation(configProfile, "TLS 1.3");
                 workingTl13Config = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
             }
         }
-        LOGGER.info("Found no suitable Config for TLS 1.3 - will use default config");
-        workingTl13Config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
         return false;
     }
 
@@ -96,6 +128,13 @@ public class ConfigSelector {
         applyScannerConfigParameters(baseConfig);
         repairSni(baseConfig);
         repairConfig(baseConfig);
+    }
+
+    private void pauseSearch() {
+        try {
+            Thread.sleep(COOLDOWN_TIMEOUT_MULTIPLIER * scannerConfig.getTimeout());
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private boolean configWorks(Config config) {
@@ -156,26 +195,53 @@ public class ConfigSelector {
     }
 
     public Config repairConfig(Config config) {
+        restrictBasicFeatures(config);
         if (config.getHighestProtocolVersion().isTLS13()) {
-            config.setAddEllipticCurveExtension(true);
-            config.setAddECPointFormatExtension(false);
-            if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
-                config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(config.getDefaultClientNamedGroups()));
-            } else {
-                config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
-                    .filter(config.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
-            }
+            adjustKeyShareFields(config);
         } else {
-            boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
-                .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
-                .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
-            config.setAddEllipticCurveExtension(containsEc);
-            config.setAddECPointFormatExtension(containsEc);
+            adjustEccExtensionsPreTls13(config);
         }
+        setDefaultSelectedCipherSuites(config);
+        return config;
+    }
+
+    public void adjustEccExtensionsPreTls13(Config config) {
+        boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
+            .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
+            .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
+        config.setAddEllipticCurveExtension(containsEc);
+        config.setAddECPointFormatExtension(containsEc);
+    }
+
+    public void adjustKeyShareFields(Config config) {
+        config.setAddEllipticCurveExtension(true);
+        config.setAddECPointFormatExtension(false);
+        if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
+            config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(config.getDefaultClientNamedGroups()));
+        } else {
+            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
+                .filter(config.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+        }
+    }
+
+    public void setDefaultSelectedCipherSuites(Config config) {
         CipherSuite defaultSelectedCipherSuite = config.getDefaultClientSupportedCipherSuites().stream()
             .filter(CipherSuite::isRealCipherSuite).findFirst().orElse(config.getDefaultSelectedCipherSuite());
         config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
-        return config;
+    }
+
+    public void restrictBasicFeatures(Config config) {
+        Config relevantConfig = config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
+        if (relevantConfig != null) {
+            config.setDefaultClientSupportedCipherSuites(config.getDefaultClientSupportedCipherSuites().stream()
+                .filter(relevantConfig.getDefaultClientSupportedCipherSuites()::contains).collect(Collectors.toList()));
+            config.setDefaultClientNamedGroups(config.getDefaultClientNamedGroups().stream()
+                .filter(relevantConfig.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+            config.setDefaultClientSupportedSignatureAndHashAlgorithms(
+                config.getDefaultClientSupportedSignatureAndHashAlgorithms().stream()
+                    .filter(relevantConfig.getDefaultClientSupportedSignatureAndHashAlgorithms()::contains)
+                    .collect(Collectors.toList()));
+        }
     }
 
     public Config getBaseConfig() {
@@ -189,6 +255,9 @@ public class ConfigSelector {
     }
 
     public Config getTls13BaseConfig() {
+        if (workingTl13Config == null) {
+            return Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
+        }
         return workingTl13Config.createCopy();
     }
 
