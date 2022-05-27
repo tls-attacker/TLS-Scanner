@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
