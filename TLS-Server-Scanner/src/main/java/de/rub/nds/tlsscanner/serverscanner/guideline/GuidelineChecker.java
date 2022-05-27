@@ -37,7 +37,6 @@ public class GuidelineChecker {
             @SuppressWarnings("unchecked")
             List<GuidelineReport> guidelineReports = ((ListResult<GuidelineReport>) report.getResultMap()
                 .get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name())).getList();
-            ;
             List<GuidelineCheckResult> results = new ArrayList<>();
             for (GuidelineCheck check : this.guideline.getChecks()) {
                 GuidelineCheckResult result;
@@ -85,6 +84,8 @@ public class GuidelineChecker {
                 results.add(result);
             }
             guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
+            report.putResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS,
+                new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
         } catch (Exception e) {
             LOGGER.debug("property " + TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name()
                 + " requires a valid TestResult for the GuidelineChecker!");
