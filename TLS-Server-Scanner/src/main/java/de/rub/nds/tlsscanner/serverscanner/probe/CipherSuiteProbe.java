@@ -66,6 +66,9 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private TestResult supportsAria = TestResults.FALSE;
     private TestResult supportsChacha = TestResults.FALSE;
     private TestResult supportsRsa = TestResults.FALSE;
+    private TestResult supportsDh = TestResults.FALSE;
+    private TestResult supportsDhe = TestResults.FALSE;
+    private TestResult supportsEcdhe = TestResults.FALSE;
     private TestResult supportsStaticEcdh = TestResults.FALSE;
     private TestResult supportsEcdsa = TestResults.FALSE;
     private TestResult supportsRsaCert = TestResults.FALSE;
@@ -107,7 +110,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
             TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
             TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
-            TlsAnalyzedProperty.SET_CIPHERSUITES);
+            TlsAnalyzedProperty.SET_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_DHE,
+            TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
     }
 
     @Override
@@ -302,6 +306,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsCamellia = TestResults.COULD_NOT_TEST;
             supportsChacha = TestResults.COULD_NOT_TEST;
             supportsDesCiphers = TestResults.COULD_NOT_TEST;
+            supportsDh = TestResults.COULD_NOT_TEST;
+            supportsEcdhe = TestResults.COULD_NOT_TEST;
             supportsEcmqv = TestResults.COULD_NOT_TEST;
             supportsExportCiphers = TestResults.COULD_NOT_TEST;
             supportsFortezza = TestResults.COULD_NOT_TEST;
@@ -470,10 +476,13 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         super.put(TlsAnalyzedProperty.SUPPORTS_ARIA, supportsAria);
         super.put(TlsAnalyzedProperty.SUPPORTS_CHACHA, supportsChacha);
         super.put(TlsAnalyzedProperty.SUPPORTS_RSA, supportsRsa);
+        super.put(TlsAnalyzedProperty.SUPPORTS_STATIC_DH, supportsDh);
+        super.put(TlsAnalyzedProperty.SUPPORTS_DHE, supportsDhe);
         super.put(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
         super.put(TlsAnalyzedProperty.SUPPORTS_ECDSA, supportsEcdsa);
         super.put(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, supportsRsaCert);
         super.put(TlsAnalyzedProperty.SUPPORTS_DSS, supportsDss);
+        super.put(TlsAnalyzedProperty.SUPPORTS_ECDHE, supportsEcdhe);
         super.put(TlsAnalyzedProperty.SUPPORTS_GOST, supportsGost);
         super.put(TlsAnalyzedProperty.SUPPORTS_SRP, supportsSrp);
         super.put(TlsAnalyzedProperty.SUPPORTS_KERBEROS, supportsKerberos);
