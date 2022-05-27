@@ -1190,7 +1190,18 @@
         <propertyRecommendations>
             <result>FALSE</result>
             <shortDescription>The server does not process fragmented handshake messages</shortDescription>
-            <handlingRecommendation>Configure your server to always process fragmented handshake messages</handlingRecommendation>
+            <handlingRecommendation>Configure your server to process fragmented handshake messages</handlingRecommendation>
+        </propertyRecommendations>
+    </recommendation>
+    <recommendation>
+        <tlsAnalyzedProperty>SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS</tlsAnalyzedProperty>
+        <shortName>Supports DTLS fragmentation</shortName>
+        <shortDescription>Evaluates whether the server support the handshake message fragmentation with individual transport packets</shortDescription>
+        <links/>
+        <propertyRecommendations>
+            <result>FALSE</result>
+            <shortDescription>The server does not process fragmented handshake messages with individual transport packets</shortDescription>
+            <handlingRecommendation>Configure your server to process fragmented handshake messages</handlingRecommendation>
         </propertyRecommendations>
     </recommendation>
     <recommendation>

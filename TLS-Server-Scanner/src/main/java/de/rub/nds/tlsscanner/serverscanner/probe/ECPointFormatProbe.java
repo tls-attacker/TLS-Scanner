@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -16,6 +17,8 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.ECPointFormatExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -30,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerReport, ECPointFormatResult> {
+    private static final byte[] UNDEFINED_FORMAT = new byte[] { (byte) 0xE4, (byte) 0x04 };
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
@@ -41,8 +45,10 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
     @Override
     public ECPointFormatResult executeTest() {
         List<ECPointFormat> pointFormats = null;
+        TestResult completedWithUndefined = TestResults.CANNOT_BE_TESTED;
         if (shouldTestPointFormats) {
             pointFormats = getSupportedPointFormats();
+            completedWithUndefined = canHandshakeWithUndefinedFormat();
         }
         TestResult tls13SecpCompressionSupported;
         if (shouldTestTls13) {
@@ -51,11 +57,11 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
             tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
         }
         if (pointFormats != null) {
-            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
+            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported, completedWithUndefined));
 
         } else {
             LOGGER.debug("Unable to determine supported point formats");
-            return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
+            return (new ECPointFormatResult(null, tls13SecpCompressionSupported, completedWithUndefined));
         }
     }
 
@@ -67,43 +73,72 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
         return supportedFormats;
     }
 
+    private TestResult canHandshakeWithUndefinedFormat() {
+        ECPointFormat dummyFormat = ECPointFormat.UNCOMPRESSED;
+        List<CipherSuite> ourECDHCipherSuites = getCipherSuitesForTest();
+        List<NamedGroup> groups = getGroupsForTest(dummyFormat);
+        State state = getState(ourECDHCipherSuites, dummyFormat, groups);
+        state.getWorkflowTrace().getFirstSendMessage(ClientHelloMessage.class)
+            .getExtension(ECPointFormatExtensionMessage.class).setPointFormats(Modifiable.explicit(UNDEFINED_FORMAT));
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
+    }
+
     private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
+        List<CipherSuite> ourECDHCipherSuites = getCipherSuitesForTest();
+
+        List<NamedGroup> groups = getGroupsForTest(format);
+        State state = getState(ourECDHCipherSuites, format, groups);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            supportedFormats.add(format);
+        }
+    }
+
+    public List<CipherSuite> getCipherSuitesForTest() {
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.name().contains("TLS_ECDH")) {
                 ourECDHCipherSuites.add(cipherSuite);
             }
         }
+        return ourECDHCipherSuites;
+    }
 
+    public List<NamedGroup> getGroupsForTest(ECPointFormat format) {
         List<NamedGroup> groups = null;
         switch (format) {
             case UNCOMPRESSED:
                 groups = new LinkedList<>();
-                groups.addAll(Arrays.asList(NamedGroup.values()));
+                groups.addAll(configSelector.getBaseConfig().getDefaultClientNamedGroups());
                 groups.remove(NamedGroup.ECDH_X25519);
                 groups.remove(NamedGroup.ECDH_X448);
                 break;
             case ANSIX962_COMPRESSED_PRIME:
-                groups = getSecpGroups();
+                groups = getSpecificGroups("SECP");
                 break;
             case ANSIX962_COMPRESSED_CHAR2:
-                groups = getSectGroups();
+                groups = getSpecificGroups("SECT");
                 break;
-            default: // will never occur as all enum types are caught
-                ;
         }
+        return groups;
+    }
+
+    public State getState(List<CipherSuite> ourECDHCipherSuites, ECPointFormat format, List<NamedGroup> groups) {
         Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setDefaultClientNamedGroups(groups);
-        config.setEnforceSettings(true);
         configSelector.repairConfig(config);
+        config.setDefaultSelectedPointFormat(format);
+        config.setEnforceSettings(true);
+
         State state = new State(config);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            supportedFormats.add(format);
-        }
+        return state;
     }
 
     private TestResult getTls13SecpCompressionSupported() {
@@ -111,7 +146,7 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
             // SECP curves in TLS 1.3 don't use compression, some
             // implementations
             // might still accept compression
-            List<NamedGroup> secpGroups = getSecpGroups();
+            List<NamedGroup> secpGroups = getSpecificGroups("SECP");
             Config tlsConfig = configSelector.getTls13BaseConfig();
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
@@ -145,7 +180,8 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     public ECPointFormatResult getCouldNotExecuteResult() {
-        return new ECPointFormatResult(null, TestResults.COULD_NOT_TEST);
+        return new ECPointFormatResult(null, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+
     }
 
     @Override
@@ -158,26 +194,14 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
         shouldTestTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
-    private List<NamedGroup> getSecpGroups() {
+    private List<NamedGroup> getSpecificGroups(String identifier) {
         List<NamedGroup> secpGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.getImplemented()) {
-            if (group.name().contains("SECP")) {
+        for (NamedGroup group : configSelector.getBaseConfig().getDefaultClientNamedGroups()) {
+            if (group.name().contains(identifier)) {
                 secpGroups.add(group);
             }
         }
 
         return secpGroups;
     }
-
-    private List<NamedGroup> getSectGroups() {
-        List<NamedGroup> sectGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.getImplemented()) {
-            if (group.name().contains("SECT")) {
-                sectGroups.add(group);
-            }
-        }
-
-        return sectGroups;
-    }
-
 }

@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -17,60 +16,44 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteEpochAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsBugsResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsReorderingResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsBugsResult> {
+public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsReorderingResult> {
 
-    public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
+    public DtlsReorderingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.DTLS_REORDERING, configSelector);
     }
 
     @Override
-    public DtlsBugsResult executeTest() {
-        return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
+    public DtlsReorderingResult executeTest() {
+        return new DtlsReorderingResult(supportsReordering());
     }
 
-    private TestResult isAcceptingUnencryptedFinished() {
+    private TestResult supportsReordering() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        SendAction sendAction = new SendAction(new FinishedMessage(config));
-        Record record = new Record(config);
-        record.setEpoch(Modifiable.explicit(0));
-        sendAction.setRecords(record);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
-        State state = new State(config, trace);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
-
-    private TestResult isEarlyFinished() {
-        Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
+        trace.addTlsAction(new ChangeWriteEpochAction(0));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
+
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -86,8 +69,8 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport, 
     }
 
     @Override
-    public DtlsBugsResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public DtlsReorderingResult getCouldNotExecuteResult() {
+        return new DtlsReorderingResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override

@@ -619,7 +619,14 @@ public class DefaultRecommendationsTest {
             "Supports DTLS fragmentation", "Evaluates whether the server support the handshake message fragmentation",
             new PropertyResultRecommendation(TestResults.FALSE,
                 "The server does not process fragmented handshake messages",
-                "Configure your server to always process fragmented handshake messages"),
+                "Configure your server to process fragmented handshake messages"),
+            ""));
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+            "Supports DTLS fragmentation",
+            "Evaluates whether the server support the handshake message fragmentation with individual transport packets",
+            new PropertyResultRecommendation(TestResults.FALSE,
+                "The server does not process fragmented handshake messages with individual transport packets",
+                "Configure your server to process fragmented handshake messages"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_REORDERING, "Supports DTLS Reordering",
             "Evaluates whether the server support message reordering",

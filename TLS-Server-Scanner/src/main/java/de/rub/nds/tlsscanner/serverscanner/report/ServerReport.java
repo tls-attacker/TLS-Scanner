@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
@@ -64,6 +65,9 @@ public class ServerReport extends ScanReport {
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
     private ProtocolType protocolType = null;
+
+    // Application
+    private List<ApplicationProtocol> supportedApplications = null;
 
     // Attacks
     private List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList;
@@ -161,6 +165,9 @@ public class ServerReport extends ScanReport {
     private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
 
+    private Long closedAfterFinishedDelta;
+    private Long closedAfterAppDataDelta;
+
     // Guidelines
     private List<GuidelineReport> guidelineReports = new ArrayList<>();
 
@@ -202,19 +209,19 @@ public class ServerReport extends ScanReport {
         this.protocolType = protocolType;
     }
 
+    public synchronized List<ApplicationProtocol> getSupportedApplications() {
+        return supportedApplications;
+    }
+
+    public synchronized void setSupportedApplications(List<ApplicationProtocol> supportedApplications) {
+        this.supportedApplications = supportedApplications;
+    }
+
     public synchronized List<String> getSupportedAlpns() {
         return supportedAlpns;
     }
 
     public synchronized void setSupportedAlpns(List<String> supportedAlpns) {
-        this.supportedAlpns = supportedAlpns;
-    }
-
-    public List<String> getSupportedAlpnProtocols() {
-        return supportedAlpns;
-    }
-
-    public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
         this.supportedAlpns = supportedAlpns;
     }
 
@@ -796,5 +803,21 @@ public class ServerReport extends ScanReport {
 
     public synchronized void setConfigProfileIdentifierTls13(String configProfileIdentifierTls13) {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
+    }
+
+    public synchronized Long getClosedAfterFinishedDelta() {
+        return closedAfterFinishedDelta;
+    }
+
+    public synchronized void setClosedAfterFinishedDelta(long closedAfterFinishedDelta) {
+        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
+    }
+
+    public synchronized Long getClosedAfterAppDataDelta() {
+        return closedAfterAppDataDelta;
+    }
+
+    public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
+        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 }

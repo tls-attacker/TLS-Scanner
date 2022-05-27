@@ -31,10 +31,15 @@ public abstract class TlsScanner {
         this.probeList = probeList;
     }
 
-    protected abstract void fillDefaultProbeLists();
+    protected abstract void fillProbeLists();
 
     protected void addProbeToProbeList(TlsProbe probe) {
-        if (probeTypesToExecute == null || probeTypesToExecute.contains(probe.getType())) {
+        addProbeToProbeList(probe, true);
+    }
+
+    protected void addProbeToProbeList(TlsProbe probe, boolean addByDefault) {
+        if ((probeTypesToExecute == null && addByDefault)
+            || (probeTypesToExecute != null && probeTypesToExecute.contains(probe.getType()))) {
             probeList.add(probe);
         }
     }
