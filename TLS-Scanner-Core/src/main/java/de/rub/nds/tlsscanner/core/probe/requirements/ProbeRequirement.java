@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -58,7 +59,7 @@ public class ProbeRequirement implements Requirement {
             List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
             for (TlsAnalyzedProperty ap : requiredAnalyzedproperties) {
-                if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.TRUE)
+                if (apList.containsKey(ap.toString()) && apList.get(ap.toString()) != TestResults.TRUE)
                     aprops.add(ap);
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
@@ -95,7 +96,7 @@ public class ProbeRequirement implements Requirement {
             List<TlsAnalyzedProperty> aprops = new LinkedList<>();
             Map<String, TestResult> apList = report.getResultMap();
             for (TlsAnalyzedProperty ap : requiredAnalyzedpropertiesNot) {
-                if (apList.containsKey(ap.toString()) || apList.get(ap.toString()) != TestResults.FALSE)
+                if (apList.containsKey(ap.toString()) && apList.get(ap.toString()) != TestResults.FALSE)
                     aprops.add(ap);
             }
             TlsAnalyzedProperty[] tap = new TlsAnalyzedProperty[aprops.size()];
@@ -322,5 +323,26 @@ public class ProbeRequirement implements Requirement {
      */
     public ProbeRequirement getNot() {
         return not;
+    }
+
+    public String getReqs() {
+        String reqs = "";
+        if (requiredProbeTypes != null)
+            for (ProbeType pt : requiredProbeTypes)
+                reqs += pt.getName() + "|";
+        if (requiredAnalyzedproperties != null)
+            for (TlsAnalyzedProperty ap : requiredAnalyzedproperties)
+                reqs += ap.getName() + "|";
+        if (requiredAnalyzedpropertiesNot != null)
+            for (TlsAnalyzedProperty ap : requiredAnalyzedpropertiesNot)
+                reqs += ap.getName() + "|";
+        if (requiredExtensionTypes != null)
+            for (ExtensionType ap : requiredExtensionTypes)
+                reqs += ap.name() + "|";
+        if (requiredProtocolVersions != null)
+            for (ProtocolVersion ap : requiredProtocolVersions)
+                reqs += ap.name() + "|";
+
+        return reqs;
     }
 }
