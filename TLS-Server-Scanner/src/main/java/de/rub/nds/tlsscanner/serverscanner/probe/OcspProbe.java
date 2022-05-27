@@ -62,7 +62,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     private List<NamedGroup> tls13NamedGroups;
 
     private List<OcspCertificateResult> certResults;
-    private List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
+    private List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
 
     public static final int NONCE_TEST_VALUE_1 = 42;
     public static final int NONCE_TEST_VALUE_2 = 1337;
