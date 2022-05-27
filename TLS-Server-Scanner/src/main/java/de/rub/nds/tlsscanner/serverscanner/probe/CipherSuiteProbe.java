@@ -362,10 +362,16 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private void adjustKeyExchange(CipherSuite suite) {
         if (suite.name().contains("SRP"))
             supportsSrp = TestResults.TRUE;
+        if (suite.name().contains("_DH_"))
+            supportsDh = TestResults.TRUE;
+        if (suite.name().contains("_DHE_"))
+            supportsDhe = TestResults.TRUE;
         if (suite.name().contains("TLS_RSA"))
             supportsRsa = TestResults.TRUE;
         if (suite.name().contains("ECDH_"))
             supportsStaticEcdh = TestResults.TRUE;
+        if (suite.name().contains("ECDH"))
+            supportsEcdhe = TestResults.TRUE;
         if (suite.name().contains("NULL"))
             supportsNullCiphers = TestResults.TRUE;
         if (suite.name().contains("GOST"))
