@@ -33,62 +33,60 @@ public class GuidelineChecker {
     }
 
     public void fillReport(ServerReport report) {
-        try {
-            @SuppressWarnings("unchecked")
-            List<GuidelineReport> guidelineReports = ((ListResult<GuidelineReport>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name())).getList();
-            List<GuidelineCheckResult> results = new ArrayList<>();
-            for (GuidelineCheck check : this.guideline.getChecks()) {
-                GuidelineCheckResult result;
-                if (!check.passesCondition(report)) {
-                    result = new GuidelineCheckResult(TestResults.COULD_NOT_TEST) {
-                        @Override
-                        public String display() {
-                            return "Condition was not met => Check is skipped.";
-                        }
-                    };
-                    result.setName(check.getName());
-                    result.setId(check.getId());
-                    result.setCondition(check.getCondition());
-                    results.add(result);
-                    continue;
-                }
-                try {
-                    result = check.evaluate(report);
-                } catch (Throwable throwable) {
-                    LOGGER.debug("Failed evaluating check: ", throwable);
-                    result = new GuidelineCheckResult(TestResults.ERROR_DURING_TEST) {
-                        @Override
-                        public String display() {
-                            return throwable.getLocalizedMessage();
-                        }
-                    };
-                }
-
-                if (result.getResult() == null) {
-                    LOGGER.error("Null result from check {}", check.getId());
-                    continue;
-                }
-                if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MAY)) {
-                    result.setResult(TestResults.TRUE);
-                } else if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MUST_NOT)
-                    || Objects.equals(check.getRequirementLevel(), RequirementLevel.SHOULD_NOT)) {
-                    if (result.getResult().equals(TestResults.TRUE)) {
-                        result.setResult(TestResults.FALSE);
-                    } else if (result.getResult().equals(TestResults.FALSE)) {
-                        result.setResult(TestResults.TRUE);
+        @SuppressWarnings("unchecked")
+        List<GuidelineReport> guidelineReports =
+            report.getResultMap().get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name()) != null
+                ? ((ListResult<GuidelineReport>) report.getResultMap()
+                    .get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name())).getList()
+                : new ArrayList<>();
+        List<GuidelineCheckResult> results = new ArrayList<>();
+        for (GuidelineCheck check : guideline.getChecks()) {
+            GuidelineCheckResult result;
+            if (!check.passesCondition(report)) {
+                result = new GuidelineCheckResult(TestResults.COULD_NOT_TEST) {
+                    @Override
+                    public String display() {
+                        return "Condition was not met => Check is skipped.";
                     }
-                }
+                };
                 result.setName(check.getName());
                 result.setId(check.getId());
+                result.setCondition(check.getCondition());
                 results.add(result);
+                continue;
             }
-            guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
-            report.putResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS,
-                new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
-        } catch (Exception e) {
-            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name()
-                + " requires a valid TestResult for the GuidelineChecker!");
+            try {
+                result = check.evaluate(report);
+            } catch (Throwable throwable) {
+                LOGGER.debug("Failed evaluating check: ", throwable);
+                result = new GuidelineCheckResult(TestResults.ERROR_DURING_TEST) {
+                    @Override
+                    public String display() {
+                        return throwable.getLocalizedMessage();
+                    }
+                };
+            }
+
+            if (result.getResult() == null) {
+                LOGGER.error("Null result from check {}", check.getId());
+                continue;
+            }
+            if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MAY)) {
+                result.setResult(TestResults.TRUE);
+            } else if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MUST_NOT)
+                || Objects.equals(check.getRequirementLevel(), RequirementLevel.SHOULD_NOT)) {
+                if (result.getResult().equals(TestResults.TRUE)) {
+                    result.setResult(TestResults.FALSE);
+                } else if (result.getResult().equals(TestResults.FALSE)) {
+                    result.setResult(TestResults.TRUE);
+                }
+            }
+            result.setName(check.getName());
+            result.setId(check.getId());
+            results.add(result);
         }
+        guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
+        report.putResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS,
+            new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
     }
 }
