@@ -324,25 +324,4 @@ public class ProbeRequirement implements Requirement {
     public ProbeRequirement getNot() {
         return not;
     }
-
-    public String getReqs() {
-        String reqs = "";
-        if (requiredProbeTypes != null)
-            for (ProbeType pt : requiredProbeTypes)
-                reqs += pt.getName() + "|";
-        if (requiredAnalyzedproperties != null)
-            for (TlsAnalyzedProperty ap : requiredAnalyzedproperties)
-                reqs += ap.getName() + "|";
-        if (requiredAnalyzedpropertiesNot != null)
-            for (TlsAnalyzedProperty ap : requiredAnalyzedpropertiesNot)
-                reqs += ap.getName() + "|";
-        if (requiredExtensionTypes != null)
-            for (ExtensionType ap : requiredExtensionTypes)
-                reqs += ap.name() + "|";
-        if (requiredProtocolVersions != null)
-            for (ProtocolVersion ap : requiredProtocolVersions)
-                reqs += ap.name() + "|";
-
-        return reqs;
-    }
 }
