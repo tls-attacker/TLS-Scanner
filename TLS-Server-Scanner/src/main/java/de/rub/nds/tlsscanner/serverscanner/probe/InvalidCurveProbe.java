@@ -114,12 +114,15 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report)
-            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
-                TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-                TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION)
-            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.NAMED_GROUPS,
-                TlsProbeType.RESUMPTION);
+        ProbeRequirement tapTls13 =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        ProbeRequirement tapStaticEcdh =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
+        ProbeRequirement tapEcdhe =
+            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        return new ProbeRequirement(report).orRequirement(tapTls13, tapStaticEcdh, tapEcdhe).requireProbeTypes(
+            TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.NAMED_GROUPS,
+            TlsProbeType.RESUMPTION, TlsProbeType.RENEGOTIATION);
     }
 
     @SuppressWarnings("unchecked")
