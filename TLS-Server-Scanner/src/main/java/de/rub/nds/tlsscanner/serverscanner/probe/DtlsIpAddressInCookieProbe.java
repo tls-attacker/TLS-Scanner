@@ -94,7 +94,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

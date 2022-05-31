@@ -142,8 +142,8 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.REQUIRES_CCA)
+    protected Requirement getRequirements() {
+        return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.REQUIRES_CCA)
             .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 

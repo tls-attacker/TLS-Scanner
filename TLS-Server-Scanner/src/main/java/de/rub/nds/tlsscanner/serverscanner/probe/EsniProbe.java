@@ -65,8 +65,8 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.PROTOCOL_VERSION)
+    protected Requirement getRequirements() {
+        return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION)
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
     }
 

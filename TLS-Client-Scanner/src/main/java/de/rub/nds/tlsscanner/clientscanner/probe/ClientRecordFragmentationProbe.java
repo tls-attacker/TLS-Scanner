@@ -62,7 +62,7 @@ public class ClientRecordFragmentationProbe extends TlsClientProbe<ClientScanner
     }
 
     @Override
-    protected Requirement getRequirements(ClientReport report) {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

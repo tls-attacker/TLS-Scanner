@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ProbeRequirement implements Requirement {
-    private ScanReport report;
     private TlsProbeType[] requiredProbeTypes;
     private TlsAnalyzedProperty[] requiredAnalyzedproperties, requiredAnalyzedpropertiesNot;
     private ExtensionType[] requiredExtensionTypes;
@@ -32,14 +31,13 @@ public class ProbeRequirement implements Requirement {
     private ProbeRequirement not;
     private ProbeRequirement[] requiredOR;
 
-    public static ProbeRequirement NO_REQUIREMENT = new ProbeRequirement(null);
+    public static ProbeRequirement NO_REQUIREMENT = new ProbeRequirement();
 
-    public ProbeRequirement(ScanReport report) {
-        this.report = report;
+    public ProbeRequirement() {
     }
 
-    public ProbeRequirement getMissingRequirements() {
-        ProbeRequirement missing = new ProbeRequirement(report);
+    public ProbeRequirement getMissingRequirements(ScanReport report) {
+        ProbeRequirement missing = new ProbeRequirement();
 
         if (requiredProbeTypes != null) {
             List<TlsProbeType> ptypes = new LinkedList<>();
@@ -131,7 +129,7 @@ public class ProbeRequirement implements Requirement {
         if (requiredOR != null) {
             boolean or = false;
             for (ProbeRequirement pReq : requiredOR) {
-                if (pReq.evaluateRequirements()) {
+                if (pReq.evaluateRequirements(report)) {
                     or = true;
                     break;
                 }
@@ -140,7 +138,7 @@ public class ProbeRequirement implements Requirement {
                 missing.orRequirement(requiredOR);
         }
 
-        if (not != null && not.evaluateRequirements())
+        if (not != null && not.evaluateRequirements(report))
             missing.notRequirement(not);
 
         return missing;
@@ -181,12 +179,13 @@ public class ProbeRequirement implements Requirement {
         return this;
     }
 
-    public boolean evaluateRequirements() {
-        return probeTypesFulfilled() && analyzedProtocolVersionsFulfilled() && analyzedPropertiesFulfilled()
-            && extensionTypesFulfilled() && orFulfilled() && notFulfilled() && analyzedPropertiesNotFulfilled();
+    public boolean evaluateRequirements(ScanReport report) {
+        return probeTypesFulfilled(report) && analyzedProtocolVersionsFulfilled(report)
+            && analyzedPropertiesFulfilled(report) && extensionTypesFulfilled(report) && orFulfilled(report)
+            && notFulfilled(report) && analyzedPropertiesNotFulfilled(report);
     }
 
-    private boolean probeTypesFulfilled() {
+    private boolean probeTypesFulfilled(ScanReport report) {
         if (requiredProbeTypes == null)
             return true;
         for (TlsProbeType pt : requiredProbeTypes) {
@@ -196,7 +195,7 @@ public class ProbeRequirement implements Requirement {
         return true;
     }
 
-    private boolean analyzedPropertiesFulfilled() {
+    private boolean analyzedPropertiesFulfilled(ScanReport report) {
         if (requiredAnalyzedproperties == null)
             return true;
         Map<String, TestResult> apList = report.getResultMap();
@@ -210,7 +209,7 @@ public class ProbeRequirement implements Requirement {
         return true;
     }
 
-    private boolean analyzedProtocolVersionsFulfilled() {
+    private boolean analyzedProtocolVersionsFulfilled(ScanReport report) {
         if (requiredProtocolVersions == null)
             return true;
         TestResult versionsuiteResult =
@@ -228,7 +227,7 @@ public class ProbeRequirement implements Requirement {
         return false;
     }
 
-    private boolean analyzedPropertiesNotFulfilled() {
+    private boolean analyzedPropertiesNotFulfilled(ScanReport report) {
         if (requiredAnalyzedpropertiesNot == null)
             return true;
         Map<String, TestResult> apList = report.getResultMap();
@@ -242,7 +241,7 @@ public class ProbeRequirement implements Requirement {
         return true;
     }
 
-    private boolean extensionTypesFulfilled() {
+    private boolean extensionTypesFulfilled(ScanReport report) {
         if (requiredExtensionTypes == null)
             return true;
         TestResult extensionResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
@@ -259,20 +258,20 @@ public class ProbeRequirement implements Requirement {
         return false;
     }
 
-    private boolean orFulfilled() {
+    private boolean orFulfilled(ScanReport report) {
         if (requiredOR == null)
             return true;
         for (ProbeRequirement pReq : requiredOR) {
-            if (pReq.evaluateRequirements())
+            if (pReq.evaluateRequirements(report))
                 return true;
         }
         return false;
     }
 
-    private boolean notFulfilled() {
+    private boolean notFulfilled(ScanReport report) {
         if (not == null)
             return true;
-        return !not.evaluateRequirements();
+        return !not.evaluateRequirements(report);
     }
 
     /**

@@ -63,7 +63,7 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

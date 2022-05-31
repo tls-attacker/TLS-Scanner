@@ -149,20 +149,20 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements() {
         ProbeRequirement pReqSsl3 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
         ProbeRequirement pReqTls10 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
         ProbeRequirement pReqTls11 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
         ProbeRequirement pReqTls12 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
         ProbeRequirement pReqDtls10 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
         ProbeRequirement pReqDtls12 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE)
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE)
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE)
             .orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
     }

@@ -55,7 +55,7 @@ public class ForcedCompressionProbe extends TlsClientProbe<ClientScannerConfig, 
     }
 
     @Override
-    protected Requirement getRequirements(ClientReport report) {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

@@ -113,14 +113,14 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
+    protected Requirement getRequirements() {
         ProbeRequirement tapTls13 =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
         ProbeRequirement tapStaticEcdh =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
         ProbeRequirement tapEcdhe =
-            new ProbeRequirement(report).requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        return new ProbeRequirement(report).orRequirement(tapTls13, tapStaticEcdh, tapEcdhe).requireProbeTypes(
+            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        return new ProbeRequirement().orRequirement(tapTls13, tapStaticEcdh, tapEcdhe).requireProbeTypes(
             TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.NAMED_GROUPS,
             TlsProbeType.RESUMPTION, TlsProbeType.RENEGOTIATION);
     }

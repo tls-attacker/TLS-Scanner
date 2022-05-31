@@ -216,13 +216,13 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements(ServerReport report) {
-        ProbeRequirement cipherReq = new ProbeRequirement(report).requireProbeTypes(TlsProbeType.CIPHER_SUITE);
+    protected Requirement getRequirements() {
+        ProbeRequirement cipherReq = new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE);
         ProbeRequirement notTls13 =
-            new ProbeRequirement(report).requireAnalyzedPropertiesNot(TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+            new ProbeRequirement().requireAnalyzedPropertiesNot(TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                 TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                 TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement(report).orRequirement(cipherReq, notTls13);
+        return new ProbeRequirement().orRequirement(cipherReq, notTls13);
     }
 
     @SuppressWarnings("unchecked")
