@@ -150,7 +150,11 @@ public class FingerprintCheckerTest {
             ArrayConverter.hexStringToByteArray(
                 "0200004a03030fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f2400c030000022ff0100010000000000000b0004030001020023000000100005000302683200170000"));
         Record serverHelloRecord = parseRecord(ProtocolMessageType.HANDSHAKE, ProtocolVersion.TLS12.getValue(), 78,
-            ArrayConverter.hexStringToByteArray("160303004e0200004a03030fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f2400c030000022ff0100010000000000000b0004030001020023000000100005000302683200170000"));
+            ArrayConverter.hexStringToByteArray(
+                "160303004e0200004a03030fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f2400c030000022ff0100010000000000000b0004030001020023000000100005000302683200170000"));
+        Record serverHelloRecordDiffContent = parseRecord(ProtocolMessageType.HANDSHAKE, ProtocolVersion.TLS12.getValue(), 78,
+            ArrayConverter.hexStringToByteArray(
+                "00"));
 
         HandshakeMessage certificateMsg =
             parseMessage(HandshakeMessageType.CERTIFICATE.getValue(), 4050, null, ArrayConverter.hexStringToByteArray(
@@ -231,15 +235,15 @@ public class FingerprintCheckerTest {
         ModifiableByteArray serverHelloRandomDiffContent = new ModifiableByteArray();
         serverHelloRandomDiffContent.setOriginalValue(ServerHelloMessage.getHelloRetryRequestRandom());
         serverHelloMsgDiffContent.setRandom(serverHelloRandomDiffContent);
-        
+
         ModifiableByteArray serverHelloRandom = new ModifiableByteArray();
-        serverHelloRandom.setOriginalValue(ArrayConverter.hexStringToByteArray("0fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f24"));
+        serverHelloRandom.setOriginalValue(
+            ArrayConverter.hexStringToByteArray("0fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f24"));
         serverHelloMsg.setRandom(serverHelloRandom);
-        
+
         List<ProtocolMessage> msgListTestMsgContent = new LinkedList<>();
         EqualityError expectedResultMsgContent;
 
-        
         msgListTestMsgContent.add(serverHelloMsgDiffContent);
         msgListTestMsgContent.add(certificateMsg);
         msgListTestMsgContent.add(serverKeyExchangeMsg);
@@ -344,17 +348,20 @@ public class FingerprintCheckerTest {
         msgListTestMsgClassWithPriority.add(clientKeyExchangeMsg);
         expectedResultMsgClassWithPriority = EqualityError.MESSAGE_CLASS;
 
-        /*
-         * TODO-------------------------------------------------------------------------------- // Data for test with
-         * expected EqualityError: // EqualityError.MESSAGE_CONTENT // with PriorityCheck regarding
-         * EqualityError.RecordContent List<ProtocolMessage> msgListTestMsgContentWithPriority = new LinkedList<>();
-         * EqualityError expectedResultMsgContentWithPriority;
-         * msgListTestMsgContentWithPriority.add(clientHelloMsgDiffContent);
-         * msgListTestMsgContentWithPriority.add(clientKeyExchangeMsg); expectedResultMsgContentWithPriority =
-         * EqualityError.MESSAGE_CONTENT;
-         * ------------------------------------------------------------------------------------
-         */
-
+        //Data for test with expected EqualityError:
+        //EqualityError.MessageContent
+        // with PriorityCheck regarding EqualityError.RecordContent
+        EqualityError expectedResultMsgContentWithPriority;
+        expectedResultMsgContentWithPriority = EqualityError.MESSAGE_CONTENT;
+        
+        List<AbstractRecord> recordListTestServerWithContentError = new LinkedList<>();
+        
+        recordListTestServerWithContentError.add(serverHelloRecordDiffContent);
+        recordListTestServerWithContentError.add(certificateRecord);
+        recordListTestServerWithContentError.add(serverKeyExchangeRecord);
+        recordListTestServerWithContentError.add(serverHelloDoneRecord);
+    
+    
         // Data for test with expected EqualityError:
         // EqualityError.MESSAGE_COUNT
         // with PriorityCheck regarding EqualityError.RecordContent
@@ -388,7 +395,8 @@ public class FingerprintCheckerTest {
 
         // generate clientHelloRecord with different ContentType & different Content
         Record clientHelloRecordDiffContentTypeWithPriority = parseRecord(ProtocolMessageType.APPLICATION_DATA,
-            ProtocolVersion.TLS10.getValue(), 512, ArrayConverter.hexStringToByteArray("1603010200010001fc03036ced07c5f0707d08d6c98ab375b523236492233a56eaec0d8feb2565ba7c337720c6b3ba7f6fdf5c643a038d40b56a8db014a6c90359432f3ccbb6db40fa76a9200022130113031302c02bc02fcca9cca8c02cc030c00ac009c013c014009c009d002f0035010001910000001a00180000157777772e7363686e6569657266616374732e636f6d00170000ff01000100000a000e000c001d00170018001901000101000b00020100002300000010000e000c02683208687474702f312e310005000501000000000022000a000804030503060302030033006b0069001d00204ca75275f38541b0628d64892200b8b184c7b7fd836b4c8c9b3124e753d7577a00170041040c6eae5febeb82f27d09c5cb7155682da96bf0863aeaff721f556885790a3819449702afd594b8c088aa1ea4effaf210867a0c0e430ad460ffe16847b6d1cbc4002b00050403040303000d0018001604030503060308040805080604010501060102030201002d00020101001c0002400100150081000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
+            ProtocolVersion.TLS10.getValue(), 512, ArrayConverter.hexStringToByteArray(
+                "1603010200010001fc03036ced07c5f0707d08d6c98ab375b523236492233a56eaec0d8feb2565ba7c337720c6b3ba7f6fdf5c643a038d40b56a8db014a6c90359432f3ccbb6db40fa76a9200022130113031302c02bc02fcca9cca8c02cc030c00ac009c013c014009c009d002f0035010001910000001a00180000157777772e7363686e6569657266616374732e636f6d00170000ff01000100000a000e000c001d00170018001901000101000b00020100002300000010000e000c02683208687474702f312e310005000501000000000022000a000804030503060302030033006b0069001d00204ca75275f38541b0628d64892200b8b184c7b7fd836b4c8c9b3124e753d7577a00170041040c6eae5febeb82f27d09c5cb7155682da96bf0863aeaff721f556885790a3819449702afd594b8c088aa1ea4effaf210867a0c0e430ad460ffe16847b6d1cbc4002b00050403040303000d0018001604030503060308040805080604010501060102030201002d00020101001c0002400100150081000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
         List<AbstractRecord> recordListTestRecordContentTypeWithPriority = new LinkedList<>();
         EqualityError expectedResultRecordContentTypeWithPriority;
@@ -416,7 +424,8 @@ public class FingerprintCheckerTest {
 
         // generate ClientHelloRecord with different Version & different Content
         Record clientHelloRecordDiffVersionWithPriority = parseRecord(ProtocolMessageType.HANDSHAKE,
-            ProtocolVersion.TLS12.getValue(), 512, ArrayConverter.hexStringToByteArray("1603010200010001fc03036ced07c5f0707d08d6c98ab375b523236492233a56eaec0d8feb2565ba7c337720c6b3ba7f6fdf5c643a038d40b56a8db014a6c90359432f3ccbb6db40fa76a9200022130113031302c02bc02fcca9cca8c02cc030c00ac009c013c014009c009d002f0035010001910000001a00180000157777772e7363686e6569657266616374732e636f6d00170000ff01000100000a000e000c001d00170018001901000101000b00020100002300000010000e000c02683208687474702f312e310005000501000000000022000a000804030503060302030033006b0069001d00204ca75275f38541b0628d64892200b8b184c7b7fd836b4c8c9b3124e753d7577a00170041040c6eae5febeb82f27d09c5cb7155682da96bf0863aeaff721f556885790a3819449702afd594b8c088aa1ea4effaf210867a0c0e430ad460ffe16847b6d1cbc4002b00050403040303000d0018001604030503060308040805080604010501060102030201002d00020101001c0002400100150081000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
+            ProtocolVersion.TLS12.getValue(), 512, ArrayConverter.hexStringToByteArray(
+                "1603010200010001fc03036ced07c5f0707d08d6c98ab375b523236492233a56eaec0d8feb2565ba7c337720c6b3ba7f6fdf5c643a038d40b56a8db014a6c90359432f3ccbb6db40fa76a9200022130113031302c02bc02fcca9cca8c02cc030c00ac009c013c014009c009d002f0035010001910000001a00180000157777772e7363686e6569657266616374732e636f6d00170000ff01000100000a000e000c001d00170018001901000101000b00020100002300000010000e000c02683208687474702f312e310005000501000000000022000a000804030503060302030033006b0069001d00204ca75275f38541b0628d64892200b8b184c7b7fd836b4c8c9b3124e753d7577a00170041040c6eae5febeb82f27d09c5cb7155682da96bf0863aeaff721f556885790a3819449702afd594b8c088aa1ea4effaf210867a0c0e430ad460ffe16847b6d1cbc4002b00050403040303000d0018001604030503060308040805080604010501060102030201002d00020101001c0002400100150081000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
 
         List<AbstractRecord> recordListTestRecordVersionWithPriority = new LinkedList<>();
         EqualityError expectedResultRecordVersionWithPriority;
@@ -460,8 +469,8 @@ public class FingerprintCheckerTest {
             // Tests with PriorityCheck regarding EqualityError.Record_Content
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClassWithPriority,
                 recordListTestClientWithContentError, stateTestClient, expectedResultMsgClassWithPriority },
-            // { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgContentWithPriority,
-            // recordListTestClientWithContentError, stateTestClient, expectedResultMsgContentWithPriority },
+            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent, recordListTestServerWithContentError,
+                stateTestServer, expectedResultMsgContentWithPriority },
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCountWithPriority,
                 recordListTestClientWithContentError, stateTestClient, expectedResultMsgCountWithPriority },
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
