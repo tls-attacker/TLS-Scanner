@@ -12,5 +12,5 @@ package de.rub.nds.scanner.core.probe.requirements;
 import de.rub.nds.scanner.core.report.ScanReport;
 
 public interface Requirement {
-    public boolean evaluateRequirements(ScanReport report);
+    public boolean evaluate(ScanReport report);
 }

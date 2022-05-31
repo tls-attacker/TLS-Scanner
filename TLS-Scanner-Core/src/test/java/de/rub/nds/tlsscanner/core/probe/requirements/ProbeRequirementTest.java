@@ -110,56 +110,56 @@ public class ProbeRequirementTest {
     @Test
     public void evaluateProbeRequirementsTest() {
         ProbeRequirement pReq = new ProbeRequirement();
-        assertTrue(pReq.evaluateRequirements(report) == true);
+        assertTrue(pReq.evaluate(report) == true);
 
         ProbeRequirement pReq1 = new ProbeRequirement();
         ProbeRequirement pReq2 = new ProbeRequirement();
 
         ProbeRequirement pReqNot = new ProbeRequirement().requireAnalyzedPropertiesNot(aProp);
         report.putResult(aProp, TestResults.FALSE);
-        assertTrue(pReqNot.evaluateRequirements(report));
+        assertTrue(pReqNot.evaluate(report));
 
         pReq2.notRequirement(pReq1);
-        assertFalse(pReq2.evaluateRequirements(report));
+        assertFalse(pReq2.evaluate(report));
 
         pReq.orRequirement(pReq1, pReq2);
-        assertTrue(pReq.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
 
         pReq1.requireAnalyzedProperties(aProp);
-        assertTrue(pReq.evaluateRequirements(report));
-        assertTrue(pReq2.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
+        assertTrue(pReq2.evaluate(report));
 
         pReq2.requireAnalyzedProperties(aProp);
-        assertFalse(pReq.evaluateRequirements(report));
+        assertFalse(pReq.evaluate(report));
 
         pReq.requireAnalyzedProperties(aProp);
-        assertFalse(pReq.evaluateRequirements(report));
+        assertFalse(pReq.evaluate(report));
         report.putResult(aProp, TestResults.TRUE);
-        assertTrue(pReq.evaluateRequirements(report));
-        assertFalse(pReqNot.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
+        assertFalse(pReqNot.evaluate(report));
 
         pReq.requireProbeTypes(pType);
-        assertFalse(pReq.evaluateRequirements(report));
+        assertFalse(pReq.evaluate(report));
         report.markProbeAsExecuted(pType);
-        assertTrue(pReq.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
 
         pReq.requireProtocolVersions(pVer);
-        assertFalse(pReq.evaluateRequirements(report));
+        assertFalse(pReq.evaluate(report));
         List<ProtocolVersion> pList = new ArrayList<ProtocolVersion>();
         pList.add(pVer);
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
             new ListResult<>(pList, "SUPPORTED_PROTOCOLVERSIONS"));
-        assertTrue(pReq.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
 
         pReq.requireExtensionTyes(eType);
-        assertFalse(pReq.evaluateRequirements(report));
+        assertFalse(pReq.evaluate(report));
         assertTrue(pReq.getMissingRequirements(report).getRequiredExtensionTypes()[0] == eType);
         List<ExtensionType> etList = new ArrayList<ExtensionType>();
         etList.add(eType);
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
             new ListResult<>(etList, "SUPPORTED_EXTENSIONS"));
-        assertTrue(pReq.evaluateRequirements(report));
+        assertTrue(pReq.evaluate(report));
 
-        assertTrue(ProbeRequirement.NO_REQUIREMENT.evaluateRequirements(report));
+        assertTrue(ProbeRequirement.NO_REQUIREMENT.evaluate(report));
     }
 }

@@ -66,7 +66,7 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
     public abstract void merge(Report report);
 
     public final boolean canBeExecuted(Report report) {
-        return getRequirements().evaluateRequirements(report);
+        return getRequirements().evaluate(report);
     }
 
     public StatsWriter getWriter() {

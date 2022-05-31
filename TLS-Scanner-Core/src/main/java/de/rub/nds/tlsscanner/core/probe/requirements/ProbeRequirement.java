@@ -129,7 +129,7 @@ public class ProbeRequirement implements Requirement {
         if (requiredOR != null) {
             boolean or = false;
             for (ProbeRequirement pReq : requiredOR) {
-                if (pReq.evaluateRequirements(report)) {
+                if (pReq.evaluate(report)) {
                     or = true;
                     break;
                 }
@@ -138,7 +138,7 @@ public class ProbeRequirement implements Requirement {
                 missing.orRequirement(requiredOR);
         }
 
-        if (not != null && not.evaluateRequirements(report))
+        if (not != null && not.evaluate(report))
             missing.notRequirement(not);
 
         return missing;
@@ -179,7 +179,7 @@ public class ProbeRequirement implements Requirement {
         return this;
     }
 
-    public boolean evaluateRequirements(ScanReport report) {
+    public boolean evaluate(ScanReport report) {
         return probeTypesFulfilled(report) && analyzedProtocolVersionsFulfilled(report)
             && analyzedPropertiesFulfilled(report) && extensionTypesFulfilled(report) && orFulfilled(report)
             && notFulfilled(report) && analyzedPropertiesNotFulfilled(report);
@@ -262,7 +262,7 @@ public class ProbeRequirement implements Requirement {
         if (requiredOR == null)
             return true;
         for (ProbeRequirement pReq : requiredOR) {
-            if (pReq.evaluateRequirements(report))
+            if (pReq.evaluate(report))
                 return true;
         }
         return false;
@@ -271,7 +271,7 @@ public class ProbeRequirement implements Requirement {
     private boolean notFulfilled(ScanReport report) {
         if (not == null)
             return true;
-        return !not.evaluateRequirements(report);
+        return !not.evaluate(report);
     }
 
     /**
