@@ -18,12 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SetResult<T> implements TestResult {
 
-    private String name = "SetResult";
+    private final String name;
     private final Set<T> set;
-
-    public SetResult(Set<T> set) {
-        this.set = set;
-    }
 
     public SetResult(Set<T> set, String name) {
         this.set = set;

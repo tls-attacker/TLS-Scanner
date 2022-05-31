@@ -10,6 +10,8 @@
 package de.rub.nds.tlsscanner.core.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.MapResult;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,7 +69,22 @@ public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<R
         }
     }
 
-    protected final void put(TlsAnalyzedProperty aProp, TestResult result) {
+    protected final void put(TlsAnalyzedProperty aProp, Object value) {
+    	if (aProp == null || value == null) {
+    		LOGGER.error("Nullpointer in " + getProbeName() + " when putting properties in method put!");
+    		return;
+    	}
+    	TestResult result = null;
+    	if (value instanceof TestResult)
+    		result = (TestResult) value;
+    	else if (value instanceof List<?>) 
+    		result = new ListResult<>((List<?>) value, aProp.name());
+    	else if (value instanceof Map<?,?>)
+    		result = new MapResult<>((Map<?,?>) value, aProp.name());
+    	else if (value instanceof Set<?>)
+    		result = new SetResult<>((Set<?>) value, aProp.name());
+    	else // something went wrong and the put method received neither any TestResult object nor a set, list or map as expected!!
+    		result = TestResults.ERROR_DURING_TEST;
         if (propertiesMap.containsKey(aProp))
             propertiesMap.replace(aProp, result);
         else { // unregistered property
@@ -77,15 +95,20 @@ public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<R
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final void addToList(TlsAnalyzedProperty aProp, List<?> result) {
+    	if (aProp == null || result == null) {
+    		LOGGER.error("Nullpointer in " + getProbeName() + " when putting properties in method addToList!");
+    		return;
+    	}
         if (propertiesMap.containsKey(aProp)) {
-            if (propertiesMap.get(aProp).getClass().equals(ListResult.class))
-                ((ListResult) propertiesMap.get(aProp)).getList().addAll(result);
+            if (propertiesMap.get(aProp).getClass().equals(ListResult.class)) {
+                result.addAll(((ListResult) propertiesMap.get(aProp)).getList());
+                put(aProp, new ListResult<>(result, aProp.name()));
+            }
             else
-                put(aProp, new ListResult<>(result, aProp.name().substring(5))); // assuming that list result properties
-                                                                                 // begin with LIST_
+                put(aProp, new ListResult<>(result, aProp.name())); // assuming that list result properties
         } else { // unregistered property
             LOGGER.error(aProp.name() + " was set in " + getClass() + " but had not been registered!");
-            propertiesMap.put(aProp, new ListResult<>(result));
+            propertiesMap.put(aProp, new ListResult<>(result, aProp.name()));
         }
     }
 

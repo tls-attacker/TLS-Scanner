@@ -18,12 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MapResult<S, T> implements TestResult {
 
-    private String name = "MapResult";
+    private final String name;
     private final Map<S, T> map;
-
-    public MapResult(Map<S, T> map) {
-        this.map = map;
-    }
 
     public MapResult(Map<S, T> map, String name) {
         this.map = map;
