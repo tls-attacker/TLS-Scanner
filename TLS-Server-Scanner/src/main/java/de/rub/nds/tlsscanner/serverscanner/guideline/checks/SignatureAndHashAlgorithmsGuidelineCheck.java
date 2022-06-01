@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -62,14 +61,14 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
                 .get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13.name())).getList();
         else {
             algorithms = new LinkedList<>();
-            TestResult samResult_cert =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
+            ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT);
             if (samResult_cert != null)
-                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
-            TestResult samResult_ske =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
+                algorithms.addAll(samResult_cert.getList());
+            ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE);
             if (samResult_ske != null)
-                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
+                algorithms.addAll(samResult_ske.getList());
         }
         if (algorithms == null || algorithms.isEmpty())
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);

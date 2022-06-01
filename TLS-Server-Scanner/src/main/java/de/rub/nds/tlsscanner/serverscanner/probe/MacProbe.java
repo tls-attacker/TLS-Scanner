@@ -14,7 +14,6 @@ import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -364,9 +363,10 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
 
-        TestResult ciphersuitesResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        SetResult<CipherSuite> ciphersuitesResult =
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
         if (ciphersuitesResult != null) {
-            allSuiteList.addAll(((SetResult<CipherSuite>) ciphersuitesResult).getSet());
+            allSuiteList.addAll(ciphersuitesResult.getSet());
             suiteList = new LinkedList<>();
             for (CipherSuite suite : allSuiteList) {
                 if (suite.isUsingMac()) {

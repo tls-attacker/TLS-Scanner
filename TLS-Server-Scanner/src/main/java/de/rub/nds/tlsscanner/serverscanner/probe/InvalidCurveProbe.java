@@ -139,9 +139,10 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportsTls13PskDhe = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
         supportedFpGroups = new LinkedList<>();
-        TestResult namedgroupsResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name());
+        ListResult<NamedGroup> namedgroupsResult =
+            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS);
         if (namedgroupsResult != null) {
-            for (NamedGroup group : ((ListResult<NamedGroup>) namedgroupsResult).getList()) {
+            for (NamedGroup group : namedgroupsResult.getList()) {
                 if (NamedGroup.getImplemented().contains(group)
                     && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     supportedFpGroups.add(group);
@@ -152,11 +153,10 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         }
 
         HashMap<ProtocolVersion, List<CipherSuite>> cipherSuitesMap = new HashMap<>();
-        TestResult versionsuitepairResult =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+        ListResult<VersionSuiteListPair> versionsuitepairResult =
+            (ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
         if (versionsuitepairResult != null) {
-            List<VersionSuiteListPair> versionsuitepairs =
-                ((ListResult<VersionSuiteListPair>) versionsuitepairResult).getList();
+            List<VersionSuiteListPair> versionsuitepairs = versionsuitepairResult.getList();
             for (VersionSuiteListPair pair : versionsuitepairs) {
                 if (!cipherSuitesMap.containsKey(pair.getVersion())) {
                     cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
@@ -199,8 +199,8 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportedTls13FpGroups = new LinkedList<>();
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
-            for (NamedGroup group : ((ListResult<NamedGroup>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name())).getList()) {
+            for (NamedGroup group : ((ListResult<NamedGroup>) report
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS)).getList()) {
                 if (NamedGroup.getImplemented().contains(group) && group.isCurve()
                     && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     supportedTls13FpGroups.add(group);
@@ -208,8 +208,8 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
             }
 
             List<CipherSuite> tls13CipherSuites = new LinkedList<>();
-            for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList()) {
+            for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report
+                .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS)).getList()) {
                 if (pair.getVersion().isTLS13()) {
                     for (CipherSuite cipherSuite : pair.getCipherSuiteList()) {
                         if (cipherSuite.isImplemented()) {
@@ -241,10 +241,10 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedECDHCipherSuites = cipherSuitesMap;
-        namedCurveWitnesses = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap()
-            .get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES.name())).getMap();
-        namedCurveWitnessesTls13 = ((MapResult<NamedGroup, NamedGroupWitness>) report.getResultMap()
-            .get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13.name())).getMap();
+        namedCurveWitnesses = ((MapResult<NamedGroup, NamedGroupWitness>) report
+            .getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES)).getMap();
+        namedCurveWitnessesTls13 = ((MapResult<NamedGroup, NamedGroupWitness>) report
+            .getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13)).getMap();
     }
 
     private List<InvalidCurveVector> prepareVectors() {

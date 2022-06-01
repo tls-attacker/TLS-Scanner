@@ -81,8 +81,7 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     @Override
     public void adjustConfig(ServerReport report) {
         supportedGroups =
-            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name()))
-                .getList();
+            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS)).getList();
     }
 
     @Override

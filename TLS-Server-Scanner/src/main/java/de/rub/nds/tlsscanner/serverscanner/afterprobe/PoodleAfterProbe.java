@@ -32,11 +32,10 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);
             if (ssl3Result == TestResults.TRUE) {
-                TestResult versionsuiteResult =
-                    report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+                ListResult<VersionSuiteListPair> versionsuiteResult = (ListResult<VersionSuiteListPair>) report
+                    .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
                 if (versionsuiteResult != null) {
-                    for (VersionSuiteListPair versionSuitList : ((ListResult<VersionSuiteListPair>) versionsuiteResult)
-                        .getList()) {
+                    for (VersionSuiteListPair versionSuitList : versionsuiteResult.getList()) {
                         if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
                             for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
                                 if (suite.isCBC()) {

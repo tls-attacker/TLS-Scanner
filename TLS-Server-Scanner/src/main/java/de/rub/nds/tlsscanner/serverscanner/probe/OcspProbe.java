@@ -218,13 +218,12 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
-        for (CertificateChain chain : ((ListResult<CertificateChain>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList()) {
+        for (CertificateChain chain : ((ListResult<CertificateChain>) report
+            .getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN)).getList()) {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
-            ((ListResult<NamedGroup>) report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name()))
-                .getList();
+            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS)).getList();
     }
 
     private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {

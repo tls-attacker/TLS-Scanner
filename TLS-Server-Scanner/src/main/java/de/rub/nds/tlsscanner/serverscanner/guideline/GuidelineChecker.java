@@ -35,9 +35,9 @@ public class GuidelineChecker {
     public void fillReport(ServerReport report) {
         @SuppressWarnings("unchecked")
         List<GuidelineReport> guidelineReports =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name()) != null
-                ? ((ListResult<GuidelineReport>) report.getResultMap()
-                    .get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name())).getList()
+            report.getListResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS) != null
+                ? ((ListResult<GuidelineReport>) report.getListResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS))
+                    .getList()
                 : new ArrayList<>();
         List<GuidelineCheckResult> results = new ArrayList<>();
         for (GuidelineCheck check : guideline.getChecks()) {

@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -41,11 +40,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         int isSuccessfulCounter = 0;
         int isInsecureCounter = 0;
 
-        TestResult simulatedclientsResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name());
+        @SuppressWarnings("unchecked")
+        ListResult<SimulatedClientResult> simulatedclientsResult =
+            (ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT);
         if (simulatedclientsResult != null) {
-            @SuppressWarnings("unchecked")
-            List<SimulatedClientResult> simulatedclients =
-                ((ListResult<SimulatedClientResult>) simulatedclientsResult).getList();
+            List<SimulatedClientResult> simulatedclients = simulatedclientsResult.getList();
             if (simulatedclients != null) {
                 for (SimulatedClientResult simulatedClient : simulatedclients) {
                     if (simulatedClient.getReceivedAlert()) {
@@ -89,10 +88,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private boolean isCipherSuiteMismatch(ServerReport report, SimulatedClientResult simulatedClient) {
-        TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        @SuppressWarnings("unchecked")
+        SetResult<CipherSuite> ciphersuiteResult =
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
         if (ciphersuiteResult != null) {
-            @SuppressWarnings("unchecked")
-            Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+            Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
             if (ciphersuites != null) {
                 for (CipherSuite serverCipherSuite : ciphersuites) {
                     for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
@@ -109,10 +109,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private void checkSelectedProtocolVersion(ServerReport report, SimulatedClientResult simulatedClient) {
-        TestResult versionsuiteResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<ProtocolVersion> versionsuiteResult =
+            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
         if (versionsuiteResult != null) {
-            @SuppressWarnings("unchecked")
-            List<ProtocolVersion> versions = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+            List<ProtocolVersion> versions = versionsuiteResult.getList();
             if (versions != null && simulatedClient.getSupportedVersionList() != null) {
                 List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
                 Collections.sort(versions);

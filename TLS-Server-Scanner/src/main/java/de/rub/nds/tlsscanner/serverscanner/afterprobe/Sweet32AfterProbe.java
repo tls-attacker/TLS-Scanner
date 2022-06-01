@@ -24,10 +24,11 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.FALSE;
         try {
-            TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+            @SuppressWarnings("unchecked")
+            SetResult<CipherSuite> ciphersuiteResult =
+                (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
             if (ciphersuiteResult != null) {
-                @SuppressWarnings("unchecked")
-                Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+                Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
                 if (ciphersuites != null) {
                     for (CipherSuite suite : ciphersuites) {
                         if (suite.name().contains("3DES") || suite.name().contains("IDEA"))

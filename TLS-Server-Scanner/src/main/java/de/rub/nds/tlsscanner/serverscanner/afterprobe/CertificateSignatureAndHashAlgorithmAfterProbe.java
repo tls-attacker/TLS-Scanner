@@ -26,26 +26,23 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
     @Override
     public void analyze(ServerReport report) {
         Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
-
-        if (report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name()) != null) {
-
-            List<CertificateChain> certList = ((ListResult<CertificateChain>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name())).getList();
-            if (certList == null) {
-                return;
-            }
-            for (CertificateChain chain : certList) {
-                if (chain.getCertificateReportList() == null || chain.getCertificateReportList().isEmpty()) {
-                    continue;
-                }
-                SignatureAndHashAlgorithm algorithm =
-                    chain.getCertificateReportList().get(0).getSignatureAndHashAlgorithm();
-                if (algorithm != null) {
-                    algorithms.add(algorithm);
-                }
-            }
-            report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT,
-                new ListResult<>(new ArrayList<>(algorithms), "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
+        List<CertificateChain> certList =
+            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name()))
+                .getList();
+        if (certList == null) {
+            return;
         }
+        for (CertificateChain chain : certList) {
+            if (chain.getCertificateReportList() == null || chain.getCertificateReportList().isEmpty()) {
+                continue;
+            }
+            SignatureAndHashAlgorithm algorithm =
+                chain.getCertificateReportList().get(0).getSignatureAndHashAlgorithm();
+            if (algorithm != null) {
+                algorithms.add(algorithm);
+            }
+        }
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT, new ListResult<>(
+            new ArrayList<>(algorithms), TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name()));
     }
 }

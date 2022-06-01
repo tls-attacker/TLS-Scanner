@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
@@ -51,11 +50,12 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        TestResult certResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name());
+        @SuppressWarnings("unchecked")
+        ListResult<CertificateChain> certResult =
+            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
         if (certResult == null)
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
-        @SuppressWarnings("unchecked")
-        List<CertificateChain> chains = ((ListResult<CertificateChain>) certResult).getList();
+        List<CertificateChain> chains = certResult.getList();
         if (chains == null || chains.size() < 2)
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
