@@ -10,8 +10,11 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -73,6 +76,33 @@ public abstract class ScanReport extends Observable implements Serializable {
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResults.NOT_TESTED_YET : result;
+    }
+
+    public synchronized ListResult<?> getListResult(AnalyzedProperty property) {
+        return getListResult(property.getName());
+    }
+
+    public synchronized ListResult<?> getListResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null || !(result instanceof ListResult)) ? null : (ListResult<?>) result;
+    }
+
+    public synchronized MapResult<?, ?> getMapResult(AnalyzedProperty property) {
+        return getMapResult(property.getName());
+    }
+
+    public synchronized MapResult<?, ?> getMapResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null || !(result instanceof MapResult)) ? null : (MapResult<?, ?>) result;
+    }
+
+    public synchronized SetResult<?> getSetResult(AnalyzedProperty property) {
+        return getSetResult(property.getName());
+    }
+
+    public synchronized SetResult<?> getSetResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null || !(result instanceof SetResult)) ? null : (SetResult<?>) result;
     }
 
     public synchronized void removeResult(AnalyzedProperty property) {
