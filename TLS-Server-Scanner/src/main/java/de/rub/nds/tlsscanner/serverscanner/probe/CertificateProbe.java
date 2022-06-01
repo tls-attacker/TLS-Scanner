@@ -91,8 +91,8 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override

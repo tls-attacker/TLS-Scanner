@@ -26,7 +26,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
@@ -173,13 +175,10 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement preq_ecdh =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        ProbeRequirement preq_tls13 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(preq_ecdh,
-            preq_tls13);
+    protected Requirement getRequirements() {
+        PropertyRequirement preq_ecdh = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        PropertyRequirement preq_tls13 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION).requires(new OrRequirement(preq_ecdh, preq_tls13));
     }
 
     @Override

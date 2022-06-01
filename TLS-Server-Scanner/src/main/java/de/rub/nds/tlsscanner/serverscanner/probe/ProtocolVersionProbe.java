@@ -141,7 +141,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     @Override
-    protected Requirement requires() {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

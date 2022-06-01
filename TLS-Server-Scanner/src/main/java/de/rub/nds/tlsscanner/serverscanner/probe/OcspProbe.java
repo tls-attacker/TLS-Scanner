@@ -210,8 +210,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
     @SuppressWarnings("unchecked")

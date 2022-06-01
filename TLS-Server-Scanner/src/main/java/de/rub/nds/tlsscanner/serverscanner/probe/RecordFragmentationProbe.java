@@ -50,7 +50,7 @@ public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    protected Requirement requires() {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

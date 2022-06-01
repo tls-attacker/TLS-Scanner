@@ -117,8 +117,8 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.HTTP_HEADER);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.HTTP_HEADER);
     }
 
 }

@@ -196,7 +196,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     }
 
     @Override
-    protected Requirement requires() {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

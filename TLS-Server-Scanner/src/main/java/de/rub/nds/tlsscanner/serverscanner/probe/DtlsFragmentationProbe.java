@@ -132,7 +132,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
     }
 
     @Override
-    protected Requirement requires() {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

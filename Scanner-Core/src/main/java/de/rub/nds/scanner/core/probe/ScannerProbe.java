@@ -61,12 +61,12 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
      * @param  report
      * @return        ProbeRequirement object without requirements (default)
      */
-    protected abstract Requirement requires();
+    protected abstract Requirement getRequirements();
 
     public abstract void merge(Report report);
 
     public final boolean canBeExecuted(Report report) {
-        return requires().evaluate(report);
+        return getRequirements().evaluate(report);
     }
 
     public StatsWriter getWriter() {

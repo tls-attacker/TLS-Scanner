@@ -43,6 +43,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
@@ -353,9 +354,9 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE).requireAnalyzedProperties(
-            TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE).requires(new PropertyRequirement(
+            TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS));
     }
 
     @SuppressWarnings("unchecked")

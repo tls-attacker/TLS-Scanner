@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
@@ -54,8 +54,8 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_CCA);
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override

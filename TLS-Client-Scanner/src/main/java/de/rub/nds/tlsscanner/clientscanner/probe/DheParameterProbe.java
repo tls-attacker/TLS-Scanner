@@ -29,7 +29,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
@@ -204,7 +204,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE);
     }
 }

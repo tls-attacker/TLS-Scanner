@@ -20,11 +20,11 @@ public class Requirement {
     }
 
     public boolean evaluate(ScanReport report) {
-    	return true;
+        return true;
     }
-    
+
     public Requirement requires(Requirement next) {
-    	next.next = this;
-    	return next;
+        next.next = this;
+        return next;
     }
 }

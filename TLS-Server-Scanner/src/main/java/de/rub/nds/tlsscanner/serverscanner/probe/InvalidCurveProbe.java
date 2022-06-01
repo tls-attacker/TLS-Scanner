@@ -32,7 +32,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.DistributionTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.InvalidCurveTestInfo;
@@ -113,16 +115,13 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement tapTls13 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
-        ProbeRequirement tapStaticEcdh =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        ProbeRequirement tapEcdhe =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        return new ProbeRequirement().orRequirement(tapTls13, tapStaticEcdh, tapEcdhe).requireProbeTypes(
-            TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.NAMED_GROUPS,
-            TlsProbeType.RESUMPTION, TlsProbeType.RENEGOTIATION);
+    protected Requirement getRequirements() {
+        PropertyRequirement tapTls13 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        PropertyRequirement tapStaticEcdh = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
+        PropertyRequirement tapEcdhe = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        return new OrRequirement(tapTls13, tapStaticEcdh, tapEcdhe)
+            .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE,
+                TlsProbeType.NAMED_GROUPS, TlsProbeType.RESUMPTION, TlsProbeType.RENEGOTIATION));
     }
 
     @SuppressWarnings("unchecked")

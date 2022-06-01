@@ -16,23 +16,23 @@ import static org.junit.Assert.assertTrue;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.Test;
 
-public class ProbeRequirementTest extends RequirementsBasicTest{
-	@Test
-	public void testProbeRequirement() {
-		TestReport report = new TestReport();
-		TlsProbeType probe = TlsProbeType.ALPN;
-		
-		ProbeRequirement req = new ProbeRequirement(null);
-		assertTrue(req.evaluate(report));
-		
-		req = new ProbeRequirement(new TlsProbeType[0]);
-		assertTrue(req.evaluate(report));
-				
-		req =new ProbeRequirement(probe);
-		assertArrayEquals(req.getRequirement(), new TlsProbeType[]{probe});
-		assertFalse(req.evaluate(report));
-		report.markProbeAsExecuted(probe);
-		assertTrue(req.evaluate(report));
-	}
+public class ProbeRequirementTest extends RequirementsBasicTest {
+    @Test
+    public void testProbeRequirement() {
+        TestReport report = new TestReport();
+        TlsProbeType probe = TlsProbeType.ALPN;
+
+        ProbeRequirement req = new ProbeRequirement();
+        assertTrue(req.evaluate(report));
+
+        req = new ProbeRequirement(new TlsProbeType[0]);
+        assertTrue(req.evaluate(report));
+
+        req = new ProbeRequirement(probe);
+        assertArrayEquals(req.getRequirement(), new TlsProbeType[] { probe });
+        assertFalse(req.evaluate(report));
+        report.markProbeAsExecuted(probe);
+        assertTrue(req.evaluate(report));
+    }
 
 }

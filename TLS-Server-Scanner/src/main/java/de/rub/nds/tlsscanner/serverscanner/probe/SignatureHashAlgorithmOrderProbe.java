@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.NotRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -50,9 +51,8 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement preq = new ProbeRequirement().requireProbeTypes(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
-        return new ProbeRequirement().notRequirement(preq);
+    protected Requirement getRequirements() {
+        return new NotRequirement(new ProbeRequirement(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER));
     }
 
     @Override

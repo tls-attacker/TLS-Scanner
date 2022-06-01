@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ExtensionRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -80,9 +81,8 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.EXTENSIONS)
-            .requireExtensionTyes(ExtensionType.ALPN);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.EXTENSIONS).requires(new ExtensionRequirement(ExtensionType.ALPN));
     }
 
     @Override

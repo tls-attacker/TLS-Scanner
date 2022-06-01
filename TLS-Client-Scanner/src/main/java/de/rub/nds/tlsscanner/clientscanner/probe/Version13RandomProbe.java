@@ -25,7 +25,8 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.util.Random;
 
 public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
@@ -84,14 +85,13 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement ssl2 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        ProbeRequirement ssl3 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        ProbeRequirement tls10 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        ProbeRequirement tls11 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        ProbeRequirement tls12 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-
-        return new ProbeRequirement().orRequirement(ssl2, ssl3, tls10, tls11, tls12);
+    protected Requirement getRequirements() {
+        PropertyRequirement ssl2 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_2);
+        PropertyRequirement ssl3 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+        PropertyRequirement tls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        PropertyRequirement tls11 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        PropertyRequirement tls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        return new OrRequirement(ssl2, ssl3, tls10, tls11, tls12);
     }
 
     @Override

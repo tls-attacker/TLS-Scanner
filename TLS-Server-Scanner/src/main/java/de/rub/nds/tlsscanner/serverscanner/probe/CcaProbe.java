@@ -27,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
@@ -142,9 +143,9 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.REQUIRES_CCA)
-            .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.REQUIRES_CCA)
+            .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION));
     }
 
     @SuppressWarnings("unchecked")

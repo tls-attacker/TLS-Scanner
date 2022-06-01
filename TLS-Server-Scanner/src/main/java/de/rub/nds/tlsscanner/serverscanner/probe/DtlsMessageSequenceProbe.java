@@ -146,7 +146,7 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    protected Requirement requires() {
+    protected Requirement getRequirements() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

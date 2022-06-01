@@ -20,7 +20,6 @@ public class RequirementTest {
 
     @Test
     public void basicFunctionalityRequirementTest() {
-        assertEquals(Requirement.NO_REQUIREMENT.next, Requirement.NO_REQUIREMENT);
         assertEquals(new Requirement().next, Requirement.NO_REQUIREMENT);
 
         // evaluation

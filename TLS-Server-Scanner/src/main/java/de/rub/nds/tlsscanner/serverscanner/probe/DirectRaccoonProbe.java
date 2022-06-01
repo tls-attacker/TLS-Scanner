@@ -22,7 +22,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -149,22 +151,16 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement pReqSsl3 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        ProbeRequirement pReqTls10 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        ProbeRequirement pReqTls11 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        ProbeRequirement pReqTls12 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        ProbeRequirement pReqDtls10 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
-        ProbeRequirement pReqDtls12 =
-            new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE)
-            .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE)
-            .orRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12);
+    protected Requirement getRequirements() {
+        PropertyRequirement pReqSsl3 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+        PropertyRequirement pReqTls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        PropertyRequirement pReqTls11 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        PropertyRequirement pReqTls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        PropertyRequirement pReqDtls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
+        PropertyRequirement pReqDtls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE)
+            .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE))
+            .requires(new OrRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12));
     }
 
     @SuppressWarnings("unchecked")

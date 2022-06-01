@@ -32,7 +32,9 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyNotRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -216,13 +218,12 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement cipherReq = new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE);
-        ProbeRequirement notTls13 =
-            new ProbeRequirement().requireAnalyzedPropertiesNot(TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
-                TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement().orRequirement(cipherReq, notTls13);
+    protected Requirement getRequirements() {
+        ProbeRequirement cipherReq = new ProbeRequirement(TlsProbeType.CIPHER_SUITE);
+        PropertyNotRequirement notTls13 = new PropertyNotRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+            TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        return new OrRequirement(cipherReq, notTls13);
     }
 
     @SuppressWarnings("unchecked")

@@ -251,8 +251,8 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
     }
 
     @SuppressWarnings("unchecked")

@@ -316,8 +316,8 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE);
     }
 
     @SuppressWarnings("unchecked")

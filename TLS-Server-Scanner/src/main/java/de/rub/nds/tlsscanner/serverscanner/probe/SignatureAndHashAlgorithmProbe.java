@@ -26,7 +26,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -163,12 +165,12 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     @Override
-    protected Requirement requires() {
-        ProbeRequirement pReqTls12 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.TLS12);
-        ProbeRequirement pReqTls13 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.TLS13);
-        ProbeRequirement pReqDtls12 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.DTLS12);
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION).orRequirement(pReqDtls12,
-            pReqTls12, pReqTls13);
+    protected Requirement getRequirements() {
+        ProtocolRequirement pReqTls12 = new ProtocolRequirement(ProtocolVersion.TLS12);
+        ProtocolRequirement pReqTls13 = new ProtocolRequirement(ProtocolVersion.TLS13);
+        ProtocolRequirement pReqDtls12 = new ProtocolRequirement(ProtocolVersion.DTLS12);
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
+            .requires(new OrRequirement(pReqDtls12, pReqTls12, pReqTls13));
     }
 
     @SuppressWarnings("unchecked")

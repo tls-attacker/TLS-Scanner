@@ -134,8 +134,8 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     @Override
-    protected Requirement requires() {
-        return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
