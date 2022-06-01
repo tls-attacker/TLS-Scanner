@@ -58,15 +58,15 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         List<SignatureAndHashAlgorithm> algorithms = null;
         if (tls13)
             algorithms = ((ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13)).getList();
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13)).getList();
         else {
             algorithms = new LinkedList<>();
             ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT);
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
             if (samResult_cert != null)
                 algorithms.addAll(samResult_cert.getList());
             ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE);
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
             if (samResult_ske != null)
                 algorithms.addAll(samResult_ske.getList());
         }

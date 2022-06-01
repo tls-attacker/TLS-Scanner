@@ -1971,9 +1971,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
         ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT);
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
         ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE);
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
         if (samResult_cert != null || samResult_ske != null) {
             List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
             if (samResult_cert != null && samResult_cert.getList() != null)
@@ -1994,7 +1994,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
         ListResult<SignatureAndHashAlgorithm> samTls13Result = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
         if (samTls13Result != null) {
             List<SignatureAndHashAlgorithm> samTls13 = samTls13Result.getList();
             if (samTls13 != null) {

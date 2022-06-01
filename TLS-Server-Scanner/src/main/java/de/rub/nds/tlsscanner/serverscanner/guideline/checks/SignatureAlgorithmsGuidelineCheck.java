@@ -55,9 +55,9 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
     public GuidelineCheckResult evaluate(ServerReport report) {
 
         ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT);
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
         ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE);
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
         if (samResult_cert != null || samResult_ske != null) {
             Set<SignatureAlgorithm> notRecommended = new HashSet<>();
             List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();

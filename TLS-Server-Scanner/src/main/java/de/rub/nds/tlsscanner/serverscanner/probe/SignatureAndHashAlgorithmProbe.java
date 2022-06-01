@@ -47,8 +47,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
 
     public SignatureAndHashAlgorithmProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, configSelector);
-        register(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE,
-            TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
+        register(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+            TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE, signatureAndHashAlgorithmListSke);
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13, signatureAndHashAlgorithmListTls13);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE, signatureAndHashAlgorithmListSke);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13, signatureAndHashAlgorithmListTls13);
     }
 }

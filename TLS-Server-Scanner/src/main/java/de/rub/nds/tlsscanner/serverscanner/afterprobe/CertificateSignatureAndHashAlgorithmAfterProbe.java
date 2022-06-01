@@ -42,7 +42,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
                 algorithms.add(algorithm);
             }
         }
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT, new ListResult<>(
-            new ArrayList<>(algorithms), TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name()));
+        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT, new ListResult<>(
+            new ArrayList<>(algorithms), TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT.name()));
     }
 }
