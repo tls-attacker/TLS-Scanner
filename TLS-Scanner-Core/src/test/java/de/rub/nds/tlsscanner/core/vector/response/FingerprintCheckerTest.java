@@ -7,15 +7,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-/**
- * TLS-Attacker - A Modular Penetration Testing Framework for TLS
- *
- * Copyright 2014-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
- *
- * Licensed under Apache License, Version 2.0
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- */
-
 package de.rub.nds.tlsscanner.core.vector.response;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -25,11 +16,8 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
@@ -38,8 +26,6 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import java.util.LinkedList;
 import java.util.List;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.VariableModification;
-import de.rub.nds.modifiablevariable.singlebyte.ByteAddModification;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -152,9 +138,8 @@ public class FingerprintCheckerTest {
         Record serverHelloRecord = parseRecord(ProtocolMessageType.HANDSHAKE, ProtocolVersion.TLS12.getValue(), 78,
             ArrayConverter.hexStringToByteArray(
                 "160303004e0200004a03030fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f2400c030000022ff0100010000000000000b0004030001020023000000100005000302683200170000"));
-        Record serverHelloRecordDiffContent = parseRecord(ProtocolMessageType.HANDSHAKE, ProtocolVersion.TLS12.getValue(), 78,
-            ArrayConverter.hexStringToByteArray(
-                "00"));
+        Record serverHelloRecordDiffContent = parseRecord(ProtocolMessageType.HANDSHAKE,
+            ProtocolVersion.TLS12.getValue(), 78, ArrayConverter.hexStringToByteArray("00"));
 
         HandshakeMessage certificateMsg =
             parseMessage(HandshakeMessageType.CERTIFICATE.getValue(), 4050, null, ArrayConverter.hexStringToByteArray(
@@ -348,20 +333,19 @@ public class FingerprintCheckerTest {
         msgListTestMsgClassWithPriority.add(clientKeyExchangeMsg);
         expectedResultMsgClassWithPriority = EqualityError.MESSAGE_CLASS;
 
-        //Data for test with expected EqualityError:
-        //EqualityError.MessageContent
+        // Data for test with expected EqualityError:
+        // EqualityError.MessageContent
         // with PriorityCheck regarding EqualityError.RecordContent
         EqualityError expectedResultMsgContentWithPriority;
         expectedResultMsgContentWithPriority = EqualityError.MESSAGE_CONTENT;
-        
+
         List<AbstractRecord> recordListTestServerWithContentError = new LinkedList<>();
-        
+
         recordListTestServerWithContentError.add(serverHelloRecordDiffContent);
         recordListTestServerWithContentError.add(certificateRecord);
         recordListTestServerWithContentError.add(serverKeyExchangeRecord);
         recordListTestServerWithContentError.add(serverHelloDoneRecord);
-    
-    
+
         // Data for test with expected EqualityError:
         // EqualityError.MESSAGE_COUNT
         // with PriorityCheck regarding EqualityError.RecordContent
@@ -469,8 +453,8 @@ public class FingerprintCheckerTest {
             // Tests with PriorityCheck regarding EqualityError.Record_Content
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClassWithPriority,
                 recordListTestClientWithContentError, stateTestClient, expectedResultMsgClassWithPriority },
-            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent, recordListTestServerWithContentError,
-                stateTestServer, expectedResultMsgContentWithPriority },
+            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent,
+                recordListTestServerWithContentError, stateTestServer, expectedResultMsgContentWithPriority },
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCountWithPriority,
                 recordListTestClientWithContentError, stateTestClient, expectedResultMsgCountWithPriority },
             { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
