@@ -201,7 +201,6 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     protected void mergeData(ClientReport report) {
         put(TlsAnalyzedProperty.LIST_COMPOSITE_DHE_MODULUS_RESULTS, compositeModulusResultList);
         put(TlsAnalyzedProperty.LIST_SMALL_DHE_SUBGROUP_RESULTS, smallSubgroupResults);
-        report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
     }
 
     @Override

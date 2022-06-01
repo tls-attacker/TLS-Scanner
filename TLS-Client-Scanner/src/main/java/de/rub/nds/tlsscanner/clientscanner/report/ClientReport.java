@@ -20,18 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends ScanReport {
 
-    private Integer lowestPossibleDheModulusSize;
-
     public ClientReport() {
         super();
-    }
-
-    public synchronized Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
-
-    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
     }
 
     @Override
