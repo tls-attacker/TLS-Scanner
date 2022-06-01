@@ -11,6 +11,15 @@ package de.rub.nds.scanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 
-public interface Requirement {
-    public boolean evaluate(ScanReport report);
+public class Requirement {
+    protected Requirement next = NO_REQUIREMENT;
+
+    public static Requirement NO_REQUIREMENT = new Requirement();
+
+    protected Requirement() {
+    }
+
+    public boolean evaluate(ScanReport report) {
+        return true;
+    }
 }
