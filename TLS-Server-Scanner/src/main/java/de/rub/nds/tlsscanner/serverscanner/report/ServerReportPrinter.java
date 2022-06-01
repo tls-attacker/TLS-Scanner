@@ -228,11 +228,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Processes retransmissions", TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
         prettyAppend(builder, "Total retransmissions received", "" + report.getTotalReceivedRetransmissions());
 
-        TestResult countersResult = report.getResultMap().get(TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS.name());
-
+        MapResult<HandshakeMessageType, Integer> countersResult = (MapResult<HandshakeMessageType, Integer>) report
+            .getMapResult(TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS);
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && countersResult != null) {
-            Map<HandshakeMessageType, Integer> counters =
-                ((MapResult<HandshakeMessageType, Integer>) countersResult).getMap();
+            Map<HandshakeMessageType, Integer> counters = countersResult.getMap();
             if (counters != null && !counters.isEmpty())
                 for (HandshakeMessageType type : counters.keySet()) {
                     prettyAppend(builder, "-" + type.getName(), "" + counters.get(type));
@@ -244,11 +243,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Accepts App Data with Epoch 0", TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
 
-        TestResult supportedApplications =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS.name());
+        ListResult<ApplicationProtocol> supportedApplications =
+            (ListResult<ApplicationProtocol>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS);
         if (supportedApplications != null) {
-            List<ApplicationProtocol> applications =
-                ((ListResult<ApplicationProtocol>) supportedApplications).getList();
+            List<ApplicationProtocol> applications = supportedApplications.getList();
             if (applications != null) {
                 prettyAppendHeading(builder, "Supported Applications");
                 for (ApplicationProtocol application : applications) {
@@ -259,15 +257,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
-        TestResult raccoonResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT.name());
-        if (raccoonResult != null) {
-            @SuppressWarnings("unchecked")
-            List<InformationLeakTest<?>> raccoonResults =
-                ((ListResult<InformationLeakTest<?>>) raccoonResult).getList();
-            if (raccoonResults != null) {
-                appendInformationLeakTestList(builder, raccoonResults, "Direct Raccoon Results");
-            }
-        }
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<?>> raccoonResults = (ListResult<InformationLeakTest<?>>) report
+            .getListResult(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
+        if (raccoonResults != null)
+            appendInformationLeakTestList(builder, raccoonResults.getList(), "Direct Raccoon Results");
     }
 
     @SuppressWarnings("unchecked")
@@ -416,54 +410,57 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
-        for (SimulatedClientResult simulatedClient : ((ListResult<SimulatedClientResult>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name())).getList()) {
-            prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
-                + simulatedClient.getTlsClientConfig().getVersion());
-            prettyAppend(builder, "Handshake Successful", "" + simulatedClient.getHandshakeSuccessful(),
-                simulatedClient.getHandshakeSuccessful() ? AnsiColor.GREEN : AnsiColor.RED);
-            if (!simulatedClient.getHandshakeSuccessful()) {
-                for (HandshakeFailureReasons failureReason : simulatedClient.getFailReasons()) {
-                    prettyAppend(builder, "", getRedString(failureReason.getReason(), "%s"));
+        ListResult<SimulatedClientResult> resultSimulatedClients =
+            (ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT);
+        if (resultSimulatedClients != null) {
+            for (SimulatedClientResult simulatedClient : resultSimulatedClients.getList()) {
+                prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
+                    + simulatedClient.getTlsClientConfig().getVersion());
+                prettyAppend(builder, "Handshake Successful", "" + simulatedClient.getHandshakeSuccessful(),
+                    simulatedClient.getHandshakeSuccessful() ? AnsiColor.GREEN : AnsiColor.RED);
+                if (!simulatedClient.getHandshakeSuccessful()) {
+                    for (HandshakeFailureReasons failureReason : simulatedClient.getFailReasons()) {
+                        prettyAppend(builder, "", getRedString(failureReason.getReason(), "%s"));
+                    }
                 }
-            }
-            builder.append("\n");
-            if (simulatedClient.getConnectionInsecure() != null && simulatedClient.getConnectionInsecure()) {
-                prettyAppend(builder, "Connection Insecure", simulatedClient.getConnectionInsecure(),
-                    simulatedClient.getConnectionInsecure() ? AnsiColor.RED : AnsiColor.GREEN);
-                for (String reason : simulatedClient.getInsecureReasons()) {
-                    prettyAppend(builder, "", reason);
+                builder.append("\n");
+                if (simulatedClient.getConnectionInsecure() != null && simulatedClient.getConnectionInsecure()) {
+                    prettyAppend(builder, "Connection Insecure", simulatedClient.getConnectionInsecure(),
+                        simulatedClient.getConnectionInsecure() ? AnsiColor.RED : AnsiColor.GREEN);
+                    for (String reason : simulatedClient.getInsecureReasons()) {
+                        prettyAppend(builder, "", reason);
+                    }
                 }
-            }
-            prettyAppend(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure(),
-                simulatedClient.getConnectionRfc7918Secure() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
+                prettyAppend(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure(),
+                    simulatedClient.getConnectionRfc7918Secure() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
 
-            builder.append("\n");
-            prettyAppend(builder, "Protocol Version Selected",
-                getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
-            prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
-            prettyAppend(builder, "Protocol Versions Server", ((ListResult<ProtocolVersion>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList().toString());
-            prettyAppend(builder, "Protocol Version is highest",
-                simulatedClient.getHighestPossibleProtocolVersionSelected(),
-                simulatedClient.getHighestPossibleProtocolVersionSelected() ? AnsiColor.GREEN : AnsiColor.RED);
-            builder.append("\n");
-            prettyAppend(builder, "Selected CipherSuite",
-                getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), "%s"));
-            prettyAppend(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy(),
-                simulatedClient.getForwardSecrecy() ? AnsiColor.GREEN : AnsiColor.RED);
-            builder.append("\n");
-            prettyAppend(builder, "Server Public Key", getServerPublicKeyParameterColor(simulatedClient));
-            builder.append("\n");
-            if (simulatedClient.getSelectedCompressionMethod() != null) {
-                prettyAppend(builder, "Selected Compression Method",
-                    simulatedClient.getSelectedCompressionMethod().toString());
-            } else {
-                String tmp = null;
-                prettyAppend(builder, "Selected Compression Method", tmp);
+                builder.append("\n");
+                prettyAppend(builder, "Protocol Version Selected",
+                    getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
+                prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
+                prettyAppend(builder, "Protocol Versions Server", ((ListResult<ProtocolVersion>) report
+                    .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS)).getList().toString());
+                prettyAppend(builder, "Protocol Version is highest",
+                    simulatedClient.getHighestPossibleProtocolVersionSelected(),
+                    simulatedClient.getHighestPossibleProtocolVersionSelected() ? AnsiColor.GREEN : AnsiColor.RED);
+                builder.append("\n");
+                prettyAppend(builder, "Selected CipherSuite",
+                    getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), "%s"));
+                prettyAppend(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy(),
+                    simulatedClient.getForwardSecrecy() ? AnsiColor.GREEN : AnsiColor.RED);
+                builder.append("\n");
+                prettyAppend(builder, "Server Public Key", getServerPublicKeyParameterColor(simulatedClient));
+                builder.append("\n");
+                if (simulatedClient.getSelectedCompressionMethod() != null) {
+                    prettyAppend(builder, "Selected Compression Method",
+                        simulatedClient.getSelectedCompressionMethod().toString());
+                } else {
+                    String tmp = null;
+                    prettyAppend(builder, "Selected Compression Method", tmp);
+                }
+                prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
+                // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
             }
-            prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -491,11 +488,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendCertificates(StringBuilder builder) {
-        TestResult certchainsResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN.name());
+        @SuppressWarnings("unchecked")
+        ListResult<CertificateChain> certchainsResult =
+            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
         if (certchainsResult != null) {
             int certCtr = 1;
-            @SuppressWarnings("unchecked")
-            List<CertificateChain> certchains = ((ListResult<CertificateChain>) certchainsResult).getList();
+            List<CertificateChain> certchains = certchainsResult.getList();
             if (!certchains.isEmpty()) {
                 for (CertificateChain chain : certchains) {
                     prettyAppendHeading(builder,
@@ -684,10 +682,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
         appendOcspOverview(builder);
-        TestResult ocspResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_OCSP_RESULTS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<OcspCertificateResult> ocspResult =
+            (ListResult<OcspCertificateResult>) report.getListResult(TlsAnalyzedProperty.LIST_OCSP_RESULTS);
         if (ocspResult != null) {
-            @SuppressWarnings("unchecked")
-            List<OcspCertificateResult> ocspcertresults = ((ListResult<OcspCertificateResult>) ocspResult).getList();
+            List<OcspCertificateResult> ocspcertresults = ocspResult.getList();
             int certCtr = 1;
             if (ocspcertresults != null && !ocspcertresults.isEmpty()) {
                 for (OcspCertificateResult result : ocspcertresults) {
@@ -992,13 +991,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
-        TestResult raccooonResult =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_RACCOONATTACK_PROBABILITIES.name());
+        @SuppressWarnings("unchecked")
+        ListResult<RaccoonAttackProbabilities> raccooonResult = (ListResult<RaccoonAttackProbabilities>) report
+            .getListResult(TlsAnalyzedProperty.LIST_RACCOONATTACK_PROBABILITIES);
         if ((report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResults.TRUE
             || detail.isGreaterEqualTo(ScannerDetail.DETAILED)) && raccooonResult != null) {
-            @SuppressWarnings("unchecked")
-            List<RaccoonAttackProbabilities> raccoonAttackProbabilities =
-                ((ListResult<RaccoonAttackProbabilities>) raccooonResult).getList();
+            List<RaccoonAttackProbabilities> raccoonAttackProbabilities = raccooonResult.getList();
             if (raccoonAttackProbabilities != null) {
                 prettyAppendHeading(builder, "Raccoon Attack Details");
                 prettyAppend(builder,
@@ -1120,12 +1118,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
             }
             prettyAppendHeading(builder, "PaddingOracle response map");
-            TestResult paddingoracleResult =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name());
+            @SuppressWarnings("unchecked")
+            ListResult<InformationLeakTest<?>> paddingoracleResult = (ListResult<InformationLeakTest<?>>) report
+                .getListResult(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
             if (paddingoracleResult != null) {
-                @SuppressWarnings("unchecked")
-                List<InformationLeakTest<?>> paddingResults =
-                    ((ListResult<InformationLeakTest<?>>) paddingoracleResult).getList();
+                List<InformationLeakTest<?>> paddingResults = paddingoracleResult.getList();
                 if (paddingResults != null && !paddingResults.isEmpty()) {
                     prettyAppend(builder, "No vulnerability present to identify");
                     appendInformationLeakTestList(builder, paddingResults, "Padding Oracle Details");
@@ -1168,13 +1165,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendBleichenbacherResults(StringBuilder builder) {
         try {
-            TestResult bleichenResult =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS.name());
+            @SuppressWarnings("unchecked")
+            ListResult<InformationLeakTest<?>> bleichenResult = (ListResult<InformationLeakTest<?>>) report
+                .getListResult(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS);
             prettyAppendHeading(builder, "Bleichenbacher response map");
             if (bleichenResult != null) {
-                @SuppressWarnings("unchecked")
-                List<InformationLeakTest<?>> bleichenResults =
-                    ((ListResult<InformationLeakTest<?>>) bleichenResult).getList();
+                List<InformationLeakTest<?>> bleichenResults = bleichenResult.getList();
                 if (bleichenResults != null && !bleichenResults.isEmpty()) {
                     prettyAppend(builder, "No vulnerability present to identify");
                     appendInformationLeakTestList(builder, bleichenResults, "Bleichenbacher Details");
@@ -1200,11 +1196,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendInvalidCurveResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Invalid Curve Details");
         boolean foundCouldNotTest = false;
-        TestResult invcurvesResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT.name());
+        @SuppressWarnings("unchecked")
+        ListResult<InvalidCurveResponse> invcurvesResult =
+            (ListResult<InvalidCurveResponse>) report.getListResult(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
         if (invcurvesResult != null) {
-            @SuppressWarnings("unchecked")
-            List<InvalidCurveResponse> invcurvesResults =
-                ((ListResult<InvalidCurveResponse>) invcurvesResult).getList();
+            List<InvalidCurveResponse> invcurvesResults = invcurvesResult.getList();
             if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.NOT_TESTED_YET
                 && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL)
                     == TestResults.NOT_TESTED_YET
@@ -1340,9 +1336,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     @SuppressWarnings("unchecked")
     public StringBuilder appendCipherSuites(StringBuilder builder) {
-        TestResult ciphersuiteResult = report.getResultMap().get(TlsAnalyzedProperty.SET_CIPHERSUITES.name());
+        SetResult<CipherSuite> ciphersuiteResult =
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
         if (ciphersuiteResult != null) {
-            Set<CipherSuite> ciphersuites = ((SetResult<CipherSuite>) ciphersuiteResult).getSet();
+            Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
             if (ciphersuites != null) {
                 prettyAppendHeading(builder, "Supported Cipher suites");
                 if (!ciphersuites.isEmpty()) {
@@ -1351,11 +1348,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 } else
                     prettyAppend(builder, "-empty-", AnsiColor.RED);
 
-                TestResult verspairsResult =
-                    report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+                ListResult<VersionSuiteListPair> verspairsResult = (ListResult<VersionSuiteListPair>) report
+                    .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
                 if (verspairsResult != null) {
-                    List<VersionSuiteListPair> versPairs =
-                        ((ListResult<VersionSuiteListPair>) verspairsResult).getList();
+                    List<VersionSuiteListPair> versPairs = verspairsResult.getList();
                     if (versPairs != null && !versPairs.isEmpty()) {
                         for (VersionSuiteListPair versionSuitePair : versPairs) {
                             prettyAppendHeading(builder,
@@ -1427,9 +1423,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     @SuppressWarnings("unchecked")
     public StringBuilder appendProtocolVersions(StringBuilder builder) {
-        TestResult protResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name());
+        ListResult<ProtocolVersion> protResult =
+            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
         if (protResult != null) {
-            if (((ListResult<ProtocolVersion>) protResult).getList() != null) {
+            if (protResult.getList() != null) {
                 prettyAppendHeading(builder, "Versions");
                 prettyAppend(builder, "DTLS 1.0", TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
                 prettyAppend(builder, "DTLS 1.2", TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
@@ -1523,8 +1520,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "HPKP", TlsAnalyzedProperty.SUPPORTS_HPKP);
                     prettyAppend(builder, "HPKP (report only)", TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING);
                     prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
-                    List<HpkpPin> normalPins = ((ListResult<HpkpPin>) report.getResultMap()
-                        .get(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS.name())).getList();
+
+                    List<HpkpPin> normalPins =
+                        ((ListResult<HpkpPin>) report.getListResult(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS))
+                            .getList();
                     if (normalPins.size() > 0) {
                         prettyAppend(builder, "");
                         prettyAppend(builder, "HPKP-Pins:", AnsiColor.GREEN);
@@ -1532,8 +1531,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             prettyAppend(builder, pin.toString());
                         }
                     }
-                    List<HpkpPin> reportOnlyPins = ((ListResult<HpkpPin>) report.getResultMap()
-                        .get(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS.name())).getList();
+                    List<HpkpPin> reportOnlyPins =
+                        ((ListResult<HpkpPin>) report.getListResult(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS))
+                            .getList();
                     if (reportOnlyPins.size() > 0) {
                         prettyAppend(builder, "");
                         prettyAppend(builder, "Report Only HPKP-Pins:", AnsiColor.GREEN);
@@ -1546,8 +1546,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpsHeader header : ((ListResult<HttpsHeader>) report.getResultMap()
-                    .get(TlsAnalyzedProperty.LIST_HEADER.name())).getList()) {
+                for (HttpsHeader header : ((ListResult<HttpsHeader>) report
+                    .getListResult(TlsAnalyzedProperty.LIST_HEADER)).getList()) {
                     prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
                 }
                 prettyAppendHeading(builder, "HTTP False Start");
@@ -1562,9 +1562,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     @SuppressWarnings("unchecked")
     public StringBuilder appendExtensions(StringBuilder builder) {
-        TestResult extensionResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
+        ListResult<ExtensionType> extensionResult =
+            (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
         if (extensionResult != null) {
-            List<ExtensionType> extensions = ((ListResult<ExtensionType>) extensionResult).getList();
+            List<ExtensionType> extensions = extensionResult.getList();
             if (extensions != null) {
                 prettyAppendHeading(builder, "Supported Extensions");
                 for (ExtensionType type : extensions) {
@@ -1584,14 +1585,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
-            for (TokenBindingVersion version : ((ListResult<TokenBindingVersion>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION.name())).getList()) {
+            for (TokenBindingVersion version : ((ListResult<TokenBindingVersion>) report
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION)).getList()) {
                 builder.append(version.toString()).append("\n");
             }
 
             prettyAppendHeading(builder, "Tokenbinding Key Parameters");
-            for (TokenBindingKeyParameters keyParameter : ((ListResult<TokenBindingKeyParameters>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS.name())).getList()) {
+            for (TokenBindingKeyParameters keyParameter : ((ListResult<TokenBindingKeyParameters>) report
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS)).getList()) {
                 builder.append(keyParameter.toString()).append("\n");
             }
         }
@@ -1610,10 +1611,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendAlpn(StringBuilder builder) {
-        TestResult alpnResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<String> alpnResult =
+            (ListResult<String>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
         if (alpnResult != null) {
-            @SuppressWarnings("unchecked")
-            List<String> alpns = ((ListResult<String>) alpnResult).getList();
+            List<String> alpns = alpnResult.getList();
             if (alpns != null) {
                 prettyAppendHeading(builder, "ALPN");
                 for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
@@ -1634,10 +1636,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public void appendRandomness(StringBuilder builder) {
-        TestResult entropyResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_ENTROPY_REPORT.name());
+        @SuppressWarnings("unchecked")
+        ListResult<EntropyReport> entropyResult =
+            (ListResult<EntropyReport>) report.getListResult(TlsAnalyzedProperty.LIST_ENTROPY_REPORT);
         if (entropyResult != null) {
-            @SuppressWarnings("unchecked")
-            List<EntropyReport> entropyResults = ((ListResult<EntropyReport>) entropyResult).getList();
+            List<EntropyReport> entropyResults = entropyResult.getList();
             if (entropyResults != null) {
                 prettyAppendHeading(builder, "Entropy");
                 prettyAppend(builder, "Uses Unixtime", TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM);
@@ -1681,10 +1684,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "EC PublicKey reuse", TlsAnalyzedProperty.REUSES_EC_PUBLICKEY);
         prettyAppend(builder, "DH PublicKey reuse", TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
         prettyAppend(builder, "Uses Common DH Primes", TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES);
-        TestResult dhvalueResult = report.getResultMap().get(TlsAnalyzedProperty.SET_USED_COMMON_DHVALUE.name());
+        @SuppressWarnings("unchecked")
+        SetResult<CommonDhValues> dhvalueResult =
+            (SetResult<CommonDhValues>) report.getSetResult(TlsAnalyzedProperty.SET_USED_COMMON_DHVALUE);
         if (dhvalueResult != null) {
-            @SuppressWarnings("unchecked")
-            Set<CommonDhValues> dhValues = ((SetResult<CommonDhValues>) dhvalueResult).getSet();
+            Set<CommonDhValues> dhValues = dhvalueResult.getSet();
             if (dhValues != null && dhValues.size() != 0) {
                 for (CommonDhValues value : dhValues)
                     prettyAppend(builder, "\t" + value.getName(), AnsiColor.YELLOW);
@@ -1751,10 +1755,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public void appendGuidelines(StringBuilder builder) {
-        TestResult guidelineResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<GuidelineReport> guidelineResult =
+            (ListResult<GuidelineReport>) report.getListResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS);
         if (guidelineResult != null) {
-            @SuppressWarnings("unchecked")
-            List<GuidelineReport> reports = ((ListResult<GuidelineReport>) guidelineResult).getList();
+            List<GuidelineReport> reports = guidelineResult.getList();
             if (reports != null && reports.size() > 0) {
                 prettyAppendHeading(builder, "Guidelines");
                 for (GuidelineReport report : reports)
@@ -1909,9 +1914,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     @SuppressWarnings("unchecked")
     public StringBuilder appendCurves(StringBuilder builder) {
-        TestResult namedgroupsResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS.name());
+        ListResult<NamedGroup> namedgroupsResult =
+            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS);
         if (namedgroupsResult != null) {
-            List<NamedGroup> namedgroups = ((ListResult<NamedGroup>) namedgroupsResult).getList();
+            List<NamedGroup> namedgroups = namedgroupsResult.getList();
             if (namedgroups != null) {
                 prettyAppendHeading(builder, "Supported Named Groups");
                 if (namedgroups.size() > 0) {
@@ -1963,14 +1969,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     @SuppressWarnings("unchecked")
     public StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
-        TestResult samResult_cert =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT.name());
-        TestResult samResult_ske =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE.name());
+        ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT);
+        ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE);
         if (samResult_cert != null || samResult_ske != null) {
             List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-            if (samResult_cert != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList() != null)
-                algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_cert).getList());
+            if (samResult_cert != null && samResult_cert.getList() != null)
+                algorithms.addAll(samResult_cert.getList());
             if (samResult_ske != null && ((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList() != null)
                 algorithms.addAll(((ListResult<SignatureAndHashAlgorithm>) samResult_ske).getList());
             // can algorithm be empty? check required? TODO
@@ -1986,11 +1992,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder.append("none\n");
             }
         }
-        TestResult samTls13Result =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13.name());
+        ListResult<SignatureAndHashAlgorithm> samTls13Result = (ListResult<SignatureAndHashAlgorithm>) report
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_TLS13);
         if (samTls13Result != null) {
-            List<SignatureAndHashAlgorithm> samTls13 =
-                ((ListResult<SignatureAndHashAlgorithm>) samTls13Result).getList();
+            List<SignatureAndHashAlgorithm> samTls13 = samTls13Result.getList();
             if (samTls13 != null) {
                 prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
                 if (samTls13.size() > 0) {
@@ -2004,26 +2009,24 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendCompressions(StringBuilder builder) {
-        TestResult compressionsResult =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS.name());
-        if (compressionsResult != null) {
-            @SuppressWarnings("unchecked")
-            List<CompressionMethod> methods = ((ListResult<CompressionMethod>) compressionsResult).getList();
-            if (methods != null) {
-                prettyAppendHeading(builder, "Supported Compressions");
-                for (CompressionMethod compression : methods) {
-                    prettyAppend(builder, compression.name());
-                }
+        @SuppressWarnings("unchecked")
+        ListResult<CompressionMethod> methods = (ListResult<CompressionMethod>) report
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
+        if (methods != null) {
+            prettyAppendHeading(builder, "Supported Compressions");
+            for (CompressionMethod compression : methods.getList()) {
+                prettyAppend(builder, compression.name());
             }
         }
         return builder;
     }
 
     public StringBuilder appendTls13Groups(StringBuilder builder) {
-        TestResult tls13Result = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<NamedGroup> tls13Result =
+            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS);
         if (tls13Result != null) {
-            @SuppressWarnings("unchecked")
-            List<NamedGroup> tls13Groups = ((ListResult<NamedGroup>) tls13Result).getList();
+            List<NamedGroup> tls13Groups = tls13Result.getList();
             if (tls13Groups != null) {
                 prettyAppendHeading(builder, "TLS 1.3 Named Groups");
                 if (tls13Groups.size() > 0) {
@@ -2063,10 +2066,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Supported", report.getCcaSupported());
         prettyAppend(builder, "Required", report.getCcaRequired());
 
-        TestResult ccaResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_CCA_TESTRESULT.name());
+        @SuppressWarnings("unchecked")
+        ListResult<CcaTestResult> ccaResult =
+            (ListResult<CcaTestResult>) report.getListResult(TlsAnalyzedProperty.LIST_CCA_TESTRESULT);
         if (ccaResult != null) {
-            @SuppressWarnings("unchecked")
-            List<CcaTestResult> results = ((ListResult<CcaTestResult>) ccaResult).getList();
+            List<CcaTestResult> results = ccaResult.getList();
             if (results != null) {
                 List<CcaTestResult> ccaTestResults = results;
                 ccaTestResults.sort(new Comparator<CcaTestResult>() {
