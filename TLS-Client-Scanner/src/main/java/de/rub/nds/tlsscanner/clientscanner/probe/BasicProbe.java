@@ -47,7 +47,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
-        register(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES,
+        register(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES,
             TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS,
             TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
             TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS,
@@ -99,7 +99,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     @Override
     protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
+        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
         put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
         put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
             clientSupportedSignatureAndHashAlgorithms);

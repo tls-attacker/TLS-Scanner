@@ -27,7 +27,8 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
     public void analyze(ServerReport report) {
         Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
         List<CertificateChain> certList =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN)).getList();
+            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS))
+                .getList();
         if (certList == null) {
             return;
         }

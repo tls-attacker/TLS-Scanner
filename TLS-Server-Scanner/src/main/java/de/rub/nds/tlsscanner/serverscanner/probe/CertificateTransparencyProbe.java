@@ -212,7 +212,7 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChain =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN)).getList()
+            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS)).getList()
                 .get(0).getCertificate();
     }
 

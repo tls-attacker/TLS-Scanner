@@ -65,7 +65,8 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
         @SuppressWarnings("unchecked")
         List<CertificateChain> certchains =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN)).getList();
+            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS))
+                .getList();
         for (int i = 0; i < certchains.size(); i++) {
             CertificateChain chain = certchains.get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);

@@ -103,7 +103,7 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
     @Override
     public void adjustConfig(ClientReport report) {
         clientAdvertisedCipherSuites =
-            ((ListResult<CipherSuite>) report.getListResult(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES))
+            ((ListResult<CipherSuite>) report.getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES))
                 .getList();
     }
 

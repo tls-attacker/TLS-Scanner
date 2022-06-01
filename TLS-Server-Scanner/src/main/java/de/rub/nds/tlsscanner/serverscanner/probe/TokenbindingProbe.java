@@ -39,7 +39,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
         register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION,
+            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSIONS,
             TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
     }
 
@@ -99,7 +99,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION, supportedTokenBindingVersion);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSIONS, supportedTokenBindingVersion);
         put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS, supportedTokenBindingKeyParameters);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
             put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);

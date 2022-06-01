@@ -266,10 +266,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
-        prettyAppend(builder, "Tested Clients",
-            Integer.toString(
-                ((ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT))
-                    .getList().size()));
+        prettyAppend(builder, "Tested Clients", Integer.toString(((ListResult<SimulatedClientResult>) report
+            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS)).getList().size()));
         builder.append("\n");
         String identifier;
         identifier = "Handshakes - Successful";
@@ -411,8 +409,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
-        ListResult<SimulatedClientResult> resultSimulatedClients =
-            (ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT);
+        ListResult<SimulatedClientResult> resultSimulatedClients = (ListResult<SimulatedClientResult>) report
+            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS);
         if (resultSimulatedClients != null) {
             for (SimulatedClientResult simulatedClient : resultSimulatedClients.getList()) {
                 prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
@@ -491,7 +489,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendCertificates(StringBuilder builder) {
         @SuppressWarnings("unchecked")
         ListResult<CertificateChain> certchainsResult =
-            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
+            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS);
         if (certchainsResult != null) {
             int certCtr = 1;
             List<CertificateChain> certchains = certchainsResult.getList();
@@ -1548,7 +1546,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
                 for (HttpsHeader header : ((ListResult<HttpsHeader>) report
-                    .getListResult(TlsAnalyzedProperty.LIST_HEADER)).getList()) {
+                    .getListResult(TlsAnalyzedProperty.LIST_HTTPS_HEADER)).getList()) {
                     prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
                 }
                 prettyAppendHeading(builder, "HTTP False Start");
@@ -1587,7 +1585,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
             for (TokenBindingVersion version : ((ListResult<TokenBindingVersion>) report
-                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSION)).getList()) {
+                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSIONS)).getList()) {
                 builder.append(version.toString()).append("\n");
             }
 
@@ -1639,7 +1637,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public void appendRandomness(StringBuilder builder) {
         @SuppressWarnings("unchecked")
         ListResult<EntropyReport> entropyResult =
-            (ListResult<EntropyReport>) report.getListResult(TlsAnalyzedProperty.LIST_ENTROPY_REPORT);
+            (ListResult<EntropyReport>) report.getListResult(TlsAnalyzedProperty.LIST_ENTROPY_REPORTS);
         if (entropyResult != null) {
             List<EntropyReport> entropyResults = entropyResult.getList();
             if (entropyResults != null) {
@@ -1687,7 +1685,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Uses Common DH Primes", TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES);
         @SuppressWarnings("unchecked")
         SetResult<CommonDhValues> dhvalueResult =
-            (SetResult<CommonDhValues>) report.getSetResult(TlsAnalyzedProperty.SET_USED_COMMON_DHVALUE);
+            (SetResult<CommonDhValues>) report.getSetResult(TlsAnalyzedProperty.SET_COMMON_DH_VALUES);
         if (dhvalueResult != null) {
             Set<CommonDhValues> dhValues = dhvalueResult.getSet();
             if (dhValues != null && dhValues.size() != 0) {
@@ -2069,7 +2067,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         @SuppressWarnings("unchecked")
         ListResult<CcaTestResult> ccaResult =
-            (ListResult<CcaTestResult>) report.getListResult(TlsAnalyzedProperty.LIST_CCA_TESTRESULT);
+            (ListResult<CcaTestResult>) report.getListResult(TlsAnalyzedProperty.LIST_CCA_TESTRESULTS);
         if (ccaResult != null) {
             List<CcaTestResult> results = ccaResult.getList();
             if (results != null) {

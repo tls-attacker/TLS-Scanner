@@ -51,7 +51,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
             TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
             TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-            TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
+            TlsAnalyzedProperty.LIST_HTTPS_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
             TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS);
     }
 
@@ -88,7 +88,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
-        put(TlsAnalyzedProperty.LIST_HEADER, headerList);
+        put(TlsAnalyzedProperty.LIST_HTTPS_HEADER, headerList);
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (headerList != null) {

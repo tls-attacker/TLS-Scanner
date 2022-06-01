@@ -41,8 +41,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         int isInsecureCounter = 0;
 
         @SuppressWarnings("unchecked")
-        ListResult<SimulatedClientResult> simulatedclientsResult =
-            (ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT);
+        ListResult<SimulatedClientResult> simulatedclientsResult = (ListResult<SimulatedClientResult>) report
+            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS);
         if (simulatedclientsResult != null) {
             List<SimulatedClientResult> simulatedclients = simulatedclientsResult.getList();
             if (simulatedclients != null) {
@@ -77,7 +77,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 report.setConnectionInsecureCounter(isInsecureCounter);
             }
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 

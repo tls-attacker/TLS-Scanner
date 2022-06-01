@@ -51,8 +51,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
-        register(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
-            TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT);
+        register(TlsAnalyzedProperty.LIST_SMALL_DHE_SUBGROUP_RESULTS,
+            TlsAnalyzedProperty.LIST_COMPOSITE_DHE_MODULUS_RESULTS);
         random = new Random(0);
     }
 
@@ -186,9 +186,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     @Override
     public void adjustConfig(ClientReport report) {
         @SuppressWarnings("unchecked")
-        List<CipherSuite> ciphers =
-            ((ListResult<CipherSuite>) report.getListResult(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name()))
-                .getList();
+        List<CipherSuite> ciphers = ((ListResult<CipherSuite>) report
+            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES.name())).getList();
         List<CipherSuite> dheCiphers = new LinkedList<>();
         for (CipherSuite suite : ciphers) {
             if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().contains("_DHE_")) {
@@ -200,8 +199,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     @Override
     protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT, compositeModulusResultList);
-        put(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS, smallSubgroupResults);
+        put(TlsAnalyzedProperty.LIST_COMPOSITE_DHE_MODULUS_RESULTS, compositeModulusResultList);
+        put(TlsAnalyzedProperty.LIST_SMALL_DHE_SUBGROUP_RESULTS, smallSubgroupResults);
         report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
     }
 
