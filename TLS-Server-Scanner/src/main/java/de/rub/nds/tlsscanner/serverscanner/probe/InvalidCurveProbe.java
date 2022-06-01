@@ -87,7 +87,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         scanDetail = configSelector.getScannerConfig().getScanDetail();
         register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
             TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
+            TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, TlsAnalyzedProperty.LIST_INVALIDCURVE_TESTRESULT);
     }
 
     @Override
@@ -747,6 +747,6 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
         put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
         put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
-        put(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT, responses);
+        put(TlsAnalyzedProperty.LIST_INVALIDCURVE_TESTRESULT, responses);
     }
 }

@@ -1119,7 +1119,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppendHeading(builder, "PaddingOracle response map");
             @SuppressWarnings("unchecked")
             ListResult<InformationLeakTest<?>> paddingoracleResult = (ListResult<InformationLeakTest<?>>) report
-                .getListResult(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS);
+                .getListResult(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULT);
             if (paddingoracleResult != null) {
                 List<InformationLeakTest<?>> paddingResults = paddingoracleResult.getList();
                 if (paddingResults != null && !paddingResults.isEmpty()) {
@@ -1166,7 +1166,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         try {
             @SuppressWarnings("unchecked")
             ListResult<InformationLeakTest<?>> bleichenResult = (ListResult<InformationLeakTest<?>>) report
-                .getListResult(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS);
+                .getListResult(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULT);
             prettyAppendHeading(builder, "Bleichenbacher response map");
             if (bleichenResult != null) {
                 List<InformationLeakTest<?>> bleichenResults = bleichenResult.getList();
@@ -1197,7 +1197,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         boolean foundCouldNotTest = false;
         @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> invcurvesResult =
-            (ListResult<InvalidCurveResponse>) report.getListResult(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
+            (ListResult<InvalidCurveResponse>) report.getListResult(TlsAnalyzedProperty.LIST_INVALIDCURVE_TESTRESULT);
         if (invcurvesResult != null) {
             List<InvalidCurveResponse> invcurvesResults = invcurvesResult.getList();
             if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.NOT_TESTED_YET

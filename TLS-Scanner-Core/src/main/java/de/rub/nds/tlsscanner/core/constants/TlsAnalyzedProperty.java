@@ -20,10 +20,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
     LIST_SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.QUIRKS),
-    LIST_BLEICHENBACHER_TESTRESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
-    LIST_PADDINGORACLE_TESTRESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
+    LIST_BLEICHENBACHER_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    LIST_PADDINGORACLE_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     LIST_DIRECTRACCOON_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    LIST_INVALIDCURVE_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    LIST_INVALIDCURVE_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     LIST_RACCOONATTACK_PROBABILITIES(TlsAnalyzedPropertyCategory.ATTACKS),
     LIST_SUPPORTED_PROTOCOLVERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
     LIST_SUPPORTED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
@@ -39,7 +39,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     LIST_SUPPORTED_ALPNS(TlsAnalyzedPropertyCategory.QUIRKS),
     LIST_SUPPORTED_COMPRESSION_METHODS(TlsAnalyzedPropertyCategory.COMPRESSION),
     LIST_CERTIFICATE_CHAINS(TlsAnalyzedPropertyCategory.CERTIFICATE),
-    LIST_STATIC_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     LIST_EPHEMERAL_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     LIST_TLS13_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     LIST_STATIC_ECDSA_SIGGROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
