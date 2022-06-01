@@ -11,20 +11,22 @@ package de.rub.nds.scanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 
-public class Requirement {
-    protected Requirement next = NO_REQUIREMENT;
+public abstract class Requirement {
+    protected Requirement next = BaseRequirement.NO_REQUIREMENT;
 
-    public static Requirement NO_REQUIREMENT = new Requirement();
-
-    protected Requirement() {
-    }
-
-    public boolean evaluate(ScanReport report) {
-        return true;
-    }
+    public abstract boolean evaluate(ScanReport report);
 
     public Requirement requires(Requirement next) {
         next.next = this;
         return next;
+    }
+
+    public static class BaseRequirement extends Requirement {
+        public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
+
+        @Override
+        public boolean evaluate(ScanReport report) {
+            return true;
+        }
     }
 }

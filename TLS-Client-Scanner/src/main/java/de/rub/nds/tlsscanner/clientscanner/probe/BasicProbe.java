@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.BaseRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -30,7 +31,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -94,7 +94,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     @Override
     protected Requirement getRequirements() {
-        return ProbeRequirement.NO_REQUIREMENT;
+        return BaseRequirement.NO_REQUIREMENT;
     }
 
     @Override

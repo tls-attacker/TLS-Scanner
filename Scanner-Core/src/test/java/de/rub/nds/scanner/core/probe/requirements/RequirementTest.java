@@ -20,11 +20,11 @@ public class RequirementTest {
 
     @Test
     public void basicFunctionalityRequirementTest() {
-        assertEquals(new Requirement().next, Requirement.NO_REQUIREMENT);
+        assertEquals(new BaseRequirement().next, BaseRequirement.NO_REQUIREMENT);
 
         // evaluation
-        assertTrue(Requirement.NO_REQUIREMENT.evaluate(new TestReport()));
-        assertTrue(new Requirement().evaluate(new TestReport()));
+        assertTrue(BaseRequirement.NO_REQUIREMENT.evaluate(new TestReport()));
+        assertTrue(new BaseRequirement().evaluate(new TestReport()));
     }
 
     /**

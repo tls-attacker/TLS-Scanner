@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.BaseRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -27,7 +28,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAct
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -105,6 +105,6 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     protected Requirement getRequirements() {
-        return ProbeRequirement.NO_REQUIREMENT;
+        return BaseRequirement.NO_REQUIREMENT;
     }
 }

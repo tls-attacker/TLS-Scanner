@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.BaseRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -23,7 +24,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
@@ -229,6 +229,6 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     protected Requirement getRequirements() {
-        return ProbeRequirement.NO_REQUIREMENT;
+        return BaseRequirement.NO_REQUIREMENT;
     }
 }
