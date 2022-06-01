@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 public class FingerprintChecker {
 
     public static EqualityError checkEquality(ResponseFingerprint fingerprint1, ResponseFingerprint fingerprint2) {
+        boolean foundRecordContentMismatch = false;
         if (fingerprint1.getMessageList().size() == fingerprint2.getMessageList().size()) {
             for (int i = 0; i < fingerprint1.getMessageList().size(); i++) {
                 if (!fingerprint1.getMessageList().get(i).toCompactString()
@@ -36,11 +37,6 @@ public class FingerprintChecker {
                         .equals(fingerprint2.getRecordList().get(i).getClass())) {
                         return EqualityError.RECORD_CLASS;
                     }
-                    // This also finds fragmentation issues
-                    if (fingerprint1.getRecordList().get(i).getCompleteRecordBytes().getValue().length
-                        != fingerprint2.getRecordList().get(i).getCompleteRecordBytes().getValue().length) {
-                        return EqualityError.RECORD_CONTENT;
-                    }
                     if (fingerprint1.getRecordList().get(i) instanceof Record
                         && fingerprint2.getRecordList().get(i) instanceof Record) {
                         // Comparing Records
@@ -56,6 +52,12 @@ public class FingerprintChecker {
                             return EqualityError.RECORD_VERSION;
                         }
 
+                        // This also finds fragmentation issues
+                        if (fingerprint1.getRecordList().get(i).getCompleteRecordBytes().getValue().length
+                            != fingerprint2.getRecordList().get(i).getCompleteRecordBytes().getValue().length) {
+                            foundRecordContentMismatch = true;
+                        }
+
                     } else {
                         // Comparing BlobRecords
                         if (java.util.Arrays.equals(
@@ -69,11 +71,13 @@ public class FingerprintChecker {
                 return EqualityError.RECORD_COUNT;
             }
         }
-        if (fingerprint1.getSocketState() == fingerprint2.getSocketState()) {
-            return EqualityError.NONE;
-        } else {
+        if (fingerprint1.getSocketState() != fingerprint2.getSocketState()) {
             return EqualityError.SOCKET_STATE;
+        } else if (foundRecordContentMismatch) {
+            return EqualityError.RECORD_CONTENT;
         }
+
+        return EqualityError.NONE;
     }
 
     private FingerprintChecker() {
