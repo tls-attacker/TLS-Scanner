@@ -85,8 +85,13 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
 
     @Override
     protected Requirement requires() {
-        // TODO Check if atleast one non tls 1.3 version is supported
-        return ProbeRequirement.NO_REQUIREMENT;
+    	ProbeRequirement ssl2 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
+    	ProbeRequirement ssl3 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+    	ProbeRequirement tls10 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+    	ProbeRequirement tls11 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+    	ProbeRequirement tls12 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+
+        return new ProbeRequirement().orRequirement(ssl2, ssl3, tls10, tls11, tls12);
     }
 
     @Override
