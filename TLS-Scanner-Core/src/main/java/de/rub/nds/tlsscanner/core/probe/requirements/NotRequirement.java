@@ -6,12 +6,6 @@ import de.rub.nds.scanner.core.report.ScanReport;
 public class NotRequirement extends Requirement{
 	private final Requirement notRequirement;
 	
-	public NotRequirement(Requirement next, Requirement notRequirement){
-		super();
-		this.notRequirement = notRequirement;
-		this.next = next;
-	}
-	
 	public NotRequirement(Requirement notRequirement){
 		super();
 		this.notRequirement = notRequirement;

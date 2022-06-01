@@ -10,12 +10,6 @@ import java.util.List;
 public class ExtensionRequirement extends Requirement{
 	private final ExtensionType[] extensions;
 	
-	public ExtensionRequirement(Requirement next, ExtensionType... extensions){
-		super();
-		this.extensions = extensions;
-		this.next = next;
-	}
-	
 	public ExtensionRequirement(ExtensionType... extensions){
 		super();
 		this.extensions = extensions;

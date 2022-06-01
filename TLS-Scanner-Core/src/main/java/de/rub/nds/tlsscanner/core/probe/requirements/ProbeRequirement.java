@@ -16,12 +16,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 public class ProbeRequirement extends Requirement {
 	private final TlsProbeType[] probes;
 	
-	public ProbeRequirement(Requirement next, TlsProbeType... probes){
-		super();
-		this.probes = probes;
-		this.next = next;
-	}
-	
 	public ProbeRequirement(TlsProbeType... probes){
 		super();
 		this.probes = probes;

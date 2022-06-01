@@ -21,10 +21,10 @@ public class OrRequirementTest extends RequirementsBasicTest {
 		OrRequirement req = new OrRequirement(Requirement.NO_REQUIREMENT, null);
 		assertTrue(req.evaluate(report));
 		
-		req = new OrRequirement(Requirement.NO_REQUIREMENT, new Requirement[0]);
+		req = new OrRequirement(new Requirement[0]);
 		assertTrue(req.evaluate(report));
 				
-		req = new OrRequirement(Requirement.NO_REQUIREMENT, req0, req1);
+		req = new OrRequirement(req0, req1);
 		assertArrayEquals(req.getRequirement(), new Requirement[] {req0, req1});
 		assertFalse(req.evaluate(report));
 		report.markProbeAsExecuted(TlsProbeType.BASIC);

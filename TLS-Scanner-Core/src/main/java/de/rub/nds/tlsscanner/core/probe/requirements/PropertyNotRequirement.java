@@ -11,12 +11,6 @@ public class PropertyNotRequirement extends Requirement{
 
 private final TlsAnalyzedProperty[] propertiesNot;
 	
-public PropertyNotRequirement(Requirement next, TlsAnalyzedProperty... propertiesNot){
-	super();
-	this.propertiesNot = propertiesNot;
-	this.next = next;
-}
-
 public PropertyNotRequirement(TlsAnalyzedProperty... propertiesNot){
 	super();
 	this.propertiesNot = propertiesNot;

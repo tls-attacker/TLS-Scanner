@@ -10,12 +10,6 @@ import java.util.List;
 public class ProtocolRequirement extends Requirement{
 	private final ProtocolVersion[] protocols;
 	
-	public ProtocolRequirement(Requirement next, ProtocolVersion... protocols){
-		super();
-		this.protocols = protocols;
-		this.next = next;
-	}
-	
 	public ProtocolRequirement(ProtocolVersion... protocols){
 		super();
 		this.protocols = protocols;

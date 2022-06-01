@@ -6,10 +6,9 @@ import de.rub.nds.scanner.core.report.ScanReport;
 public class OrRequirement extends Requirement {
 	private final Requirement[] requirements;
 	
-	public OrRequirement(Requirement next, Requirement... requirements){
+	public OrRequirement(Requirement... requirements){
 		super();
 		this.requirements = requirements;
-		this.next = next;
 	}
 	
 	@Override

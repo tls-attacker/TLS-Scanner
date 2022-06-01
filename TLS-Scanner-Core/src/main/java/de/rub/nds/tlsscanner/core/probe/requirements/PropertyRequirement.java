@@ -11,12 +11,6 @@ public class PropertyRequirement extends Requirement{
 	
 	private final TlsAnalyzedProperty[] properties;
 	
-	public PropertyRequirement(Requirement next, TlsAnalyzedProperty... properties){
-		super();
-		this.properties = properties;
-		this.next = next;
-	}
-	
 	public PropertyRequirement(TlsAnalyzedProperty... properties){
 		super();
 		this.properties = properties;
