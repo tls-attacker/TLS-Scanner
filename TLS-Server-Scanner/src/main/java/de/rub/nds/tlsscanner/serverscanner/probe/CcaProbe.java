@@ -150,8 +150,9 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        versionSuiteListPairsList.addAll(((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList());
+        versionSuiteListPairsList.addAll(
+            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
+                .getList());
     }
 
     private Config generateConfig() {

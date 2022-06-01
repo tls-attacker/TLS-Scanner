@@ -48,10 +48,11 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResults.of(((ListResult<ExtensionType>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension)),
-            ((ListResult<ExtensionType>) report.getResultMap()
-                .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(requiredExtension),
+            TestResults
+                .of(((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS))
+                    .getList().contains(requiredExtension)),
+            ((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS)).getList()
+                .contains(requiredExtension),
             requiredExtension);
     }
 

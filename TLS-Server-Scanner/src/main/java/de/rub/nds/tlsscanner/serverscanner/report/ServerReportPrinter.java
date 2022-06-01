@@ -266,8 +266,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
-        prettyAppend(builder, "Tested Clients", Integer.toString(((ListResult<SimulatedClientResult>) report
-            .getResultMap().get(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT.name())).getList().size()));
+        prettyAppend(builder, "Tested Clients",
+            Integer.toString(
+                ((ListResult<SimulatedClientResult>) report.getListResult(TlsAnalyzedProperty.LIST_SIMULATED_CLIENT))
+                    .getList().size()));
         builder.append("\n");
         String identifier;
         identifier = "Handshakes - Successful";
@@ -1925,8 +1927,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         if (detail == ScannerDetail.ALL) {
                             builder.append("\n  Found using:");
                             NamedGroupWitness witness = ((MapResult<NamedGroup, NamedGroupWitness>) report
-                                .getResultMap().get(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES.name()))
-                                    .getMap().get(group);
+                                .getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES)).getMap()
+                                    .get(group);
                             for (CipherSuite cipher : witness.getCipherSuites()) {
                                 builder.append("\n    ").append(cipher.toString());
                             }

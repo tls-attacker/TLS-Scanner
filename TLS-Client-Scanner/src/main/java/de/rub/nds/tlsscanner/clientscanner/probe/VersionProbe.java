@@ -102,8 +102,9 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ClientReport report) {
-        clientAdvertisedCipherSuites = ((ListResult<CipherSuite>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList();
+        clientAdvertisedCipherSuites =
+            ((ListResult<CipherSuite>) report.getListResult(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES))
+                .getList();
     }
 
     @Override

@@ -84,8 +84,9 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        alpnSupported = ((ListResult<ExtensionType>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList().contains(ExtensionType.ALPN);
+        alpnSupported =
+            ((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name()))
+                .getList().contains(ExtensionType.ALPN);
     }
 
     @Override

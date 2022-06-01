@@ -129,8 +129,8 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report
+            .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
     }
 
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,

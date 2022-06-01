@@ -175,8 +175,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     @Override
     public void adjustConfig(ServerReport report) {
         versions = new ArrayList<>();
-        for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList()) {
+        for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report
+            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS)).getList()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
                 versions.add(version);
             }

@@ -67,11 +67,11 @@ public class ProbeRequirement implements Requirement {
         }
 
         if (requiredProtocolVersions != null) {
-            TestResult versionsuiteResult =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name());
+            @SuppressWarnings("unchecked")
+            ListResult<ProtocolVersion> versionsuiteResult =
+                (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
             if (versionsuiteResult != null) {
-                @SuppressWarnings("unchecked")
-                List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+                List<ProtocolVersion> pvList = versionsuiteResult.getList();
                 if (pvList != null && !pvList.isEmpty()) {
                     List<ProtocolVersion> pvers = new LinkedList<>();
                     for (ProtocolVersion pv : requiredProtocolVersions) {
@@ -104,11 +104,11 @@ public class ProbeRequirement implements Requirement {
         }
 
         if (requiredExtensionTypes != null) {
-            TestResult extensionResult =
-                report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
+            @SuppressWarnings("unchecked")
+            ListResult<ExtensionType> extensionResult =
+                (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
             if (extensionResult != null) {
-                @SuppressWarnings("unchecked")
-                List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
+                List<ExtensionType> etList = extensionResult.getList();
                 if (etList != null && !etList.isEmpty()) {
                     List<ExtensionType> etype = new LinkedList<>();
                     for (ExtensionType et : requiredExtensionTypes) {
@@ -212,11 +212,11 @@ public class ProbeRequirement implements Requirement {
     private boolean analyzedProtocolVersionsFulfilled(ScanReport report) {
         if (requiredProtocolVersions == null)
             return true;
-        TestResult versionsuiteResult =
-            report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<ProtocolVersion> versionsuiteResult =
+            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
         if (versionsuiteResult != null) {
-            @SuppressWarnings("unchecked")
-            List<ProtocolVersion> pvList = ((ListResult<ProtocolVersion>) versionsuiteResult).getList();
+            List<ProtocolVersion> pvList = versionsuiteResult.getList();
             if (pvList != null && !pvList.isEmpty()) {
                 for (ProtocolVersion pv : requiredProtocolVersions) {
                     if (pvList.contains(pv))
@@ -244,10 +244,11 @@ public class ProbeRequirement implements Requirement {
     private boolean extensionTypesFulfilled(ScanReport report) {
         if (requiredExtensionTypes == null)
             return true;
-        TestResult extensionResult = report.getResultMap().get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name());
+        @SuppressWarnings("unchecked")
+        ListResult<ExtensionType> extensionResult =
+            (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
         if (extensionResult != null) {
-            @SuppressWarnings("unchecked")
-            List<ExtensionType> etList = ((ListResult<ExtensionType>) extensionResult).getList();
+            List<ExtensionType> etList = extensionResult.getList();
             if (etList != null && !etList.isEmpty()) {
                 for (ExtensionType et : requiredExtensionTypes) {
                     if (etList.contains(et))

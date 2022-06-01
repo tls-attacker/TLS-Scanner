@@ -64,16 +64,17 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        supportsExtendedRandom = ((ListResult<ExtensionType>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name())).getList()
+        supportsExtendedRandom =
+            ((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS)).getList()
                 .contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
         @SuppressWarnings("unchecked")
-        List<VersionSuiteListPair> versionSuitePairs = ((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        List<VersionSuiteListPair> versionSuitePairs =
+            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
+                .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;

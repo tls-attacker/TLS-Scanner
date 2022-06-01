@@ -38,8 +38,8 @@ public class ClientContainerReportCreator extends ReportCreator {
     private void addCipherSuiteContainer(ListContainer rootContainer, ClientReport report) {
         rootContainer.add(new HeadlineContainer("Supported Cipher suites"));
         ListContainer listContainer = new ListContainer();
-        for (CipherSuite suite : ((ListResult<CipherSuite>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList()) {
+        for (CipherSuite suite : ((ListResult<CipherSuite>) report
+            .getListResult(TlsAnalyzedProperty.LIST_ADVERTISED_CIPHERSUITES.name())).getList()) {
             listContainer.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
         }
         rootContainer.add(listContainer);

@@ -80,8 +80,9 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     @Override
     public void adjustConfig(ServerReport report) {
         @SuppressWarnings("unchecked")
-        List<ProtocolVersion> versions = new ArrayList<>(((ListResult<ProtocolVersion>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name())).getList());
+        List<ProtocolVersion> versions = new ArrayList<>(
+            ((ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS))
+                .getList());
         Collections.sort(versions);
         secondHighestVersion = versions.get(versions.size() - 2);
     }

@@ -38,7 +38,7 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
                 @SuppressWarnings("unchecked")
                 KnownPaddingOracleVulnerability knownVulnerability =
                     attributor.getKnownVulnerability(((ListResult<InformationLeakTest<PaddingOracleTestInfo>>) report
-                        .getResultMap().get(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name())).getList());
+                        .getListResult(TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name())).getList());
                 report.setKnownVulnerability(knownVulnerability);
             } catch (Exception e) {
                 LOGGER.debug("property " + TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULTS.name()

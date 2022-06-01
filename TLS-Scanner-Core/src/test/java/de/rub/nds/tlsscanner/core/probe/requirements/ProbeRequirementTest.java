@@ -148,7 +148,7 @@ public class ProbeRequirementTest {
         List<ProtocolVersion> pList = new ArrayList<ProtocolVersion>();
         pList.add(pVer);
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<>(pList, "SUPPORTED_PROTOCOLVERSIONS"));
+            new ListResult<>(pList, TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS.name()));
         assertTrue(pReq.evaluate(report));
 
         pReq.requireExtensionTyes(eType);
@@ -157,7 +157,7 @@ public class ProbeRequirementTest {
         List<ExtensionType> etList = new ArrayList<ExtensionType>();
         etList.add(eType);
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            new ListResult<>(etList, "SUPPORTED_EXTENSIONS"));
+            new ListResult<>(etList, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name()));
         assertTrue(pReq.evaluate(report));
 
         assertTrue(ProbeRequirement.NO_REQUIREMENT.evaluate(report));

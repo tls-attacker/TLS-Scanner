@@ -71,8 +71,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     @SuppressWarnings("unchecked")
     private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
         Set<CipherSuite> supported = new HashSet<>();
-        for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList()) {
+        for (VersionSuiteListPair pair : ((ListResult<VersionSuiteListPair>) report
+            .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS)).getList()) {
             if (versions.contains(pair.getVersion())) {
                 supported.addAll(pair.getCipherSuiteList());
             }

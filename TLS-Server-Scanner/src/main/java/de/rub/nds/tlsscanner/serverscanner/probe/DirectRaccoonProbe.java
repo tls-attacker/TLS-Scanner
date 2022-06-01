@@ -170,8 +170,9 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        serverSupportedSuites =
+            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
+                .getList();
     }
 
     @Override

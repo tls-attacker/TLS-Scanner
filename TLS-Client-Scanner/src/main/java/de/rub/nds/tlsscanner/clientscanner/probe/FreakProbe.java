@@ -125,8 +125,9 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
     public void adjustConfig(ClientReport report) {
         rsaCipherSuites = new LinkedList<>();
         @SuppressWarnings("unchecked")
-        List<VersionSuiteListPair> versionSuitPairs = ((ListResult<VersionSuiteListPair>) report.getResultMap()
-            .get(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        List<VersionSuiteListPair> versionSuitPairs =
+            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
+                .getList();
         for (VersionSuiteListPair suitePair : versionSuitPairs) {
             for (CipherSuite suite : suitePair.getCipherSuiteList()) {
                 if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
