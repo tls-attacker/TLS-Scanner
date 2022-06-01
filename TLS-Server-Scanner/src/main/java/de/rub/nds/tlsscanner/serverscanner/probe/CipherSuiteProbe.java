@@ -236,7 +236,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 

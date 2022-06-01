@@ -80,7 +80,7 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.EXTENSIONS)
             .requireExtensionTyes(ExtensionType.ALPN);
     }

@@ -204,7 +204,7 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
     }
 

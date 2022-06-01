@@ -206,7 +206,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_DHE);
     }
 }

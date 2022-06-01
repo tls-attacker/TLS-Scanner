@@ -80,7 +80,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

@@ -50,7 +50,7 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION,
             TlsProbeType.EXTENSIONS);
     }

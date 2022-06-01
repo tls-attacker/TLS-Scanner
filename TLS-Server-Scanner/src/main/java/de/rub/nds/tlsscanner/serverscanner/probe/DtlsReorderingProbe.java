@@ -72,7 +72,7 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 

@@ -353,7 +353,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE).requireAnalyzedProperties(
             TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
     }

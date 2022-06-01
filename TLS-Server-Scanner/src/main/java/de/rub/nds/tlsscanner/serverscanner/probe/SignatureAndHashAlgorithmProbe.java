@@ -163,7 +163,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         ProbeRequirement pReqTls12 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.TLS12);
         ProbeRequirement pReqTls13 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.TLS13);
         ProbeRequirement pReqDtls12 = new ProbeRequirement().requireProtocolVersions(ProtocolVersion.DTLS12);

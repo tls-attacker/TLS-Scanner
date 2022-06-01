@@ -72,7 +72,7 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_ECDHE);
     }

@@ -121,7 +121,7 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
             .requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_RSA);
     }

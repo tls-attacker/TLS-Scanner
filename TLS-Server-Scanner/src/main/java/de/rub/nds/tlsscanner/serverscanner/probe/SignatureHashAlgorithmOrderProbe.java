@@ -50,7 +50,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         ProbeRequirement preq = new ProbeRequirement().requireProbeTypes(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
         return new ProbeRequirement().notRequirement(preq);
     }

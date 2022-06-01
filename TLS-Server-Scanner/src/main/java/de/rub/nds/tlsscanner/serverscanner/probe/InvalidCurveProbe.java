@@ -113,7 +113,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         ProbeRequirement tapTls13 =
             new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
         ProbeRequirement tapStaticEcdh =

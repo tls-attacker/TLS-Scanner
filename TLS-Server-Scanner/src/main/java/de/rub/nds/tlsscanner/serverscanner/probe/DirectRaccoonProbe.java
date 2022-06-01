@@ -149,7 +149,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         ProbeRequirement pReqSsl3 =
             new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
         ProbeRequirement pReqTls10 =

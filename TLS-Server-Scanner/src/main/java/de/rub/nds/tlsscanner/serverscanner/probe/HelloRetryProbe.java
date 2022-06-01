@@ -48,7 +48,7 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
             .requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }

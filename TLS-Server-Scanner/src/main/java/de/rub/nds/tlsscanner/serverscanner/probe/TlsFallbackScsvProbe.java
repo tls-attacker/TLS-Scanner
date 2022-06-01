@@ -73,7 +73,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return new ProbeRequirement().requireProbeTypes(TlsProbeType.PROTOCOL_VERSION);
     }
 

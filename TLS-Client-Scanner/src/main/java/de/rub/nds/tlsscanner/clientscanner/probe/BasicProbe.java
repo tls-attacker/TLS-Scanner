@@ -93,7 +93,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
     }
 
     @Override
-    protected Requirement getRequirements() {
+    protected Requirement requires() {
         return ProbeRequirement.NO_REQUIREMENT;
     }
 
