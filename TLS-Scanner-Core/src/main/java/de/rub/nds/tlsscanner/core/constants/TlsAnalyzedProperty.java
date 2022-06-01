@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
-    // server report lists, maps, sets
     LIST_SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.LIST),
     LIST_BLEICHENBACHER_TESTRESULTS(TlsAnalyzedPropertyCategory.LIST),
     LIST_PADDINGORACLE_TESTRESULTS(TlsAnalyzedPropertyCategory.LIST),
@@ -61,9 +60,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     LIST_GUIDELINE_REPORTS(TlsAnalyzedPropertyCategory.LIST),
     LIST_PROBETYPES(TlsAnalyzedPropertyCategory.LIST),
 
-    // client report lists and sets
-//	LIST_VERSIONSUITE_PAIRS(TlsAnalyzedPropertyCategory.LIST),
-//	LIST_SUPPORTED_PROTOCOLVERSIONS(TlsAnalyzedPropertyCategory.LIST),
     LIST_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.LIST),
     LIST_SMALL_DHESUBGROUP_RESULTS(TlsAnalyzedPropertyCategory.LIST),
     LIST_COMPOSITE_DHEMODULUS_RESULT(TlsAnalyzedPropertyCategory.LIST),
@@ -74,7 +70,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS(TlsAnalyzedPropertyCategory.LIST),
     LIST_CLIENT_ADVERTISED_POINTFORMATS(TlsAnalyzedPropertyCategory.LIST),
 
-    // properties before
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS),
