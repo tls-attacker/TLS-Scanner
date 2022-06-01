@@ -108,8 +108,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
             TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
             TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
-            TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_DHE,
-            TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
+            TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE,
+            TlsAnalyzedProperty.SUPPORTS_DHE, TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
     }
 
     @Override

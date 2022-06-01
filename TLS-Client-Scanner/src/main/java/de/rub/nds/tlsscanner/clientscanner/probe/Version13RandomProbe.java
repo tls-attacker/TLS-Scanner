@@ -48,9 +48,9 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
         if (tls10Rejected && tls11Rejected && tls12Rejected)
-        	hasDowngradeProtection = TestResults.TRUE;
+            hasDowngradeProtection = TestResults.TRUE;
         else
-        	hasDowngradeProtection = TestResults.FALSE;
+            hasDowngradeProtection = TestResults.FALSE;
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
@@ -85,11 +85,11 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
 
     @Override
     protected Requirement requires() {
-    	ProbeRequirement ssl2 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-    	ProbeRequirement ssl3 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-    	ProbeRequirement tls10 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-    	ProbeRequirement tls11 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-    	ProbeRequirement tls12 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        ProbeRequirement ssl2 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_2);
+        ProbeRequirement ssl3 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_SSL_3);
+        ProbeRequirement tls10 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        ProbeRequirement tls11 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        ProbeRequirement tls12 = new ProbeRequirement().requireAnalyzedProperties(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
 
         return new ProbeRequirement().orRequirement(ssl2, ssl3, tls10, tls11, tls12);
     }
