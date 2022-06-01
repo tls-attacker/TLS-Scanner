@@ -85,7 +85,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public InvalidCurveProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, configSelector);
         scanDetail = configSelector.getScannerConfig().getScanDetail();
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
+        register(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
             TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
             TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT);
     }
@@ -93,7 +93,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     @Override
     public void executeTest() {
         List<InvalidCurveVector> vectors = prepareVectors();
-        List<InvalidCurveResponse> responses = new LinkedList<>();
+        responses = new LinkedList<>();
         for (InvalidCurveVector vector : vectors) {
             if (benignHandshakeSuccessful(vector)) {
                 InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
@@ -744,10 +744,9 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
-        super.put(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT,
-            new ListResult<InvalidCurveResponse>(responses, "INVALIDCURVE_RESULT"));
+        put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
+        put(TlsAnalyzedProperty.LIST_INVALIDCURVE_RESULT, responses);
     }
 }

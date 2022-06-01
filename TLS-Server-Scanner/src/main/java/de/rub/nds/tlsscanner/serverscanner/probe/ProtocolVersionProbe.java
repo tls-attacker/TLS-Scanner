@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -51,7 +50,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             toTestList.add(ProtocolVersion.TLS12);
             toTestList.add(ProtocolVersion.TLS13);
         }
-        super.register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
+        register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
             TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TlsAnalyzedProperty.SUPPORTS_SSL_2,
             TlsAnalyzedProperty.SUPPORTS_SSL_3, TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
@@ -151,62 +150,61 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         if (supportedProtocolVersions != null) {
             for (ProtocolVersion version : supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10_DRAFT)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS10)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.DTLS12)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL2)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
                 if (version == ProtocolVersion.SSL3)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS10)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS11)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS12)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
                 if (version == ProtocolVersion.TLS13)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10_DRAFT)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS10)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.DTLS12)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL2)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
                 if (version == ProtocolVersion.SSL3)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS10)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS11)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS12)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
                 if (version == ProtocolVersion.TLS13)
-                    super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
             }
         } else {
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
         if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
         }
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<ProtocolVersion>(supportedProtocolVersions, "SUPPORTED_PROTOCOLVERSIONS"));
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, supportedProtocolVersions);
     }
 }

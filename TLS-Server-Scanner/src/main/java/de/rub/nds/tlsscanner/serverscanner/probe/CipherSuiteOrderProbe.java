@@ -33,7 +33,7 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
 
     public CipherSuiteOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);
-        super.register(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
+        register(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
     }
 
     @Override
@@ -69,6 +69,6 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
+        put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
     }
 }

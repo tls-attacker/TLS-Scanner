@@ -56,7 +56,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
 
     public DtlsHelloVerifyRequestProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, configSelector);
-        super.register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
+        register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
             TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
             TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
             TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
@@ -246,14 +246,14 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
-        super.put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
-        super.put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
-        super.put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
-        super.put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
-        super.put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
-        super.put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
-        super.put(TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, usesPortInCookie);
+        put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
+        put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
+        put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
+        put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
+        put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
+        put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
+        put(TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, usesPortInCookie);
         report.setCookieLength(cookieLength);
     }
 }

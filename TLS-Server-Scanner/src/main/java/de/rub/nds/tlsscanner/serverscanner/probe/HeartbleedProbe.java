@@ -35,11 +35,11 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.UNCERTAIN;
 
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
     }
 
     @Override
@@ -81,6 +81,6 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
     }
 }

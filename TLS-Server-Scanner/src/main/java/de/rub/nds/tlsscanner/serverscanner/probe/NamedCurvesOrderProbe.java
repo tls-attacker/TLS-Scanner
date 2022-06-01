@@ -44,7 +44,7 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
 
     public NamedCurvesOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS_ORDER, configSelector);
-        super.register(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
+        register(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
     }
 
     @Override
@@ -87,6 +87,6 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
+        put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
     }
 }

@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -69,10 +68,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
-            TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
-            TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
+        register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE,
+            TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
+            TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS, TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS,
+            TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
             TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
     }
 
@@ -455,17 +454,13 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
         if (namedGroupsMapTls13 != null)
             tls13Groups.addAll(namedGroupsMapTls13.keySet());
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
-            new ListResult<NamedGroup>(allGroups, "SUPPORTED_NAMEDGROUPS"));
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS,
-            new ListResult<NamedGroup>(tls13Groups, "SUPPORTED_TLS13_GROUPS"));
-        super.put(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES,
-            new MapResult<NamedGroup, NamedGroupWitness>(namedGroupsMap, "NAMEDGROUPS_WITNESSES"));
-        super.put(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13,
-            new MapResult<NamedGroup, NamedGroupWitness>(namedGroupsMapTls13, "NAMEDGROUPS_WITNESSES_TLS13"));
-        super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
-        super.put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
-        super.put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);
-        super.put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS, allGroups);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS, tls13Groups);
+        put(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES, namedGroupsMap);
+        put(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13, namedGroupsMapTls13);
+        put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
+        put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
+        put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);
+        put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
     }
 }

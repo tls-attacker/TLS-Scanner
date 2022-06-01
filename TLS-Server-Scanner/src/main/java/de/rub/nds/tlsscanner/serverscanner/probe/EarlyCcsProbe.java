@@ -41,7 +41,7 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     public EarlyCcsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, configSelector);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
     }
 
     @Override
@@ -95,18 +95,18 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     @Override
     protected void mergeData(ServerReport report) {
         if (earlyCcsVulnerabilityType == null)
-            super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
         else {
             switch (earlyCcsVulnerabilityType) {
                 case VULN_EXPLOITABLE:
                 case VULN_NOT_EXPLOITABLE:
-                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.TRUE);
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.TRUE);
                     break;
                 case NOT_VULNERABLE:
-                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
                     break;
                 case UNKNOWN:
-                    super.put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
             }
         }
     }

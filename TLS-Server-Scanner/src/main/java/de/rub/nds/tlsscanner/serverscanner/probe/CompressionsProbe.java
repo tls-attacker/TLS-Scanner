@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -35,7 +34,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
+        register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
             TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
     }
 
@@ -88,19 +87,18 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     @Override
     protected void mergeData(ServerReport report) {
         if (compressions != null) {
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS,
-                new ListResult<CompressionMethod>(compressions, "COMPRESSION_METHODS"));
+            put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
-                super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
-                super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
+                put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
-                super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
-                super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
+                put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            super.put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
-            super.put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, null);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, new LinkedList<>());
         }
     }
 }

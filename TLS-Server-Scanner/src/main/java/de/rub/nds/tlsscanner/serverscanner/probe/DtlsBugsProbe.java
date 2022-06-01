@@ -41,7 +41,7 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
-        super.register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
-        super.put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 }

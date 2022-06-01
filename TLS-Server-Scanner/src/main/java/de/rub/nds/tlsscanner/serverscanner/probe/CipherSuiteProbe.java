@@ -9,8 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -93,7 +91,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public CipherSuiteProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE, configSelector);
         protocolVersions = new LinkedList<>();
-        super.register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
+        register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
             TlsAnalyzedProperty.SUPPORTS_EXPORT, TlsAnalyzedProperty.SUPPORTS_DES, TlsAnalyzedProperty.SUPPORTS_SEED,
             TlsAnalyzedProperty.SUPPORTS_IDEA, TlsAnalyzedProperty.SUPPORTS_RC2, TlsAnalyzedProperty.SUPPORTS_RC4,
             TlsAnalyzedProperty.SUPPORTS_3DES, TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
@@ -294,7 +292,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 adjustCipherType(suite);
                 adjustCertificate(suite);
             }
-            super.put(TlsAnalyzedProperty.SET_CIPHERSUITES, new SetResult<CipherSuite>(allSupported, "CIPHERSUITES"));
+            put(TlsAnalyzedProperty.SET_CIPHERSUITES, allSupported);
         } else {
             supportsAeadCiphers = TestResults.COULD_NOT_TEST;
             prefersPfsCiphers = TestResults.COULD_NOT_TEST;
@@ -337,7 +335,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsLegacyPrf = TestResults.COULD_NOT_TEST;
             supportsSha256Prf = TestResults.COULD_NOT_TEST;
             supportsSha384Prf = TestResults.COULD_NOT_TEST;
-            super.put(TlsAnalyzedProperty.SET_CIPHERSUITES, new SetResult<>(Collections.emptySet(), "CIPHERSUITES"));
+            put(TlsAnalyzedProperty.SET_CIPHERSUITES, Collections.emptySet());
         }
         writeToReport(report);
     }
@@ -464,47 +462,47 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     private void writeToReport(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_DES, supportsDesCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SEED, supportsSeedCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_IDEA, supportsIdeaCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_3DES, supportsTripleDesCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, supportsPostQuantumCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, supportsOnlyPfsCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_AES, supportsAes);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, supportsCamellia);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ARIA, supportsAria);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CHACHA, supportsChacha);
-        super.put(TlsAnalyzedProperty.SUPPORTS_RSA, supportsRsa);
-        super.put(TlsAnalyzedProperty.SUPPORTS_STATIC_DH, supportsDh);
-        super.put(TlsAnalyzedProperty.SUPPORTS_DHE, supportsDhe);
-        super.put(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ECDSA, supportsEcdsa);
-        super.put(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, supportsRsaCert);
-        super.put(TlsAnalyzedProperty.SUPPORTS_DSS, supportsDss);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ECDHE, supportsEcdhe);
-        super.put(TlsAnalyzedProperty.SUPPORTS_GOST, supportsGost);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SRP, supportsSrp);
-        super.put(TlsAnalyzedProperty.SUPPORTS_KERBEROS, supportsKerberos);
-        super.put(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, supportsPskPlain);
-        super.put(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, supportsPskRsa);
-        super.put(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, supportsPskDhe);
-        super.put(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, supportsPskEcdhe);
-        super.put(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, supportsFortezza);
-        super.put(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, supportsNewHope);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ECMQV, supportsEcmqv);
-        super.put(TlsAnalyzedProperty.PREFERS_PFS, prefersPfsCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, supportsStreamCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, supportsBlockCiphers);
-        super.put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
-        super.put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS, new ListResult<>(pairLists, "VERSIONSUITE_PAIRS"));
+        put(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_DES, supportsDesCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_SEED, supportsSeedCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_IDEA, supportsIdeaCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
+        put(TlsAnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
+        put(TlsAnalyzedProperty.SUPPORTS_3DES, supportsTripleDesCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, supportsPostQuantumCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, supportsOnlyPfsCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_AES, supportsAes);
+        put(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, supportsCamellia);
+        put(TlsAnalyzedProperty.SUPPORTS_ARIA, supportsAria);
+        put(TlsAnalyzedProperty.SUPPORTS_CHACHA, supportsChacha);
+        put(TlsAnalyzedProperty.SUPPORTS_RSA, supportsRsa);
+        put(TlsAnalyzedProperty.SUPPORTS_STATIC_DH, supportsDh);
+        put(TlsAnalyzedProperty.SUPPORTS_DHE, supportsDhe);
+        put(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
+        put(TlsAnalyzedProperty.SUPPORTS_ECDSA, supportsEcdsa);
+        put(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, supportsRsaCert);
+        put(TlsAnalyzedProperty.SUPPORTS_DSS, supportsDss);
+        put(TlsAnalyzedProperty.SUPPORTS_ECDHE, supportsEcdhe);
+        put(TlsAnalyzedProperty.SUPPORTS_GOST, supportsGost);
+        put(TlsAnalyzedProperty.SUPPORTS_SRP, supportsSrp);
+        put(TlsAnalyzedProperty.SUPPORTS_KERBEROS, supportsKerberos);
+        put(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, supportsPskPlain);
+        put(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, supportsPskRsa);
+        put(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, supportsPskDhe);
+        put(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, supportsPskEcdhe);
+        put(TlsAnalyzedProperty.SUPPORTS_FORTEZZA, supportsFortezza);
+        put(TlsAnalyzedProperty.SUPPORTS_NEWHOPE, supportsNewHope);
+        put(TlsAnalyzedProperty.SUPPORTS_ECMQV, supportsEcmqv);
+        put(TlsAnalyzedProperty.PREFERS_PFS, prefersPfsCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, supportsStreamCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, supportsBlockCiphers);
+        put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
+        put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
+        put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
+        put(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS, pairLists);
     }
 }

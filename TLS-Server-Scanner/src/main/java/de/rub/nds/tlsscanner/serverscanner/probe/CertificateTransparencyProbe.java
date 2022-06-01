@@ -65,7 +65,7 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
 
     public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
+        register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
             TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
     }
 
@@ -221,9 +221,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         report.setHandshakeSctList(handshakeSctList);
         report.setOcspSctList(ocspSctList);
 
-        super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTsResult);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTsResult);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTsResult);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicyResult);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTsResult);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTsResult);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTsResult);
+        put(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicyResult);
     }
 }

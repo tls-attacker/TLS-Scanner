@@ -48,7 +48,7 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     public ECPointFormatProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
+        register(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
             TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
             TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
             TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT);
@@ -225,13 +225,13 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
             supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
             supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
-        super.put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
-        super.put(TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT, completesHandshakeWithUndefined);
+        put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
+        put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
+        put(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
+        put(TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT, completesHandshakeWithUndefined);
         if (tls13SecpCompression != null)
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         else
-            super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
     }
 }

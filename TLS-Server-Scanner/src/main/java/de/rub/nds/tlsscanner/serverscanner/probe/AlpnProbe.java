@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
@@ -33,7 +32,7 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public AlpnProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ALPN, configSelector);
-        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
+        register(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
     }
 
     @Override
@@ -92,7 +91,6 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS,
-            new ListResult<String>(supportedAlpnProtocols, "SUPPORTED_ALPNS"));
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS, supportedAlpnProtocols);
     }
 }

@@ -100,7 +100,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
 
     public SessionTicketZeroKeyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+        register(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
             TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
     }
 
@@ -195,7 +195,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, hasDecryptableMasterSecret);
-        super.put(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, hasGnuTlsMagicBytes);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, hasDecryptableMasterSecret);
+        put(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, hasGnuTlsMagicBytes);
     }
 }

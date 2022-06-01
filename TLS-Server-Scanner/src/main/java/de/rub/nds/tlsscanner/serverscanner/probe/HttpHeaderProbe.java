@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -49,7 +48,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
+        register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
             TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
             TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
             TlsAnalyzedProperty.LIST_HEADER, TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS,
@@ -88,8 +87,8 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
-        super.put(TlsAnalyzedProperty.LIST_HEADER, new ListResult<HttpsHeader>(headerList, "HEADER"));
+        put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
+        put(TlsAnalyzedProperty.LIST_HEADER, headerList);
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (headerList != null) {
@@ -182,15 +181,14 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
             vulnerableBreach = TestResults.COULD_NOT_TEST;
         }
         report.setHstsMaxAge(hstsMaxAge);
-        super.put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
-        super.put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
-        super.put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
-        super.put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
+        put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
+        put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
+        put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
+        put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
         report.setHpkpMaxAge(hpkpMaxAge);
-        super.put(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, new ListResult<HpkpPin>(pinList, "NORMAL_HPKPPINS"));
-        super.put(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS,
-            new ListResult<HpkpPin>(reportOnlyPinList, "REPORT_ONLY_HPKPPINS"));
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
+        put(TlsAnalyzedProperty.LIST_NORMAL_HPKPPINS, pinList);
+        put(TlsAnalyzedProperty.LIST_REPORT_ONLY_HPKPPINS, reportOnlyPinList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
     }
 
     @Override

@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -51,9 +50,9 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
 
     public ExtensionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
-            TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+        register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
+            TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
             TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
     }
 
@@ -146,8 +145,7 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            new ListResult<ExtensionType>(allSupportedExtensions, "SUPPORTED_EXTENSIONS"));
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, allSupportedExtensions);
         if (allSupportedExtensions != null) {
             for (ExtensionType type : allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC)
@@ -171,11 +169,11 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
             certStatusRequest = TestResults.COULD_NOT_TEST;
             certStatusRequestV2 = TestResults.COULD_NOT_TEST;
         }
-        super.put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
-        super.put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
-        super.put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
+        put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
+        put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
+        put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+        put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
+        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
+        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
     }
 }

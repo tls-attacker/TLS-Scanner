@@ -40,7 +40,7 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     public DtlsReorderingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_REORDERING, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
+        register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
+        put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
     }
 
     @Override

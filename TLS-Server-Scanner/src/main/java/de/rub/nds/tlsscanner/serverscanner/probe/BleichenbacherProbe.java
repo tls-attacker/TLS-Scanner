@@ -57,8 +57,7 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
             : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
         numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
             : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,
-            TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS);
     }
 
     @Override
@@ -162,8 +161,7 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
             }
         } else
             vulnerable = TestResults.ERROR_DURING_TEST;
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
-        super.put(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS,
-            new ListResult<>(testResultList, "BLEICHENBACHER_TESTRESULTS"));
+        put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
+        put(TlsAnalyzedProperty.LIST_BLEICHENBACHER_TESTRESULTS, testResultList);
     }
 }

@@ -41,7 +41,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     public TlsFallbackScsvProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
+        register(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV);
     }
 
     @Override
@@ -88,6 +88,6 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
     }
 }

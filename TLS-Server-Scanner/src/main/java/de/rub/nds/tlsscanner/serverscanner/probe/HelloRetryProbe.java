@@ -39,7 +39,7 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     public HelloRetryProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, configSelector);
-        super.register(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+        register(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
     }
 
     @Override
@@ -79,13 +79,13 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     protected void mergeData(ServerReport report) {
         if (issuesCookie != null)
-            super.put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
+            put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
         else
-            super.put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
+            put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
         if (sendsHelloRetryRequest != null)
-            super.put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
+            put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
         else
-            super.put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
+            put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
         report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
     }
 }

@@ -30,7 +30,7 @@ public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     public CcaSupportProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_CCA);
+        register(TlsAnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_CCA, supportsCca);
+        put(TlsAnalyzedProperty.SUPPORTS_CCA, supportsCca);
     }
 }

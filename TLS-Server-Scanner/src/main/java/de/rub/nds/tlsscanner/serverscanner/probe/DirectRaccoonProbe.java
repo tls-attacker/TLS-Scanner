@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -54,8 +55,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
-        super.register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
-            TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
     }
 
     @Override
@@ -176,9 +176,18 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT,
-            new ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>(testResultList,
-                "DIRECTRACCOON_TESTRESULT"));
-        super.put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
+        if (testResultList != null) {
+            vulnerable = TestResults.FALSE;
+            for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest : testResultList) {
+                if (informationLeakTest.isSignificantDistinctAnswers()) {
+                    vulnerable = TestResults.TRUE;
+                }
+            }
+        } else {
+            testResultList = new LinkedList<>();
+            vulnerable = TestResults.ERROR_DURING_TEST;
+        }
+        put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT, testResultList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 }

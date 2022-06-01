@@ -33,7 +33,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
 
     public SignatureHashAlgorithmOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
-        super.register(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
+        register(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
     }
 
     @Override
@@ -71,6 +71,6 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
+        put(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
     }
 }

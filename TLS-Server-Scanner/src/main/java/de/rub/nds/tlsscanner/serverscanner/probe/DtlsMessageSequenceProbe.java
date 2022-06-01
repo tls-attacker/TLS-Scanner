@@ -44,7 +44,7 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
 
     public DtlsMessageSequenceProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, configSelector);
-        super.register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+        register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
             TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
@@ -156,16 +156,15 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
-            acceptsStartedWithInvalidMessageNumber);
-        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
-        super.put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, acceptsSkippedMessageNumbersMultiple);
-        super.put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE, acceptsStartedWithInvalidMessageNumber);
+        put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
+        put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, acceptsSkippedMessageNumbersMultiple);
+        put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
         if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
             && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
             && acceptsRandomMessageNumbers == TestResults.FALSE) {
-            super.put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
         } else
-            super.put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
     }
 }

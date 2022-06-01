@@ -51,7 +51,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
-        super.register(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
+        register(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
             TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT);
         random = new Random(0);
     }
@@ -199,10 +199,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.put(TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT,
-            new ListResult<CompositeModulusResult>(compositeModulusResultList, "COMPOSITE_DHEMODULUS_RESULT"));
-        super.put(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS,
-            new ListResult<SmallSubgroupResult>(smallSubgroupResults, "SMALL_DHESUBGROUP_RESULTS"));
+        put(TlsAnalyzedProperty.LIST_COMPOSITE_DHEMODULUS_RESULT, compositeModulusResultList);
+        put(TlsAnalyzedProperty.LIST_SMALL_DHESUBGROUP_RESULTS, smallSubgroupResults);
         report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
     }
 

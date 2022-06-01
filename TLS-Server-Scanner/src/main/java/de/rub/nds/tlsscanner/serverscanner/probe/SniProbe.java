@@ -30,7 +30,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public SniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SNI, configSelector);
-        super.register(TlsAnalyzedProperty.REQUIRES_SNI);
+        register(TlsAnalyzedProperty.REQUIRES_SNI);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
+        put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
     }
 
     public void adjustConfig(ServerReport report) {

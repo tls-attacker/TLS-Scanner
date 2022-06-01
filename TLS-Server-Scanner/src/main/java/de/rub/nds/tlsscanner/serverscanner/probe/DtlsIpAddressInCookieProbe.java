@@ -48,7 +48,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
 
     public DtlsIpAddressInCookieProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
-        super.register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
+        register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
+        put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
     }
 
     @Override

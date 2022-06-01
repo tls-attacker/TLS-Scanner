@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.primitives.Bytes;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -49,8 +48,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     public DtlsApplicationFingerprintProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
-        super.register(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS,
-            TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        register(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
     }
 
     @Override
@@ -193,9 +191,8 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS,
-            new ListResult<>(supportedApplications, "SUPPORTED_APPLICATIONS"));
-        super.put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
+        put(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, supportedApplications);
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
     }
 
     @Override

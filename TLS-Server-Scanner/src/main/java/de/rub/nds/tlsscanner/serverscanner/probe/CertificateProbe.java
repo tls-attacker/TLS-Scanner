@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -29,6 +28,7 @@ import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,8 +56,8 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     public CertificateProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, configSelector);
-        super.register(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
-            TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
+        register(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS, TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS,
+            TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN);
     }
 
     @Override
@@ -417,14 +417,10 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     @Override
     protected void mergeData(ServerReport report) {
         if (certificates != null)
-            super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
-                new ListResult<CertificateChain>(new LinkedList<>(certificates), "CERTIFICATE_CHAIN"));
+            put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN, new ArrayList<>(certificates));
         else
-            super.put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN,
-                new ListResult<CertificateChain>(new LinkedList<>(), "CERTIFICATE_CHAIN"));
-        super.put(TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS,
-            new ListResult<NamedGroup>(ecdsaPkGroupsStatic, "STATIC_ECDSA_PKGROUPS"));
-        super.put(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS,
-            new ListResult<NamedGroup>(ecdsaPkGroupsEphemeral, "EPHEMERAL_ECDSA_PKGROUPS"));
+            put(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAIN, new LinkedList<>());
+        put(TlsAnalyzedProperty.LIST_STATIC_ECDSA_PKGROUPS, ecdsaPkGroupsStatic);
+        put(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS, ecdsaPkGroupsEphemeral);
     }
 }

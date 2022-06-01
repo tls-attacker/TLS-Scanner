@@ -67,7 +67,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, configSelector);
-        super.register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+        register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
             TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
             TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
             TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
@@ -331,16 +331,16 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     protected void mergeData(ServerReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
-        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+        put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
+        put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
             supportsDtlsCookieExchangeInResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
             supportsDtlsCookieExchangeInSessionTicketResumption);
-        super.put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 }

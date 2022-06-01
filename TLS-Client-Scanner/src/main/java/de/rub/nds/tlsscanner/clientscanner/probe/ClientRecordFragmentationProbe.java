@@ -33,7 +33,7 @@ public class ClientRecordFragmentationProbe extends TlsClientProbe<ClientScanner
 
     public ClientRecordFragmentationProbe(ClientScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
-        super.register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ClientRecordFragmentationProbe extends TlsClientProbe<ClientScanner
 
     @Override
     protected void mergeData(ClientReport report) {
-        super.put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
+        put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
     }
 
     @Override
