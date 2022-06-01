@@ -323,7 +323,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = ((SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES)).getSet();
+        supportedSuites = ((SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES)).getSet();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }

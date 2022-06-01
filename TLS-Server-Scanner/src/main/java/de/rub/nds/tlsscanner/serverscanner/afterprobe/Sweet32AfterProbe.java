@@ -26,7 +26,7 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
         try {
             @SuppressWarnings("unchecked")
             SetResult<CipherSuite> ciphersuiteResult =
-                (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
+                (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
             if (ciphersuiteResult != null) {
                 Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
                 if (ciphersuites != null) {

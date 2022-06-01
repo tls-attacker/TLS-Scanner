@@ -90,7 +90,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     private boolean isCipherSuiteMismatch(ServerReport report, SimulatedClientResult simulatedClient) {
         @SuppressWarnings("unchecked")
         SetResult<CipherSuite> ciphersuiteResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
         if (ciphersuiteResult != null) {
             Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
             if (ciphersuites != null) {
@@ -103,7 +103,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 }
             }
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.SET_CIPHERSUITES.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
         return true;
     }

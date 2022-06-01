@@ -108,7 +108,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
             TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
             TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS,
-            TlsAnalyzedProperty.SET_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_DHE,
+            TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE, TlsAnalyzedProperty.SUPPORTS_DHE,
             TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
     }
 
@@ -292,7 +292,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 adjustCipherType(suite);
                 adjustCertificate(suite);
             }
-            put(TlsAnalyzedProperty.SET_CIPHERSUITES, allSupported);
+            put(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, allSupported);
         } else {
             supportsAeadCiphers = TestResults.COULD_NOT_TEST;
             prefersPfsCiphers = TestResults.COULD_NOT_TEST;
@@ -335,7 +335,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsLegacyPrf = TestResults.COULD_NOT_TEST;
             supportsSha256Prf = TestResults.COULD_NOT_TEST;
             supportsSha384Prf = TestResults.COULD_NOT_TEST;
-            put(TlsAnalyzedProperty.SET_CIPHERSUITES, Collections.emptySet());
+            put(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, Collections.emptySet());
         }
         writeToReport(report);
     }

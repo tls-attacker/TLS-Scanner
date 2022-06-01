@@ -364,7 +364,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         List<CipherSuite> allSuiteList = new LinkedList<>();
 
         SetResult<CipherSuite> ciphersuitesResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
         if (ciphersuitesResult != null) {
             allSuiteList.addAll(ciphersuitesResult.getSet());
             suiteList = new LinkedList<>();

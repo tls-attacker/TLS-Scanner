@@ -61,7 +61,7 @@ public class Sweet32AfterProbeTest {
     public void testVulnerableCipherSuites() {
         // test reports that only use vulnerable ciphers
         for (CipherSuite vulnerable : vulnerableCipherSuites) {
-            report.putResult(TlsAnalyzedProperty.SET_CIPHERSUITES,
+            report.putResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES,
                 new SetResult<>(Collections.singleton(vulnerable), "CIPHERSUITES"));
             probe.analyze(report);
             assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
@@ -74,7 +74,7 @@ public class Sweet32AfterProbeTest {
             // add a number of "random" safe cipher suites to the mix
             ciphers.addAll(safeCipherSuites.subList(0, 10));
 
-            report.putResult(TlsAnalyzedProperty.SET_CIPHERSUITES, new SetResult<>(ciphers, "CIPHERSUITES"));
+            report.putResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES, new SetResult<>(ciphers, "CIPHERSUITES"));
             probe.analyze(report);
             assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
         }
@@ -86,7 +86,7 @@ public class Sweet32AfterProbeTest {
     @Test
     public void testSafeCipherSuites() {
         for (CipherSuite safe : safeCipherSuites) {
-            report.putResult(TlsAnalyzedProperty.SET_CIPHERSUITES,
+            report.putResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES,
                 new SetResult<>(Collections.singleton(safe), "CIPHERSUITES"));
             probe.analyze(report);
             assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));

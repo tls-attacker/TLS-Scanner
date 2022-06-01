@@ -1338,7 +1338,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @SuppressWarnings("unchecked")
     public StringBuilder appendCipherSuites(StringBuilder builder) {
         SetResult<CipherSuite> ciphersuiteResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
         if (ciphersuiteResult != null) {
             Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
             if (ciphersuites != null) {

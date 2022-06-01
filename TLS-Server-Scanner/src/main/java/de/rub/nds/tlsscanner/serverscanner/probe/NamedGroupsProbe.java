@@ -279,7 +279,7 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         if (ecdsaCertSigGroupsTls13Result != null)
             ecdsaCertSigGroupsTls13 = ecdsaCertSigGroupsTls13Result.getList();
         SetResult<CipherSuite> supportedCipherSuitesResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES);
+            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
         if (supportedCipherSuitesResult != null)
             supportedCipherSuites = supportedCipherSuitesResult.getSet();
     }

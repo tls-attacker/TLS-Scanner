@@ -26,7 +26,7 @@ public class FreakAfterProbe extends AfterProbe<ServerReport> {
         try {
             @SuppressWarnings("unchecked")
             Set<CipherSuite> ciphersuites =
-                ((SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_CIPHERSUITES)).getSet();
+                ((SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES)).getSet();
             if (ciphersuites != null) {
                 for (CipherSuite suite : ciphersuites) {
                     if (suite.name().contains("RSA_EXPORT"))
