@@ -63,10 +63,8 @@ public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<R
     }
 
     protected final void register(TlsAnalyzedProperty... properties) {
-        if (properties.length > 0) {
-            for (int i = 0; i < properties.length; i++)
-                propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
-        }
+        for (int i = 0; i < properties.length; i++)
+            propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
     }
 
     protected final void put(TlsAnalyzedProperty aProp, Object value) {
