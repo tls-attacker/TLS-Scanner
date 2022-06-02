@@ -12,7 +12,8 @@ package de.rub.nds.scanner.core.probe.requirements;
 import de.rub.nds.scanner.core.report.ScanReport;
 
 public abstract class Requirement {
-    protected Requirement next = BaseRequirement.NO_REQUIREMENT;
+    protected Requirement next = Requirement.NO_REQUIREMENT;
+    public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
 
     public abstract boolean evaluate(ScanReport report);
 
@@ -22,8 +23,6 @@ public abstract class Requirement {
     }
 
     public static class BaseRequirement extends Requirement {
-        public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
-
         @Override
         public boolean evaluate(ScanReport report) {
             return true;

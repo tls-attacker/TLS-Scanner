@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.probe.requirements.BaseRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -67,6 +66,6 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected Requirement getRequirements() {
-        return BaseRequirement.NO_REQUIREMENT;
+        return Requirement.NO_REQUIREMENT;
     }
 }
