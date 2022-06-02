@@ -11,24 +11,31 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrRequirement extends Requirement {
     private final Requirement[] requirements;
+    private List<Requirement> missing;
 
     public OrRequirement(Requirement... requirements) {
         super();
         this.requirements = requirements;
+        this.missing = new ArrayList<>();
     }
 
     @Override
-    public boolean evaluate(ScanReport report) {
+    protected boolean evaluateIntern(ScanReport report) {
         if (requirements == null || requirements.length == 0)
-            return next.evaluate(report);
+            return true;
+        boolean returnValue = false;
         for (Requirement req : requirements) {
             if (req.evaluate(report))
-                return next.evaluate(report);
+                returnValue = true;
+            else
+            	missing.add(req);
         }
-        return false;
+        return returnValue;
     }
 
     /**
@@ -37,4 +44,11 @@ public class OrRequirement extends Requirement {
     public Requirement[] getRequirement() {
         return requirements;
     }
+    
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false)
+			return next.getMissingRequirementIntern(missing.requires(new OrRequirement(this.missing.toArray(new Requirement[this.missing.size()]))), report);
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }

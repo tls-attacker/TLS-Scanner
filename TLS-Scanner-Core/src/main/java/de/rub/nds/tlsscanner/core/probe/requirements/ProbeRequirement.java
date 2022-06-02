@@ -12,24 +12,31 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProbeRequirement extends Requirement {
     private final TlsProbeType[] probes;
+    private List<TlsProbeType> missing;
 
     public ProbeRequirement(TlsProbeType... probes) {
         super();
         this.probes = probes;
+        this.missing = new ArrayList<>();
     }
 
     @Override
-    public boolean evaluate(ScanReport report) {
+    protected boolean evaluateIntern(ScanReport report) {
         if (probes == null || probes.length == 0)
-            return next.evaluate(report);
+            return true;
+        boolean returnValue = true;
         for (TlsProbeType pt : probes) {
-            if (report.isProbeAlreadyExecuted(pt) == false)
-                return false;
+            if (report.isProbeAlreadyExecuted(pt) == false) {
+            	returnValue = false;
+            	missing.add(pt);
+            }
         }
-        return next.evaluate(report);
+        return returnValue;
     }
 
     /**
@@ -38,4 +45,11 @@ public class ProbeRequirement extends Requirement {
     public TlsProbeType[] getRequirement() {
         return probes;
     }
+    
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false)
+			return next.getMissingRequirementIntern(missing.requires(new ProbeRequirement(this.missing.toArray(new TlsProbeType[this.missing.size()]))), report);
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }

@@ -14,30 +14,39 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class PropertyRequirement extends Requirement {
 
     private final TlsAnalyzedProperty[] properties;
+    private List<TlsAnalyzedProperty> missing;
 
     public PropertyRequirement(TlsAnalyzedProperty... properties) {
         super();
         this.properties = properties;
+        this.missing = new ArrayList<>();
     }
 
     @Override
-    public boolean evaluate(ScanReport report) {
+    protected boolean evaluateIntern(ScanReport report) {
         if (properties == null || properties.length == 0)
-            return next.evaluate(report);
+            return true;
+        boolean returnValue = true;
         Map<String, TestResult> apList = report.getResultMap();
         for (TlsAnalyzedProperty ap : properties) {
             if (apList.containsKey(ap.toString())) {
-                if (apList.get(ap.toString()) != TestResults.TRUE)
-                    return false;
-            } else
-                return false;
+                if (apList.get(ap.toString()) != TestResults.TRUE) {
+                	returnValue = false;
+                    missing.add(ap);
+                }
+            } else {
+            	returnValue = false;
+            	missing.add(ap);
+            }
         }
-        return next.evaluate(report);
+        return returnValue;
     }
 
     /**
@@ -46,4 +55,11 @@ public class PropertyRequirement extends Requirement {
     public TlsAnalyzedProperty[] getRequirement() {
         return properties;
     }
+
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false) 
+			return next.getMissingRequirementIntern(missing.requires(new PropertyRequirement(this.missing.toArray(new TlsAnalyzedProperty[this.missing.size()]))), report);
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }

@@ -15,17 +15,39 @@ public abstract class Requirement {
     protected Requirement next = Requirement.NO_REQUIREMENT;
     public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
 
-    public abstract boolean evaluate(ScanReport report);
+    protected abstract boolean evaluateIntern(ScanReport report);
+
+    public boolean evaluate(ScanReport report) {
+    	return next.evaluate(report) && evaluateIntern(report);
+    }
 
     public Requirement requires(Requirement next) {
         next.next = this;
         return next;
     }
 
+    public Requirement getMissingRequirements(ScanReport report) {
+    	Requirement missing = new BaseRequirement();
+    	return getMissingRequirementIntern(missing, report);
+    }
+    
+    public abstract Requirement getMissingRequirementIntern(Requirement missing, ScanReport report);
+    	
+    
     public static class BaseRequirement extends Requirement {
-        @Override
-        public boolean evaluate(ScanReport report) {
-            return true;
-        }
+		@Override
+		protected boolean evaluateIntern(ScanReport report) {
+			return true;
+		}
+		
+		@Override
+		public boolean evaluate(ScanReport report) {
+			return true;
+		}
+		
+		@Override
+		public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+			return missing;
+	    }
     }
 }

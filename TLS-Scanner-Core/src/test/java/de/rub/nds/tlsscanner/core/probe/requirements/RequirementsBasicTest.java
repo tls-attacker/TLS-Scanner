@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,14 +23,14 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.Before;
 
 public class RequirementsBasicTest {
 
     /**
      * Implementation of ScanReport
      */
-    protected class TestReport extends ScanReport {
+    public class TestReport extends ScanReport {
         private static final long serialVersionUID = 1L;
 
         public TestReport() {
@@ -42,7 +43,7 @@ public class RequirementsBasicTest {
         }
     }
 
-    @Test
+    @Before
     public void requirementsTest() {
         TestReport report = new TestReport();
         Requirement reqs = new ExtensionRequirement(new ExtensionType[] { ExtensionType.ALPN });
@@ -54,6 +55,14 @@ public class RequirementsBasicTest {
         TlsProbeType probe = TlsProbeType.ALPN;
         reqs = reqs.requires(new ProbeRequirement(probe));
         assertFalse(reqs.evaluate(report));
+        
+        Requirement reqMis = reqs.getMissingRequirements(report);
+        assertFalse(reqMis.evaluate(report));
+        TlsProbeType[] array = ((ProbeRequirement)reqMis).getRequirement();
+        for (int i = 0; i < array.length; i++)
+        	System.out.println("array "+ array[i] + " |" + i);
+        assertArrayEquals(((ProbeRequirement)reqMis).getRequirement(), new ProbeRequirement(probe).getRequirement());
+        
         report.markProbeAsExecuted(probe);
         assertTrue(reqs.evaluate(report));
 

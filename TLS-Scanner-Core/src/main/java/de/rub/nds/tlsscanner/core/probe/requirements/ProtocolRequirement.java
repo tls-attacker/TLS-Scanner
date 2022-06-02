@@ -14,20 +14,24 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProtocolRequirement extends Requirement {
     private final ProtocolVersion[] protocols;
+    private List<ProtocolVersion> missing;
 
     public ProtocolRequirement(ProtocolVersion... protocols) {
         super();
         this.protocols = protocols;
+        this.missing = new ArrayList<>();
     }
 
     @Override
-    public boolean evaluate(ScanReport report) {
+    protected boolean evaluateIntern(ScanReport report) {
         if (protocols == null || protocols.length == 0)
-            return next.evaluate(report);
+            return true;
+        boolean returnValue = false;
         @SuppressWarnings("unchecked")
         ListResult<ProtocolVersion> versionsuiteResult =
             (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
@@ -35,12 +39,14 @@ public class ProtocolRequirement extends Requirement {
             List<ProtocolVersion> pvList = versionsuiteResult.getList();
             if (pvList != null && !pvList.isEmpty()) {
                 for (ProtocolVersion pv : protocols) {
-                    if (pvList.contains(pv))
-                        return next.evaluate(report);
+                    if (pvList.contains(pv)) 
+                    	returnValue = true;
+                    else
+                        missing.add(pv);
                 }
             }
         }
-        return false;
+        return returnValue;
     }
 
     /**
@@ -49,4 +55,11 @@ public class ProtocolRequirement extends Requirement {
     public ProtocolVersion[] getRequirement() {
         return protocols;
     }
+
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false)
+			return next.getMissingRequirementIntern(missing.requires(new ProtocolRequirement(this.missing.toArray(new ProtocolVersion[this.missing.size()]))), report);
+    	return next.getMissingRequirementIntern(missing, report);
+	}
 }

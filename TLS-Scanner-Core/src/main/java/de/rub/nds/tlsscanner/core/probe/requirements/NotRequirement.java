@@ -21,10 +21,10 @@ public class NotRequirement extends Requirement {
     }
 
     @Override
-    public boolean evaluate(ScanReport report) {
+    protected boolean evaluateIntern(ScanReport report) {
         if (notRequirement == null)
-            return next.evaluate(report);
-        return !notRequirement.evaluate(report) && next.evaluate(report);
+            return true;
+        return !notRequirement.evaluate(report);
     }
 
     /**
@@ -33,4 +33,11 @@ public class NotRequirement extends Requirement {
     public Requirement getRequirement() {
         return notRequirement;
     }
+    
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false)
+			return next.getMissingRequirementIntern(missing.requires(new NotRequirement(notRequirement)), report);
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }

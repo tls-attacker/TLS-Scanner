@@ -49,7 +49,6 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!supportedTokenBindingVersion.isEmpty())
             supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
-
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
