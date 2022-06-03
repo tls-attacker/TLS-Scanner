@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +23,10 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
+import org.junit.Test;
 
 public class RequirementsBasicTest {
 
@@ -43,9 +46,15 @@ public class RequirementsBasicTest {
         }
     }
 
+    private TestReport report;
+
     @Before
+    public void setup() {
+        report = new TestReport();
+    }
+
+    @Test
     public void requirementsTest() {
-        TestReport report = new TestReport();
         Requirement reqs = new ExtensionRequirement(new ExtensionType[] { ExtensionType.ALPN });
         assertFalse(reqs.evaluate(report));
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
@@ -55,14 +64,6 @@ public class RequirementsBasicTest {
         TlsProbeType probe = TlsProbeType.ALPN;
         reqs = reqs.requires(new ProbeRequirement(probe));
         assertFalse(reqs.evaluate(report));
-        
-        Requirement reqMis = reqs.getMissingRequirements(report);
-        assertFalse(reqMis.evaluate(report));
-        TlsProbeType[] array = ((ProbeRequirement)reqMis).getRequirement();
-        for (int i = 0; i < array.length; i++)
-        	System.out.println("array "+ array[i] + " |" + i);
-        assertArrayEquals(((ProbeRequirement)reqMis).getRequirement(), new ProbeRequirement(probe).getRequirement());
-        
         report.markProbeAsExecuted(probe);
         assertTrue(reqs.evaluate(report));
 
@@ -103,5 +104,18 @@ public class RequirementsBasicTest {
         assertTrue(reqs.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.CCA);
         assertFalse(reqs.evaluate(report));
+    }
+
+    @Test
+    public void missingTest() {
+        ProbeRequirement req1 = new ProbeRequirement(TlsProbeType.BASIC);
+        Requirement req = new ProbeRequirement(TlsProbeType.BLEICHENBACHER).requires(req1);
+        Set<TlsProbeType> set1 = new HashSet<>(), set2 = new HashSet<>();
+        set1.add(((ProbeRequirement) req).getRequirement()[0]);
+        set1.add(((ProbeRequirement) req.getNext()).getRequirement()[0]);
+
+        set2.add(((ProbeRequirement) req.getMissingRequirements(report)).getRequirement()[0]);
+        set2.add(((ProbeRequirement) req.getMissingRequirements(report).getNext()).getRequirement()[0]);
+        assertEquals(set1, set2);
     }
 }

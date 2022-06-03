@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import org.junit.Test;
 
@@ -34,6 +35,11 @@ public class PropertyNotRequirementTest extends RequirementsBasicTest {
         req = new PropertyNotRequirement(propNot);
         assertArrayEquals(req.getRequirement(), propNot);
         assertFalse(req.evaluate(report));
+
+        Requirement reqMis = req.getMissingRequirements(report);
+        assertFalse(req.evaluate(report));
+        assertArrayEquals(((PropertyNotRequirement) reqMis).getRequirement(), req.getRequirement());
+
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
         assertFalse(req.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);

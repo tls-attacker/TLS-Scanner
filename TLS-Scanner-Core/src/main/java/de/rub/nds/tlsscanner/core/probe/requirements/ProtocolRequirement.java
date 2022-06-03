@@ -32,6 +32,7 @@ public class ProtocolRequirement extends Requirement {
         if (protocols == null || protocols.length == 0)
             return true;
         boolean returnValue = false;
+        missing = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ListResult<ProtocolVersion> versionsuiteResult =
             (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
@@ -39,12 +40,15 @@ public class ProtocolRequirement extends Requirement {
             List<ProtocolVersion> pvList = versionsuiteResult.getList();
             if (pvList != null && !pvList.isEmpty()) {
                 for (ProtocolVersion pv : protocols) {
-                    if (pvList.contains(pv)) 
-                    	returnValue = true;
+                    if (pvList.contains(pv))
+                        returnValue = true;
                     else
                         missing.add(pv);
                 }
             }
+        } else {
+            for (ProtocolVersion pv : protocols)
+                missing.add(pv);
         }
         return returnValue;
     }
@@ -56,10 +60,11 @@ public class ProtocolRequirement extends Requirement {
         return protocols;
     }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false)
-			return next.getMissingRequirementIntern(missing.requires(new ProtocolRequirement(this.missing.toArray(new ProtocolVersion[this.missing.size()]))), report);
-    	return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(missing.requires(
+                new ProtocolRequirement(this.missing.toArray(new ProtocolVersion[this.missing.size()]))), report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

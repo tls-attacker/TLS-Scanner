@@ -34,16 +34,17 @@ public class PropertyRequirement extends Requirement {
         if (properties == null || properties.length == 0)
             return true;
         boolean returnValue = true;
+        missing = new ArrayList<>();
         Map<String, TestResult> apList = report.getResultMap();
         for (TlsAnalyzedProperty ap : properties) {
             if (apList.containsKey(ap.toString())) {
                 if (apList.get(ap.toString()) != TestResults.TRUE) {
-                	returnValue = false;
+                    returnValue = false;
                     missing.add(ap);
                 }
             } else {
-            	returnValue = false;
-            	missing.add(ap);
+                returnValue = false;
+                missing.add(ap);
             }
         }
         return returnValue;
@@ -56,10 +57,13 @@ public class PropertyRequirement extends Requirement {
         return properties;
     }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false) 
-			return next.getMissingRequirementIntern(missing.requires(new PropertyRequirement(this.missing.toArray(new TlsAnalyzedProperty[this.missing.size()]))), report);
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(
+                missing.requires(
+                    new PropertyRequirement(this.missing.toArray(new TlsAnalyzedProperty[this.missing.size()]))),
+                report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

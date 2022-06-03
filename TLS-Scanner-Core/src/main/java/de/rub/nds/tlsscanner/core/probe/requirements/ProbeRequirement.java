@@ -30,10 +30,11 @@ public class ProbeRequirement extends Requirement {
         if (probes == null || probes.length == 0)
             return true;
         boolean returnValue = true;
+        missing = new ArrayList<>();
         for (TlsProbeType pt : probes) {
             if (report.isProbeAlreadyExecuted(pt) == false) {
-            	returnValue = false;
-            	missing.add(pt);
+                returnValue = false;
+                missing.add(pt);
             }
         }
         return returnValue;
@@ -45,11 +46,13 @@ public class ProbeRequirement extends Requirement {
     public TlsProbeType[] getRequirement() {
         return probes;
     }
-    
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false)
-			return next.getMissingRequirementIntern(missing.requires(new ProbeRequirement(this.missing.toArray(new TlsProbeType[this.missing.size()]))), report);
-		return next.getMissingRequirementIntern(missing, report);
-	}
+
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(
+                missing.requires(new ProbeRequirement(this.missing.toArray(new TlsProbeType[this.missing.size()]))),
+                report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

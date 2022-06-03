@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.Test;
 
@@ -31,5 +32,9 @@ public class NotRequirementTest extends RequirementsBasicTest {
         assertTrue(req.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.BASIC);
         assertFalse(req.evaluate(report));
+
+        Requirement reqMis = req.getMissingRequirements(report);
+        assertFalse(req.evaluate(report));
+        assertEquals(((NotRequirement) reqMis).getRequirement(), req.getRequirement());
     }
 }

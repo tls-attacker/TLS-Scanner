@@ -32,6 +32,7 @@ public class ExtensionRequirement extends Requirement {
         if (extensions == null || extensions.length == 0)
             return true;
         boolean returnValue = false;
+        missing = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ListResult<ExtensionType> extensionResult =
             (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
@@ -39,12 +40,15 @@ public class ExtensionRequirement extends Requirement {
             List<ExtensionType> etList = extensionResult.getList();
             if (etList != null && !etList.isEmpty()) {
                 for (ExtensionType et : extensions) {
-                    if (etList.contains(et)) 
-                    	returnValue = true;
+                    if (etList.contains(et))
+                        returnValue = true;
                     else
-                    	missing.add(et);
+                        missing.add(et);
                 }
             }
+        } else {
+            for (ExtensionType et : extensions)
+                missing.add(et);
         }
         return returnValue;
     }
@@ -56,10 +60,11 @@ public class ExtensionRequirement extends Requirement {
         return extensions;
     }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false)
-			return next.getMissingRequirementIntern(missing.requires(new ExtensionRequirement(this.missing.toArray(new ExtensionType[this.missing.size()]))), report);
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(missing.requires(
+                new ExtensionRequirement(this.missing.toArray(new ExtensionType[this.missing.size()]))), report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

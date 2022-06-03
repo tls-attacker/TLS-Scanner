@@ -33,11 +33,11 @@ public class NotRequirement extends Requirement {
     public Requirement getRequirement() {
         return notRequirement;
     }
-    
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false)
-			return next.getMissingRequirementIntern(missing.requires(new NotRequirement(notRequirement)), report);
-		return next.getMissingRequirementIntern(missing, report);
-	}
+
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(missing.requires(new NotRequirement(notRequirement)), report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
@@ -34,6 +35,11 @@ public class ProtocolRequirementTest extends RequirementsBasicTest {
         req = new ProtocolRequirement(prot);
         assertArrayEquals(req.getRequirement(), prot);
         assertFalse(req.evaluate(report));
+
+        Requirement reqMis = req.getMissingRequirements(report);
+        assertFalse(req.evaluate(report));
+        assertArrayEquals(((ProtocolRequirement) reqMis).getRequirement(), req.getRequirement());
+
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
             new ListResult<>(Arrays.asList(prot), "LIST_SUPPORTED_PROTOCOLVERSIONS"));
         assertTrue(req.evaluate(report));

@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -35,7 +36,15 @@ public class OrRequirementTest extends RequirementsBasicTest {
         req = new OrRequirement(req0, req1);
         assertArrayEquals(req.getRequirement(), new Requirement[] { req0, req1 });
         assertFalse(req.evaluate(report));
+
+        Requirement reqMis = req.getMissingRequirements(report);
+        assertFalse(req.evaluate(report));
+        assertArrayEquals(((OrRequirement) reqMis).getRequirement(), req.getRequirement());
+
         report.markProbeAsExecuted(TlsProbeType.BASIC);
         assertTrue(req.evaluate(report));
+
+        reqMis = req.getMissingRequirements(report);
+        assertEquals(reqMis, Requirement.NO_REQUIREMENT);
     }
 }

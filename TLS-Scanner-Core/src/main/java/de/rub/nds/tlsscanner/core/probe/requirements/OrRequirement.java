@@ -29,11 +29,12 @@ public class OrRequirement extends Requirement {
         if (requirements == null || requirements.length == 0)
             return true;
         boolean returnValue = false;
+        missing = new ArrayList<>();
         for (Requirement req : requirements) {
             if (req.evaluate(report))
                 returnValue = true;
             else
-            	missing.add(req);
+                missing.add(req);
         }
         return returnValue;
     }
@@ -44,11 +45,13 @@ public class OrRequirement extends Requirement {
     public Requirement[] getRequirement() {
         return requirements;
     }
-    
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false)
-			return next.getMissingRequirementIntern(missing.requires(new OrRequirement(this.missing.toArray(new Requirement[this.missing.size()]))), report);
-		return next.getMissingRequirementIntern(missing, report);
-	}
+
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false)
+            return next.getMissingRequirementIntern(
+                missing.requires(new OrRequirement(this.missing.toArray(new Requirement[this.missing.size()]))),
+                report);
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

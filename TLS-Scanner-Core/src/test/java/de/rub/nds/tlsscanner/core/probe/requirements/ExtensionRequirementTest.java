@@ -14,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
@@ -35,6 +36,11 @@ public class ExtensionRequirementTest extends RequirementsBasicTest {
         req = new ExtensionRequirement(ext);
         assertArrayEquals(req.getRequirement(), ext);
         assertFalse(req.evaluate(report));
+
+        Requirement reqMis = req.getMissingRequirements(report);
+        assertFalse(req.evaluate(report));
+        assertArrayEquals(((ExtensionRequirement) reqMis).getRequirement(), req.getRequirement());
+
         report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
             new ListResult<>(Arrays.asList(ext), "LIST_SUPPORTED_EXTENSIONS"));
         assertTrue(req.evaluate(report));
