@@ -22,13 +22,11 @@ import java.util.Set;
 
 public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<ServerReport> {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void analyze(ServerReport report) {
         Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
-        List<CertificateChain> certList =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS))
-                .getList();
+        @SuppressWarnings("unchecked")
+		List<CertificateChain> certList = report.getCertificateChainList();
         if (certList == null) {
             return;
         }

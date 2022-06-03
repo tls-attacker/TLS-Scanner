@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -24,16 +23,11 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.FALSE;
         try {
-            @SuppressWarnings("unchecked")
-            SetResult<CipherSuite> ciphersuiteResult =
-                (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
-            if (ciphersuiteResult != null) {
-                Set<CipherSuite> ciphersuites = ciphersuiteResult.getSet();
-                if (ciphersuites != null) {
-                    for (CipherSuite suite : ciphersuites) {
-                        if (suite.name().contains("3DES") || suite.name().contains("IDEA"))
-                            vulnerable = TestResults.TRUE;
-                    }
+            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
+            if (ciphersuites != null) {
+                for (CipherSuite suite : ciphersuites) {
+                    if (suite.name().contains("3DES") || suite.name().contains("IDEA"))
+                        vulnerable = TestResults.TRUE;
                 }
             } else
                 vulnerable = TestResults.UNCERTAIN;
