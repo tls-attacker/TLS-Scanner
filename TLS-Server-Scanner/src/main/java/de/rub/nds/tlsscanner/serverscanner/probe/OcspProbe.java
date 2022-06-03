@@ -218,8 +218,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
-        for (CertificateChain chain : ((ListResult<CertificateChain>) report
-            .getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS)).getList()) {
+        for (CertificateChain chain : (List<CertificateChain>) report.getCertificateChainList()) {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =

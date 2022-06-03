@@ -59,13 +59,10 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        supportsExtendedRandom =
-            ((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS)).getList()
-                .contains(ExtensionType.EXTENDED_RANDOM);
+        supportsExtendedRandom = report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(ServerReport report) {

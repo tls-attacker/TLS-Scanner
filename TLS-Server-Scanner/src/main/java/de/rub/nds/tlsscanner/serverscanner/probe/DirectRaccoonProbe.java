@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -163,12 +162,9 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
             .requires(new OrRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites =
-            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
-                .getList();
+        serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     @Override

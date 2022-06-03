@@ -13,7 +13,6 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -57,6 +56,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -359,15 +359,13 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
 
-        SetResult<CipherSuite> ciphersuitesResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
+        Set<CipherSuite> ciphersuitesResult = report.getSupportedCipherSuites();
         if (ciphersuitesResult != null) {
-            allSuiteList.addAll(ciphersuitesResult.getSet());
+            allSuiteList.addAll(ciphersuitesResult);
             suiteList = new LinkedList<>();
             for (CipherSuite suite : allSuiteList) {
                 if (suite.isUsingMac()) {

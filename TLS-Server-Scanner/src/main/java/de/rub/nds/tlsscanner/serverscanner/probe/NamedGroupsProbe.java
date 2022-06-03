@@ -9,8 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -255,33 +253,14 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        ListResult<NamedGroup> ecdsaPkGroupsEphemeralResult =
-            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS);
-        if (ecdsaPkGroupsEphemeralResult != null)
-            ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeralResult.getList();
-        ListResult<NamedGroup> ecdsaPkGroupsTls13Result =
-            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS);
-        if (ecdsaPkGroupsTls13Result != null)
-            ecdsaPkGroupsTls13 = ecdsaPkGroupsTls13Result.getList();
-        ListResult<NamedGroup> ecdsaCertSigGroupsStaticResult =
-            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS);
-        if (ecdsaCertSigGroupsStaticResult != null)
-            ecdsaCertSigGroupsStatic = ecdsaCertSigGroupsStaticResult.getList();
-        ListResult<NamedGroup> ecdsaCertSigGroupsEphemeralResult =
-            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_SIGGROUPS);
-        if (ecdsaCertSigGroupsEphemeralResult != null)
-            ecdsaCertSigGroupsEphemeral = ecdsaCertSigGroupsEphemeralResult.getList();
-        ListResult<NamedGroup> ecdsaCertSigGroupsTls13Result =
-            (ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_TLS13_ECDSA_SIGGROUPS);
-        if (ecdsaCertSigGroupsTls13Result != null)
-            ecdsaCertSigGroupsTls13 = ecdsaCertSigGroupsTls13Result.getList();
-        SetResult<CipherSuite> supportedCipherSuitesResult =
-            (SetResult<CipherSuite>) report.getSetResult(TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES);
-        if (supportedCipherSuitesResult != null)
-            supportedCipherSuites = supportedCipherSuitesResult.getSet();
+        ecdsaPkGroupsEphemeral = report.getEphemeralEcdsaPkgGroups();
+        ecdsaPkGroupsTls13 = report.getTls13EcdsaPkgGroups();
+        ecdsaCertSigGroupsStatic = report.getStaticEcdsaSigGroups();
+        ecdsaCertSigGroupsEphemeral = report.getEphemeralEcdsaSigGroups();
+        ecdsaCertSigGroupsTls13 = report.getTls13EcdsaSigGroups();
+        supportedCipherSuites = report.getSupportedCipherSuites();
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {

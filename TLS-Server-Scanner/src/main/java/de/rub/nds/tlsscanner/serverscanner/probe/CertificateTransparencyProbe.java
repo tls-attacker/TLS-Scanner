@@ -13,7 +13,6 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1Field;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -208,12 +207,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         return new ProbeRequirement(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverCertChain =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS)).getList()
-                .get(0).getCertificate();
+        serverCertChain = ((CertificateChain) report.getCertificateChainList().get(0)).getCertificate();
     }
 
     @Override

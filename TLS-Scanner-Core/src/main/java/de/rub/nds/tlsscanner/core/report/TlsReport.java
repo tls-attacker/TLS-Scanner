@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.core.report;
 
 import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -22,6 +23,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
@@ -51,6 +53,18 @@ public abstract class TlsReport extends ScanReport {
     public synchronized List getGuidelineReports() {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS);
         return listResult == null ? null : listResult.getList();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public synchronized Map getSupportedNamedGroupsWitnesses() {
+        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES);
+        return mapResult == null ? null : mapResult.getMap();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public synchronized Map getSupportedNamedGroupsWitnessesTls13() {
+        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
+        return mapResult == null ? null : mapResult.getMap();
     }
 
     public synchronized Set<CipherSuite> getSupportedCipherSuites() {
@@ -103,4 +117,30 @@ public abstract class TlsReport extends ScanReport {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
+
+    public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_PKGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getTls13EcdsaPkgGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_TLS13_ECDSA_PKGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getStaticEcdsaSigGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_STATIC_ECDSA_SIGGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getEphemeralEcdsaSigGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_EPHEMERAL_ECDSA_SIGGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getTls13EcdsaSigGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_TLS13_ECDSA_SIGGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
 }

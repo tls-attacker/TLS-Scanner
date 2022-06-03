@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -173,12 +172,10 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
             .requires(new OrRequirement(pReqDtls12, pReqTls12, pReqTls13));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         versions = new ArrayList<>();
-        for (ProtocolVersion version : ((ListResult<ProtocolVersion>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS)).getList()) {
+        for (ProtocolVersion version : report.getSupportedProtocolVersions()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
                 versions.add(version);
             }

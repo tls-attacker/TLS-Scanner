@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -127,11 +126,9 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
             .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_RSA));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites = ((ListResult<VersionSuiteListPair>) report
-            .getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name())).getList();
+        serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,

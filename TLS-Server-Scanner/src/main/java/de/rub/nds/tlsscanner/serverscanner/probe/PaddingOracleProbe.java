@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -129,12 +128,9 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
             .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        serverSupportedSuites =
-            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
-                .getList();
+        serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,

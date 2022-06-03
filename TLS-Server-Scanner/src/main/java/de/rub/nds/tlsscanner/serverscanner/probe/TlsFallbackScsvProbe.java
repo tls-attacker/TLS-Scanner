@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -30,7 +29,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,10 +77,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void adjustConfig(ServerReport report) {
-        @SuppressWarnings("unchecked")
-        List<ProtocolVersion> versions = new ArrayList<>(
-            ((ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS))
-                .getList());
+        List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
         Collections.sort(versions);
         secondHighestVersion = versions.get(versions.size() - 2);
     }

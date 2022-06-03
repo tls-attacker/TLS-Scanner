@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -148,12 +147,9 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        versionSuiteListPairsList.addAll(
-            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS))
-                .getList());
+        versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     private Config generateConfig() {

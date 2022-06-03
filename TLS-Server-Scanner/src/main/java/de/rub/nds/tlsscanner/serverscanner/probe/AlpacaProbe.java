@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -81,12 +80,9 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         return new ProbeRequirement(TlsProbeType.EXTENSIONS);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
-        alpnSupported =
-            ((ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS.name()))
-                .getList().contains(ExtensionType.ALPN);
+        alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
 
     @Override
