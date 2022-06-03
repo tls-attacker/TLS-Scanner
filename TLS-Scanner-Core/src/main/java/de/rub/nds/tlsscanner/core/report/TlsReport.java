@@ -41,7 +41,7 @@ public abstract class TlsReport extends ScanReport {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS);
         return listResult == null ? null : listResult.getList();
     }
-    
+
     @SuppressWarnings("rawtypes")
     public synchronized List getGuidelineReports() {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS);
@@ -62,7 +62,5 @@ public abstract class TlsReport extends ScanReport {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
         return listResult == null ? null : (List<ProtocolVersion>) listResult.getList();
     }
-    
-
 
 }

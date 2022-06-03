@@ -34,9 +34,9 @@ public class GuidelineChecker {
 
     public void fillReport(ServerReport report) {
         @SuppressWarnings("unchecked")
-		List<GuidelineReport> guidelineReports = report.getGuidelineReports();
+        List<GuidelineReport> guidelineReports = report.getGuidelineReports();
         if (guidelineReports == null)
-        	guidelineReports = new ArrayList<>();
+            guidelineReports = new ArrayList<>();
         List<GuidelineCheckResult> results = new ArrayList<>();
         for (GuidelineCheck check : guideline.getChecks()) {
             GuidelineCheckResult result;
