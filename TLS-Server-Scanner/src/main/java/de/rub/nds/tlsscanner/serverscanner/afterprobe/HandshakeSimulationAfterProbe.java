@@ -39,7 +39,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         int isInsecureCounter = 0;
 
         @SuppressWarnings("unchecked")
-		List<SimulatedClientResult> simulatedclients = (List<SimulatedClientResult>) report.getClientSimulationResultList();
+        List<SimulatedClientResult> simulatedclients =
+            (List<SimulatedClientResult>) report.getClientSimulationResultList();
         if (simulatedclients != null) {
             for (SimulatedClientResult simulatedClient : simulatedclients) {
                 if (simulatedClient.getReceivedAlert()) {
@@ -82,15 +83,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private boolean isCipherSuiteMismatch(ServerReport report, SimulatedClientResult simulatedClient) {
-            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
-            if (ciphersuites != null) {
-                for (CipherSuite serverCipherSuite : ciphersuites) {
-                    for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
-                        if (serverCipherSuite.equals(clientCipherSuite)) {
-                            return false;
-                        }
+        Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
+        if (ciphersuites != null) {
+            for (CipherSuite serverCipherSuite : ciphersuites) {
+                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
+                    if (serverCipherSuite.equals(clientCipherSuite)) {
+                        return false;
                     }
                 }
+            }
         } else
             LOGGER.debug("property " + TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
@@ -98,24 +99,24 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private void checkSelectedProtocolVersion(ServerReport report, SimulatedClientResult simulatedClient) {
-            List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
-            if (versions != null && simulatedClient.getSupportedVersionList() != null) {
-                List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
-                Collections.sort(versions);
-                Collections.sort(simulatedClient.getSupportedVersionList());
-                for (ProtocolVersion serverVersion : versions) {
-                    if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
-                        commonProtocolVersions.add(serverVersion);
-                    }
+        List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
+        if (versions != null && simulatedClient.getSupportedVersionList() != null) {
+            List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
+            Collections.sort(versions);
+            Collections.sort(simulatedClient.getSupportedVersionList());
+            for (ProtocolVersion serverVersion : versions) {
+                if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
+                    commonProtocolVersions.add(serverVersion);
                 }
-                Collections.sort(commonProtocolVersions);
-                simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
-                if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
-                    .equals(simulatedClient.getSelectedProtocolVersion())) {
-                    simulatedClient.setHighestPossibleProtocolVersionSelected(true);
-                } else {
-                    simulatedClient.setHighestPossibleProtocolVersionSelected(false);
-                }
+            }
+            Collections.sort(commonProtocolVersions);
+            simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
+            if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
+                .equals(simulatedClient.getSelectedProtocolVersion())) {
+                simulatedClient.setHighestPossibleProtocolVersionSelected(true);
+            } else {
+                simulatedClient.setHighestPossibleProtocolVersionSelected(false);
+            }
         } else
             LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");

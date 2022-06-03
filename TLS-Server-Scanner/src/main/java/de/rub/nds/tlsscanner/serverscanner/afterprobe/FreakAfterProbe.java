@@ -23,7 +23,7 @@ public class FreakAfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();	
+            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
             if (ciphersuites != null) {
                 for (CipherSuite suite : ciphersuites) {
                     if (suite.name().contains("RSA_EXPORT"))
