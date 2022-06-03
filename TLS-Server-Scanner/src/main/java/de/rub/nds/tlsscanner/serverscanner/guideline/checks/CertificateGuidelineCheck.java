@@ -9,9 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -64,9 +62,7 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         boolean uncertainFlag = false;
         CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
         @SuppressWarnings("unchecked")
-        List<CertificateChain> certchains =
-            ((ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS))
-                .getList();
+        List<CertificateChain> certchains = report.getCertificateChainList();
         for (int i = 0; i < certchains.size(); i++) {
             CertificateChain chain = certchains.get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);

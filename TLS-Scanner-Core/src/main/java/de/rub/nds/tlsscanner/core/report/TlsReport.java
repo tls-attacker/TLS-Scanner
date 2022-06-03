@@ -13,9 +13,14 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,4 +68,39 @@ public abstract class TlsReport extends ScanReport {
         return listResult == null ? null : (List<ProtocolVersion>) listResult.getList();
     }
 
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
+        return listResult == null ? null : (List<SignatureAndHashAlgorithm>) listResult.getList();
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
+        return listResult == null ? null : (List<SignatureAndHashAlgorithm>) listResult.getList();
+    }
+
+    public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
+        HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
+        if (getSupportedSignatureAndHashAlgorithmsCert() != null) {
+            combined.addAll(getSupportedSignatureAndHashAlgorithmsCert());
+        }
+        if (getSupportedSignatureAndHashAlgorithmsSke() != null) {
+            combined.addAll(getSupportedSignatureAndHashAlgorithmsSke());
+        }
+        return new ArrayList<>(combined);
+    }
+
+    public synchronized List<ExtensionType> getSupportedExtensions() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
+        return listResult == null ? null : (List<ExtensionType>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getSupportedTls13Groups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
+
+    public synchronized List<NamedGroup> getSupportedNamedGroups() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS);
+        return listResult == null ? null : (List<NamedGroup>) listResult.getList();
+    }
 }

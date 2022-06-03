@@ -9,11 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -22,7 +20,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuide
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,20 +48,11 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
-        ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
-            .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
-        if (samResult_cert != null || samResult_ske != null) {
+        List<SignatureAndHashAlgorithm> algorithms = report.getSupportedSignatureAndHashAlgorithms();
+        if (algorithms != null) {
             Set<HashAlgorithm> nonRecommended = new HashSet<>();
-            List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-            if (samResult_cert != null && samResult_cert.getList() != null)
-                algorithms.addAll(samResult_cert.getList());
-            if (samResult_ske != null && samResult_ske.getList() != null)
-                algorithms.addAll(samResult_ske.getList());
             // can algorithm be empty? check required? TODO
             for (SignatureAndHashAlgorithm alg : algorithms) {
                 if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {

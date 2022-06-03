@@ -9,10 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
@@ -65,10 +63,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        @SuppressWarnings("unchecked")
-        List<NamedGroup> supportedGroups = tls13
-            ? ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS)).getList()
-            : ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS)).getList();
+        List<NamedGroup> supportedGroups = tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
