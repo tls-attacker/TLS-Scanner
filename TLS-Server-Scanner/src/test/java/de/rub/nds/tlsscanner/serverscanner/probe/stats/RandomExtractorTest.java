@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -18,9 +21,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class RandomExtractorTest {
 
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
-    private final Logger LOGGER = LogManager.getLogger();
+
     @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] STATIC_RANDOM1 =
         ArrayConverter.hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
