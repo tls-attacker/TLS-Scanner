@@ -24,27 +24,27 @@ public class OrRequirementTest extends RequirementsBasicTest {
     public void testOrRequirement() {
         TestReport report = new TestReport();
 
-        ProbeRequirement req0 = new ProbeRequirement(TlsProbeType.ALPN);
-        ProbeRequirement req1 = new ProbeRequirement(TlsProbeType.BASIC);
+        ProbeRequirement requirement0 = new ProbeRequirement(TlsProbeType.ALPN);
+        ProbeRequirement requirement1 = new ProbeRequirement(TlsProbeType.BASIC);
 
-        OrRequirement req = new OrRequirement();
-        assertTrue(req.evaluate(report));
+        OrRequirement requirement = new OrRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new OrRequirement(new Requirement[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new OrRequirement(new Requirement[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new OrRequirement(req0, req1);
-        assertArrayEquals(req.getRequirement(), new Requirement[] { req0, req1 });
-        assertFalse(req.evaluate(report));
+        requirement = new OrRequirement(requirement0, requirement1);
+        assertArrayEquals(requirement.getRequirement(), new Requirement[] { requirement0, requirement1 });
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((OrRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement requirementMissing = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((OrRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
 
         report.markProbeAsExecuted(TlsProbeType.BASIC);
-        assertTrue(req.evaluate(report));
+        assertTrue(requirement.evaluate(report));
 
-        reqMis = req.getMissingRequirements(report);
-        assertEquals(reqMis, Requirement.NO_REQUIREMENT);
+        requirementMissing = requirement.getMissingRequirements(report);
+        assertEquals(requirementMissing, Requirement.NO_REQUIREMENT);
     }
 }

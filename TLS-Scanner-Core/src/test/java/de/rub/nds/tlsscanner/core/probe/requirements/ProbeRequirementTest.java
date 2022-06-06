@@ -23,23 +23,23 @@ public class ProbeRequirementTest extends RequirementsBasicTest {
         TestReport report = new TestReport();
         TlsProbeType probe = TlsProbeType.ALPN;
 
-        ProbeRequirement req = new ProbeRequirement();
-        assertTrue(req.evaluate(report));
+        ProbeRequirement requirement = new ProbeRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new ProbeRequirement(new TlsProbeType[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new ProbeRequirement(new TlsProbeType[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new ProbeRequirement(probe);
-        assertArrayEquals(req.getRequirement(), new TlsProbeType[] { probe });
-        assertFalse(req.evaluate(report));
+        requirement = new ProbeRequirement(probe);
+        assertArrayEquals(requirement.getRequirement(), new TlsProbeType[] { probe });
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((ProbeRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement requirementMissing = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((ProbeRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
 
         report.markProbeAsExecuted(probe);
-        assertTrue(req.evaluate(report));
-        assertTrue(reqMis.evaluate(report));
+        assertTrue(requirement.evaluate(report));
+        assertTrue(requirementMissing.evaluate(report));
     }
 
 }

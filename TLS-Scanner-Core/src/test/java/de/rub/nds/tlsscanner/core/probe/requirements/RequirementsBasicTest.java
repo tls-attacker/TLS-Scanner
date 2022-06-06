@@ -55,67 +55,67 @@ public class RequirementsBasicTest {
 
     @Test
     public void requirementsTest() {
-        Requirement reqs = new ExtensionRequirement(new ExtensionType[] { ExtensionType.ALPN });
-        assertFalse(reqs.evaluate(report));
+        Requirement requirements = new ExtensionRequirement(new ExtensionType[] { ExtensionType.ALPN });
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
             new ListResult<>(Arrays.asList(new ExtensionType[] { ExtensionType.ALPN }), "SUPPORTED_EXTENSIONS"));
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
         TlsProbeType probe = TlsProbeType.ALPN;
-        reqs = reqs.requires(new ProbeRequirement(probe));
-        assertFalse(reqs.evaluate(report));
+        requirements = requirements.requires(new ProbeRequirement(probe));
+        assertFalse(requirements.evaluate(report));
         report.markProbeAsExecuted(probe);
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
-        TlsAnalyzedProperty[] propNot =
+        TlsAnalyzedProperty[] propertyNot =
             new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
-        reqs = reqs.requires(new PropertyNotRequirement(propNot));
-        assertFalse(reqs.evaluate(report));
+        requirements = requirements.requires(new PropertyNotRequirement(propertyNot));
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
-        assertFalse(reqs.evaluate(report));
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
-        TlsAnalyzedProperty[] prop =
+        TlsAnalyzedProperty[] property =
             new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE };
-        reqs = reqs.requires(new PropertyRequirement(prop));
-        assertFalse(reqs.evaluate(report));
+        requirements = requirements.requires(new PropertyRequirement(property));
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, TestResults.FALSE);
-        assertFalse(reqs.evaluate(report));
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, TestResults.TRUE);
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
         ProtocolVersion[] prot = new ProtocolVersion[] { ProtocolVersion.TLS10 };
-        reqs = reqs.requires(new ProtocolRequirement(prot));
-        assertFalse(reqs.evaluate(report));
+        requirements = requirements.requires(new ProtocolRequirement(prot));
+        assertFalse(requirements.evaluate(report));
         report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS,
             new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOLVERSIONS"));
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
-        ProbeRequirement req0 = new ProbeRequirement(TlsProbeType.BLEICHENBACHER);
-        ProbeRequirement req1 = new ProbeRequirement(TlsProbeType.BASIC);
-        reqs = reqs.requires(new OrRequirement(req0, req1));
-        assertFalse(reqs.evaluate(report));
+        ProbeRequirement requirement0 = new ProbeRequirement(TlsProbeType.BLEICHENBACHER);
+        ProbeRequirement requirement1 = new ProbeRequirement(TlsProbeType.BASIC);
+        requirements = requirements.requires(new OrRequirement(requirement0, requirement1));
+        assertFalse(requirements.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.BASIC);
-        assertTrue(reqs.evaluate(report));
+        assertTrue(requirements.evaluate(report));
 
-        ProbeRequirement reqNot = new ProbeRequirement(TlsProbeType.CCA);
-        reqs = reqs.requires(new NotRequirement(reqNot));
-        assertTrue(reqs.evaluate(report));
+        ProbeRequirement requirementNot = new ProbeRequirement(TlsProbeType.CCA);
+        requirements = requirements.requires(new NotRequirement(requirementNot));
+        assertTrue(requirements.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.CCA);
-        assertFalse(reqs.evaluate(report));
+        assertFalse(requirements.evaluate(report));
     }
 
     @Test
     public void missingTest() {
-        ProbeRequirement req1 = new ProbeRequirement(TlsProbeType.BASIC);
-        Requirement req = new ProbeRequirement(TlsProbeType.BLEICHENBACHER).requires(req1);
+        ProbeRequirement requirement1 = new ProbeRequirement(TlsProbeType.BASIC);
+        Requirement requirement = new ProbeRequirement(TlsProbeType.BLEICHENBACHER).requires(requirement1);
         Set<TlsProbeType> set1 = new HashSet<>(), set2 = new HashSet<>();
-        set1.add(((ProbeRequirement) req).getRequirement()[0]);
-        set1.add(((ProbeRequirement) req.getNext()).getRequirement()[0]);
+        set1.add(((ProbeRequirement) requirement).getRequirement()[0]);
+        set1.add(((ProbeRequirement) requirement.getNext()).getRequirement()[0]);
 
-        set2.add(((ProbeRequirement) req.getMissingRequirements(report)).getRequirement()[0]);
-        set2.add(((ProbeRequirement) req.getMissingRequirements(report).getNext()).getRequirement()[0]);
+        set2.add(((ProbeRequirement) requirement.getMissingRequirements(report)).getRequirement()[0]);
+        set2.add(((ProbeRequirement) requirement.getMissingRequirements(report).getNext()).getRequirement()[0]);
         assertEquals(set1, set2);
     }
 }

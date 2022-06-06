@@ -25,24 +25,24 @@ public class ExtensionRequirementTest extends RequirementsBasicTest {
     @Test
     public void testExtensionRequirement() {
         TestReport report = new TestReport();
-        ExtensionType[] ext = new ExtensionType[] { ExtensionType.ALPN };
+        ExtensionType[] extension = new ExtensionType[] { ExtensionType.ALPN };
 
-        ExtensionRequirement req = new ExtensionRequirement();
-        assertTrue(req.evaluate(report));
+        ExtensionRequirement requirement = new ExtensionRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new ExtensionRequirement(new ExtensionType[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new ExtensionRequirement(new ExtensionType[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new ExtensionRequirement(ext);
-        assertArrayEquals(req.getRequirement(), ext);
-        assertFalse(req.evaluate(report));
+        requirement = new ExtensionRequirement(extension);
+        assertArrayEquals(requirement.getRequirement(), extension);
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((ExtensionRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement requirementMissing = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((ExtensionRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
 
         report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-            new ListResult<>(Arrays.asList(ext), "SUPPORTED_EXTENSIONS"));
-        assertTrue(req.evaluate(report));
+            new ListResult<>(Arrays.asList(extension), "SUPPORTED_EXTENSIONS"));
+        assertTrue(requirement.evaluate(report));
     }
 }

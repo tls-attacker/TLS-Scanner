@@ -23,26 +23,26 @@ public class PropertyNotRequirementTest extends RequirementsBasicTest {
     @Test
     public void testPropertyNotRequirement() {
         TestReport report = new TestReport();
-        TlsAnalyzedProperty[] propNot =
+        TlsAnalyzedProperty[] propertyNot =
             new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
 
-        PropertyNotRequirement req = new PropertyNotRequirement();
-        assertTrue(req.evaluate(report));
+        PropertyNotRequirement requirement = new PropertyNotRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new PropertyNotRequirement(new TlsAnalyzedProperty[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new PropertyNotRequirement(new TlsAnalyzedProperty[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new PropertyNotRequirement(propNot);
-        assertArrayEquals(req.getRequirement(), propNot);
-        assertFalse(req.evaluate(report));
+        requirement = new PropertyNotRequirement(propertyNot);
+        assertArrayEquals(requirement.getRequirement(), propertyNot);
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((PropertyNotRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement reqMis = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((PropertyNotRequirement) reqMis).getRequirement(), requirement.getRequirement());
 
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
-        assertFalse(req.evaluate(report));
+        assertFalse(requirement.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);
-        assertTrue(req.evaluate(report));
+        assertTrue(requirement.evaluate(report));
     }
 }

@@ -23,25 +23,26 @@ public class PropertyRequirementTest extends RequirementsBasicTest {
     @Test
     public void testPropertyRequirement() {
         TestReport report = new TestReport();
-        TlsAnalyzedProperty[] prop = new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
+        TlsAnalyzedProperty[] property =
+            new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
 
-        PropertyRequirement req = new PropertyRequirement();
-        assertTrue(req.evaluate(report));
+        PropertyRequirement requirement = new PropertyRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new PropertyRequirement(new TlsAnalyzedProperty[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new PropertyRequirement(new TlsAnalyzedProperty[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new PropertyRequirement(prop);
-        assertArrayEquals(req.getRequirement(), prop);
-        assertFalse(req.evaluate(report));
+        requirement = new PropertyRequirement(property);
+        assertArrayEquals(requirement.getRequirement(), property);
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((PropertyRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement reqMis = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((PropertyRequirement) reqMis).getRequirement(), requirement.getRequirement());
 
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);
-        assertFalse(req.evaluate(report));
+        assertFalse(requirement.evaluate(report));
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
-        assertTrue(req.evaluate(report));
+        assertTrue(requirement.evaluate(report));
     }
 }

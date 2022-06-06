@@ -24,24 +24,24 @@ public class ProtocolRequirementTest extends RequirementsBasicTest {
     @Test
     public void testProtocolRequirement() {
         TestReport report = new TestReport();
-        ProtocolVersion[] prot = new ProtocolVersion[] { ProtocolVersion.TLS10 };
+        ProtocolVersion[] protocolVersion = new ProtocolVersion[] { ProtocolVersion.TLS10 };
 
-        ProtocolRequirement req = new ProtocolRequirement();
-        assertTrue(req.evaluate(report));
+        ProtocolRequirement requirement = new ProtocolRequirement();
+        assertTrue(requirement.evaluate(report));
 
-        req = new ProtocolRequirement(new ProtocolVersion[0]);
-        assertTrue(req.evaluate(report));
+        requirement = new ProtocolRequirement(new ProtocolVersion[0]);
+        assertTrue(requirement.evaluate(report));
 
-        req = new ProtocolRequirement(prot);
-        assertArrayEquals(req.getRequirement(), prot);
-        assertFalse(req.evaluate(report));
+        requirement = new ProtocolRequirement(protocolVersion);
+        assertArrayEquals(requirement.getRequirement(), protocolVersion);
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertArrayEquals(((ProtocolRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement requirementMissing = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertArrayEquals(((ProtocolRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
 
         report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOLVERSIONS"));
-        assertTrue(req.evaluate(report));
+            new ListResult<>(Arrays.asList(protocolVersion), "SUPPORTED_PROTOCOLVERSIONS"));
+        assertTrue(requirement.evaluate(report));
     }
 }

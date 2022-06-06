@@ -22,19 +22,19 @@ public class NotRequirementTest extends RequirementsBasicTest {
     @Test
     public void testNotRequirement() {
         TestReport report = new TestReport();
-        ProbeRequirement reqNot = new ProbeRequirement(TlsProbeType.BASIC);
+        ProbeRequirement requirementNot = new ProbeRequirement(TlsProbeType.BASIC);
 
-        NotRequirement req = new NotRequirement(null);
-        assertTrue(req.evaluate(report));
+        NotRequirement requirement = new NotRequirement(null);
+        assertTrue(requirement.evaluate(report));
 
-        req = new NotRequirement(reqNot);
-        assertEquals(req.getRequirement(), reqNot);
-        assertTrue(req.evaluate(report));
+        requirement = new NotRequirement(requirementNot);
+        assertEquals(requirement.getRequirement(), requirementNot);
+        assertTrue(requirement.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.BASIC);
-        assertFalse(req.evaluate(report));
+        assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = req.getMissingRequirements(report);
-        assertFalse(req.evaluate(report));
-        assertEquals(((NotRequirement) reqMis).getRequirement(), req.getRequirement());
+        Requirement reqMis = requirement.getMissingRequirements(report);
+        assertFalse(requirement.evaluate(report));
+        assertEquals(((NotRequirement) reqMis).getRequirement(), requirement.getRequirement());
     }
 }
