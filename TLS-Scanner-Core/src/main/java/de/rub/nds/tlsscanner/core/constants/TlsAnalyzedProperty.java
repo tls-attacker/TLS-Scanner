@@ -36,7 +36,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13(TlsAnalyzedPropertyCategory.CERTIFICATE),
     SUPPORTED_TOKENBINDINGVERSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTED_TOKENBINDING_KEYPARAMETERS(TlsAnalyzedPropertyCategory.EXTENSIONS),
-    SUPPORTED_ALPNS(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTED_ALPN_CONSTANTS(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTED_COMPRESSION_METHODS(TlsAnalyzedPropertyCategory.COMPRESSION),
     CERTIFICATE_CHAINS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     EPHEMERAL_ECDSA_PKGROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
