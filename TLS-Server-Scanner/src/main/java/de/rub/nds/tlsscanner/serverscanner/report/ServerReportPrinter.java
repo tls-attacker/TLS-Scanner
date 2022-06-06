@@ -1562,7 +1562,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendAlpn(StringBuilder builder) {
         @SuppressWarnings("unchecked")
-        ListResult<String> alpnResult = (ListResult<String>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
+        ListResult<String> alpnResult =
+            (ListResult<String>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
         if (alpnResult != null) {
             List<String> alpns = alpnResult.getList();
             if (alpns != null) {
