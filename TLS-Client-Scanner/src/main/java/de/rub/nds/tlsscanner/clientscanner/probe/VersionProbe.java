@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -99,12 +98,9 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ClientReport report) {
-        clientAdvertisedCipherSuites =
-            ((ListResult<CipherSuite>) report.getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES))
-                .getList();
+        clientAdvertisedCipherSuites = report.getClientAdvertisedCiphersuites();
     }
 
     @Override

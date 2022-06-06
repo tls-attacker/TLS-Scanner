@@ -10,15 +10,15 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
+import de.rub.nds.tlsscanner.core.report.TlsReport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends ScanReport {
+public class ClientReport extends TlsReport {
 
     public ClientReport() {
         super();

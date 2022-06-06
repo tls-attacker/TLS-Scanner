@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -185,9 +184,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     @Override
     public void adjustConfig(ClientReport report) {
-        @SuppressWarnings("unchecked")
-        List<CipherSuite> ciphers = ((ListResult<CipherSuite>) report
-            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES.name())).getList();
+        List<CipherSuite> ciphers = report.getClientAdvertisedCiphersuites();
         List<CipherSuite> dheCiphers = new LinkedList<>();
         for (CipherSuite suite : ciphers) {
             if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().contains("_DHE_")) {

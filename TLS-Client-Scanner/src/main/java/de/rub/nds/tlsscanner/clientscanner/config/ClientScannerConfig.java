@@ -17,13 +17,9 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 public class ClientScannerConfig extends ScannerConfig {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     @ParametersDelegate
     protected ServerDelegate serverDelegate;

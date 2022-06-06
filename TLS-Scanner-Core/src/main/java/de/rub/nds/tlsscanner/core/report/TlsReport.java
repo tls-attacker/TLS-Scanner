@@ -142,6 +142,11 @@ public abstract class TlsReport extends ScanReport {
         return setResult == null ? null : (Set<CipherSuite>) setResult.getSet();
     }
 
+    public synchronized List<CipherSuite> getClientAdvertisedCiphersuites() {
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES);
+        return listResult == null ? null : (List<CipherSuite>) listResult.getList();
+    }
+
     public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
         return listResult == null ? null : (List<VersionSuiteListPair>) listResult.getList();

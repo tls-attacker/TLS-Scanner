@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ReportCreator;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
@@ -34,12 +33,10 @@ public class ClientContainerReportCreator extends ReportCreator {
         return rootContainer;
     }
 
-    @SuppressWarnings("unchecked")
     private void addCipherSuiteContainer(ListContainer rootContainer, ClientReport report) {
         rootContainer.add(new HeadlineContainer("Supported Cipher suites"));
         ListContainer listContainer = new ListContainer();
-        for (CipherSuite suite : ((ListResult<CipherSuite>) report
-            .getListResult(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES.name())).getList()) {
+        for (CipherSuite suite : report.getClientAdvertisedCiphersuites()) {
             listContainer.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
         }
         rootContainer.add(listContainer);
