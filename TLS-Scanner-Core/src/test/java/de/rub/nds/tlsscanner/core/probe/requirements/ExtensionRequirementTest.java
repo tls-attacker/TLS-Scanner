@@ -41,8 +41,8 @@ public class ExtensionRequirementTest extends RequirementsBasicTest {
         assertFalse(req.evaluate(report));
         assertArrayEquals(((ExtensionRequirement) reqMis).getRequirement(), req.getRequirement());
 
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            new ListResult<>(Arrays.asList(ext), "LIST_SUPPORTED_EXTENSIONS"));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+            new ListResult<>(Arrays.asList(ext), "SUPPORTED_EXTENSIONS"));
         assertTrue(req.evaluate(report));
     }
 }

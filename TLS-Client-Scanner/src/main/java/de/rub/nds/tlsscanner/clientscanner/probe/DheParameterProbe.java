@@ -50,8 +50,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.DH_PARAMETERS, scannerConfig);
-        register(TlsAnalyzedProperty.LIST_SMALL_DHE_SUBGROUP_RESULTS,
-            TlsAnalyzedProperty.LIST_COMPOSITE_DHE_MODULUS_RESULTS);
+        register(TlsAnalyzedProperty.SMALL_DHE_SUBGROUP_RESULTS, TlsAnalyzedProperty.COMPOSITE_DHE_MODULUS_RESULTS);
         random = new Random(0);
     }
 
@@ -196,8 +195,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 
     @Override
     protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.LIST_COMPOSITE_DHE_MODULUS_RESULTS, compositeModulusResultList);
-        put(TlsAnalyzedProperty.LIST_SMALL_DHE_SUBGROUP_RESULTS, smallSubgroupResults);
+        put(TlsAnalyzedProperty.COMPOSITE_DHE_MODULUS_RESULTS, compositeModulusResultList);
+        put(TlsAnalyzedProperty.SMALL_DHE_SUBGROUP_RESULTS, smallSubgroupResults);
     }
 
     @Override

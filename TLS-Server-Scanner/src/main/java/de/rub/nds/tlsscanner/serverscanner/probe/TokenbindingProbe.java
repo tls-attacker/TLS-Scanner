@@ -37,9 +37,9 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSIONS,
-            TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS);
+        register(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+            TlsAnalyzedProperty.SUPPORTED_TOKENBINDINGVERSIONS,
+            TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEYPARAMETERS);
     }
 
     @Override
@@ -97,16 +97,16 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDINGVERSIONS, supportedTokenBindingVersion);
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_TOKENBINDING_KEYPARAMETERS, supportedTokenBindingKeyParameters);
+        put(TlsAnalyzedProperty.SUPPORTED_TOKENBINDINGVERSIONS, supportedTokenBindingVersion);
+        put(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEYPARAMETERS, supportedTokenBindingKeyParameters);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
             put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
             List<ExtensionType> list = new LinkedList<>();
             list.add(ExtensionType.TOKEN_BINDING);
-            addToList(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, list);
+            addToList(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, list);
         } else
             put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
-        addToList(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, new LinkedList<>());
+        addToList(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, new LinkedList<>());
     }
 
     public void adjustConfig(ServerReport report) {

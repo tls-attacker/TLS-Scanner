@@ -47,7 +47,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     public DtlsApplicationFingerprintProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
-        register(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        register(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_APPLICATIONS, supportedApplications);
+        put(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, supportedApplications);
         put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
     }
 

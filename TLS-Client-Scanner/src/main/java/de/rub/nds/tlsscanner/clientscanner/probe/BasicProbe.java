@@ -46,13 +46,11 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
-        register(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES,
-            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS,
-            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-            TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS,
-            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS,
-            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
-            TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS);
+        register(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMEDGROUPS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
     }
 
     @Override
@@ -98,13 +96,13 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     @Override
     protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
             clientSupportedSignatureAndHashAlgorithms);
-        put(TlsAnalyzedProperty.SET_CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_NAMEDGROUPS, clientAdvertisedNamedGroupsList);
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS, clientKeyShareNamedGroupsList);
-        put(TlsAnalyzedProperty.LIST_CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMEDGROUPS, clientAdvertisedNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS, clientKeyShareNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
     }
 }

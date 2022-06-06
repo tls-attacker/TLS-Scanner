@@ -35,7 +35,7 @@ public class ExtensionRequirement extends Requirement {
         missing = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ListResult<ExtensionType> extensionResult =
-            (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
+            (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
         if (extensionResult != null) {
             List<ExtensionType> etList = extensionResult.getList();
             if (etList != null && !etList.isEmpty()) {

@@ -84,7 +84,7 @@ public class GuidelineChecker {
             results.add(result);
         }
         guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
-        report.putResult(TlsAnalyzedProperty.LIST_GUIDELINE_REPORTS,
-            new ListResult<>(guidelineReports, "LIST_GUIDELINE_REPORTS"));
+        report.putResult(TlsAnalyzedProperty.GUIDELINE_REPORTS,
+            new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
     }
 }

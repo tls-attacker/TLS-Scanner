@@ -53,7 +53,7 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         register(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
             TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
             TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
-            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS);
+            TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS, allSupportedExtensions);
+        put(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, allSupportedExtensions);
         if (allSupportedExtensions != null) {
             for (ExtensionType type : allSupportedExtensions) {
                 if (type == ExtensionType.ENCRYPT_THEN_MAC)

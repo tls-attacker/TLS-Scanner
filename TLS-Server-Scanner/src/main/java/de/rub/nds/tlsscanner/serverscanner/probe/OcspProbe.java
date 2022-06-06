@@ -75,7 +75,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
             TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
             TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.LIST_OCSP_RESULTS);
+            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.OCSP_RESULTS);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
-            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_TLS13_GROUPS)).getList();
+            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)).getList();
     }
 
     private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
@@ -254,7 +254,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_OCSP_RESULTS, certResults);
+        put(TlsAnalyzedProperty.OCSP_RESULTS, certResults);
         put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
         put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());

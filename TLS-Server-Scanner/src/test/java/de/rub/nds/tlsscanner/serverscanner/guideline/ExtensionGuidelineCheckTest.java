@@ -25,7 +25,7 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
             new ListResult<>(Collections.singletonList(ExtensionType.COOKIE), "SUPPORTED_EXTENSIONS"));
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
@@ -36,7 +36,7 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_EXTENSIONS,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
             new ListResult<>(Collections.emptyList(), "SUPPORTED_EXTENSIONS"));
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);

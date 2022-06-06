@@ -45,7 +45,7 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
                     }
                 } else {
                     vulnerable = TestResults.ERROR_DURING_TEST;
-                    LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()
+                    LOGGER.debug("property " + TlsAnalyzedProperty.VERSIONSUITE_PAIRS.name()
                         + " requires a TestResult for the PoodleAfterProbe but has result null!");
                 }
             }

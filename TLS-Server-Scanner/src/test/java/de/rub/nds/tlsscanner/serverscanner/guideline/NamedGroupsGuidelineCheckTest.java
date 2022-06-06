@@ -26,7 +26,7 @@ public class NamedGroupsGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS,
             new ListResult<>(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1), "SUPPORTED_NAMEDGROUPS"));
 
         NamedGroupsGuidelineCheck check =
@@ -39,7 +39,7 @@ public class NamedGroupsGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_NAMEDGROUPS,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS,
             new ListResult<>(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1), "SUPPORTED_NAMEDGROUPS"));
 
         NamedGroupsGuidelineCheck check =

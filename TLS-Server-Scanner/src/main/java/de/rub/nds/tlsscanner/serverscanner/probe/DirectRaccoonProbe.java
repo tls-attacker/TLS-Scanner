@@ -56,7 +56,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
-        register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, TlsAnalyzedProperty.DIRECTRACCOON_TESTRESULT);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
             testResultList = new LinkedList<>();
             vulnerable = TestResults.ERROR_DURING_TEST;
         }
-        put(TlsAnalyzedProperty.LIST_DIRECTRACCOON_TESTRESULT, testResultList);
+        put(TlsAnalyzedProperty.DIRECTRACCOON_TESTRESULT, testResultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 }

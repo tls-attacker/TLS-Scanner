@@ -72,7 +72,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
             report.setHandshakeFailedCounter(simulatedclients.size() - isSuccessfulCounter);
             report.setConnectionInsecureCounter(isInsecureCounter);
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 
@@ -93,7 +93,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 }
             }
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.SET_SUPPORTED_CIPHERSUITES.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
         return true;
     }
@@ -118,7 +118,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 simulatedClient.setHighestPossibleProtocolVersionSelected(false);
             }
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.VERSIONSUITE_PAIRS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 

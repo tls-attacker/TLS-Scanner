@@ -33,7 +33,7 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public AlpnProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ALPN, configSelector);
-        register(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
+        register(TlsAnalyzedProperty.SUPPORTED_ALPNS);
     }
 
     @Override
@@ -91,6 +91,6 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS, supportedAlpnProtocols);
+        put(TlsAnalyzedProperty.SUPPORTED_ALPNS, supportedAlpnProtocols);
     }
 }

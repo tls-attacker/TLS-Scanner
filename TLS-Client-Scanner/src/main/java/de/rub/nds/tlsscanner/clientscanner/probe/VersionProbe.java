@@ -44,7 +44,7 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
         register(TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-            TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
+            TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS);
     }
 
     protected Config getTls13Config() {
@@ -148,6 +148,6 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
             put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
             put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
-        put(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS, supportedProtocolVersions);
+        put(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS, supportedProtocolVersions);
     }
 }

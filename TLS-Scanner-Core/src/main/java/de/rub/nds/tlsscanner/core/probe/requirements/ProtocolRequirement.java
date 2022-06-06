@@ -35,7 +35,7 @@ public class ProtocolRequirement extends Requirement {
         missing = new ArrayList<>();
         @SuppressWarnings("unchecked")
         ListResult<ProtocolVersion> versionsuiteResult =
-            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS);
+            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS);
         if (versionsuiteResult != null) {
             List<ProtocolVersion> pvList = versionsuiteResult.getList();
             if (pvList != null && !pvList.isEmpty()) {

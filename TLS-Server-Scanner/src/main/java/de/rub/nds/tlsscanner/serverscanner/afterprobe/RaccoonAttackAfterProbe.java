@@ -68,7 +68,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
             BigInteger modulo = smallestByteSizeModuloMap.get(i);
             attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
         }
-        report.putResult(TlsAnalyzedProperty.LIST_RACCOONATTACK_PROBABILITIES,
+        report.putResult(TlsAnalyzedProperty.RACCOONATTACK_PROBABILITIES,
             new ListResult<>(attackProbabilityList, "RACCOONATTACK_PROBABILITIES"));
 
         TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);

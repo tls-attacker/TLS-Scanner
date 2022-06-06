@@ -115,8 +115,8 @@ public class RandomnessAfterProbe extends AfterProbe<ServerReport> {
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(TlsAnalyzedProperty.LIST_ENTROPY_REPORTS,
-            new ListResult<>(entropyReport, TlsAnalyzedProperty.LIST_ENTROPY_REPORTS.name()));
+        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS,
+            new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
     }
 
     public EntropyReport createEntropyReport(List<ComparableByteArray> byteArrayList, RandomType type) {

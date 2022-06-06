@@ -46,7 +46,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
 
     public HandshakeSimulationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, configSelector);
-        register(TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS);
+        register(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
 
         simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
@@ -223,7 +223,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.LIST_CLIENT_SIMULATION_RESULTS, simulatedClientList);
+        put(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS, simulatedClientList);
     }
 
     @Override

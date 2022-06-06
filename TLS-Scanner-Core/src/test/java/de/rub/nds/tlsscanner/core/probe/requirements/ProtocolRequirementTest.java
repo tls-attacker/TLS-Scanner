@@ -40,8 +40,8 @@ public class ProtocolRequirementTest extends RequirementsBasicTest {
         assertFalse(req.evaluate(report));
         assertArrayEquals(((ProtocolRequirement) reqMis).getRequirement(), req.getRequirement());
 
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<>(Arrays.asList(prot), "LIST_SUPPORTED_PROTOCOLVERSIONS"));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS,
+            new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOLVERSIONS"));
         assertTrue(req.evaluate(report));
     }
 }

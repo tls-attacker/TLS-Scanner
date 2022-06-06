@@ -40,7 +40,7 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
                     (List<InformationLeakTest<PaddingOracleTestInfo>>) report.getPaddingOracleTestResultList());
                 report.setKnownVulnerability(knownVulnerability);
             } catch (Exception e) {
-                LOGGER.debug("property " + TlsAnalyzedProperty.LIST_PADDINGORACLE_TESTRESULT.name()
+                LOGGER.debug("property " + TlsAnalyzedProperty.PADDINGORACLE_TESTRESULT.name()
                     + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
                     + e.getMessage());
             }

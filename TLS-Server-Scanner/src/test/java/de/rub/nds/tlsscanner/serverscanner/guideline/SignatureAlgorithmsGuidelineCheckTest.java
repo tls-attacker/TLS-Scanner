@@ -25,7 +25,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
             new ListResult<>(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
                 "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
 
@@ -38,7 +38,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.LIST_SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
             new ListResult<>(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1),
                 "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
 

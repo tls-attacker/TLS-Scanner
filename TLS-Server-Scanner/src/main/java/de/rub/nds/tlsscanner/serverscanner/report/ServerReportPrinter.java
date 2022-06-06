@@ -424,8 +424,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppend(builder, "Protocol Version Selected",
                 getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
-            prettyAppend(builder, "Protocol Versions Server", ((ListResult<ProtocolVersion>) report
-                .getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_PROTOCOLVERSIONS)).getList().toString());
+            prettyAppend(builder, "Protocol Versions Server",
+                ((ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS))
+                    .getList().toString());
             prettyAppend(builder, "Protocol Version is highest",
                 simulatedClient.getHighestPossibleProtocolVersionSelected(),
                 simulatedClient.getHighestPossibleProtocolVersionSelected() ? AnsiColor.GREEN : AnsiColor.RED);
@@ -475,7 +476,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendCertificates(StringBuilder builder) {
         @SuppressWarnings("unchecked")
         ListResult<CertificateChain> certchainsResult =
-            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.LIST_CERTIFICATE_CHAINS);
+            (ListResult<CertificateChain>) report.getListResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS);
         if (certchainsResult != null) {
             int certCtr = 1;
             List<CertificateChain> certchains = certchainsResult.getList();
@@ -669,7 +670,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendOcspOverview(builder);
         @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> ocspResult =
-            (ListResult<OcspCertificateResult>) report.getListResult(TlsAnalyzedProperty.LIST_OCSP_RESULTS);
+            (ListResult<OcspCertificateResult>) report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS);
         if (ocspResult != null) {
             List<OcspCertificateResult> ocspcertresults = ocspResult.getList();
             int certCtr = 1;
@@ -1315,7 +1316,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppend(builder, "-empty-", AnsiColor.RED);
 
             ListResult<VersionSuiteListPair> verspairsResult =
-                (ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.LIST_VERSIONSUITE_PAIRS);
+                (ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS);
             if (verspairsResult != null) {
                 List<VersionSuiteListPair> versPairs = verspairsResult.getList();
                 if (versPairs != null && !versPairs.isEmpty()) {
@@ -1561,8 +1562,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendAlpn(StringBuilder builder) {
         @SuppressWarnings("unchecked")
-        ListResult<String> alpnResult =
-            (ListResult<String>) report.getListResult(TlsAnalyzedProperty.LIST_SUPPORTED_ALPNS);
+        ListResult<String> alpnResult = (ListResult<String>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_ALPNS);
         if (alpnResult != null) {
             List<String> alpns = alpnResult.getList();
             if (alpns != null) {
@@ -1860,7 +1860,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     if (detail == ScannerDetail.ALL) {
                         builder.append("\n  Found using:");
                         NamedGroupWitness witness = ((MapResult<NamedGroup, NamedGroupWitness>) report
-                            .getMapResult(TlsAnalyzedProperty.MAP_SUPPORTED_NAMEDGROUPS_WITNESSES)).getMap().get(group);
+                            .getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES)).getMap().get(group);
                         for (CipherSuite cipher : witness.getCipherSuites()) {
                             builder.append("\n    ").append(cipher.toString());
                         }

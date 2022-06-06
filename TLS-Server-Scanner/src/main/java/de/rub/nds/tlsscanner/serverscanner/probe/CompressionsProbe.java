@@ -34,7 +34,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
         register(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
-            TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS);
+            TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     @Override
     protected void mergeData(ServerReport report) {
         if (compressions != null) {
-            put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, compressions);
+            put(TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS, compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
                 put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
                 put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
@@ -97,7 +97,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         } else {
             put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
             put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.LIST_SUPPORTED_COMPRESSION_METHODS, new LinkedList<>());
+            put(TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS, new LinkedList<>());
         }
     }
 }
