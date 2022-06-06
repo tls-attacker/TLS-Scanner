@@ -17,11 +17,11 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.report.TlsReport;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +33,7 @@ public class RequirementsBasicTest {
     /**
      * Implementation of ScanReport
      */
-    public class TestReport extends ScanReport {
+    public class TestReport extends TlsReport {
         private static final long serialVersionUID = 1L;
 
         public TestReport() {

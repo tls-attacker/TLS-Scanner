@@ -27,14 +27,14 @@ public class ProbeRequirement extends Requirement {
 
     @Override
     protected boolean evaluateIntern(ScanReport report) {
-        if (probes == null || probes.length == 0)
+        if ((probes == null) || (probes.length == 0))
             return true;
         boolean returnValue = true;
         missing = new ArrayList<>();
-        for (TlsProbeType pt : probes) {
-            if (report.isProbeAlreadyExecuted(pt) == false) {
+        for (TlsProbeType probe : probes) {
+            if (report.isProbeAlreadyExecuted(probe) == false) {
                 returnValue = false;
-                missing.add(pt);
+                missing.add(probe);
             }
         }
         return returnValue;

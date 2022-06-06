@@ -9,11 +9,10 @@
 
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.report.TlsReport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,26 +28,21 @@ public class ExtensionRequirement extends Requirement {
 
     @Override
     protected boolean evaluateIntern(ScanReport report) {
-        if (extensions == null || extensions.length == 0)
+        if ((extensions == null) || (extensions.length == 0))
             return true;
         boolean returnValue = false;
         missing = new ArrayList<>();
-        @SuppressWarnings("unchecked")
-        ListResult<ExtensionType> extensionResult =
-            (ListResult<ExtensionType>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
-        if (extensionResult != null) {
-            List<ExtensionType> etList = extensionResult.getList();
-            if (etList != null && !etList.isEmpty()) {
-                for (ExtensionType et : extensions) {
-                    if (etList.contains(et))
-                        returnValue = true;
-                    else
-                        missing.add(et);
-                }
+        List<ExtensionType> extensionList = ((TlsReport) report).getSupportedExtensions();
+        if (extensionList != null && !extensionList.isEmpty()) {
+            for (ExtensionType extension : extensions) {
+                if (extensionList.contains(extension))
+                    returnValue = true;
+                else
+                    missing.add(extension);
             }
         } else {
-            for (ExtensionType et : extensions)
-                missing.add(et);
+            for (ExtensionType extension : extensions)
+                missing.add(extension);
         }
         return returnValue;
     }

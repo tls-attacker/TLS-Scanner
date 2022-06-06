@@ -19,12 +19,8 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsattacker.transport.tcp.ClientTcpTransportHandler;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ResponseExtractor {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public static ResponseFingerprint getFingerprint(State state, ReceivingAction action) {
         List<ProtocolMessage> messageList = action.getReceivedMessages();

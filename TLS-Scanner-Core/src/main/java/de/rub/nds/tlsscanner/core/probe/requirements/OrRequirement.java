@@ -26,15 +26,15 @@ public class OrRequirement extends Requirement {
 
     @Override
     protected boolean evaluateIntern(ScanReport report) {
-        if (requirements == null || requirements.length == 0)
+        if ((requirements == null) || (requirements.length == 0))
             return true;
         boolean returnValue = false;
         missing = new ArrayList<>();
-        for (Requirement req : requirements) {
-            if (req.evaluate(report))
+        for (Requirement requirement : requirements) {
+            if (requirement.evaluate(report))
                 returnValue = true;
             else
-                missing.add(req);
+                missing.add(requirement);
         }
         return returnValue;
     }

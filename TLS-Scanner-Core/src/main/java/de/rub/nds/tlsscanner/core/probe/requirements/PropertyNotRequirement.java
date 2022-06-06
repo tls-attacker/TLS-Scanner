@@ -31,20 +31,20 @@ public class PropertyNotRequirement extends Requirement {
 
     @Override
     protected boolean evaluateIntern(ScanReport report) {
-        if (propertiesNot == null || propertiesNot.length == 0)
+        if ((propertiesNot == null) || (propertiesNot.length == 0))
             return true;
         boolean returnValue = true;
         missing = new ArrayList<>();
-        Map<String, TestResult> apList = report.getResultMap();
-        for (TlsAnalyzedProperty ap : propertiesNot) {
-            if (apList.containsKey(ap.toString())) {
-                if (apList.get(ap.toString()) != TestResults.FALSE) {
+        Map<String, TestResult> propertyMap = report.getResultMap();
+        for (TlsAnalyzedProperty property : propertiesNot) {
+            if (propertyMap.containsKey(property.toString())) {
+                if (propertyMap.get(property.toString()) != TestResults.FALSE) {
                     returnValue = false;
-                    missing.add(ap);
+                    missing.add(property);
                 }
             } else {
                 returnValue = false;
-                missing.add(ap);
+                missing.add(property);
             }
         }
         return returnValue;

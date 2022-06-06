@@ -9,11 +9,10 @@
 
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.report.TlsReport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,26 +28,21 @@ public class ProtocolRequirement extends Requirement {
 
     @Override
     protected boolean evaluateIntern(ScanReport report) {
-        if (protocols == null || protocols.length == 0)
+        if ((protocols == null) || (protocols.length == 0))
             return true;
         boolean returnValue = false;
         missing = new ArrayList<>();
-        @SuppressWarnings("unchecked")
-        ListResult<ProtocolVersion> versionsuiteResult =
-            (ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS);
-        if (versionsuiteResult != null) {
-            List<ProtocolVersion> pvList = versionsuiteResult.getList();
-            if (pvList != null && !pvList.isEmpty()) {
-                for (ProtocolVersion pv : protocols) {
-                    if (pvList.contains(pv))
-                        returnValue = true;
-                    else
-                        missing.add(pv);
-                }
+        List<ProtocolVersion> protocolVersions = ((TlsReport) report).getSupportedProtocolVersions();
+        if (protocolVersions != null && !protocolVersions.isEmpty()) {
+            for (ProtocolVersion protocol : protocols) {
+                if (protocolVersions.contains(protocol))
+                    returnValue = true;
+                else
+                    missing.add(protocol);
             }
         } else {
-            for (ProtocolVersion pv : protocols)
-                missing.add(pv);
+            for (ProtocolVersion protocol : protocols)
+                missing.add(protocol);
         }
         return returnValue;
     }
