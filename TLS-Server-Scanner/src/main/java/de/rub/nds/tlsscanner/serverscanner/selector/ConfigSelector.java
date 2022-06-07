@@ -202,6 +202,7 @@ public class ConfigSelector {
             adjustEccExtensionsPreTls13(config);
         }
         setDefaultSelectedCipherSuites(config);
+        applyDelegates(config);
         return config;
     }
 
