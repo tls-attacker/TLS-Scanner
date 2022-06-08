@@ -283,7 +283,7 @@ public final class TlsServerScanner extends TlsScanner {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                 configSelector.findWorkingConfigs();
                 serverReport.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
-                serverReport.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifierTls13());
+                serverReport.setConfigProfileIdentifierTls13(configSelector.getConfigProfileIdentifierTls13());
                 if (configSelector.isSpeaksProtocol()) {
                     speaksProtocol = true;
                     LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
