@@ -158,7 +158,7 @@
                                     <destFileName>${project.build.finalName}.${project.packaging}</destFileName>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${main.basedir}/apps</outputDirectory>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/apps</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -168,7 +168,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/apps/lib</outputDirectory>
                             <!--Ensures only runnable dependencies are included-->
                             <includeScope>compile</includeScope>
                         </configuration>
@@ -180,7 +180,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>4.1</version>
                 <configuration>
-                    <header>license_header_plain.txt</header>
+                    <header>${main.basedir}/license_header_plain.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
                         <include>src/**/*.java</include>
