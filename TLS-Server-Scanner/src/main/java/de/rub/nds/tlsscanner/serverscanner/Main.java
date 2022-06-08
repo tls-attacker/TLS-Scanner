@@ -18,6 +18,8 @@ import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportSerializer;
+import java.io.File;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +47,10 @@ public class Main {
                 ConsoleLogger.CONSOLE
                     .info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000)
                         + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                if (config.isWriteReportToFile()) {
+                    File outputFile = new File(config.getOutputFile());
+                    ServerReportSerializer.serialize(outputFile, report);
+                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }
