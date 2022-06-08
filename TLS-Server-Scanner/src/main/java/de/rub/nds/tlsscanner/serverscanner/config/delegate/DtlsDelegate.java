@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 
 public class DtlsDelegate extends Delegate {
 
-    @Parameter(names = "-dtls", required = false, description = "Scan DTLS")
+    // @Parameter(names = "-dtls", required = false, description = "Scan DTLS")
     private boolean dtls = false;
 
     public DtlsDelegate() {
