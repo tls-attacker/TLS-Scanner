@@ -61,7 +61,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                             createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
-                                DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                                DirectRaccoonWorkflowType.CKE);
                         testResultList.add(informationLeakTest);
 
                     }
@@ -105,7 +105,11 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
             Config config = configSelector.getBaseConfig();
+            config.setHighestProtocolVersion(version);
+            config.setDefaultClientSupportedCipherSuites(suite);
             config.setWorkflowExecutorShouldClose(false);
+            config.setStopActionsAfterWarning(false);
+            config.setStopReceivingAfterWarning(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
             WorkflowTrace trace =
