@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>4.2.1</version>
+    <version>4.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>TLS-Scanner</name>
     <url>https://github.com/tls-attacker/TLS-Scanner</url>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>3.8.0</version>
+            <version>3.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
