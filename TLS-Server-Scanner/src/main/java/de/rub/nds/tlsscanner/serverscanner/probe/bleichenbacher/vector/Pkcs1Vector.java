@@ -22,6 +22,9 @@ public class Pkcs1Vector implements Vector {
 
     private byte[] encryptedValue;
 
+    private Pkcs1Vector() {
+    }
+
     public Pkcs1Vector(String name, byte[] value) {
         this.name = name;
         this.plainValue = value;
