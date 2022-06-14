@@ -4,11 +4,11 @@
     <parent>
         <groupId>de.rub.nds.tlsscanner</groupId>
         <artifactId>TLS-Scanner</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.2.2</version>
     </parent>
     <packaging>jar</packaging>
     <artifactId>Scanner-Core</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.2.2</version>
     <build>
         <plugins>
             <plugin>

@@ -141,7 +141,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportedFpGroups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
-                if (NamedGroup.getImplemented().contains(group)
+                if (NamedGroup.getImplemented().contains(group) && group.isCurve()
                     && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     supportedFpGroups.add(group);
                 }
