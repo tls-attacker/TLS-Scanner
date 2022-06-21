@@ -55,7 +55,7 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (headerList != null) {
             for (HttpsHeader header : headerList) {
-                if (header.getHeaderName().getValue().equals("Strict-Transport-Security")) {
+                if (header.getHeaderName().getValue().toLowerCase().equals("strict-transport-security")) {
                     supportsHsts = TestResults.TRUE;
                     boolean preload = false;
                     String[] values = header.getHeaderValue().getValue().split(";");
