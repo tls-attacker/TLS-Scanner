@@ -36,6 +36,8 @@ $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 
 You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).
 
+In order to see more details about the Guidelines, use "-reportDetail ALL".
+
 
 # Docker
 We provide you with a Dockerfile, which lets you run the scanner directly:
