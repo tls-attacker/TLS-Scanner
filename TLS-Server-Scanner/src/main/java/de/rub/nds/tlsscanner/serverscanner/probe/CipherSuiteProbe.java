@@ -26,10 +26,10 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerReport, CipherSuiteResult> {
 
@@ -46,21 +46,12 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
             if (version.isTLS13()) {
-                pairLists.add(new VersionSuiteListPair(version, getSupportedCipherSuites()));
+                pairLists.add(new VersionSuiteListPair(version, getSupportedTls13CipherSuites()));
             } else {
-                List<CipherSuite> toTestList = new LinkedList<>();
-                List<CipherSuite> versionSupportedSuites = new LinkedList<>();
-                if (version == ProtocolVersion.SSL3) {
-                    toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
-                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                } else {
-                    toTestList.addAll(Arrays.asList(CipherSuite.values()));
-                    toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                    toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                    if (versionSupportedSuites.isEmpty()) {
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
-                    }
+                List<CipherSuite> toTestList = new LinkedList<>(Arrays.asList(CipherSuite.values()));
+                List<CipherSuite> versionSupportedSuites = getSupportedCipherSuites(toTestList, version);
+                if (versionSupportedSuites.isEmpty()) {
+                    versionSupportedSuites = getSupportedCipherSuites(CipherSuite.getImplemented(), version);
                 }
                 if (versionSupportedSuites.size() > 0) {
                     pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
@@ -70,18 +61,20 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return new CipherSuiteResult(pairLists);
     }
 
-    private List<CipherSuite> getSupportedCipherSuites() {
-        CipherSuite selectedSuite = null;
-        List<CipherSuite> toTestList = new LinkedList<>();
-        List<CipherSuite> supportedSuits = new LinkedList<>();
-        for (CipherSuite suite : CipherSuite.values()) {
-            if (suite.isTLS13()) {
-                toTestList.add(suite);
-            }
-        }
-        do {
-            selectedSuite = getSelectedCipherSuite(toTestList);
+    private List<CipherSuite> getCipherSuitesForVersion(List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> applicableCipherSuites = baseList.stream()
+            .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version)).collect(Collectors.toList());
+        applicableCipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        applicableCipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        return applicableCipherSuites;
+    }
 
+    private List<CipherSuite> getSupportedTls13CipherSuites() {
+        CipherSuite selectedSuite = null;
+        List<CipherSuite> toTestList = CipherSuite.getTls13CipherSuites();
+        List<CipherSuite> supportedSuits = new LinkedList<>();
+        do {
+            selectedSuite = getSelectedTls13CipherSuite(toTestList);
             if (selectedSuite != null) {
                 if (!toTestList.contains(selectedSuite)) {
                     LOGGER.warn("Server chose a CipherSuite we did not propose!");
@@ -95,7 +88,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return supportedSuits;
     }
 
-    private CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
+    private CipherSuite getSelectedTls13CipherSuite(List<CipherSuite> toTestList) {
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
@@ -114,13 +107,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
     }
 
-    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(ProtocolVersion version) {
-        return getSupportedCipherSuitesWithIntolerance(new ArrayList<>(CipherSuite.getImplemented()), version);
-    }
-
-    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList,
-        ProtocolVersion version) {
-        List<CipherSuite> listWeSupport = new LinkedList<>(toTestList);
+    public List<CipherSuite> getSupportedCipherSuites(List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> listWeSupport = getCipherSuitesForVersion(baseList, version);
         List<CipherSuite> supported = new LinkedList<>();
 
         boolean supportsMore = false;
