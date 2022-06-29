@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>TLS-Scanner</name>
     <url>https://github.com/tls-attacker/TLS-Scanner</url>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
+            <version>3.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.60</version>
+            <version>1.64</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -158,7 +158,7 @@
                                     <destFileName>${project.build.finalName}.${project.packaging}</destFileName>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${main.basedir}/apps</outputDirectory>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/apps</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -168,7 +168,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/apps/lib</outputDirectory>
                             <!--Ensures only runnable dependencies are included-->
                             <includeScope>compile</includeScope>
                         </configuration>
@@ -180,7 +180,7 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <version>4.1</version>
                 <configuration>
-                    <header>license_header_plain.txt</header>
+                    <header>${main.basedir}/license_header_plain.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
                         <include>src/**/*.java</include>

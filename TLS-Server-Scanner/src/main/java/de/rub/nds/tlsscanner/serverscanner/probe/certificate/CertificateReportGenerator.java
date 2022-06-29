@@ -117,7 +117,7 @@ public class CertificateReportGenerator {
             return;
         }
         report.setExtendedKeyUsageServerAuth(extension.hasKeyPurposeId(KeyPurposeId.id_kp_serverAuth));
-        report.setExtendedKeyUsagePresent(extension.hasKeyPurposeId(KeyPurposeId.anyExtendedKeyUsage));
+        report.setExtendedKeyUsagePresent(true);
     }
 
     private static void setCommonNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

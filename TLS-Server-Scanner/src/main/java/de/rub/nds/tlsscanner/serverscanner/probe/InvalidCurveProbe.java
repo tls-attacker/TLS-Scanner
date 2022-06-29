@@ -136,10 +136,12 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportsTls13PskDhe = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
         supportedFpGroups = new LinkedList<>();
-        for (NamedGroup group : report.getSupportedNamedGroups()) {
-            if (NamedGroup.getImplemented().contains(group)
-                && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
-                supportedFpGroups.add(group);
+        if (report.getSupportedNamedGroups() != null) {
+            for (NamedGroup group : report.getSupportedNamedGroups()) {
+                if (NamedGroup.getImplemented().contains(group) && group.isCurve()
+                    && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
+                    supportedFpGroups.add(group);
+                }
             }
         }
 

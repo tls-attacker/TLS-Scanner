@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.ConfigIO;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -29,7 +30,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -39,13 +40,25 @@ import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
 
-    private ServerScannerConfig scannerConfig;
+    public String getConfigProfileIdentifier() {
+        return configProfileIdentifier;
+    }
+
+    public String getConfigProfileIdentifierTls13() {
+        return configProfileIdentifierTls13;
+    }
+
+    private final ServerScannerConfig scannerConfig;
     private Config workingConfig;
+    private String configProfileIdentifier;
+    private Config workingTl13Config;
+    private String configProfileIdentifierTls13;
 
     public static final String PATH = "/configs/";
     public static final String SSL2_CONFIG = "ssl2Only.config";
-    public static final String TLS13_CONFIG = "tls13Only.config";
-    public static final List<String> CONFIGS = Arrays.asList("default.config", "nice.config");
+    public static final String TLS13_CONFIG = "tls13rich.config";
+    public static final String DEFAULT_CONFIG = "default.config";
+    private static final int COOLDOWN_TIMEOUT_MULTIPLIER = 5;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -56,21 +69,72 @@ public class ConfigSelector {
         this.scannerConfig = scannerConfig;
     }
 
+    public boolean findWorkingConfigs() {
+        findWorkingConfig();
+        findWorkingTls13Config();
+        return workingConfig != null || workingTl13Config != null;
+    }
+
     public boolean findWorkingConfig() {
-        for (String resource : CONFIGS) {
-            Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + resource));
-            applyDelegates(config);
-            applyPerformanceParamters(config);
-            applyScannerConfigParameters(config);
-            repairSni(config);
-            repairConfig(config);
-            if (configWorks(config)) {
-                workingConfig = config.createCopy();
+        for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls12ConfigProfiles()) {
+            Config baseConfig = getConfigForProfile(DEFAULT_CONFIG, configProfile);
+            if (configWorks(baseConfig)) {
+                reportLimitation(configProfile, "TLS 1.2");
+                configProfileIdentifier = configProfile.getIdentifier();
+                workingConfig = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
             }
         }
         return false;
+    }
+
+    public Config getConfigForProfile(String startingConfigFile, ConfigFilterProfile configProfile)
+        throws ConfigurationException {
+        if (scannerConfig.isConfigSearchCooldown()) {
+            pauseSearch();
+        }
+        Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
+        ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
+        prepareBaseConfig(baseConfig);
+        return baseConfig;
+    }
+
+    public void reportLimitation(ConfigFilterProfile configProfile, String versionText) {
+        if (configProfile.getConfigFilterTypes().length > 0) {
+            LOGGER.warn(
+                "Unable to perform handshake with extensive Config for {}.\nScanning with reduced Config ({}), which may affect the extent of some probes.",
+                versionText, configProfile.getIdentifier());
+        }
+    }
+
+    public boolean findWorkingTls13Config() {
+        for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
+            Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
+            if (configWorks(baseConfig)) {
+                configProfileIdentifierTls13 = configProfile.getIdentifier();
+                reportLimitation(configProfile, "TLS 1.3");
+                workingTl13Config = baseConfig.createCopy();
+                isHandshaking = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void prepareBaseConfig(Config baseConfig) throws ConfigurationException {
+        applyDelegates(baseConfig);
+        applyPerformanceParamters(baseConfig);
+        applyScannerConfigParameters(baseConfig);
+        repairSni(baseConfig);
+        repairConfig(baseConfig);
+    }
+
+    private void pauseSearch() {
+        try {
+            Thread.sleep(COOLDOWN_TIMEOUT_MULTIPLIER * scannerConfig.getTimeout());
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private boolean configWorks(Config config) {
@@ -131,25 +195,54 @@ public class ConfigSelector {
     }
 
     public Config repairConfig(Config config) {
+        restrictBasicFeatures(config);
         if (config.getHighestProtocolVersion().isTLS13()) {
-            config.setAddEllipticCurveExtension(true);
-            config.setAddECPointFormatExtension(false);
-            List<NamedGroup> tls13groups =
-                config.getDefaultClientNamedGroups().stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
-            config.setDefaultClientNamedGroups(tls13groups);
-            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
-                .filter(tls13groups::contains).collect(Collectors.toList()));
+            adjustKeyShareFields(config);
         } else {
-            boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
-                .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
-                .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
-            config.setAddEllipticCurveExtension(containsEc);
-            config.setAddECPointFormatExtension(containsEc);
+            adjustEccExtensionsPreTls13(config);
         }
+        setDefaultSelectedCipherSuites(config);
+        applyDelegates(config);
+        return config;
+    }
+
+    public void adjustEccExtensionsPreTls13(Config config) {
+        boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
+            .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
+            .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
+        config.setAddEllipticCurveExtension(containsEc);
+        config.setAddECPointFormatExtension(containsEc);
+    }
+
+    public void adjustKeyShareFields(Config config) {
+        config.setAddEllipticCurveExtension(true);
+        config.setAddECPointFormatExtension(false);
+        if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
+            config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(config.getDefaultClientNamedGroups()));
+        } else {
+            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
+                .filter(config.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+        }
+    }
+
+    public void setDefaultSelectedCipherSuites(Config config) {
         CipherSuite defaultSelectedCipherSuite = config.getDefaultClientSupportedCipherSuites().stream()
             .filter(CipherSuite::isRealCipherSuite).findFirst().orElse(config.getDefaultSelectedCipherSuite());
         config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
-        return config;
+    }
+
+    public void restrictBasicFeatures(Config config) {
+        Config relevantConfig = config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
+        if (relevantConfig != null) {
+            config.setDefaultClientSupportedCipherSuites(config.getDefaultClientSupportedCipherSuites().stream()
+                .filter(relevantConfig.getDefaultClientSupportedCipherSuites()::contains).collect(Collectors.toList()));
+            config.setDefaultClientNamedGroups(config.getDefaultClientNamedGroups().stream()
+                .filter(relevantConfig.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+            config.setDefaultClientSupportedSignatureAndHashAlgorithms(
+                config.getDefaultClientSupportedSignatureAndHashAlgorithms().stream()
+                    .filter(relevantConfig.getDefaultClientSupportedSignatureAndHashAlgorithms()::contains)
+                    .collect(Collectors.toList()));
+        }
     }
 
     public Config getBaseConfig() {
@@ -158,22 +251,15 @@ public class ConfigSelector {
 
     public Config getSSL2BaseConfig() {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + SSL2_CONFIG));
-        applyDelegates(config);
-        applyPerformanceParamters(config);
-        applyScannerConfigParameters(config);
-        repairSni(config);
-        repairConfig(config);
+        prepareBaseConfig(config);
         return config;
     }
 
     public Config getTls13BaseConfig() {
-        Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
-        applyDelegates(config);
-        applyPerformanceParamters(config);
-        applyScannerConfigParameters(config);
-        repairSni(config);
-        repairConfig(config);
-        return config;
+        if (workingTl13Config == null) {
+            return Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
+        }
+        return workingTl13Config.createCopy();
     }
 
     public boolean isIsHandshaking() {

@@ -28,6 +28,10 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
+    @Parameter(names = "-outputFile", required = false,
+        description = "Specify a file to write the site report in JSON to")
+    private String outputFile = null;
+
     @Parameter(names = "-probeTimeout", required = false,
         description = "The timeout for each probe in ms (default 1800000)")
     private int probeTimeout = 1800000;
@@ -80,5 +84,17 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
 
     public void setProbeTimeout(int probeTimeout) {
         this.probeTimeout = probeTimeout;
+    }
+
+    public boolean isWriteReportToFile() {
+        return outputFile != null;
+    }
+
+    public String getOutputFile() {
+        return outputFile;
+    }
+
+    public void setOutputFile(String outputFile) {
+        this.outputFile = outputFile;
     }
 }

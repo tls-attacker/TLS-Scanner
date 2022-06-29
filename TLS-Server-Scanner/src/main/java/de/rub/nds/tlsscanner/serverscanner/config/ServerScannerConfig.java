@@ -63,6 +63,10 @@ public class ServerScannerConfig extends ScannerConfig {
     @ParametersDelegate
     private CallbackDelegate callbackDelegate;
 
+    @Parameter(names = "-configSearchCooldown", required = false,
+        description = "Pause between config tests to ensure the server finished processing the previously rejected messages")
+    private boolean configSearchCooldown = false;
+
     private List<ProbeType> probes = null;
 
     public ServerScannerConfig(GeneralDelegate delegate) {
@@ -161,6 +165,14 @@ public class ServerScannerConfig extends ScannerConfig {
 
     public void setCustomCAPathList(List<String> customCAPathList) {
         this.customCAPathList = customCAPathList;
+    }
+
+    public boolean isConfigSearchCooldown() {
+        return configSearchCooldown;
+    }
+
+    public void setConfigSearchCooldown(boolean configSearchCooldown) {
+        this.configSearchCooldown = configSearchCooldown;
     }
 
 }

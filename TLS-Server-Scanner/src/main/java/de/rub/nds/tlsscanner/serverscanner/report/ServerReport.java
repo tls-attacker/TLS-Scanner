@@ -91,6 +91,10 @@ public class ServerReport extends TlsReport {
     private long scanStartTime;
     private long scanEndTime;
 
+    // Config profile used to limit our Client Hello
+    private String configProfileIdentifier;
+    private String configProfileIdentifierTls13;
+
     public ServerReport() {
         host = null;
         port = null;
@@ -359,6 +363,22 @@ public class ServerReport extends TlsReport {
 
     public synchronized void setHelloRetryRequestSelectedNamedGroup(NamedGroup helloRetryRequestSelectedNamedGroup) {
         this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
+    }
+
+    public synchronized String getConfigProfileIdentifier() {
+        return configProfileIdentifier;
+    }
+
+    public synchronized void setConfigProfileIdentifier(String configProfileIdentifier) {
+        this.configProfileIdentifier = configProfileIdentifier;
+    }
+
+    public synchronized String getConfigProfileIdentifierTls13() {
+        return configProfileIdentifierTls13;
+    }
+
+    public synchronized void setConfigProfileIdentifierTls13(String configProfileIdentifierTls13) {
+        this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
     }
 
     public synchronized Long getClosedAfterFinishedDelta() {

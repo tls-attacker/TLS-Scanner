@@ -104,7 +104,8 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             KeyExchangeAlgorithm.ECDH_ECDSA);
         supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
         supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
-        namedGroupsMapTls13 = getTls13SupportedGroups();
+        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS())
+        	namedGroupsMapTls13 = getTls13SupportedGroups();
         groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(namedGroupsMap);
     }
 

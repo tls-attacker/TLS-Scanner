@@ -63,7 +63,7 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
         heartbeatMessage.setPayload(Modifiable.explicit(new byte[] { 1, 3 }));
-        heartbeatMessage.setPayloadLength(Modifiable.explicit(20000));
+        heartbeatMessage.setPayloadLength(Modifiable.explicit(10));
         trace.addTlsAction(new SendAction(heartbeatMessage));
         trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
         return trace;
