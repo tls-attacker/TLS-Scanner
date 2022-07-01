@@ -58,7 +58,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
             : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
         numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
             : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
-        register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, TlsAnalyzedProperty.PADDINGORACLE_TESTRESULT);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
             }
         } else
             vulnerable = TestResults.ERROR_DURING_TEST;
-        put(TlsAnalyzedProperty.PADDINGORACLE_TESTRESULT, resultList);
+        put(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT, resultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 }

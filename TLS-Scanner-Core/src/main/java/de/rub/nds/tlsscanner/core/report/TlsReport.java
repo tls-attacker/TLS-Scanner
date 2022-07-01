@@ -38,19 +38,19 @@ public abstract class TlsReport extends ScanReport {
 
     @SuppressWarnings("rawtypes")
     public synchronized List getPaddingOracleTestResultList() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.PADDINGORACLE_TESTRESULT);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized List getBleichenbacherTestResultList() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TESTRESULT);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized List getRaccoonTestResultList() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.DIRECTRACCOON_TESTRESULT);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -62,13 +62,13 @@ public abstract class TlsReport extends ScanReport {
 
     @SuppressWarnings("rawtypes")
     public synchronized List getInvalidCurveTestResultList() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.INVALIDCURVE_TESTRESULT);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized List getCcaTestResultList() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CCA_TESTRESULTS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
         return listResult == null ? null : listResult.getList();
     }
 

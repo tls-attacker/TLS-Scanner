@@ -20,10 +20,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.QUIRKS),
-    BLEICHENBACHER_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    PADDINGORACLE_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    DIRECTRACCOON_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    INVALIDCURVE_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    PADDINGORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    DIRECTRACCOON_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    INVALIDCURVE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     RACCOONATTACK_PROBABILITIES(TlsAnalyzedPropertyCategory.ATTACKS),
     SUPPORTED_PROTOCOL_VERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
@@ -55,7 +55,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     MAP_RETRANSMISSION_COUNTERS(TlsAnalyzedPropertyCategory.QUIRKS),
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
     CLIENT_SIMULATION_RESULTS(TlsAnalyzedPropertyCategory.QUIRKS),
-    CCA_TESTRESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
+    CCA_TEST_RESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
     GUIDELINE_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
     EXECUTED_PROBE_TYPES(TlsAnalyzedPropertyCategory.QUIRKS),
 
