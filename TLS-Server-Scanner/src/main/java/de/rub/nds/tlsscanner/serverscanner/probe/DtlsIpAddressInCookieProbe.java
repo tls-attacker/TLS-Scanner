@@ -33,68 +33,68 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 /**
- * Determines whether the server uses the client IP address for the DTLS cookie generation. It requires a proxy so we
- * limit the probe.
+ * Determines whether the server uses the client IP address for the DTLS cookie
+ * generation. It requires a proxy so we limit the probe.
  */
 public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private final static String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
-    private final static int PROXY_CONTROL_PORT = 5555;
-    private final static String PROXY_DATA_HOSTNAME = "195.37.190.89";
-    private final static int PROXY_DATA_PORT = 4444;
+	private final static String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
+	private final static int PROXY_CONTROL_PORT = 5555;
+	private final static String PROXY_DATA_HOSTNAME = "195.37.190.89";
+	private final static int PROXY_DATA_PORT = 4444;
 
-    private TestResult usesIpAdressInCookie;
+	private TestResult usesIpAdressInCookie;
 
-    public DtlsIpAddressInCookieProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
-        register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
-    }
+	public DtlsIpAddressInCookieProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+		super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
+		register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
+	}
 
-    @Override
-    public void executeTest() {
-        Config config = configSelector.getBaseConfig();
-        config.getDefaultClientConnection().setTransportHandlerType(TransportHandlerType.UDP_PROXY);
-        config.getDefaultClientConnection().setProxyControlHostname(PROXY_CONTROL_HOSTNAME);
-        config.getDefaultClientConnection().setProxyControlPort(PROXY_CONTROL_PORT);
-        config.getDefaultClientConnection().setProxyDataHostname(PROXY_DATA_HOSTNAME);
-        config.getDefaultClientConnection().setProxyDataPort(PROXY_DATA_PORT);
-        WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        State state = new State(config, trace);
-        TlsContext oldContext = state.getTlsContext();
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
-            config = configSelector.getBaseConfig();
-            config.getDefaultClientConnection().setSourcePort(3333);
-            trace = new WorkflowConfigurationFactory(config)
-                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-            state = new State(config, trace);
-            state.getTlsContext().setClientRandom(oldContext.getClientRandom());
-            state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
-            executeState(state);
-            usesIpAdressInCookie =
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
-                    ? TestResults.TRUE : TestResults.FALSE;
-        } else
-            usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
-    }
+	@Override
+	public void executeTest() {
+		Config config = configSelector.getBaseConfig();
+		config.getDefaultClientConnection().setTransportHandlerType(TransportHandlerType.UDP_PROXY);
+		config.getDefaultClientConnection().setProxyControlHostname(PROXY_CONTROL_HOSTNAME);
+		config.getDefaultClientConnection().setProxyControlPort(PROXY_CONTROL_PORT);
+		config.getDefaultClientConnection().setProxyDataHostname(PROXY_DATA_HOSTNAME);
+		config.getDefaultClientConnection().setProxyDataPort(PROXY_DATA_PORT);
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+		trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+		trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+		State state = new State(config, trace);
+		TlsContext oldContext = state.getTlsContext();
+		executeState(state);
+		if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+			config = configSelector.getBaseConfig();
+			config.getDefaultClientConnection().setSourcePort(3333);
+			trace = new WorkflowConfigurationFactory(config)
+					.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+			trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+			trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+			state = new State(config, trace);
+			state.getTlsContext().setClientRandom(oldContext.getClientRandom());
+			state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
+			executeState(state);
+			usesIpAdressInCookie = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
+					state.getWorkflowTrace()) ? TestResults.TRUE : TestResults.FALSE;
+		} else {
+			usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
+		}
+	}
 
-    @Override
-    public void adjustConfig(ServerReport report) {
-    }
+	@Override
+	public void adjustConfig(ServerReport report) {
+	}
 
-    @Override
-    protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
-    }
+	@Override
+	protected void mergeData(ServerReport report) {
+		put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
+	}
 
-    @Override
-    protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 
 }
