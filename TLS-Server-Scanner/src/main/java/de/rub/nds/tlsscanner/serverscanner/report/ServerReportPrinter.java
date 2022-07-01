@@ -425,7 +425,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
             prettyAppend(builder, "Protocol Versions Server",
-                ((ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS))
+                ((ListResult<ProtocolVersion>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS))
                     .getList().toString());
             prettyAppend(builder, "Protocol Version is highest",
                 simulatedClient.getHighestPossibleProtocolVersionSelected(),

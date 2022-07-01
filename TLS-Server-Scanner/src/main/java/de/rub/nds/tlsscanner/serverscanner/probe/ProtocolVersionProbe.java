@@ -53,7 +53,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TlsAnalyzedProperty.SUPPORTS_SSL_2,
             TlsAnalyzedProperty.SUPPORTS_SSL_3, TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
             TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS);
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
     }
 
     @Override
@@ -204,6 +204,6 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
         }
-        put(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS, supportedProtocolVersions);
+        put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
     }
 }

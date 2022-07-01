@@ -153,7 +153,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<ProtocolVersion> getSupportedProtocolVersions() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
         return listResult == null ? null : (List<ProtocolVersion>) listResult.getList();
     }
 

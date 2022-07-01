@@ -25,7 +25,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     DIRECTRACCOON_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     INVALIDCURVE_TESTRESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     RACCOONATTACK_PROBABILITIES(TlsAnalyzedPropertyCategory.ATTACKS),
-    SUPPORTED_PROTOCOLVERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
+    SUPPORTED_PROTOCOL_VERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.EC),
     SUPPORTED_NAMED_GROUPS_WITNESSES(TlsAnalyzedPropertyCategory.EC),

@@ -88,8 +88,8 @@ public class RequirementsBasicTest {
         ProtocolVersion[] prot = new ProtocolVersion[] { ProtocolVersion.TLS10 };
         requirements = requirements.requires(new ProtocolRequirement(prot));
         assertFalse(requirements.evaluate(report));
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOLVERSIONS,
-            new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOLVERSIONS"));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
+            new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOL_VERSIONS"));
         assertTrue(requirements.evaluate(report));
 
         ProbeRequirement requirement0 = new ProbeRequirement(TlsProbeType.BLEICHENBACHER);
