@@ -239,7 +239,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<TokenBindingKeyParameters> getSupportedTokenbindingKeyParameters() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEYPARAMETERS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
         return listResult == null ? null : (List<TokenBindingKeyParameters>) listResult.getList();
     }
 
