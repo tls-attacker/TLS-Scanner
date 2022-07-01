@@ -30,49 +30,50 @@ import java.util.Arrays;
 
 public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult receivedCorrectNonce;
+	private TestResult receivedCorrectNonce;
 
-    public EsniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.ESNI, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_ESNI);
-    }
+	public EsniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+		super(parallelExecutor, TlsProbeType.ESNI, configSelector);
+		register(TlsAnalyzedProperty.SUPPORTS_ESNI);
+	}
 
-    @Override
-    public void executeTest() {
-        Config tlsConfig = configSelector.getTls13BaseConfig();
-        tlsConfig.setAddServerNameIndicationExtension(false);
-        tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        // ESNI stuff is in a bad state and only works with X25519 on our end
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.ECDH_X25519);
-        State state = new State(tlsConfig);
-        executeState(state);
+	@Override
+	public void executeTest() {
+		Config tlsConfig = configSelector.getTls13BaseConfig();
+		tlsConfig.setAddServerNameIndicationExtension(false);
+		tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
+		tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+		// ESNI stuff is in a bad state and only works with X25519 on our end
+		tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
+		tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.ECDH_X25519);
+		State state = new State(tlsConfig);
+		executeState(state);
 
-        TlsContext context = state.getTlsContext();
-        boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
-        boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-            && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
-            receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
-        else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce)
-            receivedCorrectNonce = TestResults.TRUE;
-        else
-            receivedCorrectNonce = TestResults.FALSE;
-    }
+		TlsContext context = state.getTlsContext();
+		boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
+		boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
+				&& Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
+		if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+			receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
+		} else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
+			receivedCorrectNonce = TestResults.TRUE;
+		} else {
+			receivedCorrectNonce = TestResults.FALSE;
+		}
+	}
 
-    @Override
-    public void adjustConfig(ServerReport report) {
-    }
+	@Override
+	public void adjustConfig(ServerReport report) {
+	}
 
-    @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
-            .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
+				.requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+	}
 
-    @Override
-    protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
-    }
+	@Override
+	protected void mergeData(ServerReport report) {
+		put(TlsAnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
+	}
 }
