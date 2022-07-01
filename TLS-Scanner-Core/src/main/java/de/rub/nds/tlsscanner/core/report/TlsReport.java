@@ -148,7 +148,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS);
         return listResult == null ? null : (List<VersionSuiteListPair>) listResult.getList();
     }
 

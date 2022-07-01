@@ -1316,7 +1316,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppend(builder, "-empty-", AnsiColor.RED);
 
             ListResult<VersionSuiteListPair> verspairsResult =
-                (ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS);
+                (ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS);
             if (verspairsResult != null) {
                 List<VersionSuiteListPair> versPairs = verspairsResult.getList();
                 if (versPairs != null && !versPairs.isEmpty()) {

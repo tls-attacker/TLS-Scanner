@@ -28,13 +28,13 @@ public class CipherSuiteGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS,
+        report.putResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
             new ListResult<>(Arrays.asList(
                 new VersionSuiteListPair(ProtocolVersion.TLS12,
                     Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
                 new VersionSuiteListPair(ProtocolVersion.TLS13,
                     Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256))),
-                "VERSIONSUITE_PAIRS"));
+                "VERSION_SUITE_PAIRS"));
 
         CipherSuiteGuidelineCheck check =
             new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),
@@ -52,11 +52,11 @@ public class CipherSuiteGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS,
+        report.putResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
             new ListResult<>(
                 Collections.singletonList(new VersionSuiteListPair(ProtocolVersion.TLS12, Arrays
                     .asList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256, CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))),
-                "VERSIONSUITE_PAIRS"));
+                "VERSION_SUITE_PAIRS"));
 
         CipherSuiteGuidelineCheck check =
             new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),

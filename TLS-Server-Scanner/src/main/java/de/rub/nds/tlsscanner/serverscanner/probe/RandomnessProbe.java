@@ -69,7 +69,7 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
         int bestScore = 0;
         @SuppressWarnings("unchecked")
         List<VersionSuiteListPair> versionSuitePairs =
-            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSIONSUITE_PAIRS)).getList();
+            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS)).getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;

@@ -45,7 +45,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     EPHEMERAL_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     TLS13_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     OCSP_RESULTS(TlsAnalyzedPropertyCategory.OCSP),
-    VERSIONSUITE_PAIRS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    VERSION_SUITE_PAIRS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     HTTPS_HEADER(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     NORMAL_HPKPPINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),

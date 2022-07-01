@@ -107,7 +107,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             TlsAnalyzedProperty.SUPPORTS_ECMQV, TlsAnalyzedProperty.PREFERS_PFS,
             TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
             TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
-            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.VERSIONSUITE_PAIRS,
+            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
             TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE,
             TlsAnalyzedProperty.SUPPORTS_DHE, TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
     }
@@ -491,6 +491,6 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
-        put(TlsAnalyzedProperty.VERSIONSUITE_PAIRS, pairLists);
+        put(TlsAnalyzedProperty.VERSION_SUITE_PAIRS, pairLists);
     }
 }

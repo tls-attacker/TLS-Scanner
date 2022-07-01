@@ -118,7 +118,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 simulatedClient.setHighestPossibleProtocolVersionSelected(false);
             }
         } else
-            LOGGER.debug("property " + TlsAnalyzedProperty.VERSIONSUITE_PAIRS.name()
+            LOGGER.debug("property " + TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
     }
 
