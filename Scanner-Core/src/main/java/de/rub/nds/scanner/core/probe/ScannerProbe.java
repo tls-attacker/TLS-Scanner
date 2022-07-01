@@ -25,10 +25,24 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
 
     private StatsWriter writer;
 
-    protected long startTime;
-    protected long stopTime;
+    private long startTime;
+    private long stopTime;
 
-    public ScannerProbe(ProbeType type) {
+    /**
+	 * @return the startTime
+	 */
+	public long getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @return the stopTime
+	 */
+	public long getStopTime() {
+		return stopTime;
+	}
+
+	public ScannerProbe(ProbeType type) {
         this.type = type;
     }
 

@@ -119,8 +119,8 @@ public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<R
 
     public final void merge(Report report) {
         // merge data
-        if (startTime != 0 && stopTime != 0)
-            report.getPerformanceList().add(new PerformanceData(getType(), startTime, stopTime));
+        if (getStartTime() != 0 && getStopTime() != 0)
+            report.getPerformanceList().add(new PerformanceData(getType(), getStartTime(), getStopTime()));
         mergeData(report);
         TestResult result;
         for (TlsAnalyzedProperty property : propertiesMap.keySet()) {
