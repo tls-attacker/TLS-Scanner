@@ -1861,7 +1861,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     if (detail == ScannerDetail.ALL) {
                         builder.append("\n  Found using:");
                         NamedGroupWitness witness = ((MapResult<NamedGroup, NamedGroupWitness>) report
-                            .getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES)).getMap().get(group);
+                            .getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES)).getMap().get(group);
                         for (CipherSuite cipher : witness.getCipherSuites()) {
                             builder.append("\n    ").append(cipher.toString());
                         }

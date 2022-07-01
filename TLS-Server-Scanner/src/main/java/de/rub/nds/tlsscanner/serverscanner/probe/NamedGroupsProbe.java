@@ -68,9 +68,9 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
         register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE,
             TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
-            TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS, TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
-            TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES,
-            TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
+            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
+            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
     }
 
     @Override
@@ -435,10 +435,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
         if (namedGroupsMapTls13 != null)
             tls13Groups.addAll(namedGroupsMapTls13.keySet());
-        put(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS, allGroups);
+        put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, allGroups);
         put(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, tls13Groups);
-        put(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES, namedGroupsMap);
-        put(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13, namedGroupsMapTls13);
+        put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES, namedGroupsMap);
+        put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13, namedGroupsMapTls13);
         put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
         put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
         put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);

@@ -122,13 +122,13 @@ public abstract class TlsReport extends ScanReport {
 
     @SuppressWarnings("rawtypes")
     public synchronized Map getSupportedNamedGroupsWitnesses() {
-        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES);
+        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
         return mapResult == null ? null : mapResult.getMap();
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized Map getSupportedNamedGroupsWitnessesTls13() {
-        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS_WITNESSES_TLS13);
+        MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
         return mapResult == null ? null : mapResult.getMap();
     }
 
@@ -199,7 +199,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_NAMEDGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 

@@ -48,8 +48,8 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
         register(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
             TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-            TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMEDGROUPS,
-            TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
+            TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
             TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
     }
 
@@ -101,8 +101,8 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
             clientSupportedSignatureAndHashAlgorithms);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
-        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMEDGROUPS, clientAdvertisedNamedGroupsList);
-        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMEDGROUPS, clientKeyShareNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS, clientKeyShareNamedGroupsList);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
     }
 }
