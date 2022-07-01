@@ -204,27 +204,27 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PKGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 
     public synchronized List<NamedGroup> getTls13EcdsaPkgGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PKGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 
     public synchronized List<NamedGroup> getStaticEcdsaSigGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIGGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 
     public synchronized List<NamedGroup> getEphemeralEcdsaSigGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIGGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 
     public synchronized List<NamedGroup> getTls13EcdsaSigGroups() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIGGROUPS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
         return listResult == null ? null : (List<NamedGroup>) listResult.getList();
     }
 

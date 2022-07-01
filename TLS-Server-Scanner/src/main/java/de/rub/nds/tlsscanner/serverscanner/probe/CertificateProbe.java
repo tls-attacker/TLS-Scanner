@@ -56,7 +56,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     public CertificateProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, configSelector);
-        register(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PKGROUPS, TlsAnalyzedProperty.CERTIFICATE_CHAINS);
+        register(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, TlsAnalyzedProperty.CERTIFICATE_CHAINS);
     }
 
     @Override
@@ -419,6 +419,6 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new ArrayList<>(certificates));
         else
             put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>());
-        put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PKGROUPS, ecdsaPkGroupsEphemeral);
+        put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
     }
 }
