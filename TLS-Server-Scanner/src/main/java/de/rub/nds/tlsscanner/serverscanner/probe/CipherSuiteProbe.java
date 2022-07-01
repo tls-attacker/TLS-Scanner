@@ -260,18 +260,22 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsOnlyPfsCiphers = TestResults.TRUE;
             prefersPfsCiphers = TestResults.TRUE;
             for (VersionSuiteListPair pair : pairLists) {
-                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral())
+                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) {
                     prefersPfsCiphers = TestResults.FALSE;
+                }
                 allSupported.addAll(pair.getCipherSuiteList());
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                    }
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsSha256Prf = TestResults.TRUE;
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY)
+                    }
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsSha384Prf = TestResults.TRUE;
+                    }
                 }
             }
             for (CipherSuite suite : allSupported) {
@@ -284,7 +288,6 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         } else {
             supportsAeadCiphers = TestResults.COULD_NOT_TEST;
             prefersPfsCiphers = TestResults.COULD_NOT_TEST;
-            supportsAeadCiphers = TestResults.COULD_NOT_TEST;
             supportsAes = TestResults.COULD_NOT_TEST;
             supportsAnonCiphers = TestResults.COULD_NOT_TEST;
             supportsAria = TestResults.COULD_NOT_TEST;
@@ -346,34 +349,48 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     private void adjustKeyExchange(CipherSuite suite) {
-        if (suite.name().contains("SRP"))
+        if (suite.name().contains("SRP")) {
             supportsSrp = TestResults.TRUE;
-        if (suite.name().contains("_DH_"))
+        }
+        if (suite.name().contains("_DH_")) {
             supportsDh = TestResults.TRUE;
-        if (suite.name().contains("_DHE_"))
+        }
+        if (suite.name().contains("_DHE_")) {
             supportsDhe = TestResults.TRUE;
-        if (suite.name().contains("TLS_RSA"))
+        }
+        if (suite.name().contains("TLS_RSA")) {
             supportsRsa = TestResults.TRUE;
-        if (suite.name().contains("ECDH_"))
+        }
+        if (suite.name().contains("ECDH_")) {
             supportsStaticEcdh = TestResults.TRUE;
-        if (suite.name().contains("ECDH"))
+        }
+        if (suite.name().contains("ECDH")) {
             supportsEcdhe = TestResults.TRUE;
-        if (suite.name().contains("NULL"))
+        }
+        if (suite.name().contains("NULL")) {
             supportsNullCiphers = TestResults.TRUE;
-        if (suite.name().contains("GOST"))
+        }
+        if (suite.name().contains("GOST")) {
             supportsGost = TestResults.TRUE;
-        if (suite.name().contains("KRB5"))
+        }
+        if (suite.name().contains("KRB5")) {
             supportsKerberos = TestResults.TRUE;
-        if (suite.name().contains("TLS_PSK_WITH"))
+        }
+        if (suite.name().contains("TLS_PSK_WITH")) {
             supportsPskPlain = TestResults.TRUE;
-        if (suite.name().contains("_DHE_PSK"))
+        }
+        if (suite.name().contains("_DHE_PSK")) {
             supportsPskDhe = TestResults.TRUE;
-        if (suite.name().contains("ECDHE_PSK"))
+        }
+        if (suite.name().contains("ECDHE_PSK")) {
             supportsPskEcdhe = TestResults.TRUE;
-        if (suite.name().contains("RSA_PSK"))
+        }
+        if (suite.name().contains("RSA_PSK")) {
             supportsPskRsa = TestResults.TRUE;
-        if (suite.name().contains("FORTEZZA"))
+        }
+        if (suite.name().contains("FORTEZZA")) {
             supportsFortezza = TestResults.TRUE;
+        }
         if (suite.name().contains("ECMQV")) {
             supportsPostQuantumCiphers = TestResults.TRUE;
             supportsEcmqv = TestResults.TRUE;
@@ -382,14 +399,17 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsPostQuantumCiphers = TestResults.TRUE;
             supportsNewHope = TestResults.TRUE;
         }
-        if (suite.name().contains("anon"))
+        if (suite.name().contains("anon")) {
             supportsAnonCiphers = TestResults.TRUE;
-        if (suite.isEphemeral())
+        }
+        if (suite.isEphemeral()) {
             supportsPfsCiphers = TestResults.TRUE;
-        else
+        } else {
             supportsOnlyPfsCiphers = TestResults.FALSE;
-        if (suite.isExport())
+        }
+        if (suite.isExport()) {
             supportsExportCiphers = TestResults.TRUE;
+        }
     }
 
     private void adjustBulk(CipherSuite suite) {
@@ -441,12 +461,15 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     private void adjustCertificate(CipherSuite suite) {
-        if (suite.name().contains("ECDSA"))
+        if (suite.name().contains("ECDSA")) {
             supportsEcdsa = TestResults.TRUE;
-        if (suite.name().contains("DSS"))
+        }
+        if (suite.name().contains("DSS")) {
             supportsDss = TestResults.TRUE;
-        if (suite.name().contains("RSA"))
+        }
+        if (suite.name().contains("RSA")) {
             supportsRsaCert = TestResults.TRUE;
+        }
     }
 
     private void writeToReport(ServerReport report) {
