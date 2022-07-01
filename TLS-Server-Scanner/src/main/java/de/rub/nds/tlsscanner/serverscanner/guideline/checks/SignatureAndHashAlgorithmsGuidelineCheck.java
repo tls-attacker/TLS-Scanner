@@ -31,67 +31,70 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
-    private boolean tls13;
+	private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
+	private boolean tls13;
 
-    private SignatureAndHashAlgorithmsGuidelineCheck() {
-        super(null, null);
-    }
+	private SignatureAndHashAlgorithmsGuidelineCheck() {
+		super(null, null);
+	}
 
-    public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
-        super(name, requirementLevel);
-        this.recommendedAlgorithms = recommendedAlgorithms;
-        this.tls13 = tls13;
-    }
+	public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+			List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
+		super(name, requirementLevel);
+		this.recommendedAlgorithms = recommendedAlgorithms;
+		this.tls13 = tls13;
+	}
 
-    public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
-        super(name, requirementLevel, condition);
-        this.recommendedAlgorithms = recommendedAlgorithms;
-        this.tls13 = tls13;
-    }
+	public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+			GuidelineCheckCondition condition, List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
+		super(name, requirementLevel, condition);
+		this.recommendedAlgorithms = recommendedAlgorithms;
+		this.tls13 = tls13;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms = null;
-        if (tls13)
-            algorithms = ((ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13)).getList();
-        else {
-            algorithms = new LinkedList<>();
-            ListResult<SignatureAndHashAlgorithm> samResult_cert = (ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
-            if (samResult_cert != null)
-                algorithms.addAll(samResult_cert.getList());
-            ListResult<SignatureAndHashAlgorithm> samResult_ske = (ListResult<SignatureAndHashAlgorithm>) report
-                .getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
-            if (samResult_ske != null)
-                algorithms.addAll(samResult_ske.getList());
-        }
-        if (algorithms == null || algorithms.isEmpty())
-            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
-        Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm alg : algorithms) {
-            if (!this.recommendedAlgorithms.contains(alg)) {
-                notRecommended.add(alg);
-            }
-        }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
-            notRecommended);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public GuidelineCheckResult evaluate(ServerReport report) {
+		List<SignatureAndHashAlgorithm> algorithms = null;
+		if (tls13) {
+			algorithms = ((ListResult<SignatureAndHashAlgorithm>) report
+					.getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13)).getList();
+		} else {
+			algorithms = new LinkedList<>();
+			ListResult<SignatureAndHashAlgorithm> samResultCert = (ListResult<SignatureAndHashAlgorithm>) report
+					.getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
+			if (samResultCert != null) {
+				algorithms.addAll(samResultCert.getList());
+			}
+			ListResult<SignatureAndHashAlgorithm> samResultSke = (ListResult<SignatureAndHashAlgorithm>) report
+					.getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
+			if (samResultSke != null) {
+				algorithms.addAll(samResultSke.getList());
+			}
+		}
+		if (algorithms == null || algorithms.isEmpty()) {
+			return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
+		}
+		Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
+		for (SignatureAndHashAlgorithm alg : algorithms) {
+			if (!this.recommendedAlgorithms.contains(alg)) {
+				notRecommended.add(alg);
+			}
+		}
+		return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
+				notRecommended);
+	}
 
-    @Override
-    public String getId() {
-        return "SignatureAndHashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
-    }
+	@Override
+	public String getId() {
+		return "SignatureAndHashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
+	}
 
-    public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
-        return recommendedAlgorithms;
-    }
+	public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
+		return recommendedAlgorithms;
+	}
 
-    public boolean isTls13() {
-        return tls13;
-    }
+	public boolean isTls13() {
+		return tls13;
+	}
 }
