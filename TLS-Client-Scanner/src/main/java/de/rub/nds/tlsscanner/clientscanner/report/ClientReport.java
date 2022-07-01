@@ -20,7 +20,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsReport {
 
-    public ClientReport() {
+	private Integer lowestPossibleDheModulusSize;
+	
+    /**
+	 * @return the lowestPossibleDheModulusSize
+	 */
+	public Integer getLowestPossibleDheModulusSize() {
+		return lowestPossibleDheModulusSize;
+	}
+
+	/**
+	 * @param lowestPossibleDheModulusSize the lowestPossibleDheModulusSize to set
+	 */
+	public void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
+		this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
+	}
+
+	public ClientReport() {
         super();
     }
 
