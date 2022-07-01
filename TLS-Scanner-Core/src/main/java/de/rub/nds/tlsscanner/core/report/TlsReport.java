@@ -74,13 +74,13 @@ public abstract class TlsReport extends ScanReport {
 
     @SuppressWarnings("rawtypes")
     public synchronized List getNormalHpkpPins() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.NORMAL_HPKPPINS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
         return listResult == null ? null : listResult.getList();
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized List getReportOnlyHpkpPins() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKPPINS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
         return listResult == null ? null : listResult.getList();
     }
 

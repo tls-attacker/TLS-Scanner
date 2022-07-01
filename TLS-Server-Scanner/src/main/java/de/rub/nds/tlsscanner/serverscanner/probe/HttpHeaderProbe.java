@@ -50,8 +50,8 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
             TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
             TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-            TlsAnalyzedProperty.HTTPS_HEADER, TlsAnalyzedProperty.NORMAL_HPKPPINS,
-            TlsAnalyzedProperty.REPORT_ONLY_HPKPPINS);
+            TlsAnalyzedProperty.HTTPS_HEADER, TlsAnalyzedProperty.NORMAL_HPKP_PINS,
+            TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
     }
 
     @Override
@@ -185,8 +185,8 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
         put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
         report.setHpkpMaxAge(hpkpMaxAge);
-        put(TlsAnalyzedProperty.NORMAL_HPKPPINS, pinList);
-        put(TlsAnalyzedProperty.REPORT_ONLY_HPKPPINS, reportOnlyPinList);
+        put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
+        put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
     }
 
