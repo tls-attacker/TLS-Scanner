@@ -85,7 +85,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     @SuppressWarnings("rawtypes")
-    public synchronized List getClientSimulationResultList() {
+    public synchronized List getSimulatedClientsResultList() {
         ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
         return listResult == null ? null : listResult.getList();
     }

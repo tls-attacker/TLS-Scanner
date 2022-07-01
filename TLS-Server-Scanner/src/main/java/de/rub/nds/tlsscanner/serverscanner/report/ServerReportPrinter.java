@@ -256,7 +256,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
-        prettyAppend(builder, "Tested Clients", Integer.toString(report.getClientSimulationResultList().size()));
+        prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientsResultList().size()));
         builder.append("\n");
         String identifier;
         identifier = "Handshakes - Successful";
@@ -399,7 +399,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
         for (SimulatedClientResult simulatedClient : (List<SimulatedClientResult>) report
-            .getClientSimulationResultList()) {
+            .getSimulatedClientsResultList()) {
             prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
                 + simulatedClient.getTlsClientConfig().getVersion());
             prettyAppend(builder, "Handshake Successful", "" + simulatedClient.getHandshakeSuccessful(),

@@ -40,7 +40,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 
         @SuppressWarnings("unchecked")
         List<SimulatedClientResult> simulatedclients =
-            (List<SimulatedClientResult>) report.getClientSimulationResultList();
+            (List<SimulatedClientResult>) report.getSimulatedClientsResultList();
         if (simulatedclients != null) {
             for (SimulatedClientResult simulatedClient : simulatedclients) {
                 if (simulatedClient.getReceivedAlert()) {
