@@ -36,53 +36,53 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private TestResult vulnerable;
+    private TestResult vulnerable;
 
-	public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-		super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
-		register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
-	}
+    public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
+    }
 
-	@Override
-	public void executeTest() {
-		Config tlsConfig = configSelector.getBaseConfig();
-		tlsConfig.setAddHeartbeatExtension(true);
+    @Override
+    public void executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setAddHeartbeatExtension(true);
 
-		State state = new State(tlsConfig, getTrace(tlsConfig));
-		executeState(state);
-		if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
-			vulnerable = TestResults.TRUE;
-		} else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-			vulnerable = TestResults.UNCERTAIN;
-		} else {
-			vulnerable = TestResults.FALSE;
-		}
-	}
+        State state = new State(tlsConfig, getTrace(tlsConfig));
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
+            vulnerable = TestResults.TRUE;
+        } else if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            vulnerable = TestResults.UNCERTAIN;
+        } else {
+            vulnerable = TestResults.FALSE;
+        }
+    }
 
-	private WorkflowTrace getTrace(Config tlsConfig) {
-		WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-		HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
-		heartbeatMessage.setPayload(Modifiable.explicit(new byte[] { 1, 3 }));
-		heartbeatMessage.setPayloadLength(Modifiable.explicit(10));
-		trace.addTlsAction(new SendAction(heartbeatMessage));
-		trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
-		return trace;
-	}
+    private WorkflowTrace getTrace(Config tlsConfig) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
+        heartbeatMessage.setPayload(Modifiable.explicit(new byte[] { 1, 3 }));
+        heartbeatMessage.setPayloadLength(Modifiable.explicit(10));
+        trace.addTlsAction(new SendAction(heartbeatMessage));
+        trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
+        return trace;
+    }
 
-	@Override
-	public void adjustConfig(ServerReport report) {
+    @Override
+    public void adjustConfig(ServerReport report) {
 
-	}
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return new ProbeRequirement(TlsProbeType.EXTENSIONS)
-				.requires(new ExtensionRequirement(ExtensionType.HEARTBEAT));
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.EXTENSIONS)
+            .requires(new ExtensionRequirement(ExtensionType.HEARTBEAT));
+    }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
+    }
 }

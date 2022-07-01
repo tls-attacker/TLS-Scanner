@@ -37,68 +37,68 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private TestResult supportsFalseStart;
+    private TestResult supportsFalseStart;
 
-	public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-		super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
-		register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
-	}
+    public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
+    }
 
-	@Override
-	public void executeTest() {
-		Config tlsConfig = configSelector.getBaseConfig();
-		tlsConfig.setHttpsParsingEnabled(true);
+    @Override
+    public void executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setHttpsParsingEnabled(true);
 
-		WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-		WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-		trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-		trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-		trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(),
-				new HttpsRequestMessage(tlsConfig)));
-		trace.addTlsAction(
-				new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(
+            new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsRequestMessage(tlsConfig)));
+        trace.addTlsAction(
+            new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
 
-		State state = new State(tlsConfig, trace);
-		executeState(state);
+        State state = new State(tlsConfig, trace);
+        executeState(state);
 
-		boolean receivedServerFinishedMessage = false;
-		ReceivingAction action = trace.getLastReceivingAction();
-		if (action.getReceivedMessages() != null) {
-			for (ProtocolMessage message : action.getReceivedMessages()) {
-				if (message instanceof HttpsResponseMessage) {
-					// if http response was received the server handled the
-					// false start
+        boolean receivedServerFinishedMessage = false;
+        ReceivingAction action = trace.getLastReceivingAction();
+        if (action.getReceivedMessages() != null) {
+            for (ProtocolMessage message : action.getReceivedMessages()) {
+                if (message instanceof HttpsResponseMessage) {
+                    // if http response was received the server handled the
+                    // false start
 
-					supportsFalseStart = TestResults.TRUE;
-					return;
-				} else if (message instanceof FinishedMessage) {
-					receivedServerFinishedMessage = true;
-				}
-			}
-		}
-		if (!receivedServerFinishedMessage) {
-			// server sent no finished message, false start messed up the
-			// handshake
-			supportsFalseStart = TestResults.FALSE;
-			return;
-		}
-		// received no http response -> maybe server did not understand
-		// request
-		supportsFalseStart = TestResults.UNCERTAIN;
-	}
+                    supportsFalseStart = TestResults.TRUE;
+                    return;
+                } else if (message instanceof FinishedMessage) {
+                    receivedServerFinishedMessage = true;
+                }
+            }
+        }
+        if (!receivedServerFinishedMessage) {
+            // server sent no finished message, false start messed up the
+            // handshake
+            supportsFalseStart = TestResults.FALSE;
+            return;
+        }
+        // received no http response -> maybe server did not understand
+        // request
+        supportsFalseStart = TestResults.UNCERTAIN;
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
+    }
 
-	@Override
-	public void adjustConfig(ServerReport report) {
-	}
+    @Override
+    public void adjustConfig(ServerReport report) {
+    }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
+    }
 }

@@ -58,310 +58,309 @@ import org.bouncycastle.crypto.tls.Certificate;
 
 public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private List<CertificateChain> serverCertChains;
-	private List<NamedGroup> tls13NamedGroups;
+    private List<CertificateChain> serverCertChains;
+    private List<NamedGroup> tls13NamedGroups;
 
-	private List<OcspCertificateResult> certResults;
-	private List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
+    private List<OcspCertificateResult> certResults;
+    private List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
 
-	public static final int NONCE_TEST_VALUE_1 = 42;
-	public static final int NONCE_TEST_VALUE_2 = 1337;
-	private static final long STAPLED_NONCE_RANDOM_SEED = 42;
-	private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
+    public static final int NONCE_TEST_VALUE_1 = 42;
+    public static final int NONCE_TEST_VALUE_2 = 1337;
+    private static final long STAPLED_NONCE_RANDOM_SEED = 42;
+    private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
-	public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-		super(parallelExecutor, TlsProbeType.OCSP, configSelector);
-		register(TlsAnalyzedProperty.SUPPORTS_OCSP, TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
-				TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
-				TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
-				TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
-				TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-				TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.OCSP_RESULTS);
-	}
+    public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.OCSP, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_OCSP, TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
+            TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
+            TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
+            TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.OCSP_RESULTS);
+    }
 
-	@Override
-	public void executeTest() {
-		certResults = new LinkedList<>();
-		for (CertificateChain serverCertChain : serverCertChains) {
-			OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
+    @Override
+    public void executeTest() {
+        certResults = new LinkedList<>();
+        for (CertificateChain serverCertChain : serverCertChains) {
+            OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
-			getMustStaple(serverCertChain.getCertificate(), certResult);
-			getStapledResponse(certResult);
-			performRequest(serverCertChain.getCertificate(), certResult);
+            getMustStaple(serverCertChain.getCertificate(), certResult);
+            getStapledResponse(certResult);
+            performRequest(serverCertChain.getCertificate(), certResult);
 
-			certResults.add(certResult);
-		}
-		if (!tls13NamedGroups.isEmpty()) {
-			tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
-		}
-	}
+            certResults.add(certResult);
+        }
+        if (!tls13NamedGroups.isEmpty()) {
+            tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
+        }
+    }
 
-	private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
-		org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
-		CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
-		try {
-			certResult.setMustStaple(certInformationExtractor.getMustStaple());
-		} catch (Exception e) {
-			if (e.getCause() instanceof InterruptedException) {
-				LOGGER.error("Timeout on " + getProbeName());
-			} else {
-				LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
-			}
-		}
-	}
+    private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
+        org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
+        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
+        try {
+            certResult.setMustStaple(certInformationExtractor.getMustStaple());
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+            }
+        }
+    }
 
-	private void getStapledResponse(OcspCertificateResult certResult) {
-		Config tlsConfig = configSelector.getBaseConfig();
-		tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-		tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
-		tlsConfig.setAddCertificateStatusRequestExtension(true);
+    private void getStapledResponse(OcspCertificateResult certResult) {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
 
-		State state = new State(tlsConfig);
-		executeState(state);
-		List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
+        State state = new State(tlsConfig);
+        executeState(state);
+        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
-		CertificateStatusMessage certificateStatusMessage = null;
-		if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
-			certResult.setSupportsStapling(true);
-			if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS,
-					state.getWorkflowTrace())) {
-				certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil
-						.getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
-			}
-		} else {
-			certResult.setSupportsStapling(false);
-		}
+        CertificateStatusMessage certificateStatusMessage = null;
+        if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
+            certResult.setSupportsStapling(true);
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS,
+                state.getWorkflowTrace())) {
+                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil
+                    .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
+            }
+        } else {
+            certResult.setSupportsStapling(false);
+        }
 
-		if (certificateStatusMessage != null) {
-			try {
-				certResult.setStapledResponse(
-						OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
-			} catch (Exception e) {
-				if (e.getCause() instanceof InterruptedException) {
-					LOGGER.error("Timeout on " + getProbeName());
-				} else {
-					LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
-				}
-			}
-		}
-	}
+        if (certificateStatusMessage != null) {
+            try {
+                certResult.setStapledResponse(
+                    OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
+            } catch (Exception e) {
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                }
+            }
+        }
+    }
 
-	private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
-		CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(
-				serverCertificateChain.getCertificateAt(0));
-		URL ocspResponderUrl;
+    private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
+        CertificateInformationExtractor mainCertExtractor =
+            new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
+        URL ocspResponderUrl;
 
-		try {
-			// Check if leaf certificate supports OCSP
-			ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
-		} catch (MalformedURLException ex) {
-			throw new RuntimeException(ex);
-		}
-		certResult.setSupportsOcsp(true);
+        try {
+            // Check if leaf certificate supports OCSP
+            ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
+        }
+        certResult.setSupportsOcsp(true);
 
-		OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
+        OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
 
-		// First Request Message with first fixed nonce test value
-		OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
-		ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
-		ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-		certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
-		certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
+        // First Request Message with first fixed nonce test value
+        OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
+        ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
+        ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+        certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
+        certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
 
-		// If nonce is supported used, check if server actually replies
-		// with a different one immediately after
-		if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
-			certResult.setSupportsNonce(true);
-			OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
-			ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
-			ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-			certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
-			LOGGER.debug(certResult.getSecondResponse().toString());
-		} else {
-			certResult.setSupportsNonce(false);
-		}
-	}
+        // If nonce is supported used, check if server actually replies
+        // with a different one immediately after
+        if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
+            certResult.setSupportsNonce(true);
+            OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
+            ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
+            ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+            certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
+            LOGGER.debug(certResult.getSecondResponse().toString());
+        } else {
+            certResult.setSupportsNonce(false);
+        }
+    }
 
-	private byte[] prepareNonceExtension() {
-		Asn1Sequence innerExtensionSequence = new Asn1Sequence();
-		Asn1ObjectIdentifier oid = new Asn1ObjectIdentifier();
-		oid.setValue(NONCE.getOID());
+    private byte[] prepareNonceExtension() {
+        Asn1Sequence innerExtensionSequence = new Asn1Sequence();
+        Asn1ObjectIdentifier oid = new Asn1ObjectIdentifier();
+        oid.setValue(NONCE.getOID());
 
-		Asn1Sequence extensionSequence = new Asn1Sequence();
-		innerExtensionSequence.addChild(oid);
+        Asn1Sequence extensionSequence = new Asn1Sequence();
+        innerExtensionSequence.addChild(oid);
 
-		Asn1EncapsulatingOctetString encapsulatingOctetString = new Asn1EncapsulatingOctetString();
+        Asn1EncapsulatingOctetString encapsulatingOctetString = new Asn1EncapsulatingOctetString();
 
-		// Nonce
-		Asn1PrimitiveOctetString nonceOctetString = new Asn1PrimitiveOctetString();
+        // Nonce
+        Asn1PrimitiveOctetString nonceOctetString = new Asn1PrimitiveOctetString();
 
-		Random rand = new Random(STAPLED_NONCE_RANDOM_SEED);
-		BigInteger nonce = new BigInteger(STAPLED_NONCE_RANDOM_BIT_LENGTH, rand);
+        Random rand = new Random(STAPLED_NONCE_RANDOM_SEED);
+        BigInteger nonce = new BigInteger(STAPLED_NONCE_RANDOM_BIT_LENGTH, rand);
 
-		nonceOctetString.setValue(nonce.toByteArray());
-		encapsulatingOctetString.addChild(nonceOctetString);
+        nonceOctetString.setValue(nonce.toByteArray());
+        encapsulatingOctetString.addChild(nonceOctetString);
 
-		innerExtensionSequence.addChild(encapsulatingOctetString);
-		extensionSequence.addChild(innerExtensionSequence);
+        innerExtensionSequence.addChild(encapsulatingOctetString);
+        extensionSequence.addChild(innerExtensionSequence);
 
-		List<Asn1Encodable> asn1Encodables = new LinkedList<>();
-		asn1Encodables.add(extensionSequence);
+        List<Asn1Encodable> asn1Encodables = new LinkedList<>();
+        asn1Encodables.add(extensionSequence);
 
-		Asn1Encoder asn1Encoder = new Asn1Encoder(asn1Encodables);
-		return asn1Encoder.encode();
-	}
+        Asn1Encoder asn1Encoder = new Asn1Encoder(asn1Encodables);
+        return asn1Encoder.encode();
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void adjustConfig(ServerReport report) {
-		serverCertChains = new LinkedList<>();
-		for (CertificateChain chain : (List<CertificateChain>) report.getCertificateChainList()) {
-			serverCertChains.add(chain);
-		}
-		tls13NamedGroups = ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS))
-				.getList();
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void adjustConfig(ServerReport report) {
+        serverCertChains = new LinkedList<>();
+        for (CertificateChain chain : (List<CertificateChain>) report.getCertificateChainList()) {
+            serverCertChains.add(chain);
+        }
+        tls13NamedGroups =
+            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)).getList();
+    }
 
-	private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
-		List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
-		Config tlsConfig = configSelector.getTls13BaseConfig();
-		tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-		List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-		pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
-		pskKex.add(PskKeyExchangeMode.PSK_KE);
-		tlsConfig.setPSKKeyExchangeModes(pskKex);
-		tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+    private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
+        List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        pskKex.add(PskKeyExchangeMode.PSK_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
 
-		State state = new State(tlsConfig);
-		executeState(state);
-		if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
-			CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil
-					.getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
-			List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
-			for (CertificateEntry certificateEntry : certificateEntries) {
-				for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
-					if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
-						certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
-					}
-				}
-			}
-		}
-		return certificateStatuses;
-	}
+        State state = new State(tlsConfig);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
+            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
+            for (CertificateEntry certificateEntry : certificateEntries) {
+                for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
+                    if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
+                        certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
+                    }
+                }
+            }
+        }
+        return certificateStatuses;
+    }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		put(TlsAnalyzedProperty.OCSP_RESULTS, certResults);
-		put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
-		put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-		put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
-		put(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
-		put(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
-		put(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
-		put(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.OCSP_RESULTS, certResults);
+        put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
+        put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
+        put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
+        put(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
+        put(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
+        put(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
+        put(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
 
-		if (tls13CertStatus != null) {
-			if (tls13CertStatus.size() == 1) {
-				put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-				put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
-			} else if (tls13CertStatus.size() > 1) {
-				put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
-				put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
-			} else {
-				put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
-				put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
-			}
-		} else {
-			put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
-			put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
-		}
-	}
+        if (tls13CertStatus != null) {
+            if (tls13CertStatus.size() == 1) {
+                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            } else if (tls13CertStatus.size() > 1) {
+                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
+            } else {
+                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            }
+        } else {
+            put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
+        }
+    }
 
-	private TestResult getConclusiveSupportsOcsp() {
-		boolean foundFalse = false;
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (Boolean.TRUE.equals(result.getSupportsOcsp())) {
-					return TestResults.TRUE;
-				} else if (Boolean.FALSE.equals(result.getSupportsOcsp())) {
-					foundFalse = true;
-				}
-			}
-			if (foundFalse) {
-				return TestResults.FALSE;
-			}
-		}
-		return TestResults.ERROR_DURING_TEST;
-	}
+    private TestResult getConclusiveSupportsOcsp() {
+        boolean foundFalse = false;
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (Boolean.TRUE.equals(result.getSupportsOcsp())) {
+                    return TestResults.TRUE;
+                } else if (Boolean.FALSE.equals(result.getSupportsOcsp())) {
+                    foundFalse = true;
+                }
+            }
+            if (foundFalse) {
+                return TestResults.FALSE;
+            }
+        }
+        return TestResults.ERROR_DURING_TEST;
+    }
 
-	private TestResult getConclusiveSupportsStapling() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.isSupportsStapling()) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveSupportsStapling() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsStapling()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 
-	private TestResult getConclusiveIncludesCertMessage() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.getStapledResponse() != null) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveIncludesCertMessage() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 
-	private TestResult getConclusiveSupportsStapledNonce() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveSupportsStapledNonce() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 
-	private TestResult getConclusiveMustStaple() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.isMustStaple()) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveMustStaple() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isMustStaple()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 
-	private TestResult getConclusiveSupportsNonce() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.isSupportsNonce()) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveSupportsNonce() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsNonce()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 
-	private TestResult getConclusiveStapledResponseExpired() {
-		if (certResults != null) {
-			for (OcspCertificateResult result : certResults) {
-				if (result.isStapledResponseExpired()) {
-					return TestResults.TRUE;
-				}
-			}
-		}
-		return TestResults.FALSE;
-	}
+    private TestResult getConclusiveStapledResponseExpired() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isStapledResponseExpired()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
 }

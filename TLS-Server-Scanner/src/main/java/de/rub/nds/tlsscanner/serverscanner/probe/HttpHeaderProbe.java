@@ -33,168 +33,168 @@ import org.apache.logging.log4j.Logger;
 
 public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	private List<HttpsHeader> headerList;
-	private TestResult speaksHttps;
-	private TestResult supportsHsts = TestResults.FALSE;
-	private Long hstsMaxAge;
-	private Integer hpkpMaxAge;
-	private TestResult supportsHstsPreloading = TestResults.FALSE;
-	private TestResult supportsHpkp = TestResults.FALSE;
-	private TestResult supportsHpkpReportOnly = TestResults.FALSE;
-	private TestResult vulnerableBreach = TestResults.FALSE;
+    private List<HttpsHeader> headerList;
+    private TestResult speaksHttps;
+    private TestResult supportsHsts = TestResults.FALSE;
+    private Long hstsMaxAge;
+    private Integer hpkpMaxAge;
+    private TestResult supportsHstsPreloading = TestResults.FALSE;
+    private TestResult supportsHpkp = TestResults.FALSE;
+    private TestResult supportsHpkpReportOnly = TestResults.FALSE;
+    private TestResult vulnerableBreach = TestResults.FALSE;
 
-	public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-		super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
-		register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
-				TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
-				TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-				TlsAnalyzedProperty.HTTPS_HEADER, TlsAnalyzedProperty.NORMAL_HPKP_PINS,
-				TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
-	}
+    public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
+            TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
+            TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
+            TlsAnalyzedProperty.HTTPS_HEADER, TlsAnalyzedProperty.NORMAL_HPKP_PINS,
+            TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+    }
 
-	@Override
-	public void executeTest() {
-		Config tlsConfig = configSelector.getBaseConfig();
-		tlsConfig.setHttpsParsingEnabled(true);
-		tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
-		State state = new State(tlsConfig);
-		executeState(state);
+    @Override
+    public void executeTest() {
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.setHttpsParsingEnabled(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
+        State state = new State(tlsConfig);
+        executeState(state);
 
-		ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
-		HttpsResponseMessage responseMessage = null;
-		if (action.getReceivedMessages() != null) {
-			for (ProtocolMessage message : action.getReceivedMessages()) {
-				if (message instanceof HttpsResponseMessage) {
-					responseMessage = (HttpsResponseMessage) message;
-					break;
-				}
-			}
-		}
-		boolean speaksHttps = responseMessage != null;
-		if (speaksHttps) {
-			headerList = responseMessage.getHeader();
-		} else {
-			headerList = new LinkedList<>();
-		}
-		this.speaksHttps = speaksHttps == true ? TestResults.TRUE : TestResults.FALSE;
-	}
+        ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
+        HttpsResponseMessage responseMessage = null;
+        if (action.getReceivedMessages() != null) {
+            for (ProtocolMessage message : action.getReceivedMessages()) {
+                if (message instanceof HttpsResponseMessage) {
+                    responseMessage = (HttpsResponseMessage) message;
+                    break;
+                }
+            }
+        }
+        boolean speaksHttps = responseMessage != null;
+        if (speaksHttps) {
+            headerList = responseMessage.getHeader();
+        } else {
+            headerList = new LinkedList<>();
+        }
+        this.speaksHttps = speaksHttps == true ? TestResults.TRUE : TestResults.FALSE;
+    }
 
-	@Override
-	public void adjustConfig(ServerReport report) {
-	}
+    @Override
+    public void adjustConfig(ServerReport report) {
+    }
 
-	@Override
-	protected void mergeData(ServerReport report) {
-		put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
-		put(TlsAnalyzedProperty.HTTPS_HEADER, headerList);
-		List<HpkpPin> pinList = new LinkedList<>();
-		List<HpkpPin> reportOnlyPinList = new LinkedList<>();
-		if (headerList != null) {
-			for (HttpsHeader header : headerList) {
-				if (header.getHeaderName().getValue().equals("Strict-Transport-Security")) {
-					supportsHsts = TestResults.TRUE;
-					boolean preload = false;
-					String[] values = header.getHeaderValue().getValue().split(";");
-					for (String value : values) {
-						if (value.trim().startsWith("preload")) {
-							preload = true;
-						}
-						if (value.trim().startsWith("max-age")) {
-							String[] maxAge = value.split("=");
-							if (maxAge.length == 2) {
-								try {
-									hstsMaxAge = Long.parseLong(maxAge[1].trim());
-								} catch (Exception e) {
-									LOGGER.warn("HSTS was not parseable", e);
-								}
-							}
-						}
-					}
-					supportsHstsPreloading = preload == true ? TestResults.TRUE : TestResults.FALSE;
-				}
-				if (header.getHeaderName().getValue().equals("Public-Key-Pins")) {
-					supportsHpkp = TestResults.TRUE;
-					String[] values = header.getHeaderValue().getValue().split(";");
-					for (String value : values) {
-						if (value.trim().startsWith("max-age")) {
-							String[] maxAge = value.split("=");
-							if (maxAge.length == 2) {
-								try {
-									hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
-								} catch (Exception e) {
-									LOGGER.warn("HPKP was not parseable", e);
-								}
-							}
-						}
-						try {
-							String[] pinString = value.split("=");
-							HpkpPin pin = new HpkpPin(pinString[0],
-									Base64.getDecoder().decode(pinString[1].replace("\"", "")));
-							pinList.add(pin);
-						} catch (Exception e) {
-							LOGGER.warn("HPKP was not parseable", e);
-						}
-					}
-				}
-				if (header.getHeaderName().getValue().equals("Public-Key-Pins-Report-Only")) {
-					supportsHpkpReportOnly = TestResults.TRUE;
-					String[] values = header.getHeaderValue().getValue().split(";");
-					for (String value : values) {
-						if (value.trim().startsWith("max-age")) {
-							String[] maxAge = value.split("=");
-							if (maxAge.length == 2) {
-								try {
-									hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
-								} catch (Exception e) {
-									LOGGER.warn("HPKP was not parseable", e);
-								}
-							}
-						}
-						if (value.trim().startsWith("pin-")) {
-							try {
-								String[] pinString = value.split("=");
-								HpkpPin pin = new HpkpPin(pinString[0],
-										Base64.getDecoder().decode(pinString[1].replace("\"", "")));
-								reportOnlyPinList.add(pin);
-							} catch (Exception e) {
-								LOGGER.warn("HPKP was not parseable", e);
-							}
-						}
-					}
-				}
-				if (header.getHeaderName().getValue().equals("Content-Encoding")) {
-					String compressionHeaderValue = header.getHeaderValue().getValue();
-					String[] compressionAlgorithms = { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma",
-							"xz" };
-					for (String compression : compressionAlgorithms) {
-						if (compressionHeaderValue.contains(compression)) {
-							vulnerableBreach = TestResults.TRUE;
-						}
-					}
-				}
-			}
-		} else {
-			supportsHsts = TestResults.COULD_NOT_TEST;
-			supportsHstsPreloading = TestResults.COULD_NOT_TEST;
-			supportsHpkp = TestResults.COULD_NOT_TEST;
-			supportsHpkpReportOnly = TestResults.COULD_NOT_TEST;
-			vulnerableBreach = TestResults.COULD_NOT_TEST;
-		}
-		report.setHstsMaxAge(hstsMaxAge);
-		put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
-		put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
-		put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
-		put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
-		report.setHpkpMaxAge(hpkpMaxAge);
-		put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
-		put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
-		put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
-	}
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
+        put(TlsAnalyzedProperty.HTTPS_HEADER, headerList);
+        List<HpkpPin> pinList = new LinkedList<>();
+        List<HpkpPin> reportOnlyPinList = new LinkedList<>();
+        if (headerList != null) {
+            for (HttpsHeader header : headerList) {
+                if (header.getHeaderName().getValue().equals("Strict-Transport-Security")) {
+                    supportsHsts = TestResults.TRUE;
+                    boolean preload = false;
+                    String[] values = header.getHeaderValue().getValue().split(";");
+                    for (String value : values) {
+                        if (value.trim().startsWith("preload")) {
+                            preload = true;
+                        }
+                        if (value.trim().startsWith("max-age")) {
+                            String[] maxAge = value.split("=");
+                            if (maxAge.length == 2) {
+                                try {
+                                    hstsMaxAge = Long.parseLong(maxAge[1].trim());
+                                } catch (Exception e) {
+                                    LOGGER.warn("HSTS was not parseable", e);
+                                }
+                            }
+                        }
+                    }
+                    supportsHstsPreloading = preload == true ? TestResults.TRUE : TestResults.FALSE;
+                }
+                if (header.getHeaderName().getValue().equals("Public-Key-Pins")) {
+                    supportsHpkp = TestResults.TRUE;
+                    String[] values = header.getHeaderValue().getValue().split(";");
+                    for (String value : values) {
+                        if (value.trim().startsWith("max-age")) {
+                            String[] maxAge = value.split("=");
+                            if (maxAge.length == 2) {
+                                try {
+                                    hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
+                                } catch (Exception e) {
+                                    LOGGER.warn("HPKP was not parseable", e);
+                                }
+                            }
+                        }
+                        try {
+                            String[] pinString = value.split("=");
+                            HpkpPin pin =
+                                new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                            pinList.add(pin);
+                        } catch (Exception e) {
+                            LOGGER.warn("HPKP was not parseable", e);
+                        }
+                    }
+                }
+                if (header.getHeaderName().getValue().equals("Public-Key-Pins-Report-Only")) {
+                    supportsHpkpReportOnly = TestResults.TRUE;
+                    String[] values = header.getHeaderValue().getValue().split(";");
+                    for (String value : values) {
+                        if (value.trim().startsWith("max-age")) {
+                            String[] maxAge = value.split("=");
+                            if (maxAge.length == 2) {
+                                try {
+                                    hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
+                                } catch (Exception e) {
+                                    LOGGER.warn("HPKP was not parseable", e);
+                                }
+                            }
+                        }
+                        if (value.trim().startsWith("pin-")) {
+                            try {
+                                String[] pinString = value.split("=");
+                                HpkpPin pin = new HpkpPin(pinString[0],
+                                    Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                                reportOnlyPinList.add(pin);
+                            } catch (Exception e) {
+                                LOGGER.warn("HPKP was not parseable", e);
+                            }
+                        }
+                    }
+                }
+                if (header.getHeaderName().getValue().equals("Content-Encoding")) {
+                    String compressionHeaderValue = header.getHeaderValue().getValue();
+                    String[] compressionAlgorithms =
+                        { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz" };
+                    for (String compression : compressionAlgorithms) {
+                        if (compressionHeaderValue.contains(compression)) {
+                            vulnerableBreach = TestResults.TRUE;
+                        }
+                    }
+                }
+            }
+        } else {
+            supportsHsts = TestResults.COULD_NOT_TEST;
+            supportsHstsPreloading = TestResults.COULD_NOT_TEST;
+            supportsHpkp = TestResults.COULD_NOT_TEST;
+            supportsHpkpReportOnly = TestResults.COULD_NOT_TEST;
+            vulnerableBreach = TestResults.COULD_NOT_TEST;
+        }
+        report.setHstsMaxAge(hstsMaxAge);
+        put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
+        put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
+        put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
+        put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
+        report.setHpkpMaxAge(hpkpMaxAge);
+        put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
+        put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }
