@@ -39,10 +39,11 @@ public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport
         tlsConfig.setAutoSelectCertificate(false);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace()))
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
             supportsCca = TestResults.TRUE;
-        else
+        } else {
             supportsCca = TestResults.FALSE;
+        }
     }
 
     @Override

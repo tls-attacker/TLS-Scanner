@@ -26,13 +26,16 @@ public class FreakAfterProbe extends AfterProbe<ServerReport> {
             Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
             if (ciphersuites != null) {
                 for (CipherSuite suite : ciphersuites) {
-                    if (suite.name().contains("RSA_EXPORT"))
+                    if (suite.name().contains("RSA_EXPORT")) {
                         vulnerable = TestResults.TRUE;
+                    }
                 }
-                if (vulnerable != TestResults.TRUE)
+                if (vulnerable != TestResults.TRUE) {
                     vulnerable = TestResults.FALSE;
-            } else
+                }
+            } else {
                 vulnerable = TestResults.UNCERTAIN;
+            }
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

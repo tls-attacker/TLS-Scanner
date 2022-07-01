@@ -415,10 +415,11 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (certificates != null)
+        if (certificates != null) {
             put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new ArrayList<>(certificates));
-        else
+        } else {
             put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>());
+        }
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
     }
 }

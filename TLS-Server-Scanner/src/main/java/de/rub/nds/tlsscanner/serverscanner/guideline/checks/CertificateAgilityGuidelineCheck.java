@@ -50,8 +50,9 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
     public GuidelineCheckResult evaluate(ServerReport report) {
         @SuppressWarnings("unchecked")
         List<CertificateChain> chains = report.getCertificateChainList();
-        if (chains == null || chains.size() < 2)
+        if (chains == null || chains.size() < 2) {
             return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+        }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
         Integer firstKey = null;

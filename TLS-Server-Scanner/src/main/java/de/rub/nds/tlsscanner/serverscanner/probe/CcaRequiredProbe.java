@@ -47,10 +47,11 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace()))
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             requiresCca = TestResults.FALSE;
-        else
+        } else {
             requiresCca = TestResults.TRUE;
+        }
     }
 
     @Override

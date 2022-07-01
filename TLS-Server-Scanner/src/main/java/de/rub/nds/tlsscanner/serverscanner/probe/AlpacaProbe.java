@@ -39,10 +39,11 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     public void executeTest() {
         strictSni = isSupportingStrictSni();
-        if (!alpnSupported)
+        if (!alpnSupported) {
             strictAlpn = TestResults.FALSE;
-        else
+        } else {
             strictAlpn = isSupportingStrictAlpn();
+        }
     }
 
     private TestResult isSupportingStrictSni() {
@@ -90,12 +91,13 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
             && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
             TestResult alpacaMitigated;
-            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE)
+            if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
                 alpacaMitigated = TestResults.TRUE;
-            else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE)
+            } else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
                 alpacaMitigated = TestResults.PARTIALLY;
-            else
+            } else {
                 alpacaMitigated = TestResults.FALSE;
+            }
 
             put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
             put(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);

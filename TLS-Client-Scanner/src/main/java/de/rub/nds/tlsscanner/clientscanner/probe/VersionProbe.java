@@ -91,10 +91,11 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
             // confirm success
             State state = new State(config, trace);
             executeState(state);
-            if (state.getWorkflowTrace().executedAsPlanned())
+            if (state.getWorkflowTrace().executedAsPlanned()) {
                 supportedProtocolVersions.add(version);
-            else
+            } else {
                 unsupportedProtocolVersions.add(version);
+            }
         }
     }
 
@@ -112,33 +113,45 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
     protected void mergeData(ClientReport report) {
         if (supportedProtocolVersions != null) {
             for (ProtocolVersion version : supportedProtocolVersions) {
-                if (version == ProtocolVersion.SSL2)
+                if (version == ProtocolVersion.SSL2) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
-                if (version == ProtocolVersion.SSL3)
+                }
+                if (version == ProtocolVersion.SSL3) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
-                if (version == ProtocolVersion.TLS10)
+                }
+                if (version == ProtocolVersion.TLS10) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
-                if (version == ProtocolVersion.TLS11)
+                }
+                if (version == ProtocolVersion.TLS11) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
-                if (version == ProtocolVersion.TLS12)
+                }
+                if (version == ProtocolVersion.TLS12) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
-                if (version == ProtocolVersion.TLS13)
+                }
+                if (version == ProtocolVersion.TLS13) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+                }
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
-                if (version == ProtocolVersion.SSL2)
+                if (version == ProtocolVersion.SSL2) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
-                if (version == ProtocolVersion.SSL3)
+                }
+                if (version == ProtocolVersion.SSL3) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
-                if (version == ProtocolVersion.TLS10)
+                }
+                if (version == ProtocolVersion.TLS10) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
-                if (version == ProtocolVersion.TLS11)
+                }
+                if (version == ProtocolVersion.TLS11) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
-                if (version == ProtocolVersion.TLS12)
+                }
+                if (version == ProtocolVersion.TLS12) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
-                if (version == ProtocolVersion.TLS13)
+                }
+                if (version == ProtocolVersion.TLS13) {
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
+                }
             }
         } else {
             put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);

@@ -26,11 +26,13 @@ public class Sweet32AfterProbe extends AfterProbe<ServerReport> {
             Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
             if (ciphersuites != null) {
                 for (CipherSuite suite : ciphersuites) {
-                    if (suite.name().contains("3DES") || suite.name().contains("IDEA"))
+                    if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
                         vulnerable = TestResults.TRUE;
+                    }
                 }
-            } else
+            } else {
                 vulnerable = TestResults.UNCERTAIN;
+            }
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

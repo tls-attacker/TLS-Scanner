@@ -48,10 +48,11 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
         boolean tls10Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS10);
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
-        if (tls10Rejected && tls11Rejected && tls12Rejected)
+        if (tls10Rejected && tls11Rejected && tls12Rejected) {
             hasDowngradeProtection = TestResults.TRUE;
-        else
+        } else {
             hasDowngradeProtection = TestResults.FALSE;
+        }
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
