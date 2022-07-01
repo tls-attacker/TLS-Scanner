@@ -15,43 +15,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrRequirement extends Requirement {
-    private final Requirement[] requirements;
-    private List<Requirement> missing;
+	private final Requirement[] requirements;
+	private List<Requirement> missing;
 
-    public OrRequirement(Requirement... requirements) {
-        super();
-        this.requirements = requirements;
-        this.missing = new ArrayList<>();
-    }
+	public OrRequirement(Requirement... requirements) {
+		super();
+		this.requirements = requirements;
+		this.missing = new ArrayList<>();
+	}
 
-    @Override
-    protected boolean evaluateIntern(ScanReport report) {
-        if ((requirements == null) || (requirements.length == 0))
-            return true;
-        boolean returnValue = false;
-        missing = new ArrayList<>();
-        for (Requirement requirement : requirements) {
-            if (requirement.evaluate(report))
-                returnValue = true;
-            else
-                missing.add(requirement);
-        }
-        return returnValue;
-    }
+	@Override
+	protected boolean evaluateIntern(ScanReport report) {
+		if ((requirements == null) || (requirements.length == 0)) {
+			return true;
+		}
+		boolean returnValue = false;
+		missing = new ArrayList<>();
+		for (Requirement requirement : requirements) {
+			if (requirement.evaluate(report)) {
+				returnValue = true;
+			} else {
+				missing.add(requirement);
+			}
+		}
+		return returnValue;
+	}
 
-    /**
-     * @return the or requirements
-     */
-    public Requirement[] getRequirement() {
-        return requirements;
-    }
+	public Requirement[] getRequirement() {
+		return requirements;
+	}
 
-    @Override
-    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false)
-            return next.getMissingRequirementIntern(
-                missing.requires(new OrRequirement(this.missing.toArray(new Requirement[this.missing.size()]))),
-                report);
-        return next.getMissingRequirementIntern(missing, report);
-    }
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false) {
+			return next.getMissingRequirementIntern(
+					missing.requires(new OrRequirement(this.missing.toArray(new Requirement[this.missing.size()]))),
+					report);
+		}
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }
