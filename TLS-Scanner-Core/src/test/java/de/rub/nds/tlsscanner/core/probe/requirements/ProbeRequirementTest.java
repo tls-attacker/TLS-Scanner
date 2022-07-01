@@ -17,29 +17,29 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.Test;
 
-public class ProbeRequirementTest extends RequirementsBasicTest {
-    @Test
-    public void testProbeRequirement() {
-        TestReport report = new TestReport();
-        TlsProbeType probe = TlsProbeType.ALPN;
+public class ProbeRequirementTest {
+	@Test
+	public void testProbeRequirement() {
+		TestReport report = new TestReport();
+		TlsProbeType probe = TlsProbeType.ALPN;
 
-        ProbeRequirement requirement = new ProbeRequirement();
-        assertTrue(requirement.evaluate(report));
+		ProbeRequirement requirement = new ProbeRequirement();
+		assertTrue(requirement.evaluate(report));
 
-        requirement = new ProbeRequirement(new TlsProbeType[0]);
-        assertTrue(requirement.evaluate(report));
+		requirement = new ProbeRequirement(new TlsProbeType[0]);
+		assertTrue(requirement.evaluate(report));
 
-        requirement = new ProbeRequirement(probe);
-        assertArrayEquals(requirement.getRequirement(), new TlsProbeType[] { probe });
-        assertFalse(requirement.evaluate(report));
+		requirement = new ProbeRequirement(probe);
+		assertArrayEquals(requirement.getRequirement(), new TlsProbeType[] { probe });
+		assertFalse(requirement.evaluate(report));
 
-        Requirement requirementMissing = requirement.getMissingRequirements(report);
-        assertFalse(requirement.evaluate(report));
-        assertArrayEquals(((ProbeRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
+		Requirement requirementMissing = requirement.getMissingRequirements(report);
+		assertFalse(requirement.evaluate(report));
+		assertArrayEquals(((ProbeRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
 
-        report.markProbeAsExecuted(probe);
-        assertTrue(requirement.evaluate(report));
-        assertTrue(requirementMissing.evaluate(report));
-    }
+		report.markProbeAsExecuted(probe);
+		assertTrue(requirement.evaluate(report));
+		assertTrue(requirementMissing.evaluate(report));
+	}
 
 }

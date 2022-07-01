@@ -18,31 +18,31 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import org.junit.Test;
 
-public class PropertyNotRequirementTest extends RequirementsBasicTest {
+public class PropertyNotRequirementTest {
 
-    @Test
-    public void testPropertyNotRequirement() {
-        TestReport report = new TestReport();
-        TlsAnalyzedProperty[] propertyNot =
-            new TlsAnalyzedProperty[] { TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
+	@Test
+	public void testPropertyNotRequirement() {
+		TestReport report = new TestReport();
+		TlsAnalyzedProperty[] propertyNot = new TlsAnalyzedProperty[] {
+				TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES };
 
-        PropertyNotRequirement requirement = new PropertyNotRequirement();
-        assertTrue(requirement.evaluate(report));
+		PropertyNotRequirement requirement = new PropertyNotRequirement();
+		assertTrue(requirement.evaluate(report));
 
-        requirement = new PropertyNotRequirement(new TlsAnalyzedProperty[0]);
-        assertTrue(requirement.evaluate(report));
+		requirement = new PropertyNotRequirement(new TlsAnalyzedProperty[0]);
+		assertTrue(requirement.evaluate(report));
 
-        requirement = new PropertyNotRequirement(propertyNot);
-        assertArrayEquals(requirement.getRequirement(), propertyNot);
-        assertFalse(requirement.evaluate(report));
+		requirement = new PropertyNotRequirement(propertyNot);
+		assertArrayEquals(requirement.getRequirement(), propertyNot);
+		assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = requirement.getMissingRequirements(report);
-        assertFalse(requirement.evaluate(report));
-        assertArrayEquals(((PropertyNotRequirement) reqMis).getRequirement(), requirement.getRequirement());
+		Requirement reqMis = requirement.getMissingRequirements(report);
+		assertFalse(requirement.evaluate(report));
+		assertArrayEquals(((PropertyNotRequirement) reqMis).getRequirement(), requirement.getRequirement());
 
-        report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
-        assertFalse(requirement.evaluate(report));
-        report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);
-        assertTrue(requirement.evaluate(report));
-    }
+		report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
+		assertFalse(requirement.evaluate(report));
+		report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.FALSE);
+		assertTrue(requirement.evaluate(report));
+	}
 }

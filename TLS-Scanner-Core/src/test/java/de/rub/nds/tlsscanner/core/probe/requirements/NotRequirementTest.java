@@ -17,24 +17,24 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.Test;
 
-public class NotRequirementTest extends RequirementsBasicTest {
+public class NotRequirementTest {
 
-    @Test
-    public void testNotRequirement() {
-        TestReport report = new TestReport();
-        ProbeRequirement requirementNot = new ProbeRequirement(TlsProbeType.BASIC);
+	@Test
+	public void testNotRequirement() {
+		TestReport report = new TestReport();
+		ProbeRequirement requirementNot = new ProbeRequirement(TlsProbeType.BASIC);
 
-        NotRequirement requirement = new NotRequirement(null);
-        assertTrue(requirement.evaluate(report));
+		NotRequirement requirement = new NotRequirement(null);
+		assertTrue(requirement.evaluate(report));
 
-        requirement = new NotRequirement(requirementNot);
-        assertEquals(requirement.getRequirement(), requirementNot);
-        assertTrue(requirement.evaluate(report));
-        report.markProbeAsExecuted(TlsProbeType.BASIC);
-        assertFalse(requirement.evaluate(report));
+		requirement = new NotRequirement(requirementNot);
+		assertEquals(requirement.getRequirement(), requirementNot);
+		assertTrue(requirement.evaluate(report));
+		report.markProbeAsExecuted(TlsProbeType.BASIC);
+		assertFalse(requirement.evaluate(report));
 
-        Requirement reqMis = requirement.getMissingRequirements(report);
-        assertFalse(requirement.evaluate(report));
-        assertEquals(((NotRequirement) reqMis).getRequirement(), requirement.getRequirement());
-    }
+		Requirement reqMis = requirement.getMissingRequirements(report);
+		assertFalse(requirement.evaluate(report));
+		assertEquals(((NotRequirement) reqMis).getRequirement(), requirement.getRequirement());
+	}
 }
