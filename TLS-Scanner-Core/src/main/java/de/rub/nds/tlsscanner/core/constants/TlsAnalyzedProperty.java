@@ -50,7 +50,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     HTTPS_HEADER(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     NORMAL_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     REPORT_ONLY_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
-    MAP_EXTRACTED_VALUECONTAINTERS(TlsAnalyzedPropertyCategory.QUIRKS),
+    MAP_EXTRACTED_VALUE_CONTAINERS(TlsAnalyzedPropertyCategory.QUIRKS),
     ENTROPY_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
     MAP_RETRANSMISSION_COUNTERS(TlsAnalyzedPropertyCategory.QUIRKS),
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
