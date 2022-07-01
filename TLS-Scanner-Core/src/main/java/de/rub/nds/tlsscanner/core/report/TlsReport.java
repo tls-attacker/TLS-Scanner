@@ -234,7 +234,7 @@ public abstract class TlsReport extends ScanReport {
     }
 
     public synchronized List<TokenBindingVersion> getSupportedTokenbindingVersions() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDINGVERSIONS);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS);
         return listResult == null ? null : (List<TokenBindingVersion>) listResult.getList();
     }
 
