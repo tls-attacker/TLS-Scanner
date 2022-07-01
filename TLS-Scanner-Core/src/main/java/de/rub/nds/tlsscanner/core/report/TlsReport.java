@@ -56,7 +56,7 @@ public abstract class TlsReport extends ScanReport {
 
     @SuppressWarnings("rawtypes")
     public synchronized List getRaccoonAttackProbabilities() {
-        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.RACCOONATTACK_PROBABILITIES);
+        ListResult<?> listResult = getListResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
         return listResult == null ? null : listResult.getList();
     }
 
