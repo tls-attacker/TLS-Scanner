@@ -29,47 +29,47 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-	private List<SignatureAlgorithm> recommendedAlgorithms;
+    private List<SignatureAlgorithm> recommendedAlgorithms;
 
-	private SignatureAlgorithmsGuidelineCheck() {
-		super(null, null);
-	}
+    private SignatureAlgorithmsGuidelineCheck() {
+        super(null, null);
+    }
 
-	public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-			List<SignatureAlgorithm> recommendedAlgorithms) {
-		super(name, requirementLevel);
-		this.recommendedAlgorithms = recommendedAlgorithms;
-	}
+    public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+        List<SignatureAlgorithm> recommendedAlgorithms) {
+        super(name, requirementLevel);
+        this.recommendedAlgorithms = recommendedAlgorithms;
+    }
 
-	public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-			GuidelineCheckCondition condition, List<SignatureAlgorithm> recommendedAlgorithms) {
-		super(name, requirementLevel, condition);
-		this.recommendedAlgorithms = recommendedAlgorithms;
-	}
+    public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition, List<SignatureAlgorithm> recommendedAlgorithms) {
+        super(name, requirementLevel, condition);
+        this.recommendedAlgorithms = recommendedAlgorithms;
+    }
 
-	@Override
-	public GuidelineCheckResult evaluate(ServerReport report) {
-		List<SignatureAndHashAlgorithm> algorithms = report.getSupportedSignatureAndHashAlgorithms();
-		if (algorithms != null) {
-			Set<SignatureAlgorithm> notRecommended = new HashSet<>();
-			for (SignatureAndHashAlgorithm alg : algorithms) {
-				if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
-					notRecommended.add(alg.getSignatureAlgorithm());
-				}
-			}
-			return new SignatureAlgorithmsGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
-					notRecommended);
-		} else {
-			return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
-		}
-	}
+    @Override
+    public GuidelineCheckResult evaluate(ServerReport report) {
+        List<SignatureAndHashAlgorithm> algorithms = report.getSupportedSignatureAndHashAlgorithms();
+        if (algorithms != null) {
+            Set<SignatureAlgorithm> notRecommended = new HashSet<>();
+            for (SignatureAndHashAlgorithm alg : algorithms) {
+                if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
+                    notRecommended.add(alg.getSignatureAlgorithm());
+                }
+            }
+            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
+                notRecommended);
+        } else {
+            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
+        }
+    }
 
-	@Override
-	public String getId() {
-		return "SignatureAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
-	}
+    @Override
+    public String getId() {
+        return "SignatureAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
+    }
 
-	public List<SignatureAlgorithm> getRecommendedAlgorithms() {
-		return recommendedAlgorithms;
-	}
+    public List<SignatureAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
+    }
 }

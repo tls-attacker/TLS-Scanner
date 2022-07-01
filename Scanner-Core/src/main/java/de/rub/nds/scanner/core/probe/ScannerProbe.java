@@ -29,20 +29,20 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
     private long stopTime;
 
     /**
-	 * @return the startTime
-	 */
-	public long getStartTime() {
-		return startTime;
-	}
+     * @return the startTime
+     */
+    public long getStartTime() {
+        return startTime;
+    }
 
-	/**
-	 * @return the stopTime
-	 */
-	public long getStopTime() {
-		return stopTime;
-	}
+    /**
+     * @return the stopTime
+     */
+    public long getStopTime() {
+        return stopTime;
+    }
 
-	public ScannerProbe(ProbeType type) {
+    public ScannerProbe(ProbeType type) {
         this.type = type;
     }
 
