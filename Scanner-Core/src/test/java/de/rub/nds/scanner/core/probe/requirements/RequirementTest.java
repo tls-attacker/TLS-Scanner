@@ -22,7 +22,6 @@ public class RequirementTest {
     public void basicFunctionalityRequirementTest() {
         assertEquals(new Requirement.BaseRequirement().next, Requirement.NO_REQUIREMENT);
 
-        // evaluation
         assertTrue(Requirement.NO_REQUIREMENT.evaluate(new TestReport()));
         assertTrue(new Requirement.BaseRequirement().evaluate(new TestReport()));
     }
