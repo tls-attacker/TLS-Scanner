@@ -17,12 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum FailureResult implements TestResult {
 
-    MISSING_CLIENT_HELLO;
+	MISSING_CLIENT_HELLO;
 
-    private FailureResult() {
-    }
-
-    public static TestResults of(boolean value) {
-        return TestResults.FALSE;
-    }
+	private FailureResult() {
+	}
 }
