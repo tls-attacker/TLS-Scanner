@@ -71,7 +71,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return true;
+        return configSelector.foundWorkingConfig();
     }
 
     @Override

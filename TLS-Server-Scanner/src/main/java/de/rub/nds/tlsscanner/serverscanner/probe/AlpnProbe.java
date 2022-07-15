@@ -37,7 +37,7 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport, Alpn
     }
 
     private List<String> getSupportedAlpnProtocols() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddAlpnExtension(true);
 

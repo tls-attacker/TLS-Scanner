@@ -52,7 +52,7 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
 
     @Override
     public ConnectionClosingResult executeTest() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         configSelector.repairConfig(tlsConfig);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
         tlsConfig.setWorkflowExecutorShouldClose(false);

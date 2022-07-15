@@ -196,7 +196,7 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     private List<NamedGroup> getSpecificGroups(String identifier) {
         List<NamedGroup> secpGroups = new LinkedList<>();
-        for (NamedGroup group : configSelector.getBaseConfig().getDefaultClientNamedGroups()) {
+        for (NamedGroup group : NamedGroup.getImplemented()) {
             if (group.name().contains(identifier)) {
                 secpGroups.add(group);
             }

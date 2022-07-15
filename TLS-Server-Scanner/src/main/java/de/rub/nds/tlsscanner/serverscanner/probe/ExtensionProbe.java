@@ -37,6 +37,7 @@ import java.util.function.Predicate;
 public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport, ExtensionResult> {
 
     private boolean supportsTls13;
+    private boolean supportsPreTls13;
 
     public ExtensionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EXTENSIONS, configSelector);
@@ -50,13 +51,17 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport,
 
     public List<ExtensionType> getSupportedExtensions() {
         Set<ExtensionType> allSupportedExtensions = new HashSet<>();
-        List<ExtensionType> commonExtensions = getCommonExtension(ProtocolVersion.TLS12, suite -> true);
-        if (commonExtensions != null) {
-            allSupportedExtensions.addAll(commonExtensions);
-        }
-        commonExtensions = getCommonExtension(ProtocolVersion.TLS12, CipherSuite::isCBC);
-        if (commonExtensions != null) {
-            allSupportedExtensions.addAll(commonExtensions);
+        List<ExtensionType> commonExtensions = new LinkedList<>();
+
+        if (this.supportsPreTls13) {
+            getCommonExtension(ProtocolVersion.TLS12, suite -> true);
+            if (commonExtensions != null) {
+                allSupportedExtensions.addAll(commonExtensions);
+            }
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS12, CipherSuite::isCBC);
+            if (commonExtensions != null) {
+                allSupportedExtensions.addAll(commonExtensions);
+            }
         }
         if (this.supportsTls13) {
             commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
@@ -128,6 +133,9 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport,
     @Override
     public void adjustConfig(ServerReport report) {
         this.supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+        this.supportsPreTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE;
     }
 
     @Override

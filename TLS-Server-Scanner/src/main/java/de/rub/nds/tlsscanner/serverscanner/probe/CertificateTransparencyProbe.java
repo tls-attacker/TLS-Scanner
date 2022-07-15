@@ -108,32 +108,24 @@ public class CertificateTransparencyProbe
     private void getTlsHandshakeSCTs() {
         supportsHandshakeSCTs = false;
 
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddSignedCertificateTimestampExtension(true);
         State state = new State(tlsConfig);
         executeState(state);
 
-        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
-        if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
-                    .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
-                if (serverHelloMessage != null
-                    && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
+        SignedCertificateTimestampExtensionMessage sctExtensionMessage =
+            getNegotiatedExtension(state.getWorkflowTrace(), SignedCertificateTimestampExtensionMessage.class);
+        if (sctExtensionMessage != null) {
+            byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
-                    SignedCertificateTimestampExtensionMessage sctExtensionMessage =
-                        serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
-                    byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
+            SignedCertificateTimestampListParser sctListParser =
+                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
+            handshakeSctList = sctListParser.parse();
 
-                    SignedCertificateTimestampListParser sctListParser =
-                        new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
-                    handshakeSctList = sctListParser.parse();
-
-                    supportsHandshakeSCTs = true;
-                }
-            }
+            supportsHandshakeSCTs = true;
         }
+
     }
 
     /**

@@ -32,25 +32,17 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     public ProtocolVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, configSelector);
-        toTestList = new LinkedList<>();
-        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
-            toTestList.add(ProtocolVersion.DTLS10_DRAFT);
-            toTestList.add(ProtocolVersion.DTLS10);
-            toTestList.add(ProtocolVersion.DTLS12);
-        } else {
-            toTestList.add(ProtocolVersion.SSL2);
-            toTestList.add(ProtocolVersion.SSL3);
-            toTestList.add(ProtocolVersion.TLS10);
-            toTestList.add(ProtocolVersion.TLS11);
-            toTestList.add(ProtocolVersion.TLS12);
-            toTestList.add(ProtocolVersion.TLS13);
-        }
     }
 
     @Override
     public ProtocolVersionResult executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
+        if (configSelector.foundWorkingTls13Config()) {
+            // the ConfigSelector is currently better at determining 1.3 support
+            supportedVersionList.add(ProtocolVersion.TLS13);
+        }
+
         for (ProtocolVersion version : toTestList) {
             if (isProtocolVersionSupported(version, false)) {
                 supportedVersionList.add(version);
@@ -77,18 +69,13 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         }
         Config tlsConfig;
         List<CipherSuite> cipherSuites = new LinkedList<>();
-        if (!toTest.isTLS13()) {
-            tlsConfig = configSelector.getBaseConfig();
-            if (intolerance) {
-                cipherSuites.addAll(CipherSuite.getImplemented());
-            } else {
-                cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-                cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            }
+        tlsConfig = configSelector.getBaseConfig();
+        if (intolerance) {
+            cipherSuites.addAll(CipherSuite.getImplemented());
         } else {
-            tlsConfig = configSelector.getTls13BaseConfig();
-            cipherSuites.addAll(CipherSuite.getTls13CipherSuites());
+            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         }
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
@@ -135,6 +122,20 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void adjustConfig(ServerReport report) {
+        toTestList = new LinkedList<>();
+        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
+            toTestList.add(ProtocolVersion.DTLS10_DRAFT);
+            toTestList.add(ProtocolVersion.DTLS10);
+            toTestList.add(ProtocolVersion.DTLS12);
+        } else {
+            toTestList.add(ProtocolVersion.SSL2);
+            if (configSelector.foundWorkingConfig()) {
+                toTestList.add(ProtocolVersion.SSL3);
+                toTestList.add(ProtocolVersion.TLS10);
+                toTestList.add(ProtocolVersion.TLS11);
+                toTestList.add(ProtocolVersion.TLS12);
+            }
+        }
     }
 
     @Override

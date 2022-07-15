@@ -51,7 +51,8 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE);
+        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE
+            && configSelector.foundWorkingConfig());
     }
 
     @Override

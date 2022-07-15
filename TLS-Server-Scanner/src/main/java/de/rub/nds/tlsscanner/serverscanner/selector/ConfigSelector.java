@@ -273,4 +273,22 @@ public class ConfigSelector {
     public ServerScannerConfig getScannerConfig() {
         return scannerConfig;
     }
+
+    public boolean foundWorkingConfig() {
+        return workingConfig != null;
+    }
+
+    public boolean foundWorkingTls13Config() {
+        return workingTl13Config != null;
+    }
+
+    public Config getAnyWorkingBaseConfig() {
+        if (workingConfig != null) {
+            return getBaseConfig();
+        }
+        if (workingTl13Config != null) {
+            return getTls13BaseConfig();
+        }
+        throw new RuntimeException("No working Config found for tested host");
+    }
 }

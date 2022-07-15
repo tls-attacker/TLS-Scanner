@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -28,13 +29,17 @@ public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     public RecordFragmentationResult executeTest() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setDefaultMaxRecordData(50);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
+        HandshakeMessageType expectedFinalMessage = HandshakeMessageType.SERVER_HELLO_DONE;
+        if (state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13) {
+            expectedFinalMessage = HandshakeMessageType.FINISHED;
+        }
         return new RecordFragmentationResult(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
+            WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace()));
     }
 
     @Override

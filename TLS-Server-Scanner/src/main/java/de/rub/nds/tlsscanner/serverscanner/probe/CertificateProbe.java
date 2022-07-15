@@ -64,17 +64,19 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
         Set<CertificateChain> certificates = new HashSet<>();
-        if (scanForRsaCert) {
-            certificates.addAll(getRsaCerts());
-        }
-        if (scanForDssCert) {
-            certificates.addAll(getDssCerts());
-        }
-        if (scanForEcdsaCert) {
-            certificates.addAll(getEcdsaCerts());
-        }
-        if (scanForGostCert) {
-            certificates.addAll(getGostCert());
+        if (configSelector.foundWorkingConfig()) {
+            if (scanForRsaCert) {
+                certificates.addAll(getRsaCerts());
+            }
+            if (scanForDssCert) {
+                certificates.addAll(getDssCerts());
+            }
+            if (scanForEcdsaCert) {
+                certificates.addAll(getEcdsaCerts());
+            }
+            if (scanForGostCert) {
+                certificates.addAll(getGostCert());
+            }
         }
         if (scanForTls13) {
             certificates.addAll(getTls13Certs());

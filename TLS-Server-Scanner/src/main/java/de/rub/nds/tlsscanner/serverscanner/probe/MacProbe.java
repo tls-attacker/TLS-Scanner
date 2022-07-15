@@ -357,7 +357,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacRe
         }
         allSuiteList.addAll(report.getCipherSuites());
         for (CipherSuite suite : allSuiteList) {
-            if (suite.isUsingMac()) {
+            if (suite.isUsingMac() && configSelector.foundWorkingConfig()) {
                 return true;
             }
         }

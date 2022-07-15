@@ -199,7 +199,7 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return (report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty() || supportsOnlyTls13(report)));
+        return (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty() && !supportsOnlyTls13(report));
     }
 
     @Override
@@ -221,11 +221,11 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
      * stalling of probes that depend on this one
      */
     private boolean supportsOnlyTls13(ServerReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.FALSE
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.FALSE
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.FALSE
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.FALSE
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.FALSE;
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) != TestResults.TRUE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) != TestResults.TRUE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) != TestResults.TRUE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) != TestResults.TRUE
+            && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) != TestResults.TRUE;
     }
 
     private Config getBaseConfig() {

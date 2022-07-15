@@ -284,6 +284,11 @@ public class CertificateReportGenerator {
                 }
             } catch (IOException e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
+            } catch (Exception ignored) {
+                // OCSP exceptions should never stop the report generation
+                // Exceptions other than IOException often aren't helpful for
+                // users but only for developers
+                LOGGER.debug("OCSP request for certificate status failed", ignored);
             }
         }
     }

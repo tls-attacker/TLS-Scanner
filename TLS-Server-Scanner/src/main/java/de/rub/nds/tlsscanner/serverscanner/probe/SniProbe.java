@@ -29,7 +29,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport, SniRe
 
     @Override
     public SniResult executeTest() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddServerNameIndicationExtension(false);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
