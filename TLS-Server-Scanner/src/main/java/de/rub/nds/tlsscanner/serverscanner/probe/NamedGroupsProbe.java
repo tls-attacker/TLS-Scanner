@@ -215,6 +215,11 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private TlsContext testGroups(List<NamedGroup> groupList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(groupList);
         configSelector.repairConfig(tlsConfig);
+        if (groupList.stream().anyMatch(NamedGroup::isDhGroup)) {
+            // usually, we do not want this extension if no ecc cipher suites
+            // are listed but it is required to test for listed FFDHE groups
+            tlsConfig.setAddEllipticCurveExtension(true);
+        }
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
