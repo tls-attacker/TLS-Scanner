@@ -9,8 +9,15 @@
 
 package de.rub.nds.tlsscanner.clientscanner;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -19,9 +26,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import java.io.IOException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReportSerializer;
 
 public class Main {
 
@@ -61,6 +66,10 @@ public class Main {
                 ConsoleLogger.CONSOLE.info("{}Scanned in: {}s\n{}", AnsiColor.RESET.getCode(),
                     ((System.currentTimeMillis() - time) / 1000),
                     report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                if (config.isWriteReportToFile()) {
+                    File outputFile = new File(config.getOutputFile());
+                    ClientReportSerializer.serialize(outputFile, report);
+                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }

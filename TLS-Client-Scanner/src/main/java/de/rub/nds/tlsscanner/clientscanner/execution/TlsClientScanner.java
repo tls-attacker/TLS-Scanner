@@ -9,8 +9,17 @@
 
 package de.rub.nds.tlsscanner.clientscanner.execution;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.function.Function;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
+import de.rub.nds.scanner.core.passive.StatsWriter;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
@@ -23,11 +32,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.execution.TlsScanner;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.function.Function;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 
 public final class TlsClientScanner extends TlsScanner {
 
@@ -53,6 +58,16 @@ public final class TlsClientScanner extends TlsScanner {
         addProbeToProbeList(new FreakProbe(parallelExecutor, config));
         addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
         addProbeToProbeList(new VersionProbe(parallelExecutor, config));
+        // Init StatsWriter
+        setDefaultProbeWriter();
+    }
+
+    private void setDefaultProbeWriter() {
+        for (ScannerProbe probe : probeList) {
+            StatsWriter statsWriter = new StatsWriter();
+            statsWriter.addExtractor(new RandomExtractor());
+            probe.setWriter(statsWriter);
+        }
     }
 
     public ClientReport scan() {

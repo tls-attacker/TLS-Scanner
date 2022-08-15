@@ -78,8 +78,10 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
             config.setDefaultSelectedProtocolVersion(version);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-            trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
-            // confirm success
+            if (!version.isTLS13()) {
+                trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
+                                                                         // confirm success
+            }
             State state = new State(config, trace);
             executeState(state);
             if (state.getWorkflowTrace().executedAsPlanned()) {
