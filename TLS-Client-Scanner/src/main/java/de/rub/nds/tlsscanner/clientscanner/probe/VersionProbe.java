@@ -65,7 +65,8 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
                 config = scannerConfig.createConfig();
             }
             List<CipherSuite> suitableCiphersuites = clientAdvertisedCipherSuites.stream()
-                .filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());
+                .filter(suite -> suite.isSupportedInProtocol(version) && suite.isRealCipherSuite())
+                .collect(Collectors.toList());
             if (suitableCiphersuites.size() == 0) {
                 CipherSuite fallback = clientAdvertisedCipherSuites.get(0);
                 LOGGER.warn("No suitable cipher suite found for {}. Using {} instead.", version, fallback);
