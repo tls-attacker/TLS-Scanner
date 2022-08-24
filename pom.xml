@@ -327,6 +327,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
                 <version>3.0.0-M1</version>
             </plugin>
         </plugins>
