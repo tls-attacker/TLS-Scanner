@@ -18,20 +18,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ListResult<T> implements TestResult {
 
-    private final String name;
-    private final List<T> list;
+	private final String name;
+	private final List<T> list;
 
-    public ListResult(List<T> list, String name) {
-        this.list = list;
-        this.name = name;
-    }
+	public ListResult(List<T> list, String name) {
+		this.list = list;
+		this.name = name;
+	}
 
-    public List<T> getList() {
-        return this.list;
-    }
+	public List<T> getList() {
+		return this.list;
+	}
 
-    @Override
-    public String name() {
-        return this.name;
-    }
+	@Override
+	public String name() {
+		return this.name;
+	}
 }
