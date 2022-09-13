@@ -16,14 +16,12 @@ import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -49,6 +47,7 @@ public class ConfigSelector {
     }
 
     private final ServerScannerConfig scannerConfig;
+    private final ParallelExecutor parallelExecutor;
     private Config workingConfig;
     private String configProfileIdentifier;
     private Config workingTl13Config;
@@ -65,8 +64,9 @@ public class ConfigSelector {
     private boolean speaksProtocol = false;
     private boolean isHandshaking = false;
 
-    public ConfigSelector(ServerScannerConfig scannerConfig) {
+    public ConfigSelector(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         this.scannerConfig = scannerConfig;
+        this.parallelExecutor = parallelExecutor;
     }
 
     public boolean findWorkingConfigs() {
@@ -141,9 +141,7 @@ public class ConfigSelector {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
-        WorkflowExecutor executor =
-            WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
-        executor.executeWorkflow();
+        parallelExecutor.bulkExecuteStateTasks(state);
 
         List<AbstractRecord> reveicedRecords = state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
         if ((reveicedRecords != null && !reveicedRecords.isEmpty() && reveicedRecords.get(0) instanceof Record)

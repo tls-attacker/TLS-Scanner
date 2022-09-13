@@ -121,10 +121,10 @@ public final class TlsServerScanner extends TlsScanner {
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getProbes());
         this.config = config;
-        this.configSelector = new ConfigSelector(config);
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
             new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        this.configSelector = new ConfigSelector(config, parallelExecutor);
         setCallbacks();
         fillProbeLists();
     }
@@ -132,7 +132,7 @@ public final class TlsServerScanner extends TlsScanner {
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(config.getProbes());
         this.config = config;
-        this.configSelector = new ConfigSelector(config);
+        this.configSelector = new ConfigSelector(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
@@ -146,7 +146,7 @@ public final class TlsServerScanner extends TlsScanner {
         this.afterList.addAll(afterList);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        this.configSelector = new ConfigSelector(config);
+        this.configSelector = new ConfigSelector(config, parallelExecutor);
         closeAfterFinishParallel = false;
         setDefaultProbeWriter();
         setCallbacks();
