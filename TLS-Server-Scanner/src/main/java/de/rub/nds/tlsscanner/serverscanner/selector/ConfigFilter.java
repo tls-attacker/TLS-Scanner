@@ -50,6 +50,9 @@ public class ConfigFilter {
             case CIPHERSUITE_SRP:
             case CIPHERSUITE_CAMELLIA:
             case CIPHERSUITE_UNOFFICIAL:
+            case CIPHERSUITE_DES:
+            case CIPHERSUITE_RC4:
+            case CIPHERSUITE_NULL:
                 String filteredEnumSubstring = filterType.name().replace("CIPHERSUITE_", "");
                 reducedCipherSuites = reducedCipherSuites.stream()
                     .filter(cipherSuite -> !cipherSuite.name().contains(filteredEnumSubstring))
@@ -88,6 +91,15 @@ public class ConfigFilter {
         List<SignatureAndHashAlgorithm> reducedSignatureAlgorithms =
             baseConfig.getDefaultClientSupportedSignatureAndHashAlgorithms();
         switch (filterType) {
+            case SIGNATUREALGORITHM_DEPRECATED:
+                reducedSignatureAlgorithms = reducedSignatureAlgorithms.stream()
+                    .filter(algo -> !algo.name().contains("NONE") && !algo.name().contains("MD5")
+                        && !algo.name().contains("SHA1") && !algo.name().contains("SHA224"))
+                    .collect(Collectors.toList());
+                break;
+            case SIGNATUREALGORITHM_RSA_PSS_PSS:
+            case SIGNATUREALGORITHM_ED:
+            case SIGNATUREALGORITHM_GOST:
             case SIGNATUREALGORITHM_ANON:
             case SIGNATUREALGORITHM_DSA:
             case SIGNATUREALGORITHM_GREASE:
