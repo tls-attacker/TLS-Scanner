@@ -15,7 +15,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca;
  *
  * ROCA detector using the moduli detector.
  * This detector port is unmaintained. Please refer to the original Python implementation for more details.
- * 
+ *
  * Thanks for giving us permission to use your code @crocs-muni
  */
 import java.math.BigInteger;

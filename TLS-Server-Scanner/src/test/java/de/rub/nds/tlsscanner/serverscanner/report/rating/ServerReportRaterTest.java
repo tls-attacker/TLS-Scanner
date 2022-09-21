@@ -9,17 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
-import org.junit.Test;
 
 public class ServerReportRaterTest {
 

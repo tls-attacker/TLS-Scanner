@@ -2021,6 +2021,17 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <tlsAnalyzedProperty>SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS</tlsAnalyzedProperty>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <tlsAnalyzedProperty>SUPPORTS_REORDERING</tlsAnalyzedProperty>
         <propertyRatingInfluencers>
             <result>TRUE</result>

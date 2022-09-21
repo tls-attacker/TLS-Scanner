@@ -31,8 +31,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.Nullable;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -172,7 +171,6 @@ public class CertificateReportGenerator {
         }
     }
 
-    @Nullable
     public static SignatureAndHashAlgorithm getSignatureAndHashAlgorithm(org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {

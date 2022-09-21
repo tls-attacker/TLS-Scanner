@@ -9,34 +9,25 @@
 
 package de.rub.nds.tlsscanner.core.vector.response;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
-import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.record.BlobRecord;
+import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.LinkedList;
 import java.util.List;
-import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import java.util.Arrays;
-import java.util.Collection;
-
-@SuppressWarnings("SpellCheckingInspection")
-@RunWith(Parameterized.class)
 
 public class FingerprintCheckerTest {
 
@@ -112,9 +103,7 @@ public class FingerprintCheckerTest {
 
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> generateData() {
-
+    public static List<Arguments> provideTestVectors() {
         HandshakeMessage clientHelloMsg = parseMessage(HandshakeMessageType.CLIENT_HELLO.getValue(), 508,
             ProtocolVersion.TLS12.getValue(), ArrayConverter.hexStringToByteArray(
                 "010001fc03036ced07c5f0707d08d6c98ab375b523236492233a56eaec0d8feb2565ba7c337720c6b3ba7f6fdf5c643a038d40b56a8db014a6c90359432f3ccbb6db40fa76a9200022130113031302c02bc02fcca9cca8c02cc030c00ac009c013c014009c009d002f0035010001910000001a00180000157777772e7363686e6569657266616374732e636f6d00170000ff01000100000a000e000c001d00170018001901000101000b00020100002300000010000e000c02683208687474702f312e310005000501000000000022000a000804030503060302030033006b0069001d00204ca75275f38541b0628d64892200b8b184c7b7fd836b4c8c9b3124e753d7577a00170041040c6eae5febeb82f27d09c5cb7155682da96bf0863aeaff721f556885790a3819449702afd594b8c088aa1ea4effaf210867a0c0e430ad460ffe16847b6d1cbc4002b00050403040303000d0018001604030503060308040805080604010501060102030201002d00020101001c0002400100150081000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"));
@@ -219,11 +208,13 @@ public class FingerprintCheckerTest {
                 "0200004a03030fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f2400c030000022ff0100010000000000000b0004030001020023000000100005000302683200170000"));
         ModifiableByteArray serverHelloRandomDiffContent = new ModifiableByteArray();
         serverHelloRandomDiffContent.setOriginalValue(ServerHelloMessage.getHelloRetryRequestRandom());
+        assert serverHelloMsgDiffContent != null;
         serverHelloMsgDiffContent.setRandom(serverHelloRandomDiffContent);
 
         ModifiableByteArray serverHelloRandom = new ModifiableByteArray();
         serverHelloRandom.setOriginalValue(
             ArrayConverter.hexStringToByteArray("0fa96863574fc48715a6aa266f5f954a2a3fbcaa6a359b663c21dde3c71e6f24"));
+        assert serverHelloMsg != null;
         serverHelloMsg.setRandom(serverHelloRandom);
 
         List<ProtocolMessage> msgListTestMsgContent = new LinkedList<>();
@@ -425,67 +416,58 @@ public class FingerprintCheckerTest {
         stateTestSocketStateWithPriority = SocketState.CLOSED;
         expectedResultSocketStateWithPriority = EqualityError.SOCKET_STATE;
 
-        return Arrays.asList(new Object[][] {
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestClient,
-                stateTestClient, expectedResultClient },
-            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestServer, recordListTestServer,
-                stateTestServer, expectedResultServer },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClass, recordListTestClient,
-                stateTestClient, expectedResultMsgClass },
-            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent, recordListTestServer,
-                stateTestServer, expectedResultMsgContent },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCount, recordListTestClient,
-                stateTestClient, expectedResultMsgCount },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestRecordCLass,
-                stateTestClient, expectedResultRecordClass },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestRecordContent,
-                stateTestClient, expectedResultRecordContent },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
-                recordListTestRecordContentType, stateTestClient, expectedResultRecordContentType },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestRecordCount,
-                stateTestClient, expectedResultRecordCount },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestRecordVersion,
-                stateTestClient, expectedResultRecordVersion },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestClient,
-                stateTestSocketState, expectedResultSocketState },
+        return List.of(
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestClient, stateTestClient, expectedResultClient),
+            Arguments.of(msgListTestServer, recordListTestServer, stateTestServer, msgListTestServer,
+                recordListTestServer, stateTestServer, expectedResultServer),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClass,
+                recordListTestClient, stateTestClient, expectedResultMsgClass),
+            Arguments.of(msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent,
+                recordListTestServer, stateTestServer, expectedResultMsgContent),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCount,
+                recordListTestClient, stateTestClient, expectedResultMsgCount),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordCLass, stateTestClient, expectedResultRecordClass),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordContent, stateTestClient, expectedResultRecordContent),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordContentType, stateTestClient, expectedResultRecordContentType),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordCount, stateTestClient, expectedResultRecordCount),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordVersion, stateTestClient, expectedResultRecordVersion),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestClient, stateTestSocketState, expectedResultSocketState),
             // Tests with PriorityCheck regarding EqualityError.Record_Content
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClassWithPriority,
-                recordListTestClientWithContentError, stateTestClient, expectedResultMsgClassWithPriority },
-            { msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent,
-                recordListTestServerWithContentError, stateTestServer, expectedResultMsgContentWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCountWithPriority,
-                recordListTestClientWithContentError, stateTestClient, expectedResultMsgCountWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
-                recordListTestRecordCLassWithPriority, stateTestClient, expectedResultRecordClassWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgClassWithPriority,
+                recordListTestClientWithContentError, stateTestClient, expectedResultMsgClassWithPriority),
+            Arguments.of(msgListTestServer, recordListTestServer, stateTestServer, msgListTestMsgContent,
+                recordListTestServerWithContentError, stateTestServer, expectedResultMsgContentWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestMsgCountWithPriority,
+                recordListTestClientWithContentError, stateTestClient, expectedResultMsgCountWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordCLassWithPriority, stateTestClient, expectedResultRecordClassWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
                 recordListTestRecordContentTypeWithPriority, stateTestClient,
-                expectedResultRecordContentTypeWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
-                recordListTestRecordCountWithPriority, stateTestClient, expectedResultRecordCountWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
-                recordListTestRecordVersionWithPriority, stateTestClient, expectedResultRecordVersionWithPriority },
-            { msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient, recordListTestClient,
-                stateTestSocketStateWithPriority, expectedResultSocketStateWithPriority }, });
-
+                expectedResultRecordContentTypeWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordCountWithPriority, stateTestClient, expectedResultRecordCountWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestRecordVersionWithPriority, stateTestClient, expectedResultRecordVersionWithPriority),
+            Arguments.of(msgListTestClient, recordListTestClient, stateTestClient, msgListTestClient,
+                recordListTestClient, stateTestSocketStateWithPriority, expectedResultSocketStateWithPriority));
     }
 
-    private final ResponseFingerprint fingerprint1;
-    private final ResponseFingerprint fingerprint2;
-    private final EqualityError expectedError;
-
-    public FingerprintCheckerTest(List<ProtocolMessage> msgList1, List<AbstractRecord> recordList1, SocketState state1,
-        List<ProtocolMessage> msgList2, List<AbstractRecord> recordList2, SocketState state2, EqualityError error) {
-        fingerprint1 = new ResponseFingerprint(msgList1, recordList1, state1);
-        fingerprint2 = new ResponseFingerprint(msgList2, recordList2, state2);
-        expectedError = error;
-
+    @ParameterizedTest
+    @MethodSource("provideTestVectors")
+    public void testCheckEquality(List<ProtocolMessage> providedMsgList1, List<AbstractRecord> providedRecordList1,
+        SocketState providedState1, List<ProtocolMessage> providedMsgList2, List<AbstractRecord> providedRecordList2,
+        SocketState providedState2, EqualityError expectedError) {
+        ResponseFingerprint fingerprint1 =
+            new ResponseFingerprint(providedMsgList1, providedRecordList1, providedState1);
+        ResponseFingerprint fingerprint2 =
+            new ResponseFingerprint(providedMsgList2, providedRecordList2, providedState2);
+        assertEquals(expectedError, FingerprintChecker.checkEquality(fingerprint1, fingerprint2));
     }
-
-    @Test
-    public void testCheckEquality() {
-
-        assertEquals(expectedError, FingerprintChecker.checkEquality(this.fingerprint1, this.fingerprint2));
-
-    }
-
 }

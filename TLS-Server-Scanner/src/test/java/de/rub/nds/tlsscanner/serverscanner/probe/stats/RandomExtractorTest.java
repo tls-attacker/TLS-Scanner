@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -20,9 +23,8 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test-Class for RandomExtractor.java, which currently looks for the serverHello-message of the TLS-Handshake and
@@ -45,12 +47,9 @@ public class RandomExtractorTest {
         + "42DD3C46FBCB6C7C2D620B2AF65E98A8C06BEBA0FF");
     private SendAction testClientHello;
 
-    public RandomExtractorTest() {
-    }
-
     /**
      * Helper Method for generating serverHello-Messages
-     * 
+     *
      * @param  rndBytes
      *                  the random-bytes of the serverHello Message
      * @return          serverHello Message with the random-bytes set.
@@ -67,7 +66,7 @@ public class RandomExtractorTest {
      * Setting up a test ClientHello-message for filtering and an empty WorkflowTrace for filling it with the generated
      * ServerHello-messages and an fresh extractor.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         testClientHello = new SendAction();
         ClientHelloMessage msgClient = new ClientHelloMessage();

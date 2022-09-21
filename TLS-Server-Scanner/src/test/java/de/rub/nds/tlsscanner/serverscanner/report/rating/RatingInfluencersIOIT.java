@@ -9,21 +9,29 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
+import de.rub.nds.tlsattacker.util.tests.TestCategories;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
-import org.junit.Test;
 
-public class RecommendationsIOTest {
+public class RatingInfluencersIOIT {
 
+    /**
+     * Test of write method, of class RatingInfluencersIO.
+     */
     @Test
-    public void testWrite_OutputStream_Recommendations() throws Exception {
-        Recommendations recommendations = new Recommendations(new LinkedList<>());
+    @Tag(TestCategories.INTEGRATION_TEST)
+    public void testWrite_OutputStream_RatingInfluencers() throws Exception {
+        RatingInfluencers ratingInfluencers = new RatingInfluencers(new LinkedList<>());
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        RecommendationsIO.write(stream, recommendations);
+        RatingInfluencersIO.write(stream, ratingInfluencers);
         byte[] byteArray = stream.toByteArray();
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
-        Recommendations read = RecommendationsIO.read(inputStream);
+        RatingInfluencers read = RatingInfluencersIO.read(inputStream);
     }
+
 }

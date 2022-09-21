@@ -9,16 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyResultRatingInfluencerTest {
-
-    public PropertyResultRatingInfluencerTest() {
-    }
 
     /**
      * Test of compareTo method, of class PropertyResultRatingInfluencer.

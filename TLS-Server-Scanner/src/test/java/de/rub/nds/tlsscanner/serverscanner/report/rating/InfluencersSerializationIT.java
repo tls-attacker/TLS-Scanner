@@ -9,23 +9,25 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
+import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
-import javax.xml.bind.JAXBException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-public class InfluencersSerializationTest {
+public class InfluencersSerializationIT {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -33,8 +35,8 @@ public class InfluencersSerializationTest {
 
     private RatingInfluencers result;
 
-    @Before
-    public void setUp() throws JAXBException {
+    @BeforeEach
+    public void setUp() {
         LinkedList<RatingInfluencer> influencers = new LinkedList<>();
 
         original = new RatingInfluencers(influencers);
@@ -53,13 +55,14 @@ public class InfluencersSerializationTest {
     }
 
     @Test
+    @Tag(TestCategories.INTEGRATION_TEST)
     public void testSerializeDeserializeSimple() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         RatingInfluencersIO.write(stream, original);
         result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
-        assertEquals("Influencer length check.", original.getRatingInfluencers().size(),
-            result.getRatingInfluencers().size());
+        assertEquals(original.getRatingInfluencers().size(), result.getRatingInfluencers().size(),
+            "Influencer length check.");
 
         RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
         RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);

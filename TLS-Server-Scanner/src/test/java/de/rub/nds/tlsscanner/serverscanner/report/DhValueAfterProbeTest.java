@@ -9,7 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -21,8 +21,8 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * TestSet should check if DhValueAfterProbe detects insecure DH-Parameters as insecure ones and secure parameters as
@@ -38,7 +38,7 @@ public class DhValueAfterProbeTest {
     private DhValueAfterProbe test;
 
     // initializes attributes
-    @Before
+    @BeforeEach
     public void setup() {
         report = new ServerReport("sample", 443);
         cipherMap = new HashMap<>();
@@ -50,7 +50,6 @@ public class DhValueAfterProbeTest {
     /**
      * Test if method analyze of class DhValueAfterProbe recognizes a secure public key as such
      */
-    @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void secureDhParamTestAnalyze() {
         BigInteger securePubkey, secureMod;
@@ -97,7 +96,6 @@ public class DhValueAfterProbeTest {
     /**
      * Test if method analyze detects reused publickey
      */
-    @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void secureReusedDhPubkeyTestAnalyze() {
         BigInteger secureKey, secureMod;

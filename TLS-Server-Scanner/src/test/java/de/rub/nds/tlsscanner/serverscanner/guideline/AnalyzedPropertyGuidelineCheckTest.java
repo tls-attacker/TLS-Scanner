@@ -9,13 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AnalyzedPropertyGuidelineCheckTest {
 
@@ -29,7 +30,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -42,7 +43,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 
     @Test
@@ -54,6 +55,6 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        Assert.assertEquals(TestResults.NOT_TESTED_YET, result.getResult());
+        assertEquals(TestResults.NOT_TESTED_YET, result.getResult());
     }
 }

@@ -9,14 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
 
@@ -30,7 +32,7 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
             new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -43,6 +45,6 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
             new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 }

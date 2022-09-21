@@ -9,18 +9,20 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding.vector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class VeryShortPaddingGeneratorTest {
 
     private VeryShortPaddingGenerator generator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         generator = new VeryShortPaddingGenerator();
     }
@@ -32,8 +34,8 @@ public class VeryShortPaddingGeneratorTest {
                 List<PaddingVector> vectors = generator.getVectors(suite, ProtocolVersion.TLS12);
                 for (PaddingVector vector : vectors) {
                     int length = vector.getRecordLength(suite, ProtocolVersion.TLS12, 4);
-                    assertEquals("We only create vectors of the same length to omit false positives",
-                        VeryShortPaddingGenerator.DEFAULT_CIPHERTEXT_LENGTH, length);
+                    assertEquals(VeryShortPaddingGenerator.DEFAULT_CIPHERTEXT_LENGTH, length,
+                        "We only create vectors of the same length to omit false positives");
                 }
             }
         }

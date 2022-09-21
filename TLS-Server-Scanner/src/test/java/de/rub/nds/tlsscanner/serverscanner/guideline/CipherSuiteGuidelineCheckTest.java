@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -16,10 +18,10 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class CipherSuiteGuidelineCheckTest {
 
@@ -36,13 +38,13 @@ public class CipherSuiteGuidelineCheckTest {
             new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),
                 Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
 
         check = new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS13),
             Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
 
         result = check.evaluate(report);
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -55,6 +57,6 @@ public class CipherSuiteGuidelineCheckTest {
             new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),
                 Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 }

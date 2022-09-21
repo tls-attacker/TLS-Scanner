@@ -9,27 +9,29 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-public class RecommendationsSerializationTest {
+public class RecommendationsSerializationIT {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -45,7 +47,7 @@ public class RecommendationsSerializationTest {
 
     private Unmarshaller um;
 
-    @Before
+    @BeforeEach
     public void setUp() throws JAXBException {
 
         List<Recommendation> propertyRecommendations = new LinkedList<>();
@@ -67,6 +69,7 @@ public class RecommendationsSerializationTest {
     }
 
     @Test
+    @Tag(TestCategories.INTEGRATION_TEST)
     public void testSerializeDeserializeSimple() throws Exception {
         m.marshal(original, writer);
 
@@ -76,8 +79,8 @@ public class RecommendationsSerializationTest {
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
 
-        assertEquals("Recommendation length check.", original.getRecommendations().size(),
-            result.getRecommendations().size());
+        assertEquals(original.getRecommendations().size(), result.getRecommendations().size(),
+            "Recommendation length check.");
 
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);

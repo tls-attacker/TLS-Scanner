@@ -21,17 +21,12 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 
 public class ProbeResultTest {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    @Before
-    public void setUp() {
-    }
 
     /**
      * Test of getFlawString method, of class TestResults.

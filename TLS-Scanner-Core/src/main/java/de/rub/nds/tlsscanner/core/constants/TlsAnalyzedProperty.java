@@ -11,9 +11,9 @@ package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -168,7 +168,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
      */
     HAS_ALPN_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     /**
-     * 256 - 511 <-- ch should be bigger than this
+     * 256 - 511 &lt;-- ch should be bigger than this
      */
     HAS_CLIENT_HELLO_LENGTH_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     /**

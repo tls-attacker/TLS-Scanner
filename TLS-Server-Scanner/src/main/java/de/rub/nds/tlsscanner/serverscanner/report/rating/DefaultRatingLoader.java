@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

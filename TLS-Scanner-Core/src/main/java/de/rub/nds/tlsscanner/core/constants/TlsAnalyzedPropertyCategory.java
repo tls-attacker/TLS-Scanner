@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {

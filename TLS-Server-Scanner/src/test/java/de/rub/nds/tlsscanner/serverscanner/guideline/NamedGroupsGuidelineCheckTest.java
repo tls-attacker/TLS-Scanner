@@ -9,15 +9,17 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class NamedGroupsGuidelineCheckTest {
 
@@ -30,7 +32,7 @@ public class NamedGroupsGuidelineCheckTest {
             new NamedGroupsGuidelineCheck(null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),
                 Collections.singletonList(NamedGroup.SECP160K1), false, 1);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -42,11 +44,11 @@ public class NamedGroupsGuidelineCheckTest {
             new NamedGroupsGuidelineCheck(null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),
                 Collections.singletonList(NamedGroup.SECP256R1), false, 1);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
 
         check = new NamedGroupsGuidelineCheck(null, null, Collections.singletonList(NamedGroup.SECP160R1),
             Collections.singletonList(NamedGroup.SECP160K1), false, 1);
         result = check.evaluate(report);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 }
