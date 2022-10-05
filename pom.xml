@@ -9,7 +9,7 @@
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>4.3.1-SNAPSHOT</version>
+    <version>5.0.0</version>
     <packaging>pom</packaging>
     
     <name>TLS-Scanner</name>
@@ -43,7 +43,8 @@
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
-    </scm>
+      <tag>v5.0.0</tag>
+  </scm>
 
     <modules>
         <module>Scanner-Core</module>
