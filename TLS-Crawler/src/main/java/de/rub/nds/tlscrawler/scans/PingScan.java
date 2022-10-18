@@ -1,39 +1,48 @@
 /**
- * TLS Crawler
- * <p>
- * Licensed under Apache 2.0
- * <p>
- * Copyright 2017 Ruhr-University Bochum
+ * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+ *
+ * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.ScanTarget;
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanResult;
+import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.Document;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
-import lombok.extern.log4j.Log4j2;
-import org.bson.Document;
 
 /**
  * A simple scan testing whether a host is available at a given IP address.
- *
- * @author janis.fliegenschmidt@rub.de
  */
-@Log4j2
-public class PingScan implements IScan {
+public class PingScan extends Scan {
 
-    private static final String name = "ping_scan";
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int timeOutMs = 5000;
 
-    // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with unique advantages and disadvantages to
+    public PingScan(ScanJob scanJob, long rabbitMqAckTag, RabbitMqOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider) {
+        super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
+    }
+
+    // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with
+    // unique advantages and disadvantages to
     // each. Yeah. Standard port: Echo service, port nr 7
     private static boolean isReachable(String address, int port) {
-        log.trace("isReachable()");
+        LOGGER.trace("isReachable()");
 
         if (port < 1 || port > 65535) {
-            log.error("Tried connecting to a port outside the 16-bit range.");
+            LOGGER.error("Tried connecting to a port outside the 16-bit range.");
             throw new IllegalArgumentException("port must be in range 1-65535.");
         }
 
@@ -46,28 +55,26 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
+    public void run() {
+        LOGGER.trace("scan()");
 
-    @Override
-    public Document scan(ScanTarget target) {
-        log.trace("scan()");
+        Document result = new Document();
+        result.put("timestamp", Instant.now());
+        result.put("timeout", timeOutMs);
 
-        Document document = new Document();
-        document.put("timestamp", Instant.now());
-        document.put("timeout", timeOutMs);
-
-
-        if (isReachable(target.getIp(), target.getPort())) {
-            document.put("reachablePorts", new ArrayList<>(target.getPort()));
-            document.put("unreachablePorts", new ArrayList<>());
+        if (isReachable(scanJob.getScanTarget().getIp(), scanJob.getScanTarget().getPort())) {
+            result.put("reachablePorts", new ArrayList<>(scanJob.getScanTarget().getPort()));
+            result.put("unreachablePorts", new ArrayList<>());
         } else {
-            document.put("reachablePorts", new ArrayList<>());
-            document.put("unreachablePorts", new ArrayList<>(target.getPort()));
+            result.put("reachablePorts", new ArrayList<>());
+            result.put("unreachablePorts", new ArrayList<>(scanJob.getScanTarget().getPort()));
         }
 
-        return document;
+        persistenceProvider.insertScanResult(new ScanResult(scanJob.getBulkScanId(), scanJob.getScanTarget(), result), scanJob.getDbName(), scanJob.getCollectionName());
+
+        if (scanJob.isMonitored()) {
+            orchestrationProvider.notifyOfDoneScanJob(scanJob);
+        }
     }
 
 }

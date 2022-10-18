@@ -1,63 +1,73 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+ *
+ * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlscrawler.data;
 
-import de.rub.nds.tlsattacker.core.constants.StarttlsType;
-import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
-import de.rub.nds.tlscrawler.scans.IScan;
-import de.rub.nds.tlscrawler.scans.NullScan;
-import de.rub.nds.tlscrawler.scans.PingScan;
-import de.rub.nds.tlscrawler.scans.TlsScan;
-import java.io.Serializable;
-import lombok.Getter;
-import lombok.Setter;
+import de.rub.nds.tlscrawler.constant.Status;
 
-@Getter
-@Setter
+import java.io.Serializable;
+
 public class ScanJob implements Serializable {
 
-    private String scanName;
+    private ScanTarget scanTarget;
 
-    private String workspace;
+    private ScanConfig scanConfig;
 
-    private String scan;
+    private String bulkScanId;
 
-    private int port;
+    private boolean isMonitored;
 
-    private int reexecutions;
+    private String dbName;
 
-    private int timeout;
+    private String collectionName;
 
-    private StarttlsType starttlsType;
+    private Status status;
 
-    private ScanJob() {
+    public ScanJob(ScanTarget scanTarget, ScanConfig scanConfig, String bulkScanId, boolean isMonitored, String dbName, String collectionName, Status status) {
+        this.scanTarget = scanTarget;
+        this.scanConfig = scanConfig;
+        this.bulkScanId = bulkScanId;
+        this.isMonitored = isMonitored;
+        this.dbName = dbName;
+        this.collectionName = collectionName;
+        this.status = status;
     }
 
-    public ScanJob(String scanName, String workspace, String scan, int port, int reexecutions, int timeout, StarttlsType starttlsType) {
-        this.scanName = scanName;
-        this.workspace = workspace;
-        this.scan = scan;
-        this.reexecutions = reexecutions;
-        this.timeout = timeout;
-        this.port = port;
-        this.starttlsType = starttlsType;
+    public ScanTarget getScanTarget() {
+        return scanTarget;
     }
 
-
-    public IScan createIScanObject(WorkerCommandConfig config) {
-        switch (getScan()) {
-            case "tls":
-                return new TlsScan(getTimeout(), config.getParallelProbeThreads(), getReexecutions(), starttlsType);
-            case "ping":
-                return new PingScan();
-            case "null":
-                return new NullScan();
-            default:
-                throw new UnsupportedOperationException("Scan " + getScan() + " not implemented");
-        }
+    public ScanConfig getScanConfig() {
+        return scanConfig;
     }
 
+    public String getBulkScanId() {
+        return bulkScanId;
+    }
+
+    public boolean isMonitored() {
+        return isMonitored;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public String getCollectionName() {
+        return collectionName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

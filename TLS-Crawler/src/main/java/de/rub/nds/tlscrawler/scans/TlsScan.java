@@ -1,85 +1,93 @@
 /**
- * TLS Crawler
- * <p>
- * Licensed under Apache 2.0
- * <p>
- * Copyright 2017 Ruhr-University Bochum
+ * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+ *
+ * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlscrawler.data.ScanTarget;
-import de.rub.nds.tlsscanner.serverscanner.TlsScanner;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import lombok.extern.log4j.Log4j2;
+import de.rub.nds.tlscrawler.constant.Status;
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanResult;
+import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- * Scan using TLS Scanner, i. e. TLS Attacker.
- *
- * @author janis.fliegenschmidt@rub.de
+ * TLS scan that uses the TLS-Scanner.
  */
-@Log4j2
-public class TlsScan implements IScan {
+public class TlsScan extends Scan {
 
-    private static final String SCAN_NAME = "tls_scan";
-
+    private static final Logger LOGGER = LogManager.getLogger();
     private final ParallelExecutor parallelExecutor;
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
-    private final int timeout;
-
-    private final StarttlsType starttlsType;
-
-    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions, StarttlsType starttlsType) {
-        parallelExecutor = new ParallelExecutor(parallelExecutorThreads, reexecutions);
-        this.timeout = timeout;
-        this.starttlsType = starttlsType;
+    public TlsScan(ScanJob scanJob, long rabbitMqAckTag, RabbitMqOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider,
+        int parallelExecutorThreads) {
+        super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
+        this.parallelExecutor = new ParallelExecutor(parallelExecutorThreads, scanJob.getScanConfig().getReexecutions());
     }
 
     @Override
-    public String getName() {
-        return SCAN_NAME;
+    public void run() {
+        try {
+            GeneralDelegate generalDelegate = new GeneralDelegate();
+            generalDelegate.setQuiet(true);
+
+            ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
+            config.setScanDetail(scanJob.getScanConfig().getScannerDetail());
+            config.setTimeout(scanJob.getScanConfig().getTimeout());
+            config.getClientDelegate().setHost(scanJob.getScanTarget().getIp() + ":" + scanJob.getScanTarget().getPort());
+            config.getClientDelegate().setSniHostname(scanJob.getScanTarget().getHostname());
+            config.getStarttlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
+
+            TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor);
+
+            LOGGER.info("Started scanning '{}' ({})", scanJob.getScanTarget(), scanJob.getScanConfig().getScannerDetail());
+            ServerReport report = scanner.scan();
+            LOGGER.info("Finished scanning '{}' ({}) in {} s", scanJob.getScanTarget(), scanJob.getScanConfig().getScannerDetail(),
+                (report.getScanEndTime() - report.getScanStartTime()) / 1000);
+            if (!cancelled.get() && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
+                persistenceProvider.insertScanResult(new ScanResult(scanJob.getBulkScanId(), scanJob.getScanTarget(), this.createDocumentFromSiteReport(report)),
+                    scanJob.getDbName(), scanJob.getCollectionName());
+                scanJob.setStatus(Status.DoneResultWritten);
+            } else {
+                scanJob.setStatus(Status.DoneNoResult);
+            }
+        } catch (Throwable e) {
+            LOGGER.error("Scanning of {} had to be aborted because of an exception: ", scanJob.getScanTarget(), e);
+        } finally {
+            this.cancel(false);
+        }
     }
 
     @Override
-    public Document scan(ScanTarget target) {
-        log.trace("scan()");
-
-        GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setQuiet(true);
-
-        ScannerConfig config = new ScannerConfig(generalDelegate);
-        config.setScanDetail(ScannerDetail.NORMAL);
-        config.setTimeout(timeout);
-        config.getClientDelegate().setHost(target.getIp() + ":" + 443);
-        config.getClientDelegate().setSniHostname(target.getHostname());
-        config.getStarttlsDelegate().setStarttlsType(starttlsType);
-
-
-        TlsScanner scanner = new TlsScanner(config, parallelExecutor);
-        scanner.setCloseAfterFinishParallel(false);
-
-        if (target.getHostname() != null) {
-            log.info("Started scanning: " + target.getHostname());
-        } else {
-            log.info("Started scanning: " + target.getIp());
+    public void cancel(boolean timeout) {
+        if (!cancelled.getAndSet(true)) {
+            if (timeout) {
+                scanJob.setStatus(Status.Timeout);
+            }
+            if (scanJob.isMonitored()) {
+                orchestrationProvider.notifyOfDoneScanJob(scanJob);
+            }
+            orchestrationProvider.sendAck(rabbitMqAckTag);
+            this.parallelExecutor.shutdown();
         }
-        SiteReport report = scanner.scan();
-
-        if (target.getHostname() != null) {
-            log.info("Finished scanning: " + target.getHostname());
-        } else {
-            log.info("Finished scanning: " + target.getIp());
-        }
-
-        return createDocumentFromSiteReport(report);
     }
 
-    private Document createDocumentFromSiteReport(SiteReport report) {
+    private Document createDocumentFromSiteReport(ServerReport report) {
         Document document = new Document();
         document.put("report", report);
         return document;

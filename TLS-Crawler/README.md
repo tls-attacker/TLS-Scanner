@@ -1,40 +1,94 @@
 # TLS-Crawler
-TLS-Crawler is being developed as part of the bachelor thesis "Mapping the current TLS landscape using TLS Attacker".
-The software will be able to scan the IPv4 range, identify hosts offering TLS connections and analyzing their capabilities using TLS-Attacker.
-The goal is to continuously scan and gather data on TLS adoption and possibly the pervasion of detectable weaknesses.
 
-### Design Considerations
-Requirements, an MVP and the preliminary architecture.
+The TLS-Crawler is designed to perform large scale scans with the [TLS-Scanner](https://github.com/tls-attacker/TLS-Scanner).
+To improve performance it supports distributing the workload to multiple machines.
 
-#### Minimum Viable Product
-The minimum viable product or MVP is the most simple piece of software that would fulfill all MUST requirements.
-For this project, an MVP would have to be able to do the following:
+## Architecture
 
-- Schedule Scans (i. e. generate target IPs)
-- Perform Scans
-- Persist Scan Results
+![](docs/img/tls-crawler-architecture.drawio.svg)
 
-Additionally, it should be able to do this in an efficient manner.
-To this point no "hard" performance goal has been defined.
-A "soft" performance goal is to be able to scan the IPv4-space on roughly a weekly basis.
-It is safe to assume that a naive implementation (Generate IP, Scan, Persist, Repeat) will miss this performance goal by far.
+The TLS-Crawler is split into two applications:
+ - the Controller which is responsible for creating scan jobs, distributing them among multiple workers and scheduling recurring scans
+ - the Worker which is responsible for performing the scans
 
-#### Additional Requirements
-The MVP as pictured above leaves a few things to be desired.
-These points all pose notable improvements over the MVP and are to be addressed for the first major release, if time permits:
+Additionally, for distributing the work and persisting results two more components are required:
+ - a RabbitMq instance which handles the work distribution among workers
+ - a MongoDB database instance which stores the results of the scans.
 
-- Concert scans among multiple machines so to achieve a high maximum performance
-- Generate statistics based on the data from previous scans
-- Providing an interface to interactively display data
 
-#### Performance Considerations
-Apart from multithreading being virtually set in stone to improve performance, these technologies could also help:
-- Non-Blocking IO: Most of the time, scans will be waiting for responses.
-NBIO improves performance by not blocking execution while waiting.
-- Two-Step Scanning: Most of the time, hosts will just not reply when contacted.
-This problem has been solved with other crawlers. Using a two-step scan to identify scannable hosts first and starting a full scan then would probably highly increase performance.
+## Getting Started
 
-#### Architecture
+### Examples
 
-The architecture is not yet decided upon.
-This is mainly due to an outstanding decision whether to implement multithreading with a threadpool and synchronized message queues, or using ReactiveX to handle the data pipeline-style.
+Controller
+
+    java -jar tls-crawler.jar controller -tranco 1000 -denylist resources/denylist.txt -portToBeScanned 443 -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672 -scanName scanResults -monitorScan
+
+
+Worker
+
+    java -jar tls-crawler.jar worker -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672  -numberOfThreads 30 -parallelProbeThreads 50
+
+
+## Controller Commandline Reference
+
+Scanner specific Configuration:
+- `-portToBeScanned` the port that should be scanned
+- `-timeout` the timeout to use inside the TLS-Scanner
+- `-reexecutions` the number of reexecutions to use in the TLS-Scanner
+- `-starttls` which start tls protocol should be used (required when scanning email servers)
+- `-scanDetail` detail for the scanner (ALL, DETAILED, NORMAL, QUICK)
+
+General Configuration:
+- `-scanName string` the name of the scan
+- `-hostFile path` a file with the list of servers which should be scanned, see #hostfile
+- `-denylistFile path` a file with hosts/ip addresses or ip ranges that should not be scanned
+- `-notifyUrl` url to which an HTTP POST request should be sent when a bulk scan is finished
+- `-monitorScan` if set the controller monitors the progress of the scan and logs periodically how many servers have been scanned
+- `-tranco int(=X)` if set the controller downloads the most recent [Tranco List](https://tranco-list.eu/) and scans the top X hosts
+
+## Worker Commandline Reference
+
+- `-numberOfThreads` number of worker threads the crawler worker should use
+- `-parallelProbeThreads` number of worker threads the crawler worker should use
+- `-scanTimeout` timeout after which the crawler tries to stop a scan if its still running (should be lower than rabbitMQ consumer ack because messages are only acknowledged at the end of a scan or the timeout)
+
+### MongoDB Commandline Configuration
+
+- `-mongoDbHost` host of the MongoDB instance the crawler should save the results in
+- `-mongoDbPort` port of the MongoDB instance the crawler should save the results in
+- `-mongoDbUser` username to be used to authenticate with MongoDB
+- `-mongoDbPass` password to be used to authenticate with MongoDB
+- `-mongoDbPassFile` path to file from where the password should be read (for use with docker secrets)
+- `-mongoDbAuthSource` the DB within the MongoDB instance, in which the user:pass is defined
+
+## RabbitMQ Commandline Configuration
+
+- `-rabbitMqHost` hostname or ip of the RabbitMQ instance
+- `-rabbitMqPort` port of the RabbitMQ instance
+- `-rabbitMqUser` username to be used to authenticate with RabbitMQ
+- `-rabbitMqPass` password to be used to authenticate with RabbitMQ
+- `-rabbitMqPassFile` path to file from where the password should be read (for use with docker secrets)
+- `-rabbitMqTLS` if the connection to the RabbitMQ instance should be TLS encrypted
+
+
+## HostFile 
+
+The hosts to be scanned can be specified as domain or ip with or without port. Each line must only contain one host. 
+If no port is specified the port passed with the `-portToBeScanned` parameter is used (defaults to 443).
+
+Example:
+```
+www.google.com:443
+amazon.de
+131.234.238.217:8080
+131.234.238.217
+```
+
+# Using docker-compose
+Instead of building the crawler yourself and starting it from the commandline, you can use `docker-compose.yml` and `build.sh`.
+All parameters for the scan can be defined in the `docker-compose.yml`. `build.sh` can be used to build the crawler using 
+specifiable branches from the dependencies `TLS-Attacker` etc. Specify your Github username and access token so
+Docker can download and build the dependencies. Finally, running `./build.sh` will build your custom crawler environment
+in docker images. Using `docker-compose up` you can then start the scan. You can either use the Mongo-DB specified in the 
+`docker-compose.yml` or use an external database.

@@ -1,38 +1,61 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+ *
+ * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlscrawler.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
-import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
-import lombok.Getter;
-import lombok.Setter;
+import de.rub.nds.tlscrawler.config.delegate.RabbitMqDelegate;
 
-/**
- * @author robert
- */
-@Getter
-@Setter
 public class WorkerCommandConfig {
 
     @ParametersDelegate
-    private final RedisDelegate redisDelegate;
+    private final RabbitMqDelegate rabbitMqDelegate;
+
     @ParametersDelegate
     private final MongoDbDelegate mongoDbDelegate;
+
     @Parameter(names = "-numberOfThreads", description = "Number of worker threads the crawler slave should use")
-    private int numberOfThreads = 500;
+    private int numberOfThreads = Runtime.getRuntime().availableProcessors();
+
     @Parameter(names = "-parallelProbeThreads", description = "Number of worker threads the crawler slave should use.")
-    private int parallelProbeThreads = 200;
-    @Parameter(names = "-instanceId", description = "The ID of this TLS-Crawler instance.")
-    private String instanceId;
+    private int parallelProbeThreads = 20;
+
+    @Parameter(names = "-scanTimeout",
+        description = "Overall timeout for one scan in ms. (Default 14 minutes)"
+            + "Has to be lower than rabbitMq consumerAck timeout (default 15min) or else rabbitMq connection will be closed if scan takes longer."
+            + "After the timeout the worker tries to shutdown the scan but a shutdown can not be guaranteed due to the TLS-Scanner implementation.")
+    private int scanTimeout = 840000;
 
     public WorkerCommandConfig() {
-        redisDelegate = new RedisDelegate();
+        rabbitMqDelegate = new RabbitMqDelegate();
         mongoDbDelegate = new MongoDbDelegate();
     }
 
+    public RabbitMqDelegate getRabbitMqDelegate() {
+        return rabbitMqDelegate;
+    }
+
+    public MongoDbDelegate getMongoDbDelegate() {
+        return mongoDbDelegate;
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public int getParallelProbeThreads() {
+        return parallelProbeThreads;
+    }
+
+    public int getScanTimeout() {
+        return scanTimeout;
+    }
 }

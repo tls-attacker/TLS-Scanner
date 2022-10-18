@@ -1,3 +1,6 @@
+heapdumps
+apps/
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
