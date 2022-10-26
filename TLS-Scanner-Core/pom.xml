@@ -6,18 +6,23 @@
         <artifactId>tls-scanner</artifactId>
         <version>5.0.1-SNAPSHOT</version>
     </parent>
+    <artifactId>tls-scanner-core</artifactId>
 
     <name>TLS-Scanner-Core</name>
-    <artifactId>tls-scanner-core</artifactId>
 
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
+        <tag>HEAD</tag>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
+
+    <properties>
+        <main.basedir>${project.parent.basedir}</main.basedir>
+    </properties>
 
     <dependencies>
+        <!-- scope: compile -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>scanner-core</artifactId>
@@ -38,10 +43,10 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-                        <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
+                        <phase>validate</phase>
                         <configuration>
                             <outputDirectory>${project.basedir}/src/main/resources/trust/</outputDirectory>
                             <resources>
@@ -89,7 +94,18 @@
         </plugins>
     </build>
 
-    <properties>
-        <main.basedir>${project.parent.basedir}</main.basedir>
-    </properties>
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <!-- Record test coverage with JaCoCo -->
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
