@@ -57,7 +57,7 @@ public class PublishBulkScanJob implements Job {
             bulkScan.setTargetsGiven(targetStringList.size());
 
             persistenceProvider.insertBulkScan(bulkScan);
-            LOGGER.info("Persisted BulkScan with id: {}", bulkScan.getId());
+            LOGGER.info("Persisted BulkScan with id: {}", bulkScan.get_id());
 
             if (controllerConfig.isMonitored()) {
                 progressMonitor.startMonitoringBulkScanProgress(bulkScan);
@@ -69,7 +69,7 @@ public class PublishBulkScanJob implements Job {
                 ScanTarget target = ScanTarget.fromTargetString(targetString, controllerConfig.getPort(), denylistProvider);
                 if (target != null) {
                     orchestrationProvider
-                        .submitScanJob(new ScanJob(target, scanConfig, bulkScan.getId(), bulkScan.isMonitored(), bulkScan.getName(), bulkScan.getCollectionName(), Status.Ready));
+                        .submitScanJob(new ScanJob(target, scanConfig, bulkScan.get_id(), bulkScan.isMonitored(), bulkScan.getName(), bulkScan.getCollectionName(), Status.Ready));
                 }
                 return target;
             }).filter(Objects::nonNull).count();
@@ -78,7 +78,7 @@ public class PublishBulkScanJob implements Job {
             persistenceProvider.updateBulkScan(bulkScan);
 
             if (controllerConfig.isMonitored() && submittedJobs == 0) {
-                progressMonitor.stopMonitoringAndFinalizeBulkScan(bulkScan.getId());
+                progressMonitor.stopMonitoringAndFinalizeBulkScan(bulkScan.get_id());
             }
             LOGGER.info("Submitted {} scan jobs to RabbitMq", submittedJobs);
         } catch (Exception e) {

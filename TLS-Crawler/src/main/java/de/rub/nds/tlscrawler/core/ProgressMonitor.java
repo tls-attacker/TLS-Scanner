@@ -90,7 +90,7 @@ public class ProgressMonitor {
             listenerRegistered = true;
         }
         BulkScanJobDetails bulkScanJobDetails = new BulkScanJobDetails(bulkScan);
-        this.scanJobDetailsById.put(bulkScan.getId(), bulkScanJobDetails);
+        this.scanJobDetailsById.put(bulkScan.get_id(), bulkScanJobDetails);
     }
 
     /**
@@ -109,14 +109,14 @@ public class ProgressMonitor {
         scan.setResultsWritten(bulkScanJobDetails.getResultsWritten().get());
         scan.setScanTimeouts(bulkScanJobDetails.getScanTimeouts().get());
         persistenceProvider.updateBulkScan(scan);
-        LOGGER.info("Persisted updated BulkScan with id: {}", scan.getId());
+        LOGGER.info("Persisted updated BulkScan with id: {}", scan.get_id());
 
         scanJobDetailsById.remove(bulkScanId);
 
         if (scan.getNotifyUrl() != null && !scan.getNotifyUrl().isEmpty() && !scan.getNotifyUrl().isBlank()) {
             try {
                 String response = notify(scan);
-                LOGGER.info("BulkScan {}(id={}): sent notification to '{}' got response: '{}'", scan.getName(), scan.getId(), scan.getNotifyUrl(), response);
+                LOGGER.info("BulkScan {}(id={}): sent notification to '{}' got response: '{}'", scan.getName(), scan.get_id(), scan.getNotifyUrl(), response);
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("Could not send notification for bulkScan '{}' because: ", bulkScanId, e);
             }

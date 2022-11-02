@@ -99,7 +99,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             throw new RuntimeException();
         }
 
-        LOGGER.info("MongoDB persistence provider initialized, connected to {}.", connectionString.toString());
+        LOGGER.info("MongoDB persistence provider initialized, connected to {}.", connectionString);
     }
 
     /**
@@ -142,7 +142,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public void updateBulkScan(@NonNull BulkScan bulkScan) {
-        this.getBulkScanCollection(bulkScan.getName()).removeById(bulkScan.getId());
+        this.getBulkScanCollection(bulkScan.getName()).removeById(bulkScan.get_id());
         this.insertBulkScan(bulkScan);
     }
 

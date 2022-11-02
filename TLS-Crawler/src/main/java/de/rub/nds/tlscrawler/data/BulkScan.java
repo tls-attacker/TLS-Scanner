@@ -11,7 +11,6 @@ package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.tlscrawler.core.Controller;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
-import org.mongojack.ObjectId;
 
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -21,7 +20,6 @@ import java.time.Instant;
 
 public class BulkScan implements Serializable {
 
-    @ObjectId
     @Id
     private String _id;
 
@@ -70,9 +68,9 @@ public class BulkScan implements Serializable {
         this.notifyUrl = notifyUrl;
     }
 
-    @ObjectId
-    public String getId() {
-        return this._id;
+    // Getter naming important for correct serialization, do not change!
+    public String get_id() {
+        return _id;
     }
 
     public String getName() {
@@ -131,8 +129,8 @@ public class BulkScan implements Serializable {
         return this.crawlerVersion;
     }
 
-    @ObjectId
-    public void setId(String _id) {
+    // Setter naming important for correct serialization, do not change!
+    public void set_id(String _id) {
         this._id = _id;
     }
 

@@ -29,6 +29,10 @@ public class ScanConfig implements Serializable {
 
     private StarttlsType starttlsType;
 
+    private ScanConfig() {
+
+    }
+
     public ScanConfig(ScanType scanType, int defaultPort, ScannerDetail scannerDetail, int reexecutions, int timeout, StarttlsType starttlsType) {
         this.scanType = scanType;
         this.defaultPort = defaultPort;
