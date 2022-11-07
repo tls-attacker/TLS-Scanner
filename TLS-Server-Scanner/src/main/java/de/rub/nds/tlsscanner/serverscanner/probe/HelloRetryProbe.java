@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -27,10 +26,9 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 
-/**
- * Test the servers Hello Retry Request
- */
-public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport, HelloRetryResult> {
+/** Test the servers Hello Retry Request */
+public class HelloRetryProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResults.FALSE;
     private TestResult issuesCookie = TestResults.FALSE;
@@ -49,17 +47,17 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
+                && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
     public HelloRetryResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, serversChosenGroup);
+        return new HelloRetryResult(
+                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, serversChosenGroup);
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     private void testHelloRetry() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -68,16 +66,21 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
-            && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
-                state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                        HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+                && ((ServerHelloMessage)
+                                WorkflowTraceUtil.getFirstReceivedMessage(
+                                        HandshakeMessageType.SERVER_HELLO,
+                                        state.getWorkflowTrace()))
+                        .isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
-            if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
-                state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
+            if (((ServerHelloMessage)
+                            WorkflowTraceUtil.getFirstReceivedMessage(
+                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
+                    .containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;
             }
         }
     }
-
 }

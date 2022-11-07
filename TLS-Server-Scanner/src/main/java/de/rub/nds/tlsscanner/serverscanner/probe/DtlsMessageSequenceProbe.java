@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -29,26 +28,33 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsMessageSequenceResult;
+import de.rub.nds.tlsscanner.core.probe.result.DtlsMessageSequenceResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsMessageSequenceResult> {
+public class DtlsMessageSequenceProbe
+        extends TlsServerProbe<
+                ConfigSelector, ServerReport, DtlsMessageSequenceResult<ServerReport>> {
 
-    public DtlsMessageSequenceProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsMessageSequenceProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, configSelector);
     }
 
     @Override
     public DtlsMessageSequenceResult executeTest() {
-        return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
-            acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(), acceptsRandomMessageNumbers());
+        return new DtlsMessageSequenceResult(
+                acceptsStartedWithInvalidMessageNumber(),
+                acceptsSkippedMessageNumbersOnce(),
+                acceptsSkippedMessageNumbersMultiple(),
+                acceptsRandomMessageNumbers());
     }
 
     private TestResult acceptsRandomMessageNumbers() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
@@ -56,12 +62,16 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new ReceiveAction(
+                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -71,7 +81,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsSkippedMessageNumbersMultiple() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
@@ -79,12 +90,16 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new ReceiveAction(
+                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -94,19 +109,24 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsSkippedMessageNumbersOnce() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(
+                new ReceiveAction(
+                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -116,7 +136,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsStartedWithInvalidMessageNumber() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(0, new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 3));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
@@ -125,7 +146,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -139,12 +161,13 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     public DtlsMessageSequenceResult getCouldNotExecuteResult() {
-        return new DtlsMessageSequenceResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST,
-            TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+        return new DtlsMessageSequenceResult(
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
-
+    public void adjustConfig(ServerReport report) {}
 }

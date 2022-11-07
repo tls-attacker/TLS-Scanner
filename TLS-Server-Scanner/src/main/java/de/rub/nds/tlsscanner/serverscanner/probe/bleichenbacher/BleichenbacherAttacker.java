@@ -1,19 +1,13 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
-import de.rub.nds.tlsscanner.core.vector.VectorResponse;
-import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
-import de.rub.nds.tlsscanner.core.vector.response.EqualityErrorTranslator;
-import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
-import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -21,15 +15,20 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.exceptions.AttackFailedException;
-import de.rub.nds.tlsscanner.serverscanner.exceptions.OracleUnstableException;
+import de.rub.nds.tlsscanner.core.exceptions.AttackFailedException;
+import de.rub.nds.tlsscanner.core.exceptions.OracleUnstableException;
+import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
+import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
+import de.rub.nds.tlsscanner.core.vector.VectorResponse;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
+import de.rub.nds.tlsscanner.core.vector.response.EqualityErrorTranslator;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
-import de.rub.nds.tlsscanner.serverscanner.task.FingerPrintTask;
-import de.rub.nds.tlsscanner.serverscanner.task.FingerprintTaskVectorPair;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +37,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Sends differently formatted PKCS#1 messages to the TLS server and observes the server responses. In case there are
- * differences in the server responses, it is very likely that it is possible to execute Bleichenbacher attacks.
+ * Sends differently formatted PKCS#1 messages to the TLS server and observes the server responses.
+ * In case there are differences in the server responses, it is very likely that it is possible to
+ * execute Bleichenbacher attacks.
  */
 public class BleichenbacherAttacker {
 
@@ -62,9 +62,14 @@ public class BleichenbacherAttacker {
     private boolean shakyScans = false;
     private boolean erroneousScans = false;
 
-    public BleichenbacherAttacker(Config baseConfig, ParallelExecutor executor, BleichenbacherScanType scanType,
-        BleichenbacherWorkflowType workflowType, int numberOfIterations, ProtocolVersion testedVersion,
-        CipherSuite testedSuite) {
+    public BleichenbacherAttacker(
+            Config baseConfig,
+            ParallelExecutor executor,
+            BleichenbacherScanType scanType,
+            BleichenbacherWorkflowType workflowType,
+            int numberOfIterations,
+            ProtocolVersion testedVersion,
+            CipherSuite testedSuite) {
         this.tlsConfig = baseConfig;
         this.executor = executor;
         this.scanType = scanType;
@@ -75,8 +80,8 @@ public class BleichenbacherAttacker {
     }
 
     public Boolean isVulnerable() {
-        LOGGER
-            .debug("A server is considered vulnerable to this attack if it responds differently to the test vectors.");
+        LOGGER.debug(
+                "A server is considered vulnerable to this attack if it responds differently to the test vectors.");
         LOGGER.debug("A server is considered secure if it always responds the same way.");
         EqualityError referenceError = null;
         fullResponseMap = new LinkedList<>();
@@ -91,14 +96,16 @@ public class BleichenbacherAttacker {
         }
         referenceError = getEqualityError(fullResponseMap);
         if (referenceError != EqualityError.NONE) {
-            LOGGER.debug("Found a behavior difference within the responses. The server could be vulnerable.");
+            LOGGER.debug(
+                    "Found a behavior difference within the responses. The server could be vulnerable.");
         } else {
-            LOGGER
-                .debug("Found no behavior difference within the responses. The server is very likely not vulnerable.");
+            LOGGER.debug(
+                    "Found no behavior difference within the responses. The server is very likely not vulnerable.");
         }
 
         LOGGER.debug(EqualityErrorTranslator.translation(referenceError, null, null));
-        if (referenceError != EqualityError.NONE || LOGGER.getLevel().isMoreSpecificThan(Level.INFO)) {
+        if (referenceError != EqualityError.NONE
+                || LOGGER.getLevel().isMoreSpecificThan(Level.INFO)) {
             LOGGER.debug("-------------(Not Grouped)-----------------");
             for (VectorResponse vectorResponse : fullResponseMap) {
                 LOGGER.debug(vectorResponse.toString());
@@ -118,12 +125,21 @@ public class BleichenbacherAttacker {
         }
         List<TlsTask> taskList = new LinkedList<>();
         List<FingerprintTaskVectorPair> stateVectorPairList = new LinkedList<>();
-        for (Pkcs1Vector vector : Pkcs1VectorGenerator.generatePkcs1Vectors(publicKey, scanType,
-            tlsConfig.getDefaultHighestClientProtocolVersion())) {
-            State state = new State(tlsConfig,
-                BleichenbacherWorkflowGenerator.generateWorkflow(tlsConfig, workflowType, vector.getEncryptedValue()));
-            FingerPrintTask fingerPrintTask = new FingerPrintTask(state, additionalTimeout, increasingTimeout,
-                executor.getReexecutions(), additionalTcpTimeout);
+        for (Pkcs1Vector vector :
+                Pkcs1VectorGenerator.generatePkcs1Vectors(
+                        publicKey, scanType, tlsConfig.getDefaultHighestClientProtocolVersion())) {
+            State state =
+                    new State(
+                            tlsConfig,
+                            BleichenbacherWorkflowGenerator.generateWorkflow(
+                                    tlsConfig, workflowType, vector.getEncryptedValue()));
+            FingerPrintTask fingerPrintTask =
+                    new FingerPrintTask(
+                            state,
+                            additionalTimeout,
+                            increasingTimeout,
+                            executor.getReexecutions(),
+                            additionalTcpTimeout);
             taskList.add(fingerPrintTask);
             stateVectorPairList.add(new FingerprintTaskVectorPair(fingerPrintTask, vector));
         }
@@ -135,8 +151,16 @@ public class BleichenbacherAttacker {
                 erroneousScans = true;
                 LOGGER.warn("Could not extract fingerprint for " + pair.toString());
             } else {
-                testedSuite = pair.getFingerPrintTask().getState().getTlsContext().getSelectedCipherSuite();
-                testedVersion = pair.getFingerPrintTask().getState().getTlsContext().getSelectedProtocolVersion();
+                testedSuite =
+                        pair.getFingerPrintTask()
+                                .getState()
+                                .getTlsContext()
+                                .getSelectedCipherSuite();
+                testedVersion =
+                        pair.getFingerPrintTask()
+                                .getState()
+                                .getTlsContext()
+                                .getSelectedProtocolVersion();
                 if (testedSuite == null || testedVersion == null) {
                     LOGGER.fatal("Could not find ServerHello after successful extraction");
                     throw new OracleUnstableException("Fatal Extraction error");
@@ -145,14 +169,20 @@ public class BleichenbacherAttacker {
                 tempResponseVectorList.add(new VectorResponse(pair.getVector(), fingerprint));
             }
         }
-        // Check that the public key send by the server is actually the public key used to generate the vectors. This is
-        // currently a limitation of our script as the attack vectors are generated statically and not dynamically. We
+        // Check that the public key send by the server is actually the public key used to generate
+        // the vectors. This is
+        // currently a limitation of our script as the attack vectors are generated statically and
+        // not dynamically. We
         // will adjust this in future versions.
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
-            if (pair.getFingerPrintTask().getState().getTlsContext().getServerRSAModulus() != null && !pair
-                .getFingerPrintTask().getState().getTlsContext().getServerRSAModulus().equals(publicKey.getModulus())) {
+            if (pair.getFingerPrintTask().getState().getTlsContext().getServerRSAModulus() != null
+                    && !pair.getFingerPrintTask()
+                            .getState()
+                            .getTlsContext()
+                            .getServerRSAModulus()
+                            .equals(publicKey.getModulus())) {
                 throw new OracleUnstableException(
-                    "Server sent us a different publickey during the scan. Aborting test");
+                        "Server sent us a different publickey during the scan. Aborting test");
             }
         }
         return tempResponseVectorList;
@@ -161,7 +191,7 @@ public class BleichenbacherAttacker {
     /**
      * This assumes that the responseVectorList only contains comparable vectors
      *
-     * @param  responseVectorList
+     * @param responseVectorList
      * @return
      */
     private EqualityError getEqualityError(List<VectorResponse> responseVectorList) {
@@ -172,14 +202,14 @@ public class BleichenbacherAttacker {
                     continue;
                 }
                 EqualityError error =
-                    FingerprintChecker.checkEquality(responseOne.getFingerprint(), responseTwo.getFingerprint());
+                        FingerprintChecker.checkEquality(
+                                responseOne.getFingerprint(), responseTwo.getFingerprint());
                 if (error != EqualityError.NONE) {
                     LOGGER.debug("Found an EqualityError: " + error);
                     LOGGER.debug("Fingerprint1: " + responseOne.getFingerprint().toString());
                     LOGGER.debug("Fingerprint2: " + responseTwo.getFingerprint().toString());
                     return error;
                 }
-
             }
         }
         return EqualityError.NONE;

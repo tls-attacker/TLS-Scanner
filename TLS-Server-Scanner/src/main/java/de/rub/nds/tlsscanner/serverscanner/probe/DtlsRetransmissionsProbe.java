@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -25,13 +24,16 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsRetransmissionsResult;
+import de.rub.nds.tlsscanner.core.probe.result.DtlsRetransmissionsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, ServerReport, DtlsRetransmissionsResult> {
+public class DtlsRetransmissionsProbe
+        extends TlsServerProbe<
+                ConfigSelector, ServerReport, DtlsRetransmissionsResult<ServerReport>> {
 
-    public DtlsRetransmissionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsRetransmissionsProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_RETRANSMISSIONS, configSelector);
     }
 
@@ -45,13 +47,15 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        ReceiveTillAction receiveTillAction =
+                new ReceiveTillAction(new ServerHelloDoneMessage(config));
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);
@@ -68,13 +72,15 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        ReceiveTillAction receiveTillAction =
+                new ReceiveTillAction(new ServerHelloDoneMessage(config));
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);
@@ -93,11 +99,10 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
 
     @Override
     public DtlsRetransmissionsResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+        return new DtlsRetransmissionsResult(
+                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
-
+    public void adjustConfig(ServerReport report) {}
 }

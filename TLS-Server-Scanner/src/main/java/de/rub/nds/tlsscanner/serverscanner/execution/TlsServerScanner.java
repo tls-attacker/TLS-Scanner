@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -20,33 +19,34 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.FreakAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.execution.TlsScanner;
+import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
+import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
+import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
+import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
+import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.CertificateSignatureAndHashAlgorithmAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.DestinationPortAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.DtlsRetransmissionAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.FreakAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.LogjamAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.RandomnessAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
-import de.rub.nds.tlsscanner.serverscanner.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.DhPublicKeyExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.DtlsRetransmissionsExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
@@ -98,13 +98,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,8 +121,11 @@ public final class TlsServerScanner extends TlsScanner {
         super(config.getProbes());
         this.config = config;
         closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
-            new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        parallelExecutor =
+                new ParallelExecutor(
+                        config.getOverallThreads(),
+                        3,
+                        new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.configSelector = new ConfigSelector(config, parallelExecutor);
         setCallbacks();
         fillProbeLists();
@@ -139,8 +141,11 @@ public final class TlsServerScanner extends TlsScanner {
         fillProbeLists();
     }
 
-    public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor, List<ScannerProbe> probeList,
-        List<AfterProbe> afterList) {
+    public TlsServerScanner(
+            ServerScannerConfig config,
+            ParallelExecutor parallelExecutor,
+            List<ScannerProbe> probeList,
+            List<AfterProbe> afterList) {
         super(probeList.stream().map(ScannerProbe::getType).collect(Collectors.toList()));
         this.probeList.addAll(probeList);
         this.afterList.addAll(afterList);
@@ -154,23 +159,24 @@ public final class TlsServerScanner extends TlsScanner {
 
     private void setCallbacks() {
         if (config.getCallbackDelegate().getBeforeTransportPreInitCallback() != null
-            && parallelExecutor.getDefaultBeforeTransportPreInitCallback() == null) {
+                && parallelExecutor.getDefaultBeforeTransportPreInitCallback() == null) {
             parallelExecutor.setDefaultBeforeTransportPreInitCallback(
-                config.getCallbackDelegate().getBeforeTransportPreInitCallback());
+                    config.getCallbackDelegate().getBeforeTransportPreInitCallback());
         }
         if (config.getCallbackDelegate().getBeforeTransportInitCallback() != null
-            && parallelExecutor.getDefaultBeforeTransportInitCallback() == null) {
-            parallelExecutor
-                .setDefaultBeforeTransportInitCallback(config.getCallbackDelegate().getBeforeTransportInitCallback());
+                && parallelExecutor.getDefaultBeforeTransportInitCallback() == null) {
+            parallelExecutor.setDefaultBeforeTransportInitCallback(
+                    config.getCallbackDelegate().getBeforeTransportInitCallback());
         }
         if (config.getCallbackDelegate().getAfterTransportInitCallback() != null
-            && parallelExecutor.getDefaultAfterTransportInitCallback() == null) {
-            parallelExecutor
-                .setDefaultAfterTransportInitCallback(config.getCallbackDelegate().getAfterTransportInitCallback());
+                && parallelExecutor.getDefaultAfterTransportInitCallback() == null) {
+            parallelExecutor.setDefaultAfterTransportInitCallback(
+                    config.getCallbackDelegate().getAfterTransportInitCallback());
         }
         if (config.getCallbackDelegate().getAfterExecutionCallback() != null
-            && parallelExecutor.getDefaultAfterExecutionCallback() == null) {
-            parallelExecutor.setDefaultAfterExecutionCallback(config.getCallbackDelegate().getAfterExecutionCallback());
+                && parallelExecutor.getDefaultAfterExecutionCallback() == null) {
+            parallelExecutor.setDefaultAfterExecutionCallback(
+                    config.getCallbackDelegate().getAfterExecutionCallback());
         }
     }
 
@@ -207,11 +213,10 @@ public final class TlsServerScanner extends TlsScanner {
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(configSelector, parallelExecutor));
-
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
-        afterList.add(new RandomnessAfterProbe());
+        afterList.add(new ServerRandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
@@ -224,8 +229,10 @@ public final class TlsServerScanner extends TlsScanner {
             addProbeToProbeList(new DtlsBugsProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsMessageSequenceProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new DtlsRetransmissionsProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
+            addProbeToProbeList(
+                    new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(
+                    new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {
@@ -237,12 +244,13 @@ public final class TlsServerScanner extends TlsScanner {
             addProbeToProbeList(new EsniProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new TokenbindingProbe(configSelector, parallelExecutor));
             if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
-                || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
+                    || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
                 addProbeToProbeList(new HttpHeaderProbe(configSelector, parallelExecutor));
                 addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
             }
             addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
+            addProbeToProbeList(
+                    new ConnectionClosingProbe(configSelector, parallelExecutor), false);
             afterList.add(new PoodleAfterProbe());
         }
         // Init StatsWriter
@@ -274,57 +282,67 @@ public final class TlsServerScanner extends TlsScanner {
         boolean isHandshaking = false;
         ProtocolType protocolType = getProtocolType();
         ThreadedScanJobExecutor<ServerReport> executor = null;
-        try {
-            // TODO Kind of hacky - this extracts the hosts from the client delegate - otherwise its not initialized
-            ServerReport serverReport = new ServerReport(config.getClientDelegate().getExtractedHost(),
-                config.getClientDelegate().getExtractedPort());
-            if (isConnectable()) {
-                isConnectable = true;
-                LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                configSelector.findWorkingConfigs();
-                serverReport.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
-                serverReport.setConfigProfileIdentifierTls13(configSelector.getConfigProfileIdentifierTls13());
-                if (configSelector.isSpeaksProtocol()) {
-                    speaksProtocol = true;
-                    LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
-                    if (configSelector.isIsHandshaking()) {
-                        isHandshaking = true;
-                        LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
+        // TODO Kind of hacky - this extracts the hosts from the client delegate - otherwise its not
+        // initialized
+        ServerReport serverReport =
+                new ServerReport(
+                        config.getClientDelegate().getExtractedHost(),
+                        config.getClientDelegate().getExtractedPort());
 
-                        ScanJob job = new ScanJob(probeList, afterList);
-                        executor = new ThreadedScanJobExecutor<>(config, job, config.getParallelProbes(),
-                            config.getClientDelegate().getHost());
-                        long scanStartTime = System.currentTimeMillis();
-                        serverReport = executor.execute(serverReport);
-                        SiteReportRater rater;
-                        try {
-                            rater = DefaultRatingLoader.getServerReportRater("en");
-                            ScoreReport scoreReport = rater.getScoreReport(serverReport.getResultMap());
-                            serverReport.setScore(scoreReport.getScore());
-                            serverReport.setScoreReport(scoreReport);
-                        } catch (IOException | JAXBException | XMLStreamException ex) {
-                            LOGGER.error("Could not retrieve scoring results");
-                        }
-                        if (protocolType != ProtocolType.DTLS) {
-                            executeGuidelineEvaluation(serverReport);
-                        }
-                        long scanEndTime = System.currentTimeMillis();
-                        serverReport.setScanStartTime(scanStartTime);
-                        serverReport.setScanEndTime(scanEndTime);
+        if (isConnectable()) {
+            isConnectable = true;
+            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+            configSelector.findWorkingConfigs();
+            serverReport.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
+            serverReport.setConfigProfileIdentifierTls13(
+                    configSelector.getConfigProfileIdentifierTls13());
+            if (configSelector.isSpeaksProtocol()) {
+                speaksProtocol = true;
+                LOGGER.debug(
+                        config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
+                if (configSelector.isIsHandshaking()) {
+                    isHandshaking = true;
+                    LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
+
+                    ScanJob job = new ScanJob(probeList, afterList);
+                    executor =
+                            new ThreadedScanJobExecutor<>(
+                                    config,
+                                    job,
+                                    config.getParallelProbes(),
+                                    config.getClientDelegate().getHost());
+                    long scanStartTime = System.currentTimeMillis();
+                    serverReport = executor.execute(serverReport);
+                    SiteReportRater rater;
+                    try {
+                        rater = DefaultRatingLoader.getServerReportRater("en");
+                        ScoreReport scoreReport = rater.getScoreReport(serverReport.getResultMap());
+                        serverReport.setScore(scoreReport.getScore());
+                        serverReport.setScoreReport(scoreReport);
+                    } catch (IOException | JAXBException | XMLStreamException ex) {
+                        LOGGER.error("Could not retrieve scoring results");
                     }
+                    if (protocolType != ProtocolType.DTLS) {
+                        executeGuidelineEvaluation(serverReport);
+                    }
+                    long scanEndTime = System.currentTimeMillis();
+                    serverReport.setScanStartTime(scanStartTime);
+                    serverReport.setScanEndTime(scanEndTime);
                 }
             }
-            serverReport.setServerIsAlive(isConnectable);
-            serverReport.setSpeaksProtocol(speaksProtocol);
-            serverReport.setIsHandshaking(isHandshaking);
-            serverReport.setProtocolType(protocolType);
-            return serverReport;
-        } finally {
-            if (executor != null) {
-                executor.shutdown();
-            }
-            closeParallelExecutorIfNeeded();
         }
+
+        serverReport.setServerIsAlive(isConnectable);
+        serverReport.setSpeaksProtocol(speaksProtocol);
+        serverReport.setIsHandshaking(isHandshaking);
+        serverReport.setProtocolType(protocolType);
+
+        if (executor != null) {
+            executor.shutdown();
+        }
+        closeParallelExecutorIfNeeded();
+
+        return serverReport;
     }
 
     private void executeGuidelineEvaluation(ServerReport report) {
@@ -333,7 +351,8 @@ public final class TlsServerScanner extends TlsScanner {
 
         for (String guidelineName : guidelines) {
             try {
-                InputStream guideLineStream = GuidelineIO.class.getResourceAsStream("/guideline/" + guidelineName);
+                InputStream guideLineStream =
+                        GuidelineIO.class.getResourceAsStream("/guideline/" + guidelineName);
                 Guideline guideline = GuidelineIO.read(guideLineStream);
                 LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
                 GuidelineChecker checker = new GuidelineChecker(guideline);
@@ -346,7 +365,6 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     private void closeParallelExecutorIfNeeded() {
-
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }
@@ -355,7 +373,7 @@ public final class TlsServerScanner extends TlsScanner {
     private ProtocolType getProtocolType() {
         if (config.getDtlsDelegate().isDTLS()) {
             return ProtocolType.DTLS;
-        } else if (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE) {
+        } else if (config.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
             return ProtocolType.STARTTLS;
         } else {
             return ProtocolType.TLS;
@@ -365,7 +383,8 @@ public final class TlsServerScanner extends TlsScanner {
     public boolean isConnectable() {
         try {
             Config tlsConfig = config.createConfig();
-            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            ConnectivityChecker checker =
+                    new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
             return checker.isConnectable();
         } catch (Exception e) {
             LOGGER.warn("Could not test if we can connect to the server", e);

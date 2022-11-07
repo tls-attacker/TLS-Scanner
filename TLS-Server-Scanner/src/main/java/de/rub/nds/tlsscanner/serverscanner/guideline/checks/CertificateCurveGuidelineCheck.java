@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -16,13 +15,13 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateCurveGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -34,20 +33,27 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
         super(null, null);
     }
 
-    public CertificateCurveGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<NamedGroup> recommendedGroups) {
+    public CertificateCurveGuidelineCheck(
+            String name, RequirementLevel requirementLevel, List<NamedGroup> recommendedGroups) {
         super(name, requirementLevel);
         this.recommendedGroups = recommendedGroups;
     }
 
-    public CertificateCurveGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate,
-        List<NamedGroup> recommendedGroups) {
+    public CertificateCurveGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            boolean onlyOneCertificate,
+            List<NamedGroup> recommendedGroups) {
         super(name, requirementLevel, onlyOneCertificate);
         this.recommendedGroups = recommendedGroups;
     }
 
-    public CertificateCurveGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, boolean onlyOneCertificate, List<NamedGroup> recommendedGroups) {
+    public CertificateCurveGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            boolean onlyOneCertificate,
+            List<NamedGroup> recommendedGroups) {
         super(name, requirementLevel, condition, onlyOneCertificate);
         this.recommendedGroups = recommendedGroups;
     }
@@ -55,7 +61,8 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
-        if (!SignatureAlgorithm.ECDSA.equals(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
+        if (!SignatureAlgorithm.ECDSA.equals(
+                report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             return new CertificateCurveGuidelineCheckResult(TestResults.TRUE);
         }
         if (!(report.getPublicKey() instanceof CustomEcPublicKey)) {
@@ -76,5 +83,4 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     public List<NamedGroup> getRecommendedGroups() {
         return recommendedGroups;
     }
-
 }

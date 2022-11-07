@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +25,8 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
+                new AnalyzedPropertyGuidelineCheck(
+                        null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.TRUE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
@@ -39,7 +39,8 @@ public class AnalyzedPropertyGuidelineCheckTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
+                new AnalyzedPropertyGuidelineCheck(
+                        null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 
@@ -51,7 +52,8 @@ public class AnalyzedPropertyGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
 
         AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
+                new AnalyzedPropertyGuidelineCheck(
+                        null, null, TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE);
 
         GuidelineCheckResult result = check.evaluate(report);
 

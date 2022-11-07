@@ -1,18 +1,17 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,10 +27,14 @@ public class CertificateResult extends ProbeResult<ServerReport> {
     private final List<NamedGroup> ecdsaSigGroupsEphemeral;
     private final List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    public CertificateResult(Set<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
-        List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
-        List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
-        List<NamedGroup> ecdsaCertSigGroupsTls13) {
+    public CertificateResult(
+            Set<CertificateChain> certificates,
+            List<NamedGroup> ecdsaPkGroupsStatic,
+            List<NamedGroup> ecdsaPkGroupsEphemeral,
+            List<NamedGroup> ecdsaSigGroupsStatic,
+            List<NamedGroup> ecdsaSigGroupsEphemeral,
+            List<NamedGroup> ecdsaPkGroupsTls13,
+            List<NamedGroup> ecdsaCertSigGroupsTls13) {
         super(TlsProbeType.CERTIFICATE);
         this.certificates = certificates;
         this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
@@ -50,5 +53,4 @@ public class CertificateResult extends ProbeResult<ServerReport> {
         report.setEcdsaPkGroupsStatic(ecdsaPkGroupsStatic);
         report.setEcdsaPkGroupsEphemeral(ecdsaPkGroupsEphemeral);
     }
-
 }

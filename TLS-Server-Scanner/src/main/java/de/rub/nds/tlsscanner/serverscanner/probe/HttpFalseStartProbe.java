@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -33,7 +32,8 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
+public class HttpFalseStartProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
 
     public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
@@ -45,14 +45,21 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
         tlsConfig.setHttpsParsingEnabled(true);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace =
+                factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(
-            new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsRequestMessage(tlsConfig)));
+                new SendAction(
+                        new ChangeCipherSpecMessage(),
+                        new FinishedMessage(),
+                        new HttpsRequestMessage(tlsConfig)));
         trace.addTlsAction(
-            new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
+                new ReceiveAction(
+                        new ChangeCipherSpecMessage(),
+                        new FinishedMessage(),
+                        new HttpsResponseMessage()));
 
         State state = new State(tlsConfig, trace);
         executeState(state);
@@ -83,12 +90,11 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
-            && configSelector.foundWorkingConfig();
+                && configSelector.foundWorkingConfig();
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     public HttpFalseStartResult getCouldNotExecuteResult() {

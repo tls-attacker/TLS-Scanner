@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -72,8 +71,8 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport,
         return new ArrayList<>(allSupportedExtensions);
     }
 
-    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion,
-        Predicate<CipherSuite> cipherSuitePredicate) {
+    private List<ExtensionType> getCommonExtension(
+            ProtocolVersion highestVersion, Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig;
         if (highestVersion.isTLS13()) {
             tlsConfig = configSelector.getTls13BaseConfig();
@@ -117,10 +116,12 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport,
 
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
         } else {
-            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug(
+                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
@@ -132,10 +133,14 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport,
 
     @Override
     public void adjustConfig(ServerReport report) {
-        this.supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-        this.supportsPreTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
-            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE;
+        this.supportsTls13 =
+                TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+        this.supportsPreTls13 =
+                report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1)
+                                == TestResults.TRUE
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2)
+                                == TestResults.TRUE;
     }
 
     @Override

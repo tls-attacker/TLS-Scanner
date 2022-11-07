@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -21,9 +20,6 @@ public class Pkcs1Vector implements Vector {
     private byte[] plainValue;
 
     private byte[] encryptedValue;
-
-    private Pkcs1Vector() {
-    }
 
     public Pkcs1Vector(String name, byte[] value) {
         this.name = name;
@@ -87,7 +83,13 @@ public class Pkcs1Vector implements Vector {
 
     @Override
     public String toString() {
-        return "" + name + "{" + "plainValue=" + ArrayConverter.bytesToHexString(plainValue) + ", encryptedValue="
-            + ArrayConverter.bytesToHexString(encryptedValue) + '}';
+        return ""
+                + name
+                + "{"
+                + "plainValue="
+                + ArrayConverter.bytesToHexString(plainValue)
+                + ", encryptedValue="
+                + ArrayConverter.bytesToHexString(encryptedValue)
+                + '}';
     }
 }

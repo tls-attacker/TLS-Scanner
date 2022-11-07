@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -67,10 +66,12 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport, Alpn
         tlsConfig.setDefaultProposedAlpnProtocols(alpnList);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedAlpnProtocol();
         } else {
-            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug(
+                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
@@ -78,8 +79,7 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport, Alpn
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
-            && report.getSupportedExtensions().contains(ExtensionType.ALPN);
-
+                && report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
 
     @Override
@@ -88,6 +88,5 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport, Alpn
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 }

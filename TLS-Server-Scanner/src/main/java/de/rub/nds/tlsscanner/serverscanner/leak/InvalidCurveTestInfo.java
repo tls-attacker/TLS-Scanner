@@ -1,16 +1,17 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.leak;
 
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
+import java.util.Collections;
+import java.util.List;
 
 public class InvalidCurveTestInfo extends TestInfo {
 
@@ -23,6 +24,16 @@ public class InvalidCurveTestInfo extends TestInfo {
     @Override
     public String getTechnicalName() {
         return getVector().toString();
+    }
+
+    @Override
+    public List<String> getFieldNames() {
+        return Collections.singletonList("Vector");
+    }
+
+    @Override
+    public List<String> getFieldValues() {
+        return Collections.singletonList(getVector().toString());
     }
 
     @Override
@@ -49,5 +60,4 @@ public class InvalidCurveTestInfo extends TestInfo {
     public InvalidCurveVector getVector() {
         return vector;
     }
-
 }

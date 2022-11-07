@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -25,7 +24,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpHeaderResult> {
+public class HttpHeaderProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, HttpHeaderResult> {
 
     public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
@@ -56,7 +56,8 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         } else {
             headerList = new LinkedList<>();
         }
-        return new HttpHeaderResult(speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
+        return new HttpHeaderResult(
+                speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override
@@ -65,8 +66,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     public HttpHeaderResult getCouldNotExecuteResult() {

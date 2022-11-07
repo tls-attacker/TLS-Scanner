@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -28,7 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport, TokenbindingResult> {
+public class TokenbindingProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, TokenbindingResult> {
 
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
@@ -40,9 +40,11 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!supportedTokenBindingVersion.isEmpty()) {
-            supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
+            supportedTokenBindingKeyParameters.addAll(
+                    getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
-        return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
+        return new TokenbindingResult(
+                supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
@@ -51,7 +53,8 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingVersion(version);
         List<TokenBindingKeyParameters> supportedParameters = new LinkedList<>();
-        List<TokenBindingKeyParameters> toTestList = new ArrayList<>(Arrays.asList(TokenBindingKeyParameters.values()));
+        List<TokenBindingKeyParameters> toTestList =
+                new ArrayList<>(Arrays.asList(TokenBindingKeyParameters.values()));
 
         while (!toTestList.isEmpty()) {
             tlsConfig.setDefaultTokenBindingKeyParameters(toTestList);
@@ -59,7 +62,8 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
             executeState(state);
             if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
                 supportedParameters.addAll(state.getTlsContext().getTokenBindingKeyParameters());
-                for (TokenBindingKeyParameters param : state.getTlsContext().getTokenBindingKeyParameters()) {
+                for (TokenBindingKeyParameters param :
+                        state.getTlsContext().getTokenBindingKeyParameters()) {
                     toTestList.remove(param);
                 }
             }
@@ -83,7 +87,9 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
                 }
 
             } catch (WorkflowExecutionException ex) {
-                LOGGER.error("Could not execute Workflow to determine supported Tokenbinding Versions", ex);
+                LOGGER.error(
+                        "Could not execute Workflow to determine supported Tokenbinding Versions",
+                        ex);
             }
         }
         return supportedVersions;
@@ -95,8 +101,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     public TokenbindingResult getCouldNotExecuteResult() {
