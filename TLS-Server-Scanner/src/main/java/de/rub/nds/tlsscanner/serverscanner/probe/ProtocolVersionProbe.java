@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -22,13 +21,22 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+<<<<<<< HEAD
+=======
+import de.rub.nds.tlsscanner.core.probe.result.ProtocolVersionResult;
+>>>>>>> master
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+<<<<<<< HEAD
 public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+=======
+public class ProtocolVersionProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, ProtocolVersionResult<ServerReport>> {
+>>>>>>> master
 
     private List<ProtocolVersion> toTestList;
     private List<ProtocolVersion> supportedProtocolVersions;
@@ -36,6 +44,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     public ProtocolVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, configSelector);
+<<<<<<< HEAD
         toTestList = new LinkedList<>();
         if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
             toTestList.add(ProtocolVersion.DTLS10_DRAFT);
@@ -60,6 +69,18 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
     public void executeTest() {
         supportedProtocolVersions = new LinkedList<>();
         unsupportedProtocolVersions = new LinkedList<>();
+=======
+    }
+
+    @Override
+    public ProtocolVersionResult executeTest() {
+        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
+        if (configSelector.foundWorkingTls13Config()) {
+            // the ConfigSelector is currently better at determining 1.3 support
+            supportedVersionList.add(ProtocolVersion.TLS13);
+        }
+>>>>>>> master
 
         for (ProtocolVersion version : toTestList) {
             if (isProtocolVersionSupported(version, false)) {
@@ -86,18 +107,13 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         }
         Config tlsConfig;
         List<CipherSuite> cipherSuites = new LinkedList<>();
-        if (!toTest.isTLS13()) {
-            tlsConfig = configSelector.getBaseConfig();
-            if (intolerance) {
-                cipherSuites.addAll(CipherSuite.getImplemented());
-            } else {
-                cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-                cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            }
+        tlsConfig = configSelector.getBaseConfig();
+        if (intolerance) {
+            cipherSuites.addAll(CipherSuite.getImplemented());
         } else {
-            tlsConfig = configSelector.getTls13BaseConfig();
-            cipherSuites.addAll(CipherSuite.getTls13CipherSuites());
+            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         }
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
@@ -107,23 +123,28 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         executeState(state);
 
         if (toTest == ProtocolVersion.DTLS10_DRAFT) {
-            Record record = (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
+            Record record =
+                    (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
             if (record != null) {
-                ProtocolVersion version = ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
+                ProtocolVersion version =
+                        ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
                 if (version != null) {
                     return version == ProtocolVersion.DTLS10_DRAFT;
                 }
             }
             return false;
         } else {
-            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (!WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 LOGGER.debug("Did not receive ServerHello Message");
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 return false;
             } else {
                 LOGGER.debug("Received ServerHelloMessage");
                 LOGGER.debug(state.getWorkflowTrace().toString());
-                LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+                LOGGER.debug(
+                        "Selected Version:"
+                                + state.getTlsContext().getSelectedProtocolVersion().name());
                 return state.getTlsContext().getSelectedProtocolVersion() == toTest;
             }
         }
@@ -139,12 +160,27 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void adjustConfig(ServerReport report) {
+        toTestList = new LinkedList<>();
+        if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
+            toTestList.add(ProtocolVersion.DTLS10_DRAFT);
+            toTestList.add(ProtocolVersion.DTLS10);
+            toTestList.add(ProtocolVersion.DTLS12);
+        } else {
+            toTestList.add(ProtocolVersion.SSL2);
+            if (configSelector.foundWorkingConfig()) {
+                toTestList.add(ProtocolVersion.SSL3);
+                toTestList.add(ProtocolVersion.TLS10);
+                toTestList.add(ProtocolVersion.TLS11);
+                toTestList.add(ProtocolVersion.TLS12);
+            }
+        }
     }
 
     @Override
     protected Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
+<<<<<<< HEAD
 
     @Override
     protected void mergeData(ServerReport report) {
@@ -226,4 +262,6 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         }
         put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
     }
+=======
+>>>>>>> master
 }

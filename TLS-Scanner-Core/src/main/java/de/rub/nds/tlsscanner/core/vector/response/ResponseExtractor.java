@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.response;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -16,7 +15,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsattacker.transport.tcp.ClientTcpTransportHandler;
+import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,9 +34,10 @@ public class ResponseExtractor {
     }
 
     private static SocketState extractSocketState(State state) {
-        if (state.getTlsContext().getTransportHandler() instanceof ClientTcpTransportHandler) {
+        if (state.getTlsContext().getTransportHandler() instanceof TcpTransportHandler) {
             SocketState socketState =
-                (((ClientTcpTransportHandler) (state.getTlsContext().getTransportHandler())).getSocketState());
+                    (((TcpTransportHandler) (state.getTlsContext().getTransportHandler()))
+                            .getSocketState());
             return socketState;
         } else {
             return null;
@@ -80,6 +80,5 @@ public class ResponseExtractor {
         return false;
     }
 
-    private ResponseExtractor() {
-    }
+    private ResponseExtractor() {}
 }

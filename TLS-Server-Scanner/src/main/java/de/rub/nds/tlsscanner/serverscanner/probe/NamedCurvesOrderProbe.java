@@ -15,6 +15,7 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -58,10 +59,12 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
-        Config tlsConfig = configSelector.getBaseConfig();
-        List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
-            .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
+        if (tlsConfig.getHighestProtocolVersion() != ProtocolVersion.TLS13) {
+            List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
+                .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
+        }
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(toTestList);

@@ -1,13 +1,22 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.probe;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
@@ -16,21 +25,13 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.report.PerformanceData;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<Report> {
+public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProbe<Report> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -46,7 +47,6 @@ public abstract class TlsProbe<Report extends ScanReport> extends ScannerProbe<R
 
     public final void executeState(State... states) {
         this.executeState(new ArrayList<>(Arrays.asList(states)));
-
     }
 
     public final void executeState(List<State> states) {

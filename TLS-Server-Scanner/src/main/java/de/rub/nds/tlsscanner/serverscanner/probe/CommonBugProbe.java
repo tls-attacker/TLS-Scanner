@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -18,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -48,7 +48,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+<<<<<<< HEAD
 public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+=======
+public class CommonBugProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, CommonBugProbeResult> {
+>>>>>>> master
 
     // does it handle unknown extensions correctly?
     private TestResult extensionIntolerance;
@@ -124,12 +129,41 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         maxLengthClientHelloIntolerant = hasBigClientHelloIntolerance();
         greaseNamedGroupIntolerance = hasGreaseNamedGroupIntolerance();
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
+<<<<<<< HEAD
         greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
+=======
+        greaseSignatureAndHashAlgorithmIntolerance =
+                hasGreaseSignatureAndHashAlgorithmIntolerance();
+        return new CommonBugProbeResult(
+                extensionIntolerance,
+                cipherSuiteIntolerance,
+                cipherSuiteLengthIntolerance512,
+                compressionIntolerance,
+                versionIntolerance,
+                alpnIntolerance,
+                clientHelloLengthIntolerance,
+                emptyLastExtensionIntolerance,
+                onlySecondCipherSuiteByteEvaluated,
+                namedGroupIntolerant,
+                namedSignatureAndHashAlgorithmIntolerance,
+                ignoresCipherSuiteOffering,
+                reflectsCipherSuiteOffering,
+                ignoresOfferedNamedGroups,
+                ignoresOfferedSignatureAndHashAlgorithms,
+                maxLengthClientHelloIntolerant,
+                greaseNamedGroupIntolerance,
+                greaseCipherSuiteIntolerance,
+                greaseSignatureAndHashAlgorithmIntolerance);
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
+    public boolean canBeExecuted(ServerReport report) {
+        return true;
+>>>>>>> master
     }
+
+    @Override
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected Requirement getRequirements() {
@@ -141,13 +175,14 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         ClientHelloPreparator preparator = new ClientHelloPreparator(context.getChooser(), message);
         preparator.prepare();
         ClientHelloSerializer serializer =
-            new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
+                new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
         return serializer.serialize().length;
     }
 
     private WorkflowTrace getWorkflowTrace(Config config, ClientHelloMessage clientHello) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        WorkflowTrace trace =
+                factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(clientHello));
         if (config.getHighestProtocolVersion().isDTLS() && config.isDtlsCookieExchange()) {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
@@ -161,8 +196,15 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         try {
             State state = new State(config, trace);
             executeState(state);
-            return checkForTrue == WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResults.TRUE : TestResults.FALSE;
+            return checkForTrue
+                            == (WorkflowTraceUtil.didReceiveMessage(
+                                            HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                                    || (state.getTlsContext().getSelectedProtocolVersion()
+                                                    == ProtocolVersion.TLS13
+                                            && (WorkflowTraceUtil.didReceiveMessage(
+                                                    HandshakeMessageType.FINISHED, trace))))
+                    ? TestResults.TRUE
+                    : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -175,18 +217,18 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasExtensionIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         ClientHelloMessage message = new ClientHelloMessage(config);
         UnknownExtensionMessage extension = new UnknownExtensionMessage();
-        extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
-        extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
+        extension.setTypeConfig(new byte[] {(byte) 3F, (byte) 3F});
+        extension.setDataConfig(new byte[] {00, 11, 22, 33});
         message.getExtensions().add(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasBigClientHelloIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddPaddingExtension(true);
         config.setDefaultPaddingExtensionBytes(new byte[14000]);
         ClientHelloMessage message = new ClientHelloMessage(config);
@@ -195,7 +237,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasIgnoresSigHashAlgoOfferingBug() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(false);
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -206,45 +248,58 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         config.setDefaultClientSupportedCipherSuites(suiteList);
         configSelector.repairConfig(config);
         ClientHelloMessage message = new ClientHelloMessage(config);
-        SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-        extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+        SignatureAndHashAlgorithmsExtensionMessage extension =
+                new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(
+                Modifiable.explicit(new byte[] {(byte) 0xED, (byte) 0xED}));
         message.addExtension(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, true);
     }
 
     private TestResult hasIgnoresNamedGroupsOfferingBug() {
-        Config config = configSelector.getBaseConfig();
-        List<CipherSuite> suiteList = new LinkedList<>();
-        for (CipherSuite suite : CipherSuite.getImplemented()) {
-            if (suite.isEphemeral() && suite.name().contains("EC")) {
-                suiteList.add(suite);
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
+            List<CipherSuite> suiteList = new LinkedList<>();
+            for (CipherSuite suite : CipherSuite.getImplemented()) {
+                if (suite.isEphemeral() && suite.name().contains("EC")) {
+                    suiteList.add(suite);
+                }
             }
+            config.setDefaultClientSupportedCipherSuites(suiteList);
+            config.setAddECPointFormatExtension(true);
+            config.setAddEllipticCurveExtension(false);
+            ClientHelloMessage message = new ClientHelloMessage(config);
+            EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
+            extension.setSupportedGroups(
+                    Modifiable.explicit(new byte[] {(byte) 0xED, (byte) 0xED}));
+            message.addExtension(extension);
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, true);
+        } else {
+            // servers choosing a different group in TLS 1.3 would send an
+            // invalid HelloRetryRequest message which has a significantly
+            // different meaning than the TLS 1.2 test case
+            return TestResults.FALSE;
         }
-        config.setDefaultClientSupportedCipherSuites(suiteList);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(false);
-        ClientHelloMessage message = new ClientHelloMessage(config);
-        EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-        extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
-        message.addExtension(extension);
-        WorkflowTrace trace = getWorkflowTrace(config, message);
-        return getResult(config, trace, true);
     }
 
     private void adjustCipherSuiteSelectionBugs() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
+        message.setCipherSuites(Modifiable.explicit(new byte[] {(byte) 0xEE, (byte) 0xCC}));
         WorkflowTrace trace = getWorkflowTrace(config, message);
         State state = new State(config, trace);
         executeState(state);
         TestResult receivedShd = getResult(config, trace, true);
         if (receivedShd == TestResults.TRUE) {
-            ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
-                .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
-            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
-                new byte[] { (byte) 0xEE, (byte) 0xCC })) {
+            ServerHelloMessage serverHelloMessage =
+                    (ServerHelloMessage)
+                            WorkflowTraceUtil.getFirstReceivedMessage(
+                                    HandshakeMessageType.SERVER_HELLO, trace);
+            if (Arrays.equals(
+                    serverHelloMessage.getSelectedCipherSuite().getValue(),
+                    new byte[] {(byte) 0xEE, (byte) 0xCC})) {
                 reflectsCipherSuiteOffering = TestResults.TRUE;
                 ignoresCipherSuiteOffering = TestResults.FALSE;
             } else {
@@ -261,7 +316,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasSignatureAndHashAlgorithmIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(false);
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -272,15 +327,17 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         config.setDefaultClientSupportedCipherSuites(suiteList);
         configSelector.repairConfig(config);
         ClientHelloMessage message = new ClientHelloMessage(config);
-        SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-        extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+        SignatureAndHashAlgorithmsExtensionMessage extension =
+                new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(
+                Modifiable.insert(new byte[] {(byte) 0xED, (byte) 0xED}, 0));
         message.addExtension(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasNamedGroupIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.getImplemented()) {
             if (suite.isEphemeral() && suite.name().contains("EC")) {
@@ -292,32 +349,37 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         config.setAddEllipticCurveExtension(false);
         ClientHelloMessage message = new ClientHelloMessage(config);
         EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-        extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+        extension.setSupportedGroups(Modifiable.insert(new byte[] {(byte) 0xED, (byte) 0xED}, 0));
         message.addExtension(extension);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasOnlySecondCipherSuiteByteEvaluatedBug() {
-        Config config = configSelector.getBaseConfig();
-        ClientHelloMessage message = new ClientHelloMessage(config);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        for (CipherSuite suite : CipherSuite.values()) {
-            if (suite.getByteValue()[0] == 0x00) {
-                try {
-                    stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
-                } catch (IOException ex) {
-                    LOGGER.debug(ex);
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
+            ClientHelloMessage message = new ClientHelloMessage(config);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            for (CipherSuite suite : CipherSuite.values()) {
+                if (suite.getByteValue()[0] == 0x00) {
+                    try {
+                        stream.write(new byte[] {(byte) 0xDF, suite.getByteValue()[1]});
+                    } catch (IOException ex) {
+                        LOGGER.debug(ex);
+                    }
                 }
             }
+            message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, true);
+        } else {
+            // not applicable to TLS 1.3-only servers due to 0x13XX structure
+            return TestResults.FALSE;
         }
-        message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
-        WorkflowTrace trace = getWorkflowTrace(config, message);
-        return getResult(config, trace, true);
     }
 
     private TestResult hasEmptyLastExtensionIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         ClientHelloMessage message = new ClientHelloMessage(config);
         ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
         message.getExtensions().add(extension);
@@ -326,44 +388,52 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasVersionIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
+        message.setProtocolVersion(Modifiable.explicit(new byte[] {0x03, 0x05}));
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasCompressionIntolerance() {
-        Config config = configSelector.getBaseConfig();
-        ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
-        WorkflowTrace trace = getWorkflowTrace(config, message);
-        return getResult(config, trace, false);
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
+            ClientHelloMessage message = new ClientHelloMessage(config);
+            message.setCompressions(new byte[] {(byte) 0xFF, (byte) 0x00});
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, false);
+        } else {
+            // At this point, we must have only found a working TLS 1.3 config
+            // and RFC 8446 states:
+            // If a TLS 1.3 ClientHello is received with any other value in this
+            // field, the server MUST abort the handshake with an
+            // "illegal_parameter" alert.
+            return TestResults.FALSE;
+        }
     }
 
     private TestResult hasCipherSuiteLengthIntolerance512() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
         toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         config.setDefaultClientSupportedCipherSuites(toTestList);
-        configSelector.repairConfig(config);
         ClientHelloMessage message = new ClientHelloMessage(config);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasCipherSuiteIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
+        message.setCipherSuites(Modifiable.insert(new byte[] {(byte) 0xCF, (byte) 0xAA}, 1));
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasAlpnIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddAlpnExtension(true);
         List<String> alpnProtocols = new LinkedList<>();
         for (AlpnProtocol protocol : AlpnProtocol.values()) {
@@ -377,7 +447,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasClientHelloLengthIntolerance() {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddPaddingExtension(true);
         ClientHelloMessage message = new ClientHelloMessage(config);
         int newLength = 512 - 4 - getClientHelloLength(message, config);
@@ -391,33 +461,42 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     }
 
     private TestResult hasGreaseCipherSuiteIntolerance() {
-        Config config = configSelector.getBaseConfig();
-        Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
-            .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(CipherSuite.values()).stream()
+                .filter(cipherSuite -> cipherSuite.isGrease())
+                .forEach(
+                        greaseCipher ->
+                                config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
         ClientHelloMessage message = new ClientHelloMessage(config);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseNamedGroupIntolerance() {
-        Config config = configSelector.getBaseConfig();
-        Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
-            .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(NamedGroup.values()).stream()
+                .filter(group -> group.isGrease())
+                .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
         ClientHelloMessage message = new ClientHelloMessage(config);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
-        Config config = configSelector.getBaseConfig();
-        Arrays.asList(SignatureAndHashAlgorithm.values()).stream().filter(algorithm -> algorithm.isGrease()).forEach(
-            greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(SignatureAndHashAlgorithm.values()).stream()
+                .filter(algorithm -> algorithm.isGrease())
+                .forEach(
+                        greaseAlgorithm ->
+                                config.getDefaultClientSupportedSignatureAndHashAlgorithms()
+                                        .add(greaseAlgorithm));
         ClientHelloMessage message = new ClientHelloMessage(config);
         WorkflowTrace trace = getWorkflowTrace(config, message);
         return getResult(config, trace, false);
     }
 
     @Override
+<<<<<<< HEAD
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
         put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, cipherSuiteIntolerance);
@@ -439,5 +518,28 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         put(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, greaseCipherSuiteIntolerance);
         put(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
             greaseSignatureAndHashAlgorithmIntolerance);
+=======
+    public CommonBugProbeResult getCouldNotExecuteResult() {
+        return new CommonBugProbeResult(
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST,
+                TestResults.COULD_NOT_TEST);
+>>>>>>> master
     }
 }

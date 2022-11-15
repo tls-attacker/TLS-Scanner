@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -27,9 +26,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+<<<<<<< HEAD
 public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CompressionMethod> compressions;
+=======
+public class CompressionsProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, CompressionsResult> {
+>>>>>>> master
 
     public CompressionsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, configSelector);
@@ -45,7 +49,8 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     private List<CompressionMethod> getSupportedCompressionMethods() {
         CompressionMethod selectedCompressionMethod;
         List<CompressionMethod> supportedCompressionMethods = new LinkedList<>();
-        List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
+        List<CompressionMethod> toTestList =
+                new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         do {
             selectedCompressionMethod = testCompressionMethods(toTestList);
             if (!toTestList.contains(selectedCompressionMethod)) {
@@ -66,17 +71,28 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         tlsConfig.setDefaultClientSupportedCompressionMethods(compressionList);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCompressionMethod();
         } else {
-            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug(
+                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
 
     @Override
+<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return configSelector.foundWorkingConfig();
+    }
+
+    @Override
+    public void adjustConfig(ServerReport report) {}
+>>>>>>> master
 
     @Override
     protected Requirement getRequirements() {

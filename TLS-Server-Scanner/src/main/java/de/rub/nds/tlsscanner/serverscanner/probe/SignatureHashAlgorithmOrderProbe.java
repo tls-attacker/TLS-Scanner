@@ -60,7 +60,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
-        Config config = configSelector.getBaseConfig();
+        Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);

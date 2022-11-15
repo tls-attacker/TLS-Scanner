@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -41,19 +40,32 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResults testForGeneralDrown() {
         GeneralDrownAttacker attacker =
-            new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
+                new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
         return attacker.isVulnerable();
     }
 
     private TestResults testForExtraClearDrown() {
-        SpecialDrownAttacker attacker = new SpecialDrownAttacker(configSelector.getSSL2BaseConfig(),
-            getParallelExecutor(), DrownOracleType.EXTRA_CLEAR);
+        SpecialDrownAttacker attacker =
+                new SpecialDrownAttacker(
+                        configSelector.getSSL2BaseConfig(),
+                        getParallelExecutor(),
+                        DrownOracleType.EXTRA_CLEAR);
         return attacker.isVulnerable();
     }
 
     @Override
+<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+                && report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_2) == TestResults.TRUE;
+    }
+
+    @Override
+    public void adjustConfig(ServerReport report) {}
+>>>>>>> master
 
     @Override
     protected Requirement getRequirements() {

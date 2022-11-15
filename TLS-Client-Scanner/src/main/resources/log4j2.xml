@@ -12,13 +12,13 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="Direct" level="INFO" additivity="false">
-            <AppenderRef ref="Direct"/>
-        </Logger> 
         <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
             <AppenderRef ref="Direct"/>
         </Logger>
         <Logger name="de.rub.nds.tlsscanner" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="de.rub.nds.scanner" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="DirectLogger" level="OFF" additivity="false">

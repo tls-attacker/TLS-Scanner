@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -15,7 +14,6 @@ import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.report.ScanReport;
-import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +29,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobExecutor<Report> implements Observer {
+public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobExecutor<Report>
+        implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -48,14 +47,18 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     // Used for waiting for Threads in the ThreadPoolExecutor
     private final Semaphore semaphore = new Semaphore(0);
 
-    public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
+    public ThreadedScanJobExecutor(
+            ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
         long probeTimeout = config.getProbeTimeout();
-        executor = new ScannerThreadPoolExecutor(threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
+        executor =
+                new ScannerThreadPoolExecutor(
+                        threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
         this.config = config;
         this.scanJob = scanJob;
     }
 
-    public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
+    public ThreadedScanJobExecutor(
+            ScannerConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
         this.executor = executor;
         this.config = config;
         this.scanJob = scanJob;
@@ -100,18 +103,21 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
                     lastMerge = System.currentTimeMillis();
                     try {
                         ScannerProbe probeResult = result.get();
-                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getType().getName() + " probe executed");
+                        LOGGER.info(probeResult.getType().getName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
                         probeResult.merge(report);
                     } catch (InterruptedException | ExecutionException ex) {
-                        LOGGER.error("Encountered an exception before we could merge the result. Killing the task.",
-                            ex);
+                        LOGGER.error(
+                                "Encountered an exception before we could merge the result. Killing the task.",
+                                ex);
                         result.cancel(true);
                         finishedFutures.add(result);
                     } catch (CancellationException ex) {
-                        LOGGER.info("Could not retrieve a task because it was cancelled after "
-                            + config.getProbeTimeout() + " milliseconds");
+                        LOGGER.info(
+                                "Could not retrieve a task because it was cancelled after "
+                                        + config.getProbeTimeout()
+                                        + " milliseconds");
                         finishedFutures.add(result);
                     }
                 }
@@ -146,11 +152,14 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         HashMap<TrackableValue, ExtractedValueContainer> containerMap = new HashMap<>();
         int stateCounter = 0;
         for (ScannerProbe probe : allProbes) {
-            List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
+            List<ExtractedValueContainer> tempContainerList =
+                    probe.getWriter().getCumulatedExtractedValues();
             for (ExtractedValueContainer tempContainer : tempContainerList) {
                 if (containerMap.containsKey(tempContainer.getType())) {
-                    containerMap.get(tempContainer.getType()).getExtractedValueList()
-                        .addAll(tempContainer.getExtractedValueList());
+                    containerMap
+                            .get(tempContainer.getType())
+                            .getExtractedValueList()
+                            .addAll(tempContainer.getExtractedValueList());
                 } else {
                     containerMap.put(tempContainer.getType(), tempContainer);
                 }
@@ -194,6 +203,5 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
         } else {
             LOGGER.error(this.getClass().getName() + " received an update from a non-siteReport");
         }
-
     }
 }

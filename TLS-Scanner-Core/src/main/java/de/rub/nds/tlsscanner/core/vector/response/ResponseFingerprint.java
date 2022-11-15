@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.record.BlobRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -175,7 +175,7 @@ public class ResponseFingerprint {
     /**
      * Overrides the built-in hashCode() function. toString().hashCode() assures same hashes for responses with
      * essentially the same content but differences in their record bytes.
-     * 
+     *
      * @return The hash of the string representation
      */
     @Override
@@ -185,7 +185,7 @@ public class ResponseFingerprint {
 
     /**
      * Returns whether two ResponseFingerprints are equal using the {@link FingerprintChecker}.
-     * 
+     *
      * @param  obj
      *             ResponseFingerprint to compare this one to
      * @return     True, if both ResponseFingerprints are equal

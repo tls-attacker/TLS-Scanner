@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.core.guideline;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.TestResult;
-import javax.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class GuidelineCheckResult {

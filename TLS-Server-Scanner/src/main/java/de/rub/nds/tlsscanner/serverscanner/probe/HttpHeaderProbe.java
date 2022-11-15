@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -31,6 +30,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+<<<<<<< HEAD
 public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -44,6 +44,10 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private TestResult supportsHpkp = TestResults.FALSE;
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
+=======
+public class HttpHeaderProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, HttpHeaderResult> {
+>>>>>>> master
 
     public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
@@ -55,8 +59,13 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
+<<<<<<< HEAD
     public void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
+=======
+    public HttpHeaderResult executeTest() {
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
+>>>>>>> master
         tlsConfig.setHttpsParsingEnabled(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
@@ -78,12 +87,21 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         } else {
             headerList = new LinkedList<>();
         }
+<<<<<<< HEAD
         this.speaksHttps = speaksHttps == true ? TestResults.TRUE : TestResults.FALSE;
+=======
+        return new HttpHeaderResult(
+                speaksHttps == true ? TestResults.TRUE : TestResults.FALSE, headerList);
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
+    public boolean canBeExecuted(ServerReport report) {
+        return true;
+>>>>>>> master
     }
+
+    @Override
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

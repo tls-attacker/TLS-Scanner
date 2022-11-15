@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -35,7 +34,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
     @Override
     public void analyze(ServerReport report) {
         ExtractedValueContainer<?> publicKeyContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
+                report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
 
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
@@ -90,7 +89,8 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
                 usesCommonDhPrimes = TestResults.FALSE;
             }
         } else {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.COULD_NOT_TEST);
+            report.putResult(
+                    TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.COULD_NOT_TEST);
             onlyPrime = TestResults.COULD_NOT_TEST;
             onlySafePrime = TestResults.COULD_NOT_TEST;
             usesCommonDhPrimes = TestResults.COULD_NOT_TEST;
@@ -125,5 +125,4 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
     public TestResult getReuse() {
         return this.reuse;
     }
-
 }

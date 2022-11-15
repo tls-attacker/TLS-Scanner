@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
@@ -39,6 +38,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
+<<<<<<< HEAD
 public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<ProtocolVersion> versions;
@@ -47,6 +47,15 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
 
     public SignatureAndHashAlgorithmProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+=======
+public class SignatureAndHashAlgorithmProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, SignatureAndHashAlgorithmResult> {
+
+    private List<ProtocolVersion> versions;
+
+    public SignatureAndHashAlgorithmProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+>>>>>>> master
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, configSelector);
         register(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
             TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
@@ -60,18 +69,28 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
             if (version.isTLS13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
             } else {
-                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
+                supportedSke.addAll(
+                        testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
+<<<<<<< HEAD
         signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
         signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
+=======
+        return new SignatureAndHashAlgorithmResult(
+                new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13));
+>>>>>>> master
     }
 
-    private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
+    private Set<SignatureAndHashAlgorithm> testForVersion(
+            ProtocolVersion version, Predicate<CipherSuite> predicate) {
         Set<SignatureAndHashAlgorithm> found = new HashSet<>();
         Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
 
-        Config tlsConfig = version.isTLS13() ? configSelector.getTls13BaseConfig() : configSelector.getBaseConfig();
+        Config tlsConfig =
+                version.isTLS13()
+                        ? configSelector.getTls13BaseConfig()
+                        : configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setHighestProtocolVersion(version);
@@ -79,8 +98,10 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
         configSelector.repairConfig(tlsConfig);
 
         Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
-        testQueue.add(version.isTLS13() ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
-            : Arrays.asList(SignatureAndHashAlgorithm.values()));
+        testQueue.add(
+                version.isTLS13()
+                        ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
+                        : Arrays.asList(SignatureAndHashAlgorithm.values()));
 
         State state;
 
@@ -93,8 +114,10 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
 
             state = testAlgorithms(testSet, tlsConfig);
             if (state != null) {
-                SignatureAndHashAlgorithm selected = version.isTLS13() ? getSelectedSignatureAndHashAlgorithmCV(state)
-                    : getSelectedSignatureAndHashAlgorithmSke(state);
+                SignatureAndHashAlgorithm selected =
+                        version.isTLS13()
+                                ? getSelectedSignatureAndHashAlgorithmCV(state)
+                                : getSelectedSignatureAndHashAlgorithmSke(state);
                 if (selected == null) {
                     continue;
                 }
@@ -123,14 +146,17 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmCV(State state) {
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace())) {
-            HandshakeMessage message = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CERTIFICATE_VERIFY,
-                state.getWorkflowTrace());
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace())) {
+            HandshakeMessage message =
+                    WorkflowTraceUtil.getLastReceivedMessage(
+                            HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace());
             if (message instanceof CertificateVerifyMessage) {
                 CertificateVerifyMessage msg = (CertificateVerifyMessage) message;
                 ModifiableByteArray algByte = msg.getSignatureHashAlgorithm();
                 if (algByte != null) {
-                    return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
+                    return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(
+                            algByte.getValue());
                 }
             }
         }
@@ -138,14 +164,17 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmSke(State state) {
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
-            HandshakeMessage message = WorkflowTraceUtil
-                .getLastReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+            HandshakeMessage message =
+                    WorkflowTraceUtil.getLastReceivedMessage(
+                            HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
             if (message instanceof ServerKeyExchangeMessage) {
                 ServerKeyExchangeMessage msg = (ServerKeyExchangeMessage) message;
                 ModifiableByteArray algByte = msg.getSignatureAndHashAlgorithm();
                 if (algByte != null) {
-                    return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
+                    return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(
+                            algByte.getValue());
                 }
             }
         }
@@ -159,25 +188,42 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
         if (state.getWorkflowTrace().executedAsPlanned()) {
             return state;
         } else {
-            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug(
+                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
 
     @Override
+<<<<<<< HEAD
     protected Requirement getRequirements() {
         ProtocolRequirement pReqTls12 = new ProtocolRequirement(ProtocolVersion.TLS12);
         ProtocolRequirement pReqTls13 = new ProtocolRequirement(ProtocolVersion.TLS13);
         ProtocolRequirement pReqDtls12 = new ProtocolRequirement(ProtocolVersion.DTLS12);
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
             .requires(new OrRequirement(pReqDtls12, pReqTls12, pReqTls13));
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+                && (report.getVersions().contains(ProtocolVersion.TLS12)
+                        || report.getVersions().contains(ProtocolVersion.TLS13)
+                        || report.getVersions().contains(ProtocolVersion.DTLS12));
+>>>>>>> master
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
+<<<<<<< HEAD
         versions = new ArrayList<>();
         for (ProtocolVersion version : report.getSupportedProtocolVersions()) {
             if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
+=======
+        this.versions = new ArrayList<>();
+        for (ProtocolVersion version : report.getVersions()) {
+            if (version.equals(ProtocolVersion.DTLS12)
+                    || version.equals(ProtocolVersion.TLS12)
+                    || version.isTLS13()) {
+>>>>>>> master
                 versions.add(version);
             }
         }

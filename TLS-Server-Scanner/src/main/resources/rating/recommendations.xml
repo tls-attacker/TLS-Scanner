@@ -1167,7 +1167,7 @@
         <links/>
         <propertyRecommendations>
             <result>FALSE</result>
-            <shortDescription>The server does not reject invalid SNI names.</shortDescription>
+            <shortDescription>The server does not reject invalid SNI names</shortDescription>
             <handlingRecommendation>If possible configure your server to use strict SNI verification</handlingRecommendation>
         </propertyRecommendations>
     </recommendation>
@@ -1178,7 +1178,7 @@
         <links/>
         <propertyRecommendations>
             <result>FALSE</result>
-            <shortDescription>The server does not reject invalid SNI names.</shortDescription>
+            <shortDescription>The server does not reject invalid SNI names</shortDescription>
             <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
         </propertyRecommendations>
     </recommendation>

@@ -9,11 +9,18 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
+import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.BigIntegers;
+
 import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -32,19 +39,14 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.core.task.InvalidCurveTask;
+import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.InvalidCurvePoint;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.TwistedCurvePoint;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.trace.InvalidCurveWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
-import de.rub.nds.tlsscanner.serverscanner.task.InvalidCurveTask;
-import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.util.BigIntegers;
 
 public class InvalidCurveAttacker {
 

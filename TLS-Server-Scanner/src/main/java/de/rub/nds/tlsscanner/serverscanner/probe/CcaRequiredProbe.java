@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -28,9 +27,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
+<<<<<<< HEAD
 public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult requiresCca;
+=======
+public class CcaRequiredProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, CcaRequiredResult> {
+>>>>>>> master
 
     public CcaRequiredProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);
@@ -42,26 +46,41 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAutoSelectCertificate(false);
         CcaCertificateManager ccaCertificateManager =
-            new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
-            CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
+                new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
+        WorkflowTrace trace =
+                CcaWorkflowGenerator.generateWorkflow(
+                        tlsConfig,
+                        ccaCertificateManager,
+                        CcaWorkflowType.CRT_CKE_CCS_FIN,
+                        CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
+<<<<<<< HEAD
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             requiresCca = TestResults.FALSE;
+=======
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return new CcaRequiredResult(TestResults.FALSE);
+>>>>>>> master
         } else {
             requiresCca = TestResults.TRUE;
         }
     }
 
     @Override
+<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_CCA);
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return (report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE
+                && configSelector.foundWorkingConfig());
+>>>>>>> master
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

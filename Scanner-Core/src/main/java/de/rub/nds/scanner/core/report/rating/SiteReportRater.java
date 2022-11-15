@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
@@ -29,18 +28,17 @@ public class SiteReportRater {
         this.recommendations = recommendations;
     }
 
-    private SiteReportRater() {
-    }
-
     public ScoreReport getScoreReport(HashMap<String, TestResult> resultMap) {
-        LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers = new LinkedHashMap<>();
+        LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers =
+                new LinkedHashMap<>();
 
         for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencers()) {
             TestResult result = resultMap.get(ratingInfluencer.getAnalyzedProperty().toString());
             if (result != null) {
                 PropertyResultRatingInfluencer propertyRatingInfluencer =
-                    ratingInfluencer.getPropertyRatingInfluencer(result);
-                ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
+                        ratingInfluencer.getPropertyRatingInfluencer(result);
+                ratingInfluencers.put(
+                        ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
             }
         }
 
@@ -48,7 +46,8 @@ public class SiteReportRater {
         return new ScoreReport(score, ratingInfluencers);
     }
 
-    private int computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
+    private int computeScore(
+            HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         int score = 0;
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getInfluence() != null) {

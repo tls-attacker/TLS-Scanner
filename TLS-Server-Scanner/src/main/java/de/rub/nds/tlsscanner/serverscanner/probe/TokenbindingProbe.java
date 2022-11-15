@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -30,10 +29,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+<<<<<<< HEAD
 public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<TokenBindingVersion> supportedTokenBindingVersion;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
+=======
+public class TokenbindingProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, TokenbindingResult> {
+>>>>>>> master
 
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
@@ -48,17 +52,24 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!supportedTokenBindingVersion.isEmpty()) {
-            supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
+            supportedTokenBindingKeyParameters.addAll(
+                    getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
+<<<<<<< HEAD
+=======
+        return new TokenbindingResult(
+                supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
+>>>>>>> master
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingVersion(version);
         List<TokenBindingKeyParameters> supportedParameters = new LinkedList<>();
-        List<TokenBindingKeyParameters> toTestList = new ArrayList<>(Arrays.asList(TokenBindingKeyParameters.values()));
+        List<TokenBindingKeyParameters> toTestList =
+                new ArrayList<>(Arrays.asList(TokenBindingKeyParameters.values()));
 
         while (!toTestList.isEmpty()) {
             tlsConfig.setDefaultTokenBindingKeyParameters(toTestList);
@@ -66,7 +77,8 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
             executeState(state);
             if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
                 supportedParameters.addAll(state.getTlsContext().getTokenBindingKeyParameters());
-                for (TokenBindingKeyParameters param : state.getTlsContext().getTokenBindingKeyParameters()) {
+                for (TokenBindingKeyParameters param :
+                        state.getTlsContext().getTokenBindingKeyParameters()) {
                     toTestList.remove(param);
                 }
             }
@@ -75,7 +87,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     private Set<TokenBindingVersion> getSupportedVersions() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingKeyParameters(TokenBindingKeyParameters.values());
@@ -90,7 +102,9 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
                 }
 
             } catch (WorkflowExecutionException ex) {
-                LOGGER.error("Could not execute Workflow to determine supported Tokenbinding Versions", ex);
+                LOGGER.error(
+                        "Could not execute Workflow to determine supported Tokenbinding Versions",
+                        ex);
             }
         }
         return supportedVersions;
@@ -111,8 +125,13 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
         addToList(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, new LinkedList<>());
     }
 
+<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
+=======
+    @Override
+    public void adjustConfig(ServerReport report) {}
+>>>>>>> master
 
     @Override
     protected Requirement getRequirements() {
