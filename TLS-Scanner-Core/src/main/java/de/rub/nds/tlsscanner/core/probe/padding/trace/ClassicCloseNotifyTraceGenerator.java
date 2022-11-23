@@ -49,7 +49,7 @@ public class ClassicCloseNotifyTraceGenerator extends PaddingTraceGenerator {
             // we assume that the client sends the first application message
             trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         }
-        ApplicationMessage applicationMessage = new ApplicationMessage(config);
+        ApplicationMessage applicationMessage = new ApplicationMessage();
         AlertMessage alert = new AlertMessage();
         alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
         SendAction sendAction = new SendAction(applicationMessage, alert);

@@ -209,7 +209,6 @@ public class PaddingOracleAttacker {
         }
         tlsConfig.setStopReceivingAfterFatal(false);
         tlsConfig.setStopActionsAfterFatal(false);
-        tlsConfig.setStopReceivingAfterWarning(false);
         tlsConfig.setStopActionsAfterWarning(false);
         tlsConfig.setWorkflowExecutorShouldClose(false);
     }

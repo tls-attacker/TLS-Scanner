@@ -10,9 +10,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.http.HttpMessage;
+import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
@@ -34,23 +35,23 @@ public class HttpHeaderProbe
     @Override
     public HttpHeaderResult executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
-        tlsConfig.setHttpsParsingEnabled(true);
+        tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
         executeState(state);
 
         ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
-        HttpsResponseMessage responseMessage = null;
-        if (action.getReceivedMessages() != null) {
-            for (ProtocolMessage message : action.getReceivedMessages()) {
-                if (message instanceof HttpsResponseMessage) {
-                    responseMessage = (HttpsResponseMessage) message;
+        HttpResponseMessage responseMessage = null;
+        if (action.getReceivedHttpMessages() != null) {
+            for (HttpMessage httpMsg : action.getReceivedHttpMessages()) {
+                if (httpMsg instanceof HttpResponseMessage) {
+                    responseMessage = (HttpResponseMessage) httpMsg;
                     break;
                 }
             }
         }
         boolean speaksHttps = responseMessage != null;
-        List<HttpsHeader> headerList;
+        List<HttpHeader> headerList;
         if (speaksHttps) {
             headerList = responseMessage.getHeader();
         } else {

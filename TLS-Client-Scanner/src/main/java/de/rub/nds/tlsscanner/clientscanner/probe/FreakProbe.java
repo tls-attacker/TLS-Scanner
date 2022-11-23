@@ -72,12 +72,10 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new ChangeServerRsaParametersAction(modulus, publicKey, privateKey));
         trace.addTlsAction(
-                new SendAction(
-                        new RSAServerKeyExchangeMessage(config),
-                        new ServerHelloDoneMessage(config)));
+                new SendAction(new RSAServerKeyExchangeMessage(), new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         executeState(new State(config, trace));
 

@@ -105,7 +105,7 @@ public class ResumptionProbe
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned()
@@ -181,7 +181,7 @@ public class ResumptionProbe
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned()
@@ -273,6 +273,8 @@ public class ResumptionProbe
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setAddPreSharedKeyExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
+                // allow an early NewSessionTicket without aborting execution
+                tlsConfig.setStopTraceAfterUnexpected(false);
                 State state = new State(tlsConfig);
                 executeState(state);
 
@@ -297,7 +299,7 @@ public class ResumptionProbe
                 LOGGER.error("Timeout on " + getProbeName());
                 throw new RuntimeException(e);
             } else {
-                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + ")");
+                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + "): ", e);
             }
             return TestResults.ERROR_DURING_TEST;
         }
@@ -348,7 +350,7 @@ public class ResumptionProbe
                         .addTlsAction(
                                 new ReceiveAction(
                                         tlsConfig.getDefaultClientConnection().getAlias(),
-                                        new NewSessionTicketMessage(false)));
+                                        new NewSessionTicketMessage()));
                 executeState(state);
 
                 if (WorkflowTraceUtil.didReceiveMessage(

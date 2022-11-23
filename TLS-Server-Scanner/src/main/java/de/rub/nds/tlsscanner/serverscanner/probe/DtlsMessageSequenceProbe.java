@@ -59,14 +59,11 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(
-                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
 
         State state = new State(config, trace);
         executeState(state);
@@ -87,14 +84,11 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(
-                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
 
         State state = new State(config, trace);
         executeState(state);
@@ -115,13 +109,10 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(
-                        new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
 
         State state = new State(config, trace);
         executeState(state);
@@ -142,7 +133,7 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
 
         State state = new State(config, trace);
         executeState(state);

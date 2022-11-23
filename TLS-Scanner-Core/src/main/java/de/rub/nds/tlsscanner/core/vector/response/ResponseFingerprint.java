@@ -1,44 +1,36 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.response;
 
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
-import de.rub.nds.tlsattacker.core.record.BlobRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-
 import jakarta.xml.bind.annotation.*;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResponseFingerprint {
-    @XmlElementWrapper
-    @XmlElementRef
-    private List<ProtocolMessage> messageList;
+    @XmlElementWrapper @XmlElementRef private List<ProtocolMessage> messageList;
 
     @XmlElementWrapper
-    @XmlElements(value = { @XmlElement(type = Record.class, name = "Record"),
-        @XmlElement(type = BlobRecord.class, name = "BlobRecord") })
-    private List<AbstractRecord> recordList;
+    @XmlElements(value = {@XmlElement(type = Record.class, name = "Record")})
+    private List<Record> recordList;
 
     private SocketState socketState;
 
-    public ResponseFingerprint() {
-    }
+    public ResponseFingerprint() {}
 
-    public ResponseFingerprint(List<ProtocolMessage> messageList, List<AbstractRecord> recordList,
-        SocketState socketState) {
+    public ResponseFingerprint(
+            List<ProtocolMessage> messageList, List<Record> recordList, SocketState socketState) {
         this.messageList = messageList;
         this.recordList = recordList;
         this.socketState = socketState;
@@ -48,7 +40,7 @@ public class ResponseFingerprint {
         return socketState;
     }
 
-    public List<AbstractRecord> getRecordList() {
+    public List<Record> getRecordList() {
         return recordList;
     }
 
@@ -64,12 +56,17 @@ public class ResponseFingerprint {
             messages.append(someMessage.toCompactString()).append(",");
         }
         StringBuilder records = new StringBuilder();
-        for (AbstractRecord someRecord : this.getRecordList()) {
+        for (Record someRecord : this.getRecordList()) {
             records.append(someRecord.getClass().getSimpleName()).append(",");
         }
 
-        return "ResponseFingerprint[ Messages=[" + messages.toString() + "], Records=[" + records.toString()
-            + "], SocketState=" + socketState + ']';
+        return "ResponseFingerprint[ Messages=["
+                + messages.toString()
+                + "], Records=["
+                + records.toString()
+                + "], SocketState="
+                + socketState
+                + ']';
     }
 
     public String toShortString() {
@@ -83,28 +80,34 @@ public class ResponseFingerprint {
     public String toHumanReadable() {
         StringBuilder resultString = new StringBuilder();
         for (ProtocolMessage msg : messageList) {
-            if (!(msg instanceof TlsMessage)) {
+            if (!(msg instanceof ProtocolMessage)) {
                 resultString.append("{").append(msg.getClass().getName()).append("} ");
                 continue;
             }
 
-            TlsMessage message = (TlsMessage) msg;
+            ProtocolMessage message = (ProtocolMessage) msg;
 
             switch (message.getProtocolMessageType()) {
                 case ALERT:
                     AlertMessage alert = (AlertMessage) message;
                     AlertDescription alertDescription =
-                        AlertDescription.getAlertDescription(alert.getDescription().getValue());
+                            AlertDescription.getAlertDescription(alert.getDescription().getValue());
                     AlertLevel alertLevel = AlertLevel.getAlertLevel(alert.getLevel().getValue());
-                    if (alertDescription != null && alertLevel != null && alertLevel != AlertLevel.UNDEFINED) {
+                    if (alertDescription != null
+                            && alertLevel != null
+                            && alertLevel != AlertLevel.UNDEFINED) {
                         if (alertLevel == AlertLevel.FATAL) {
                             resultString.append("[").append(alertDescription.name()).append("]");
                         } else {
                             resultString.append("(").append(alertDescription.name()).append(")");
                         }
                     } else {
-                        resultString.append("{ALERT-").append(alert.getDescription().getValue()).append("-")
-                            .append(alert.getLevel()).append("}");
+                        resultString
+                                .append("{ALERT-")
+                                .append(alert.getDescription().getValue())
+                                .append("-")
+                                .append(alert.getLevel())
+                                .append("}");
                     }
                     break;
                 case APPLICATION_DATA:
@@ -133,7 +136,7 @@ public class ResponseFingerprint {
         }
         if (recordList != null && recordList.size() > 0) {
             resultString.append(" [");
-            for (AbstractRecord record : recordList) {
+            for (Record record : recordList) {
                 if (record instanceof Record) {
                     resultString.append("R(" + ((Record) record).getLength().getValue() + "),");
                 } else {
@@ -173,8 +176,8 @@ public class ResponseFingerprint {
     }
 
     /**
-     * Overrides the built-in hashCode() function. toString().hashCode() assures same hashes for responses with
-     * essentially the same content but differences in their record bytes.
+     * Overrides the built-in hashCode() function. toString().hashCode() assures same hashes for
+     * responses with essentially the same content but differences in their record bytes.
      *
      * @return The hash of the string representation
      */
@@ -186,27 +189,28 @@ public class ResponseFingerprint {
     /**
      * Returns whether two ResponseFingerprints are equal using the {@link FingerprintChecker}.
      *
-     * @param  obj
-     *             ResponseFingerprint to compare this one to
-     * @return     True, if both ResponseFingerprints are equal
+     * @param obj ResponseFingerprint to compare this one to
+     * @return True, if both ResponseFingerprints are equal
      */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ResponseFingerprint)) {
             return false;
         }
-        EqualityError equalityError = FingerprintChecker.checkEquality(this, (ResponseFingerprint) obj);
+        EqualityError equalityError =
+                FingerprintChecker.checkEquality(this, (ResponseFingerprint) obj);
         return equalityError == EqualityError.NONE || equalityError == EqualityError.RECORD_CONTENT;
     }
 
     /**
      * //TODO, this does not check record layer compatibility
      *
-     * @param  fingerprint
+     * @param fingerprint
      * @return
      */
     public boolean areCompatible(ResponseFingerprint fingerprint) {
-        if (socketState != SocketState.TIMEOUT && fingerprint.getSocketState() != SocketState.TIMEOUT) {
+        if (socketState != SocketState.TIMEOUT
+                && fingerprint.getSocketState() != SocketState.TIMEOUT) {
             if (fingerprint.getSocketState() != socketState) {
                 return false;
             }
@@ -223,10 +227,10 @@ public class ResponseFingerprint {
             }
         }
         return true;
-
     }
 
-    private boolean checkMessagesAreRoughlyEqual(ProtocolMessage messageOne, ProtocolMessage messageTwo) {
+    private boolean checkMessagesAreRoughlyEqual(
+            ProtocolMessage messageOne, ProtocolMessage messageTwo) {
         if (!messageOne.getClass().equals(messageTwo.getClass())) {
             return false;
         }
@@ -235,13 +239,11 @@ public class ResponseFingerprint {
             AlertMessage alertOne = (AlertMessage) messageOne;
             AlertMessage alertTwo = (AlertMessage) messageTwo;
             if (alertOne.getDescription().getValue() != alertTwo.getDescription().getValue()
-                || alertOne.getLevel().getValue() != alertTwo.getLevel().getValue()) {
+                    || alertOne.getLevel().getValue() != alertTwo.getLevel().getValue()) {
                 return false;
             }
         }
         // nothing more to check?
         return true;
-
     }
-
 }

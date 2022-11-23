@@ -99,14 +99,14 @@ public class DtlsFragmentationProbe
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        SendAction action = new SendAction(new CertificateMessage(config));
+        SendAction action = new SendAction(new CertificateMessage());
         action.setFragments(
                 new DtlsHandshakeMessageFragment(config, 20),
                 new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);
@@ -134,14 +134,14 @@ public class DtlsFragmentationProbe
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        SendAction action = new SendAction(new CertificateMessage(config));
+        SendAction action = new SendAction(new CertificateMessage());
         action.setFragments(
                 new DtlsHandshakeMessageFragment(config, 20),
                 new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);

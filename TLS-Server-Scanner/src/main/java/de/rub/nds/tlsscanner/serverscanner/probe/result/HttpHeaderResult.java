@@ -1,18 +1,17 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
@@ -27,7 +26,7 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private List<HttpsHeader> headerList = null;
+    private List<HttpHeader> headerList = null;
     private TestResult speaksHttps = null;
     private TestResult supportsHsts = TestResults.FALSE;
     private Long hstsMaxAge = null;
@@ -41,7 +40,7 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
 
-    public HttpHeaderResult(TestResult speaksHttps, List<HttpsHeader> headerList) {
+    public HttpHeaderResult(TestResult speaksHttps, List<HttpHeader> headerList) {
         super(TlsProbeType.HTTP_HEADER);
         this.speaksHttps = speaksHttps;
         this.headerList = headerList;
@@ -54,8 +53,11 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (headerList != null) {
-            for (HttpsHeader header : headerList) {
-                if (header.getHeaderName().getValue().toLowerCase().equals("strict-transport-security")) {
+            for (HttpHeader header : headerList) {
+                if (header.getHeaderName()
+                        .getValue()
+                        .toLowerCase()
+                        .equals("strict-transport-security")) {
                     supportsHsts = TestResults.TRUE;
                     boolean preload = false;
                     String[] values = header.getHeaderValue().getValue().split(";");
@@ -105,7 +107,10 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
                         try {
                             String[] pinString = value.split("=");
                             HpkpPin pin =
-                                new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                                    new HpkpPin(
+                                            pinString[0],
+                                            Base64.getDecoder()
+                                                    .decode(pinString[1].replace("\"", "")));
                             pinList.add(pin);
                         } catch (Exception e) {
                             LOGGER.warn("HPKP was not parseable", e);
@@ -136,8 +141,11 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
                         if (value.trim().startsWith("pin-")) {
                             try {
                                 String[] pinString = value.split("=");
-                                HpkpPin pin = new HpkpPin(pinString[0],
-                                    Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                                HpkpPin pin =
+                                        new HpkpPin(
+                                                pinString[0],
+                                                Base64.getDecoder()
+                                                        .decode(pinString[1].replace("\"", "")));
                                 reportOnlyPinList.add(pin);
                             } catch (Exception e) {
                                 LOGGER.warn("HPKP was not parseable", e);
@@ -148,8 +156,9 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
                 }
                 if (header.getHeaderName().getValue().equals("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
-                    String[] compressionAlgorithms =
-                        { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz" };
+                    String[] compressionAlgorithms = {
+                        "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz"
+                    };
                     for (String compression : compressionAlgorithms) {
                         if (compressionHeaderValue.contains(compression)) {
                             vulnerableBreach = TestResults.TRUE;
@@ -174,5 +183,4 @@ public class HttpHeaderResult extends ProbeResult<ServerReport> {
         report.setReportOnlyHpkpPins(reportOnlyPinList);
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
     }
-
 }

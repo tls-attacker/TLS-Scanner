@@ -96,10 +96,8 @@ public class DtlsFragmentationProbe
                 new DtlsHandshakeMessageFragment(config, 20),
                 new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
 
         State state = new State(config, trace);
         executeState(state);
@@ -129,10 +127,8 @@ public class DtlsFragmentationProbe
                 new DtlsHandshakeMessageFragment(config, 20),
                 new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
 
         State state = new State(config, trace);
         executeState(state);

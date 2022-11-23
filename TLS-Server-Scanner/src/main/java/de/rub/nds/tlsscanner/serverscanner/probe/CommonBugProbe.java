@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
@@ -29,7 +30,6 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.UnknownExtensionMe
 import de.rub.nds.tlsattacker.core.protocol.preparator.ClientHelloPreparator;
 import de.rub.nds.tlsattacker.core.protocol.serializer.ClientHelloSerializer;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -159,10 +159,10 @@ public class CommonBugProbe
                 factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(clientHello));
         if (config.getHighestProtocolVersion().isDTLS() && config.isDtlsCookieExchange()) {
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             trace.addTlsAction(new SendAction(clientHello));
         }
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         return trace;
     }
 

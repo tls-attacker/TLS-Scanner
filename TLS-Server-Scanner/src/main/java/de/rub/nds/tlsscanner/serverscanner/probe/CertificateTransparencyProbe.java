@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,9 +46,13 @@ public class CertificateTransparencyProbe
     private boolean supportsHandshakeSCTs;
     private boolean supportsOcspSCTs;
     private boolean meetsChromeCTPolicy = false;
-    private SignedCertificateTimestampList precertificateSctList;
-    private SignedCertificateTimestampList handshakeSctList;
-    private SignedCertificateTimestampList ocspSctList;
+    private final SignedCertificateTimestampList precertificateSctList =
+            new SignedCertificateTimestampList();
+    private final SignedCertificateTimestampList handshakeSctList =
+            new SignedCertificateTimestampList();
+    ;
+    private final SignedCertificateTimestampList ocspSctList = new SignedCertificateTimestampList();
+    ;
 
     public CertificateTransparencyProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -108,8 +113,8 @@ public class CertificateTransparencyProbe
             }
             SignedCertificateTimestampListParser sctListParser =
                     new SignedCertificateTimestampListParser(
-                            0, encodedSctList, serverCertChain, true);
-            precertificateSctList = sctListParser.parse();
+                            new ByteArrayInputStream(encodedSctList), serverCertChain, true);
+            sctListParser.parse(precertificateSctList);
         }
     }
 
@@ -130,8 +135,8 @@ public class CertificateTransparencyProbe
 
             SignedCertificateTimestampListParser sctListParser =
                     new SignedCertificateTimestampListParser(
-                            0, encodedSctList, serverCertChain, false);
-            handshakeSctList = sctListParser.parse();
+                            new ByteArrayInputStream(encodedSctList), serverCertChain, false);
+            sctListParser.parse(handshakeSctList);
 
             supportsHandshakeSCTs = true;
         }

@@ -122,13 +122,10 @@ public class CipherSuiteProbe
 
     private Config getBaseConfig() {
         Config config = scannerConfig.createConfig();
-        config.setEarlyStop(true);
-        config.setQuickReceive(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
-        config.setStopReceivingAfterWarning(true);
         config.setStopActionsAfterWarning(true);
         config.setAddRenegotiationInfoExtension(false);
         return config;

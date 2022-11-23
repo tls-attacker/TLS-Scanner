@@ -52,10 +52,9 @@ public class DtlsRetransmissionsProbe
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-        ReceiveTillAction receiveTillAction =
-                new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage());
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);
@@ -77,10 +76,9 @@ public class DtlsRetransmissionsProbe
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
-        ReceiveTillAction receiveTillAction =
-                new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage());
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);

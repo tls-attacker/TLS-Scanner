@@ -50,9 +50,9 @@ public class DtlsBugsProbe
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
         trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
         GenericReceiveAction receiveAction = new GenericReceiveAction();
         trace.addTlsAction(receiveAction);
 
@@ -76,7 +76,7 @@ public class DtlsBugsProbe
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
         GenericReceiveAction receiveAction = new GenericReceiveAction();
         trace.addTlsAction(receiveAction);
 

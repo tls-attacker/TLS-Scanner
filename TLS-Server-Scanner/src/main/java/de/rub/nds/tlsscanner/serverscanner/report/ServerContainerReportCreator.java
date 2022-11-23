@@ -18,7 +18,7 @@ import de.rub.nds.scanner.core.report.container.*;
 import de.rub.nds.scanner.core.report.rating.*;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.*;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -557,7 +557,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                     container.add(createDefaultTextContainer("Not supported"));
                 }
                 container.add(new HeadlineContainer("HTTPS Response Header"));
-                for (HttpsHeader header : report.getHeaderList()) {
+                for (HttpHeader header : report.getHeaderList()) {
                     container.add(
                             createDefaultKeyValueContainer(
                                     header.getHeaderName().getValue(),

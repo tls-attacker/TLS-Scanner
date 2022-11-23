@@ -121,7 +121,6 @@ public class DirectRaccoonProbe
             config.setDefaultClientSupportedCipherSuites(suite);
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterWarning(false);
-            config.setStopReceivingAfterWarning(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
             WorkflowTrace trace =

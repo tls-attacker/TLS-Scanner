@@ -11,17 +11,17 @@ package de.rub.nds.tlsscanner.core.converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import java.io.IOException;
 
-public class HttpsHeaderDeserializer extends StdDeserializer<HttpsHeader> {
+public class HttpsHeaderDeserializer extends StdDeserializer<HttpHeader> {
 
     public HttpsHeaderDeserializer() {
-        super(HttpsHeader.class);
+        super(HttpHeader.class);
     }
 
     @Override
-    public HttpsHeader deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+    public HttpHeader deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         // TODO NEED TO BE IMPLEMENTED
         return null;
     }

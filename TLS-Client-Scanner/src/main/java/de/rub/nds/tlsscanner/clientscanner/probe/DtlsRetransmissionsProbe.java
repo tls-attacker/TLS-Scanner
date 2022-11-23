@@ -48,7 +48,7 @@ public class DtlsRetransmissionsProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
@@ -71,7 +71,7 @@ public class DtlsRetransmissionsProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));

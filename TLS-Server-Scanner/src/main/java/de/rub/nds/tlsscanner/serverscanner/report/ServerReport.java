@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -106,7 +106,7 @@ public class ServerReport extends TlsScanReport {
     private GcmPattern gcmPattern = null;
 
     // HTTPS Header
-    private List<HttpsHeader> headerList = null;
+    private List<HttpHeader> headerList = null;
     private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
     private List<HpkpPin> normalHpkpPins;
@@ -397,11 +397,11 @@ public class ServerReport extends TlsScanReport {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 
-    public synchronized List<HttpsHeader> getHeaderList() {
+    public synchronized List<HttpHeader> getHeaderList() {
         return headerList;
     }
 
-    public synchronized void setHeaderList(List<HttpsHeader> headerList) {
+    public synchronized void setHeaderList(List<HttpHeader> headerList) {
         this.headerList = headerList;
     }
 

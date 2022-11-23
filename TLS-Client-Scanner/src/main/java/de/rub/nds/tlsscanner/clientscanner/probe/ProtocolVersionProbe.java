@@ -114,8 +114,6 @@ public class ProtocolVersionProbe
 
     private Config getBaseConfig() {
         Config config = scannerConfig.createConfig();
-        config.setEarlyStop(true);
-        config.setQuickReceive(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setAddRenegotiationInfoExtension(false);

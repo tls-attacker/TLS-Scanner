@@ -62,7 +62,7 @@ public class HeartbleedProbe
                 new WorkflowConfigurationFactory(tlsConfig)
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        HeartbeatMessage heartbeatMessage = new HeartbeatMessage(tlsConfig);
+        HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
         heartbeatMessage.setPayload(Modifiable.explicit(new byte[] {1, 3}));
         heartbeatMessage.setPayloadLength(Modifiable.explicit(10));
         trace.addTlsAction(new SendAction(heartbeatMessage));

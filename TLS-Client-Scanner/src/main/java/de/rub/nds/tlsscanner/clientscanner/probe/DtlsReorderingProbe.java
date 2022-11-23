@@ -51,9 +51,9 @@ public class DtlsReorderingProbe
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
         trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
         GenericReceiveAction receiveAction = new GenericReceiveAction();
         trace.addTlsAction(receiveAction);
 

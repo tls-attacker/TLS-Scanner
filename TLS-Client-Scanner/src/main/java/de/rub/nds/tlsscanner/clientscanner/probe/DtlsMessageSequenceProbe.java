@@ -59,9 +59,9 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);
@@ -80,13 +80,13 @@ public class DtlsMessageSequenceProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);
@@ -105,14 +105,14 @@ public class DtlsMessageSequenceProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);
@@ -131,14 +131,14 @@ public class DtlsMessageSequenceProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
         State state = new State(config, trace);
