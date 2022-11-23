@@ -108,20 +108,4 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
     private boolean isSafePrime(BigInteger bigInteger) {
         return bigInteger.shiftRight(1).isProbablePrime(30);
     }
-
-    public TestResult getOnlyPrime() {
-        return this.onlyPrime;
-    }
-
-    public TestResult getOnlySafePrime() {
-        return this.onlySafePrime;
-    }
-
-    public TestResult getUsesCommonDhPrimes() {
-        return this.usesCommonDhPrimes;
-    }
-
-    public TestResult getReuse() {
-        return this.reuse;
-    }
 }

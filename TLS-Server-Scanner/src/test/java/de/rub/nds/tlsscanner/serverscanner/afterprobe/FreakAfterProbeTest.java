@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.FreakAfterProbe;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
@@ -25,25 +25,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class Sweet32AfterProbeTest {
+public class FreakAfterProbeTest {
 
     private ServerReport report;
-    private Sweet32AfterProbe probe;
+    private FreakAfterProbe probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
-        return CipherSuite.getImplemented().stream()
-                .filter(cs -> cs.name().contains("3DES") || cs.name().contains("IDEA"));
+        return CipherSuite.getImplemented().stream().filter(cs -> cs.name().contains("RSA_EXPORT"));
     }
 
     public static Stream<CipherSuite> provideSafeCipherSuites() {
         return CipherSuite.getImplemented().stream()
-                .filter(cs -> !cs.name().contains("3DES") && !cs.name().contains("IDEA"));
+                .filter(cs -> !cs.name().contains("RSA_EXPORT"));
     }
 
     @BeforeEach
     public void setup() {
         report = new ServerReport();
-        probe = new Sweet32AfterProbe();
+        probe = new FreakAfterProbe();
     }
 
     @ParameterizedTest
@@ -52,8 +51,7 @@ public class Sweet32AfterProbeTest {
         // test reports that only use vulnerable ciphers
         report.setCipherSuites(Collections.singleton(providedCipherSuite));
         probe.analyze(report);
-        assertEquals(
-                TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+        assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
 
         // test reports that use both vulnerable and safe ciphers
         Set<CipherSuite> ciphers = new HashSet<>();
@@ -61,8 +59,7 @@ public class Sweet32AfterProbeTest {
         ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
         report.setCipherSuites(ciphers);
         probe.analyze(report);
-        assertEquals(
-                TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+        assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 
     @ParameterizedTest
@@ -70,23 +67,22 @@ public class Sweet32AfterProbeTest {
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
         report.setCipherSuites(Collections.singleton(providedCipherSuite));
         probe.analyze(report);
-        assertEquals(
-                TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 
     @Test
     public void testNoCipherSuites() {
         report.setCipherSuites(new HashSet<>());
         probe.analyze(report);
-        assertEquals(
-                TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 
     @Test
     public void testEmptyServerReport() {
-        probe.analyze(report);
+        ServerReport emptyReport = new ServerReport();
+        probe.analyze(emptyReport);
         assertEquals(
                 TestResults.UNCERTAIN,
-                report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+                emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 }
