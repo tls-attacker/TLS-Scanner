@@ -30,11 +30,8 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 
 @SuppressWarnings("unchecked")
 public abstract class TlsScanReport extends ScanReport {
