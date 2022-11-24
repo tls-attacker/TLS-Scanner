@@ -8,17 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.afterprobe;
 
+import java.util.Set;
+
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/afterprobe/FreakAfterProbe.java
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Set;
-=======
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
->>>>>>> master:TLS-Scanner-Core/src/main/java/de/rub/nds/tlsscanner/core/afterprobe/FreakAfterProbe.java
 
 public class FreakAfterProbe extends AfterProbe<TlsScanReport> {
 
