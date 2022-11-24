@@ -8,16 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.afterprobe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
-import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
-import de.rub.nds.tlsscanner.core.constants.RandomType;
-import de.rub.nds.tlsscanner.core.report.EntropyReport;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,8 +15,22 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.util.ComparableByteArray;
+import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
+import de.rub.nds.tlsscanner.core.constants.RandomType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.core.report.EntropyReport;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
 
 public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends AfterProbe<T> {
 
@@ -83,9 +87,8 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
         return true;
     }
 
-<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/afterprobe/RandomnessAfterProbe.java
     @Override
-    public void analyze(ServerReport report) {
+    public void analyze(TlsScanReport report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
@@ -113,11 +116,8 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
             new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
     }
 
-    public EntropyReport createEntropyReport(List<ComparableByteArray> byteArrayList, RandomType type) {
-=======
     public EntropyReport createEntropyReport(
             List<ComparableByteArray> byteArrayList, RandomType type) {
->>>>>>> master:TLS-Scanner-Core/src/main/java/de/rub/nds/tlsscanner/core/afterprobe/RandomnessAfterProbe.java
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
         StatisticalTests.approximateEntropyTest(HELLO_RETRY_REQUEST_CONST, LONGEST_RUN_BLOCK_SIZE);
         int totalDuplicates = getNumberOfDuplicates(byteArrayList);
