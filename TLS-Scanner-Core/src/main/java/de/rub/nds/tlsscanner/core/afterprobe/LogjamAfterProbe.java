@@ -13,12 +13,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/afterprobe/LogjamAfterProbe.java
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Set;
-=======
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
->>>>>>> master:TLS-Scanner-Core/src/main/java/de/rub/nds/tlsscanner/core/afterprobe/LogjamAfterProbe.java
 
 public class LogjamAfterProbe extends AfterProbe<TlsScanReport> {
 
@@ -26,14 +21,6 @@ public class LogjamAfterProbe extends AfterProbe<TlsScanReport> {
     public void analyze(TlsScanReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/afterprobe/LogjamAfterProbe.java
-            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
-            if (ciphersuites != null) {
-                for (CipherSuite suite : ciphersuites) {
-                    if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
-                        || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
-                        || suite.name().contains("DHE_RSA_EXPORT")) {
-=======
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
                     if (suite.name().contains("DH_anon_EXPORT")
@@ -41,7 +28,6 @@ public class LogjamAfterProbe extends AfterProbe<TlsScanReport> {
                             || suite.name().contains("DH_RSA_EXPORT")
                             || suite.name().contains("DHE_DSS_EXPORT")
                             || suite.name().contains("DHE_RSA_EXPORT")) {
->>>>>>> master:TLS-Scanner-Core/src/main/java/de/rub/nds/tlsscanner/core/afterprobe/LogjamAfterProbe.java
                         vulnerable = TestResults.TRUE;
                     }
                 }
