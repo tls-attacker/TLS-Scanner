@@ -8,31 +8,21 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-<<<<<<< HEAD
-import de.rub.nds.scanner.core.report.ScanReport;
-=======
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
->>>>>>> master
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-<<<<<<< HEAD
-public abstract class TlsServerProbe<ConfigSelector, Report extends ScanReport> extends TlsProbe<Report> {
-=======
-public abstract class TlsServerProbe<
-                ConfigSelector, Report extends TlsScanReport, Result extends ProbeResult<Report>>
-        extends TlsProbe<Report, Result> {
->>>>>>> master
+public abstract class TlsServerProbe<ConfigSelector, Report extends TlsScanReport> extends TlsProbe<Report> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
