@@ -407,6 +407,16 @@
                             <file>${main.basedir}/license_header_plain.txt</file>
                         </licenseHeader>
                     </java>
+                    <pom>
+                        <excludes>
+                            <exclude>trust_stores_observatory/**</exclude>
+                        </excludes>
+                    </pom>
+                    <markdown>
+                        <excludes>
+                            <exclude>trust_stores_observatory/**</exclude>
+                        </excludes>
+                    </markdown>
                 </configuration>
             </plugin>
             <!-- Flatten pom.xml before install / deploy phases -->
