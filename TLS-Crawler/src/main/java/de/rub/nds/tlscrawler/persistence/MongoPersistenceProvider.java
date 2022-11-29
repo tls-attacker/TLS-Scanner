@@ -24,7 +24,7 @@ import com.mongodb.lang.NonNull;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.data.BulkScan;
 import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlsscanner.serverscanner.converter.*;
+import de.rub.nds.tlsscanner.core.converter.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.UuidRepresentation;

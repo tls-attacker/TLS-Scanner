@@ -51,7 +51,7 @@ public class TlsScan extends Scan {
             config.setTimeout(scanJob.getScanConfig().getTimeout());
             config.getClientDelegate().setHost(scanJob.getScanTarget().getIp() + ":" + scanJob.getScanTarget().getPort());
             config.getClientDelegate().setSniHostname(scanJob.getScanTarget().getHostname());
-            config.getStarttlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
+            config.getStartTlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
 
             TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor);
 
