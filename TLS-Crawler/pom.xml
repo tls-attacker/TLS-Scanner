@@ -7,7 +7,7 @@
         <version>2.0.1</version>
     </parent>
 
-    <groupId>de.rub.nds.tlscrawler</groupId>
+    <groupId>de.rub.nds.tls.crawler</groupId>
     <artifactId>TLS-Crawler</artifactId>
     <version>0.7.1-SNAPSHOT</version>
 
@@ -77,27 +77,15 @@
         <url>https://github.com/tls-attacker/TLS-Crawler</url>
     </scm>
 
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>rub-nexus</id>
-            <name>TLS-Attacker Internal Repository</name>
-            <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
-        <!-- We redefine the signature generation process, which is enabled by default,
-        but cannot be performed by typical users. Enable it using -Dskip.signature=false -->
-        <skip.signature>true</skip.signature>
+        <!-- The following variables are required for Jenkins CI -->
+        <skipTests>false</skipTests>
+        <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+        <skip.failsafe.tests>${skipTests}</skip.failsafe.tests>
     </properties>
 
     <dependencies>
@@ -195,17 +183,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>default-clean</id>
                         <goals>
                             <goal>clean</goal>
                         </goals>
-                        <inherited>false</inherited>
                         <configuration>
                             <filesets>
                                 <fileset>
+                                    <!--suppress UnresolvedMavenProperty -->
                                     <directory>${maven.multiModuleProjectDirectory}/apps</directory>
                                 </fileset>
                             </filesets>
@@ -217,11 +204,11 @@
                             <goal>clean</goal>
                         </goals>
                         <phase>prepare-package</phase>
-                        <inherited>false</inherited>
                         <configuration>
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
+                                    <!--suppress UnresolvedMavenProperty -->
                                     <directory>${maven.multiModuleProjectDirectory}/apps</directory>
                                 </fileset>
                             </filesets>
@@ -230,7 +217,88 @@
                 </executions>
             </plugin>
             <!--################# default lifecycle plugins #################-->
-
+            <!-- Formatting -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <java>
+                        <lineEndings>GIT_ATTRIBUTES</lineEndings>
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
+                        <importOrder />
+                        <removeUnusedImports />
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
+                        <googleJavaFormat>
+                            <version>1.15.0</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
+                        <licenseHeader>
+                            <file>${project.basedir}/license_header_plain.txt</file>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+            </plugin>
+            <!-- Flatten pom.xml before install / deploy phases -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <configuration>
+                    <flattenMode>ossrh</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <phase>clean</phase>
+                    </execution>
+                    <execution>
+                        <id>flatten</id>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Copy project resources to output directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <!-- Compile source files -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <!-- Execute unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <trimStackTrace>false</trimStackTrace>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <!-- Allow parallel execution of unit tests (execution in series within test classes) -->
+                    <parallel>classes</parallel>
+                    <!-- Can be adjusted depending on the local system, 3 should be a fair default value -->
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <!-- By default we include all but integration tests during surefire execution -->
+                    <excludedGroups>IntegrationTest</excludedGroups>
+                    <skipTests>${skip.surefire.tests}</skipTests>
+                </configuration>
+            </plugin>
             <!-- Build jar file -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -313,6 +381,46 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Execute integration tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!-- By default, the Failsafe plugin excludes various files. We have to override that. -->
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <!-- Integration tests and slow tests are started -->
+                    <groups>IntegrationTest</groups>
+                    <skipITs>${skip.failsafe.tests}</skipITs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>run-integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                    </execution>
+                    <execution>
+                        <id>verify-integration-tests</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--############ plugins without lifecycle bindings #############-->
+            <!-- Static code analysis -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

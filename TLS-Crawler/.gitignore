@@ -16,6 +16,7 @@ nbactions.xml
 .idea/
 log/
 *.rdb
+**/.flattened-pom.xml
 
 
 

@@ -1,12 +1,11 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
  *
- * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ * Copyright 2018-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlscrawler;
 
 import com.beust.jcommander.JCommander;
@@ -17,9 +16,7 @@ import de.rub.nds.tlscrawler.core.Worker;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 
-/**
- * TLS-Crawler's main class.
- */
+/** TLS-Crawler's main class. */
 public class Main {
 
     public static void main(String[] args) {
@@ -39,19 +36,28 @@ public class Main {
 
         switch (jc.getParsedCommand().toLowerCase()) {
             case "worker":
-                Worker worker = new Worker(workerCommandConfig, new RabbitMqOrchestrationProvider(workerCommandConfig.getRabbitMqDelegate()),
-                    new MongoPersistenceProvider(workerCommandConfig.getMongoDbDelegate()));
+                Worker worker =
+                        new Worker(
+                                workerCommandConfig,
+                                new RabbitMqOrchestrationProvider(
+                                        workerCommandConfig.getRabbitMqDelegate()),
+                                new MongoPersistenceProvider(
+                                        workerCommandConfig.getMongoDbDelegate()));
                 worker.start();
                 break;
             case "controller":
                 controllerCommandConfig.validate();
-                Controller controller = new Controller(controllerCommandConfig, new RabbitMqOrchestrationProvider(controllerCommandConfig.getRabbitMqDelegate()),
-                    new MongoPersistenceProvider(controllerCommandConfig.getMongoDbDelegate()));
+                Controller controller =
+                        new Controller(
+                                controllerCommandConfig,
+                                new RabbitMqOrchestrationProvider(
+                                        controllerCommandConfig.getRabbitMqDelegate()),
+                                new MongoPersistenceProvider(
+                                        controllerCommandConfig.getMongoDbDelegate()));
                 controller.start();
                 break;
             default:
                 jc.usage();
         }
     }
-
 }

@@ -1,12 +1,11 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
  *
- * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ * Copyright 2018-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlscrawler.core;
 
 import static de.rub.nds.tlscrawler.core.Controller.shutdownSchedulerIfAllTriggersFinalized;
@@ -14,8 +13,8 @@ import static de.rub.nds.tlscrawler.core.Controller.shutdownSchedulerIfAllTrigge
 import org.quartz.*;
 
 /**
- * Listener which shuts scheduler down when all triggers are finalized and thereby prevents application from running
- * forever if all schedules are finished.
+ * Listener which shuts scheduler down when all triggers are finalized and thereby prevents
+ * application from running forever if all schedules are finished.
  */
 class SchedulerListenerShutdown implements SchedulerListener {
 
@@ -41,70 +40,53 @@ class SchedulerListenerShutdown implements SchedulerListener {
     }
 
     @Override
-    public void triggerPaused(TriggerKey triggerKey) {
-    }
+    public void triggerPaused(TriggerKey triggerKey) {}
 
     @Override
-    public void triggersPaused(String triggerGroup) {
-    }
+    public void triggersPaused(String triggerGroup) {}
 
     @Override
-    public void triggerResumed(TriggerKey triggerKey) {
-    }
+    public void triggerResumed(TriggerKey triggerKey) {}
 
     @Override
-    public void triggersResumed(String triggerGroup) {
-    }
+    public void triggersResumed(String triggerGroup) {}
 
     @Override
-    public void jobAdded(JobDetail jobDetail) {
-    }
+    public void jobAdded(JobDetail jobDetail) {}
 
     @Override
-    public void jobDeleted(JobKey jobKey) {
-    }
+    public void jobDeleted(JobKey jobKey) {}
 
     @Override
-    public void jobPaused(JobKey jobKey) {
-    }
+    public void jobPaused(JobKey jobKey) {}
 
     @Override
-    public void jobsPaused(String jobGroup) {
-    }
+    public void jobsPaused(String jobGroup) {}
 
     @Override
-    public void jobResumed(JobKey jobKey) {
-    }
+    public void jobResumed(JobKey jobKey) {}
 
     @Override
-    public void jobsResumed(String jobGroup) {
-    }
+    public void jobsResumed(String jobGroup) {}
 
     @Override
-    public void schedulerError(String msg, SchedulerException cause) {
-    }
+    public void schedulerError(String msg, SchedulerException cause) {}
 
     @Override
-    public void schedulerInStandbyMode() {
-    }
+    public void schedulerInStandbyMode() {}
 
     @Override
-    public void schedulerStarted() {
-    }
+    public void schedulerStarted() {}
 
     @Override
-    public void schedulerStarting() {
-    }
+    public void schedulerStarting() {}
 
     @Override
-    public void schedulerShutdown() {
-    }
+    public void schedulerShutdown() {}
 
     @Override
-    public void schedulerShuttingdown() {
-    }
+    public void schedulerShuttingdown() {}
 
     @Override
-    public void schedulingDataCleared() {
-    }
+    public void schedulingDataCleared() {}
 }
