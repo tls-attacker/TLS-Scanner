@@ -1,12 +1,11 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
  *
- * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ * Copyright 2018-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -19,25 +18,28 @@ import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-/**
- * TLS scan that uses the TLS-Scanner.
- */
+/** TLS scan that uses the TLS-Scanner. */
 public class TlsScan extends Scan {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ParallelExecutor parallelExecutor;
     private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
-    public TlsScan(ScanJob scanJob, long rabbitMqAckTag, RabbitMqOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider,
-        int parallelExecutorThreads) {
+    public TlsScan(
+            ScanJob scanJob,
+            long rabbitMqAckTag,
+            RabbitMqOrchestrationProvider orchestrationProvider,
+            IPersistenceProvider persistenceProvider,
+            int parallelExecutorThreads) {
         super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
-        this.parallelExecutor = new ParallelExecutor(parallelExecutorThreads, scanJob.getScanConfig().getReexecutions());
+        this.parallelExecutor =
+                new ParallelExecutor(
+                        parallelExecutorThreads, scanJob.getScanConfig().getReexecutions());
     }
 
     @Override
@@ -49,25 +51,44 @@ public class TlsScan extends Scan {
             ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
             config.setScanDetail(scanJob.getScanConfig().getScannerDetail());
             config.setTimeout(scanJob.getScanConfig().getTimeout());
-            config.getClientDelegate().setHost(scanJob.getScanTarget().getIp() + ":" + scanJob.getScanTarget().getPort());
+            config.getClientDelegate()
+                    .setHost(
+                            scanJob.getScanTarget().getIp()
+                                    + ":"
+                                    + scanJob.getScanTarget().getPort());
             config.getClientDelegate().setSniHostname(scanJob.getScanTarget().getHostname());
-            config.getStarttlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
+            config.getStartTlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
 
             TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor);
 
-            LOGGER.info("Started scanning '{}' ({})", scanJob.getScanTarget(), scanJob.getScanConfig().getScannerDetail());
+            LOGGER.info(
+                    "Started scanning '{}' ({})",
+                    scanJob.getScanTarget(),
+                    scanJob.getScanConfig().getScannerDetail());
             ServerReport report = scanner.scan();
-            LOGGER.info("Finished scanning '{}' ({}) in {} s", scanJob.getScanTarget(), scanJob.getScanConfig().getScannerDetail(),
-                (report.getScanEndTime() - report.getScanStartTime()) / 1000);
-            if (!cancelled.get() && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
-                persistenceProvider.insertScanResult(new ScanResult(scanJob.getBulkScanId(), scanJob.getScanTarget(), this.createDocumentFromSiteReport(report)),
-                    scanJob.getDbName(), scanJob.getCollectionName());
+            LOGGER.info(
+                    "Finished scanning '{}' ({}) in {} s",
+                    scanJob.getScanTarget(),
+                    scanJob.getScanConfig().getScannerDetail(),
+                    (report.getScanEndTime() - report.getScanStartTime()) / 1000);
+            if (!cancelled.get()
+                    && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
+                persistenceProvider.insertScanResult(
+                        new ScanResult(
+                                scanJob.getBulkScanId(),
+                                scanJob.getScanTarget(),
+                                this.createDocumentFromSiteReport(report)),
+                        scanJob.getDbName(),
+                        scanJob.getCollectionName());
                 scanJob.setStatus(Status.DoneResultWritten);
             } else {
                 scanJob.setStatus(Status.DoneNoResult);
             }
         } catch (Throwable e) {
-            LOGGER.error("Scanning of {} had to be aborted because of an exception: ", scanJob.getScanTarget(), e);
+            LOGGER.error(
+                    "Scanning of {} had to be aborted because of an exception: ",
+                    scanJob.getScanTarget(),
+                    e);
         } finally {
             this.cancel(false);
         }
@@ -92,5 +113,4 @@ public class TlsScan extends Scan {
         document.put("report", report);
         return document;
     }
-
 }

@@ -1,37 +1,37 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
  *
- * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ * Copyright 2018-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bson.Document;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
-/**
- * A simple scan testing whether a host is available at a given IP address.
- */
+/** A simple scan testing whether a host is available at a given IP address. */
 public class PingScan extends Scan {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int timeOutMs = 5000;
 
-    public PingScan(ScanJob scanJob, long rabbitMqAckTag, RabbitMqOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider) {
+    public PingScan(
+            ScanJob scanJob,
+            long rabbitMqAckTag,
+            RabbitMqOrchestrationProvider orchestrationProvider,
+            IPersistenceProvider persistenceProvider) {
         super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
     }
 
@@ -70,11 +70,13 @@ public class PingScan extends Scan {
             result.put("unreachablePorts", new ArrayList<>(scanJob.getScanTarget().getPort()));
         }
 
-        persistenceProvider.insertScanResult(new ScanResult(scanJob.getBulkScanId(), scanJob.getScanTarget(), result), scanJob.getDbName(), scanJob.getCollectionName());
+        persistenceProvider.insertScanResult(
+                new ScanResult(scanJob.getBulkScanId(), scanJob.getScanTarget(), result),
+                scanJob.getDbName(),
+                scanJob.getCollectionName());
 
         if (scanJob.isMonitored()) {
             orchestrationProvider.notifyOfDoneScanJob(scanJob);
         }
     }
-
 }

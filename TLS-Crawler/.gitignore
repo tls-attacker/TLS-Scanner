@@ -16,7 +16,8 @@ nbactions.xml
 .idea/
 log/
 *.rdb
-
+**/.flattened-pom.xml
+elastic-apm-agent-*.jar
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij

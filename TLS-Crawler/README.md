@@ -8,13 +8,12 @@ To improve performance it supports distributing the workload to multiple machine
 ![](docs/img/tls-crawler-architecture.drawio.svg)
 
 The TLS-Crawler is split into two applications:
- - the Controller which is responsible for creating scan jobs, distributing them among multiple workers and scheduling recurring scans
- - the Worker which is responsible for performing the scans
+- the Controller which is responsible for creating scan jobs, distributing them among multiple workers and scheduling recurring scans
+- the Worker which is responsible for performing the scans
 
 Additionally, for distributing the work and persisting results two more components are required:
- - a RabbitMq instance which handles the work distribution among workers
- - a MongoDB database instance which stores the results of the scans.
-
+- a RabbitMq instance which handles the work distribution among workers
+- a MongoDB database instance which stores the results of the scans.
 
 ## Getting Started
 
@@ -22,13 +21,11 @@ Additionally, for distributing the work and persisting results two more componen
 
 Controller
 
-    java -jar tls-crawler.jar controller -tranco 1000 -denylist resources/denylist.txt -portToBeScanned 443 -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672 -scanName scanResults -monitorScan
-
+        java -jar tls-crawler.jar controller -tranco 1000 -denylist resources/denylist.txt -portToBeScanned 443 -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672 -scanName scanResults -monitorScan
 
 Worker
 
-    java -jar tls-crawler.jar worker -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672  -numberOfThreads 30 -parallelProbeThreads 50
-
+        java -jar tls-crawler.jar worker -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672  -numberOfThreads 30 -parallelProbeThreads 50
 
 ## Controller Commandline Reference
 
@@ -71,13 +68,13 @@ General Configuration:
 - `-rabbitMqPassFile` path to file from where the password should be read (for use with docker secrets)
 - `-rabbitMqTLS` if the connection to the RabbitMQ instance should be TLS encrypted
 
+## HostFile
 
-## HostFile 
-
-The hosts to be scanned can be specified as domain or ip with or without port. Each line must only contain one host. 
+The hosts to be scanned can be specified as domain or ip with or without port. Each line must only contain one host.
 If no port is specified the port passed with the `-portToBeScanned` parameter is used (defaults to 443).
 
 Example:
+
 ```
 www.google.com:443
 amazon.de
@@ -86,9 +83,10 @@ amazon.de
 ```
 
 # Using docker-compose
+
 Instead of building the crawler yourself and starting it from the commandline, you can use `docker-compose.yml` and `build.sh`.
-All parameters for the scan can be defined in the `docker-compose.yml`. `build.sh` can be used to build the crawler using 
+All parameters for the scan can be defined in the `docker-compose.yml`. `build.sh` can be used to build the crawler using
 specifiable branches from the dependencies `TLS-Attacker` etc. Specify your Github username and access token so
 Docker can download and build the dependencies. Finally, running `./build.sh` will build your custom crawler environment
-in docker images. Using `docker-compose up` you can then start the scan. You can either use the Mongo-DB specified in the 
+in docker images. Using `docker-compose up` you can then start the scan. You can either use the Mongo-DB specified in the
 `docker-compose.yml` or use an external database.

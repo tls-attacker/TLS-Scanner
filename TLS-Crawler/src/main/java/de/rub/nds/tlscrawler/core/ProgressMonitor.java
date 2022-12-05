@@ -1,12 +1,11 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
  *
- * Copyright 2018-2022 Paderborn University, Ruhr University Bochum
+ * Copyright 2018-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlscrawler.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,11 +13,6 @@ import de.rub.nds.tlscrawler.data.BulkScan;
 import de.rub.nds.tlscrawler.data.BulkScanJobDetails;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -27,11 +21,15 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 
 /**
- * The ProgressMonitor keeps track of the progress of the running bulk scans. It consumes the done notifications from
- * the workers and counts for each bulk scan how many scans are done, how many timed out and how many results were
- * written to the DB.
+ * The ProgressMonitor keeps track of the progress of the running bulk scans. It consumes the done
+ * notifications from the workers and counts for each bulk scan how many scans are done, how many
+ * timed out and how many results were written to the DB.
  */
 public class ProgressMonitor {
 
@@ -47,7 +45,10 @@ public class ProgressMonitor {
 
     private boolean listenerRegistered;
 
-    public ProgressMonitor(RabbitMqOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, Scheduler scheduler) {
+    public ProgressMonitor(
+            RabbitMqOrchestrationProvider orchestrationProvider,
+            IPersistenceProvider persistenceProvider,
+            Scheduler scheduler) {
         this.scanJobDetailsById = new HashMap<>();
         this.orchestrationProvider = orchestrationProvider;
         this.persistenceProvider = persistenceProvider;
@@ -55,38 +56,51 @@ public class ProgressMonitor {
     }
 
     /**
-     * Adds a listener for the done notification queue that updates the counters for the bulk scans and checks if a bulk
-     * scan is finished.
+     * Adds a listener for the done notification queue that updates the counters for the bulk scans
+     * and checks if a bulk scan is finished.
      *
-     * @param bulkScan
-     *                 that should be monitored
+     * @param bulkScan that should be monitored
      */
     public void startMonitoringBulkScanProgress(BulkScan bulkScan) {
         if (!listenerRegistered) {
-            orchestrationProvider.registerDoneNotificationConsumer((consumerTag, scanJob) -> {
-                String bulkScanId = scanJob.getBulkScanId();
-                try {
-                    if (scanJobDetailsById.containsKey(bulkScanId)) {
-                        AtomicInteger counter = getScanJobDetails(bulkScanId).getDoneScanJobs();
-                        switch (scanJob.getStatus()) {
-                            case Timeout:
-                                getScanJobDetails(bulkScanId).getScanTimeouts().incrementAndGet();
-                                break;
-                            case DoneResultWritten:
-                                getScanJobDetails(bulkScanId).getResultsWritten().incrementAndGet();
-                                break;
+            orchestrationProvider.registerDoneNotificationConsumer(
+                    (consumerTag, scanJob) -> {
+                        String bulkScanId = scanJob.getBulkScanId();
+                        try {
+                            if (scanJobDetailsById.containsKey(bulkScanId)) {
+                                AtomicInteger counter =
+                                        getScanJobDetails(bulkScanId).getDoneScanJobs();
+                                switch (scanJob.getStatus()) {
+                                    case Timeout:
+                                        getScanJobDetails(bulkScanId)
+                                                .getScanTimeouts()
+                                                .incrementAndGet();
+                                        break;
+                                    case DoneResultWritten:
+                                        getScanJobDetails(bulkScanId)
+                                                .getResultsWritten()
+                                                .incrementAndGet();
+                                        break;
+                                }
+                                if (counter.incrementAndGet()
+                                        == (bulkScan.getScanJobsPublished() != 0
+                                                ? bulkScan.getScanJobsPublished()
+                                                : bulkScan.getTargetsGiven())) {
+                                    this.stopMonitoringAndFinalizeBulkScan(scanJob.getBulkScanId());
+                                } else {
+                                    LOGGER.info(
+                                            "BulkScan '{}': {} of {} scan jobs done",
+                                            bulkScanId,
+                                            counter.get(),
+                                            (bulkScan.getScanJobsPublished() != 0
+                                                    ? bulkScan.getScanJobsPublished()
+                                                    : bulkScan.getTargetsGiven()));
+                                }
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("Exception in done notification consumer:", e);
                         }
-                        if (counter.incrementAndGet() == (bulkScan.getScanJobsPublished() != 0 ? bulkScan.getScanJobsPublished() : bulkScan.getTargetsGiven())) {
-                            this.stopMonitoringAndFinalizeBulkScan(scanJob.getBulkScanId());
-                        } else {
-                            LOGGER.info("BulkScan '{}': {} of {} scan jobs done", bulkScanId, counter.get(),
-                                (bulkScan.getScanJobsPublished() != 0 ? bulkScan.getScanJobsPublished() : bulkScan.getTargetsGiven()));
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("Exception in done notification consumer:", e);
-                }
-            });
+                    });
             listenerRegistered = true;
         }
         BulkScanJobDetails bulkScanJobDetails = new BulkScanJobDetails(bulkScan);
@@ -94,11 +108,10 @@ public class ProgressMonitor {
     }
 
     /**
-     * Finishes the monitoring, updates the bulk scan in DB, sends HTTP notification if configured and shuts the controller
-     * down if all bulk scans are finished.
+     * Finishes the monitoring, updates the bulk scan in DB, sends HTTP notification if configured
+     * and shuts the controller down if all bulk scans are finished.
      *
-     * @param bulkScanId
-     *                   of the bulk scan for which the monitoring should be stopped.
+     * @param bulkScanId of the bulk scan for which the monitoring should be stopped.
      */
     public void stopMonitoringAndFinalizeBulkScan(String bulkScanId) {
         LOGGER.info("BulkScan '{}' is finished", bulkScanId);
@@ -113,12 +126,20 @@ public class ProgressMonitor {
 
         scanJobDetailsById.remove(bulkScanId);
 
-        if (scan.getNotifyUrl() != null && !scan.getNotifyUrl().isEmpty() && !scan.getNotifyUrl().isBlank()) {
+        if (scan.getNotifyUrl() != null
+                && !scan.getNotifyUrl().isEmpty()
+                && !scan.getNotifyUrl().isBlank()) {
             try {
                 String response = notify(scan);
-                LOGGER.info("BulkScan {}(id={}): sent notification to '{}' got response: '{}'", scan.getName(), scan.get_id(), scan.getNotifyUrl(), response);
+                LOGGER.info(
+                        "BulkScan {}(id={}): sent notification to '{}' got response: '{}'",
+                        scan.getName(),
+                        scan.get_id(),
+                        scan.getNotifyUrl(),
+                        response);
             } catch (IOException | InterruptedException e) {
-                LOGGER.error("Could not send notification for bulkScan '{}' because: ", bulkScanId, e);
+                LOGGER.error(
+                        "Could not send notification for bulkScan '{}' because: ", bulkScanId, e);
             }
         }
         try {
@@ -132,21 +153,26 @@ public class ProgressMonitor {
     }
 
     /**
-     * Sends an HTTP POST request containing the bulk scan object as json as body to the url that is specified for the bulk
-     * scan.
+     * Sends an HTTP POST request containing the bulk scan object as json as body to the url that is
+     * specified for the bulk scan.
      *
-     * @param  bulkScan
-     *                  for which a done notification request should be sent
-     * @return          body of the http response as string
+     * @param bulkScan for which a done notification request should be sent
+     * @return body of the http response as string
      */
     private static String notify(BulkScan bulkScan) throws IOException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(bulkScan);
+        String requestBody =
+                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(bulkScan);
 
         HttpRequest request =
-            HttpRequest.newBuilder(URI.create(bulkScan.getNotifyUrl())).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+                HttpRequest.newBuilder(URI.create(bulkScan.getNotifyUrl()))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
 
-        return HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()).body();
+        return HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString())
+                .body();
     }
 
     private BulkScanJobDetails getScanJobDetails(String id) {
