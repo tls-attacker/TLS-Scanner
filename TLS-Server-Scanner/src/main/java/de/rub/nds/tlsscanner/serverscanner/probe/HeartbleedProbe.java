@@ -41,7 +41,7 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     private TestResults isVulnerable() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setAddHeartbeatExtension(true);
 
         State state = new State(tlsConfig, getTrace(tlsConfig));

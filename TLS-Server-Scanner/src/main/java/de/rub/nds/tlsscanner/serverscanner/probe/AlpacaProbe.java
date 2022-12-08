@@ -44,7 +44,7 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport, Al
     }
 
     private TestResult isSupportingStrictSni() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.getDefaultClientConnection().setHostname("notarealtls-attackerhost.com");
@@ -59,7 +59,7 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport, Al
     }
 
     private TestResult isSupportingStrictAlpn() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddAlpnExtension(true);

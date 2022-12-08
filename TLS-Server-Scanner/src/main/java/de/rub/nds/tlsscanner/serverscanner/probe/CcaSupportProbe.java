@@ -43,7 +43,7 @@ public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return true;
+        return configSelector.foundWorkingConfig();
     }
 
     @Override

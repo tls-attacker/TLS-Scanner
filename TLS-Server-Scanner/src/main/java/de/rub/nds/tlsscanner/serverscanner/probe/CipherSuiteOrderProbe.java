@@ -44,7 +44,7 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         configSelector.repairConfig(tlsConfig);

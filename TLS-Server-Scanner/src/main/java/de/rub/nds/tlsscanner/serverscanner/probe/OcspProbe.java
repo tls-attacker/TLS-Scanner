@@ -72,7 +72,9 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
             getMustStaple(serverCertChain.getCertificate(), certResult);
-            getStapledResponse(certResult);
+            if (configSelector.foundWorkingConfig()) {
+                getStapledResponse(certResult);
+            }
             performRequest(serverCertChain.getCertificate(), certResult);
 
             ocspCertResults.add(certResult);
@@ -143,7 +145,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
             // Check if leaf certificate supports OCSP
             ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
         } catch (MalformedURLException ex) {
-            throw new RuntimeException(ex);
+            LOGGER.debug("Failed to parse a valid OCSP url for OCSP request");
+            return;
         }
         certResult.setSupportsOcsp(true);
 

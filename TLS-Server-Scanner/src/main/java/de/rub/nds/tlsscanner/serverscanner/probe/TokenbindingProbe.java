@@ -46,7 +46,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingVersion(version);
@@ -68,7 +68,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     private Set<TokenBindingVersion> getSupportedVersions() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddTokenBindingExtension(Boolean.TRUE);
         tlsConfig.setDefaultTokenBindingKeyParameters(TokenBindingKeyParameters.values());

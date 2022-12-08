@@ -607,12 +607,12 @@ public class DefaultRecommendationsTest {
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.STRICT_SNI, "Strict SNI",
             "Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks",
-            new PropertyResultRecommendation(TestResults.FALSE, "The server does not reject invalid SNI names.",
+            new PropertyResultRecommendation(TestResults.FALSE, "The server does not reject invalid SNI names",
                 "If possible configure your server to use strict SNI verification"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.ALPACA_MITIGATED, "ALPACA Mitigation",
             "Evaluated whether the server is vulnerable to ALPACA",
-            new PropertyResultRecommendation(TestResults.FALSE, "The server does not reject invalid SNI names.",
+            new PropertyResultRecommendation(TestResults.FALSE, "The server does not reject invalid SNI names",
                 "If possible configure your server to use strict SNI and strict ALPN verification"),
             ""));
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,

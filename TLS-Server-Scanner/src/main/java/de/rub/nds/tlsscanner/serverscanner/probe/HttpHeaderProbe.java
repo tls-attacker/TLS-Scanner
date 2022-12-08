@@ -33,7 +33,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     public HttpHeaderResult executeTest() {
-        Config tlsConfig = configSelector.getBaseConfig();
+        Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setHttpsParsingEnabled(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);

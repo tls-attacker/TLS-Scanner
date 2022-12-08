@@ -64,36 +64,40 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public NamedGroupResult executeTest() {
         Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
 
-        addGroupsFound(overallSupported,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-            KeyExchangeAlgorithm.DHE_RSA);
-        addGroupsFound(overallSupported,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-            KeyExchangeAlgorithm.DHE_DSS);
-        addGroupsFound(overallSupported,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-            KeyExchangeAlgorithm.DH_ANON);
+        TestResult supportsExplicitPrime = TestResults.CANNOT_BE_TESTED;
+        TestResult supportsExplicitChar2 = TestResults.CANNOT_BE_TESTED;
+        if (configSelector.foundWorkingConfig()) {
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
+                KeyExchangeAlgorithm.DHE_RSA);
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
+                KeyExchangeAlgorithm.DHE_DSS);
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
+                KeyExchangeAlgorithm.DH_ANON);
 
-        addGroupsFound(overallSupported,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-            KeyExchangeAlgorithm.ECDH_ANON);
-        addGroupsFound(overallSupported,
-            getSupportedNamedGroups(
-                getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
-            KeyExchangeAlgorithm.ECDHE_RSA);
-        addGroupsFound(overallSupported,
-            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
-            KeyExchangeAlgorithm.ECDHE_ECDSA);
-        addGroupsFound(overallSupported,
-            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                ecdsaCertSigGroupsStatic),
-            KeyExchangeAlgorithm.ECDH_ECDSA);
-        TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-        TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
+                KeyExchangeAlgorithm.ECDH_ANON);
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(
+                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
+                KeyExchangeAlgorithm.ECDHE_RSA);
+            addGroupsFound(overallSupported,
+                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
+                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
+                KeyExchangeAlgorithm.ECDHE_ECDSA);
+            addGroupsFound(overallSupported,
+                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
+                    ecdsaCertSigGroupsStatic),
+                KeyExchangeAlgorithm.ECDH_ECDSA);
+            supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+            supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+        }
 
         Map<NamedGroup, NamedGroupWitness> groupsTls13 = new HashMap<>();
-        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
+        if (configSelector.foundWorkingTls13Config()) {
             groupsTls13 = getTls13SupportedGroups();
         }
 
@@ -211,6 +215,11 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private TlsContext testGroups(List<NamedGroup> groupList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(groupList);
         configSelector.repairConfig(tlsConfig);
+        if (groupList.stream().anyMatch(NamedGroup::isDhGroup)) {
+            // usually, we do not want this extension if no ecc cipher suites
+            // are listed but it is required to test for listed FFDHE groups
+            tlsConfig.setAddEllipticCurveExtension(true);
+        }
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
