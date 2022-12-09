@@ -31,7 +31,8 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.List;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class HttpFalseStartProbe
         extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
@@ -52,11 +53,13 @@ public class HttpFalseStartProbe
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new HttpRequestMessage(tlsConfig)));
+        trace.addTlsAction(new SendAction(new HttpRequestMessage()));
         trace.addTlsAction(
                 new ReceiveAction(
-                        List.of(new ChangeCipherSpecMessage(), new FinishedMessage()),
-                        List.of(new HttpResponseMessage())));
+                        new LinkedList<>(
+                                Arrays.asList(
+                                        new ChangeCipherSpecMessage(), new FinishedMessage())),
+                        new LinkedList<>(Arrays.asList(new HttpResponseMessage()))));
         State state = new State(tlsConfig, trace);
         executeState(state);
 

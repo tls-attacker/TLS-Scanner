@@ -23,6 +23,7 @@ import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
 import de.rub.nds.tlsattacker.core.http.header.GenericHttpHeader;
 import de.rub.nds.tlsattacker.core.http.header.HostHeader;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -97,7 +98,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacRe
         }
         config.setWorkflowExecutorShouldClose(false);
         configSelector.repairConfig(config);
-
+        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
@@ -156,6 +157,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacRe
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
+        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
