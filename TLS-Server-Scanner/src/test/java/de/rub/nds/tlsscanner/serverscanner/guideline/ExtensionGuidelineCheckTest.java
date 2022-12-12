@@ -9,14 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class ExtensionGuidelineCheckTest {
 
@@ -27,7 +29,7 @@ public class ExtensionGuidelineCheckTest {
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(TestResults.TRUE, result.getResult());
     }
 
     @Test
@@ -37,6 +39,6 @@ public class ExtensionGuidelineCheckTest {
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 }

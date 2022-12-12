@@ -9,14 +9,15 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConditionalGuidelineCheckTest {
 
@@ -37,8 +38,8 @@ public class ConditionalGuidelineCheckTest {
             result = check.evaluate(report);
         }
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(TestResults.FALSE, result.getResult());
+        assertNotNull(result);
+        assertEquals(TestResults.FALSE, result.getResult());
     }
 
     @Test
@@ -58,6 +59,6 @@ public class ConditionalGuidelineCheckTest {
             result = check.evaluate(report);
         }
 
-        Assert.assertNull(result);
+        assertNull(result);
     }
 }

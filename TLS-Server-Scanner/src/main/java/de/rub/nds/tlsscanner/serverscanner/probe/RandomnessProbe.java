@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -15,8 +14,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
-import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
+import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -34,9 +34,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
+ * A probe which samples random material from the target host using ServerHello randoms, SessionIDs
+ * and IVs.
  */
-public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport, RandomnessResult> {
+public class RandomnessProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, RandomnessResult> {
 
     private ProtocolVersion bestVersion;
     private CipherSuite bestCipherSuite;
@@ -55,8 +57,8 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
+                && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+                && report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
     }
 
     @Override
@@ -67,7 +69,8 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        supportsExtendedRandom = report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
+        supportsExtendedRandom =
+                report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(ServerReport report) {
@@ -79,8 +82,10 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 if (!pair.getVersion().isTLS13()) {
                     score += 64; // random + session id
                     if (suite.isCBC()
-                        && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)
-                        || pair.getVersion() == ProtocolVersion.DTLS12 || pair.getVersion() == ProtocolVersion.DTLS10) {
+                                    && (pair.getVersion() == ProtocolVersion.TLS12
+                                            || pair.getVersion() == ProtocolVersion.TLS11)
+                            || pair.getVersion() == ProtocolVersion.DTLS12
+                            || pair.getVersion() == ProtocolVersion.DTLS10) {
                         score += AlgorithmResolver.getCipher(suite).getBlocksize();
                     }
                 } else {
@@ -110,12 +115,15 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 config.setAddExtendedRandomExtension(true);
             }
             configSelector.repairConfig(config);
-            WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (configSelector.getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
-                config.setHttpsParsingEnabled(true);
-                workflowTrace.addTlsAction(new SendAction(new HttpsRequestMessage(config)));
-                workflowTrace.addTlsAction(new ReceiveAction(new HttpsResponseMessage(config)));
+            WorkflowTrace workflowTrace =
+                    new WorkflowConfigurationFactory(config)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+            if (configSelector.getScannerConfig().getApplicationProtocol()
+                    == ApplicationProtocol.HTTP) {
+                config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+                workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
+                workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));
             } else {
                 // TODO: Add application specific app data to provoke data transmission
             }

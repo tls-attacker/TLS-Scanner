@@ -9,11 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class Pkcs1VectorGeneratorTest {
 
@@ -24,8 +27,8 @@ public class Pkcs1VectorGeneratorTest {
     public void testGeneratePlainPkcs1Vectors() {
         List<Pkcs1Vector> vectors =
             Pkcs1VectorGenerator.generatePlainPkcs1Vectors(2048, BleichenbacherScanType.FAST, ProtocolVersion.TLS12);
-        Assert.assertNotNull(vectors);
-        Assert.assertEquals("11 PKCS#1 vectors should be generated", 12, vectors.size());
+        assertNotNull(vectors);
+        assertEquals(12, vectors.size(), "11 PKCS#1 vectors should be generated");
     }
 
 }

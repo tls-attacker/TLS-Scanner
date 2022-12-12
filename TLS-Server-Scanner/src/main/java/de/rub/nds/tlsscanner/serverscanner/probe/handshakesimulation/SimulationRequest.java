@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -35,13 +34,10 @@ public class SimulationRequest {
 
     public State getExecutableState(ScannerConfig scannerConfig) {
         Config config = tlsClientConfig.getConfig();
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
-        config.setStopReceivingAfterWarning(false);
         config.setStopActionsAfterWarning(false);
         config.setEnforceSettings(false);
 
@@ -55,8 +51,10 @@ public class SimulationRequest {
             trace.addTlsAction(sendAction);
         } else {
             ClientHelloMessage msg = new ClientHelloMessage(config);
-            List<ExtensionMessage> extensions = WorkflowTraceUtil
-                .getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace()).getExtensions();
+            List<ExtensionMessage> extensions =
+                    WorkflowTraceUtil.getLastReceivedMessage(
+                                    HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace())
+                            .getExtensions();
             msg.setExtensions(extensions);
             trace.addTlsAction(new SendAction(msg));
         }

@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -34,15 +33,16 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport, SniRe
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new SniResult(TestResults.FALSE);
-
         }
         // Test if we can get a hello with SNI
         config.setAddServerNameIndicationExtension(true);
         state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new SniResult(TestResults.TRUE);
         }
         // We cannot get a ServerHello from this Server...
@@ -56,8 +56,7 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport, SniRe
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     public SniResult getCouldNotExecuteResult() {

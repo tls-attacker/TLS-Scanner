@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report.container;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
@@ -31,7 +30,16 @@ public class TextContainer extends ReportContainer {
 
     @Override
     public void print(StringBuilder builder, int depth, boolean useColor) {
-        addColor(builder, color, text, useColor);
+        println(builder, depth, useColor);
         builder.append("\n");
+    }
+
+    public void println(StringBuilder builder, int depth, boolean useColor) {
+        addDepth(builder, depth);
+        addColor(builder, color, text, useColor);
+    }
+
+    public String getText() {
+        return text;
     }
 }

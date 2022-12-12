@@ -17,9 +17,9 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

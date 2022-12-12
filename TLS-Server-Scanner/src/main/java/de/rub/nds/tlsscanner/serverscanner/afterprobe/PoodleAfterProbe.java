@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -22,7 +21,7 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        TestResult vulnerable = TestResults.NOT_TESTED_YET;
+        TestResult vulnerable;
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);
             if (ssl3Result == TestResults.TRUE) {
@@ -30,14 +29,15 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
                     if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
                         for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
                             if (suite.isCBC()) {
-                                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
+                                report.putResult(
+                                        TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
                                 return;
                             }
                         }
                     }
                 }
             }
-            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
+            vulnerable = TestResults.FALSE;
         } catch (Exception e) {
             vulnerable = TestResults.ERROR_DURING_TEST;
         }

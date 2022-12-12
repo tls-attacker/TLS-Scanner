@@ -1,22 +1,22 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientMasterKeyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerVerifyMessage;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import java.io.Serializable;
 
 /**
- * Container storing data required for LeakyExportCheckCallable. The primary feature of this is being serializable.
+ * Container storing data required for LeakyExportCheckCallable. The primary feature of this is
+ * being serializable.
  */
 public class LeakyExportCheckData implements Serializable {
 
@@ -30,8 +30,10 @@ public class LeakyExportCheckData implements Serializable {
     private byte[] encrypted;
     private int paddingLength;
 
-    LeakyExportCheckData(TlsContext context, SSL2ClientMasterKeyMessage clientMessage,
-        SSL2ServerVerifyMessage serverMessage) {
+    LeakyExportCheckData(
+            TlsContext context,
+            SSL2ClientMasterKeyMessage clientMessage,
+            SSL2ServerVerifyMessage serverMessage) {
         clearKey = context.getClearKey();
         // The Premaster Secret is equivalent to SECRET-KEY-DATA
         secretKeyPlain = context.getPreMasterSecret();
@@ -79,5 +81,4 @@ public class LeakyExportCheckData implements Serializable {
     public int getPaddingLength() {
         return paddingLength;
     }
-
 }

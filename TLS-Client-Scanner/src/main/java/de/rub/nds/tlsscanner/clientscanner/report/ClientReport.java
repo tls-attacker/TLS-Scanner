@@ -1,52 +1,50 @@
-/**
- * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
-import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends ScanReport {
+public class ClientReport extends TlsScanReport {
 
-    private List<VersionSuiteListPair> versionSuitePairs;
-    private List<ProtocolVersion> supportedVersions;
-    private List<CipherSuite> advertisedCipherSuites;
+    // Ciphers
+    private List<CipherSuite> clientAdvertisedCipherSuites;
 
-    private List<SmallSubgroupResult> smallDheSubgroupResults;
-    private List<CompositeModulusResult> compositeDheModulusResultList;
-
+    // Compression
     private List<CompressionMethod> clientAdvertisedCompressions;
-    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
+
+    // DHE
+    private Integer lowestPossibleDheModulusSize;
+    private Integer highestPossibleDheModulusSize;
+
+    // Extensions
     private Set<ExtensionType> clientAdvertisedExtensions;
+    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
     private List<NamedGroup> clientAdvertisedNamedGroupsList;
     private List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList;
     private List<ECPointFormat> clientAdvertisedPointFormatsList;
-
-    private Integer lowestPossibleDheModulusSize;
+    private List<String> clientAdvertisedAlpns;
 
     public ClientReport() {
         super();
@@ -56,24 +54,28 @@ public class ClientReport extends ScanReport {
         return clientAdvertisedCompressions;
     }
 
-    public synchronized void setClientAdvertisedCompressions(List<CompressionMethod> clientAdvertisedCompressions) {
+    public synchronized void setClientAdvertisedCompressions(
+            List<CompressionMethod> clientAdvertisedCompressions) {
         this.clientAdvertisedCompressions = clientAdvertisedCompressions;
     }
 
-    public synchronized List<SignatureAndHashAlgorithm> getClientAdvertisedSignatureAndHashAlgorithms() {
+    public synchronized List<SignatureAndHashAlgorithm>
+            getClientAdvertisedSignatureAndHashAlgorithms() {
         return clientAdvertisedSignatureAndHashAlgorithms;
     }
 
     public synchronized void setClientAdvertisedSignatureAndHashAlgorithms(
-        List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
-        this.clientAdvertisedSignatureAndHashAlgorithms = clientAdvertisedSignatureAndHashAlgorithms;
+            List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
+        this.clientAdvertisedSignatureAndHashAlgorithms =
+                clientAdvertisedSignatureAndHashAlgorithms;
     }
 
     public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
         return clientAdvertisedExtensions;
     }
 
-    public synchronized void setClientAdvertisedExtensions(Set<ExtensionType> clientAdvertisedExtensions) {
+    public synchronized void setClientAdvertisedExtensions(
+            Set<ExtensionType> clientAdvertisedExtensions) {
         this.clientAdvertisedExtensions = clientAdvertisedExtensions;
     }
 
@@ -81,7 +83,8 @@ public class ClientReport extends ScanReport {
         return clientAdvertisedNamedGroupsList;
     }
 
-    public synchronized void setClientAdvertisedNamedGroupsList(List<NamedGroup> clientAdvertisedNamedGroupsList) {
+    public synchronized void setClientAdvertisedNamedGroupsList(
+            List<NamedGroup> clientAdvertisedNamedGroupsList) {
         this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
     }
 
@@ -89,7 +92,8 @@ public class ClientReport extends ScanReport {
         return clientAdvertisedPointFormatsList;
     }
 
-    public synchronized void setClientAdvertisedPointFormatsList(List<ECPointFormat> clientAdvertisedPointFormatsList) {
+    public synchronized void setClientAdvertisedPointFormatsList(
+            List<ECPointFormat> clientAdvertisedPointFormatsList) {
         this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
     }
 
@@ -97,66 +101,64 @@ public class ClientReport extends ScanReport {
         return lowestPossibleDheModulusSize;
     }
 
+    public Integer getHighestPossibleDheModulusSize() {
+        return highestPossibleDheModulusSize;
+    }
+
+    public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
+        this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
+    }
+
     public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
         this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
     }
 
-    public synchronized List<SmallSubgroupResult> getSmallDheSubgroupResults() {
-        return smallDheSubgroupResults;
+    public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {
+        return clientAdvertisedCipherSuites;
     }
 
-    public synchronized void setSmallDheSubgroupResults(List<SmallSubgroupResult> smallDheSubgroupResults) {
-        this.smallDheSubgroupResults = smallDheSubgroupResults;
+    public synchronized void setClientAdvertisedCipherSuites(
+            List<CipherSuite> clientAdvertisedCipherSuites) {
+        this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
     }
 
-    public synchronized List<CompositeModulusResult> getCompositeDheModulusResultList() {
-        return compositeDheModulusResultList;
-    }
-
-    public synchronized void
-        setCompositeDheModulusResultList(List<CompositeModulusResult> compositeDheModulusResultList) {
-        this.compositeDheModulusResultList = compositeDheModulusResultList;
-    }
-
-    public synchronized List<ProtocolVersion> getSupportedVersions() {
-        return supportedVersions;
-    }
-
-    public synchronized void setSupportedVersions(List<ProtocolVersion> supportedVersions) {
-        this.supportedVersions = supportedVersions;
-    }
-
-    public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
-        return versionSuitePairs;
-    }
-
-    public synchronized void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
-        this.versionSuitePairs = versionSuitePairs;
-    }
-
-    public synchronized List<CipherSuite> getAdvertisedCipherSuites() {
-        return advertisedCipherSuites;
-    }
-
-    public synchronized void setAdvertisedCipherSuites(List<CipherSuite> advertisedCipherSuites) {
-        this.advertisedCipherSuites = advertisedCipherSuites;
-    }
-
-    @Override
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        ClientContainerReportCreator creator = new ClientContainerReportCreator();
-        ReportContainer createReport = creator.createReport(this);
-        StringBuilder builder = new StringBuilder();
-        createReport.print(builder, 0, printColorful);
-        return builder.toString();
+    public synchronized void addClientAdvertisedCipherSuites(
+            List<CipherSuite> clientAdvertisedCipherSuites) {
+        if (this.clientAdvertisedCipherSuites == null) {
+            this.clientAdvertisedCipherSuites = new LinkedList<>();
+        }
+        this.clientAdvertisedCipherSuites.addAll(clientAdvertisedCipherSuites);
     }
 
     public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
         return clientAdvertisedKeyShareNamedGroupsList;
     }
 
-    public synchronized void
-        setClientAdvertisedKeyShareNamedGroupsList(List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
+    public synchronized void setClientAdvertisedKeyShareNamedGroupsList(
+            List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
         this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
+    }
+
+    public synchronized List<String> getClientAdvertisedAlpns() {
+        return clientAdvertisedAlpns;
+    }
+
+    public synchronized void setClientAdvertisedAlpns(List<String> clientAdvertisedAlpns) {
+        this.clientAdvertisedAlpns = clientAdvertisedAlpns;
+    }
+
+    @Override
+    public String getFullReport(ScannerDetail detail, boolean printColorful) {
+        // TODO: Implement ClientReportPrinter and use them.
+        ClientContainerReportCreator creator = new ClientContainerReportCreator(detail);
+        ReportContainer createReport = creator.createReport(this);
+        StringBuilder builder = new StringBuilder();
+        createReport.print(builder, 0, printColorful);
+        return builder.toString();
+    }
+
+    @Override
+    public synchronized String toString() {
+        return getFullReport(ScannerDetail.NORMAL, false);
     }
 }

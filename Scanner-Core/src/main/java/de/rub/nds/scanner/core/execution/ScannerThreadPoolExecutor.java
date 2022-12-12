@@ -41,7 +41,7 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
     /**
      * Call super and assign the semaphore
-     * 
+     *
      * @param timeout
      *                The timeout after which tasks are cancelled in milliseconds.
      */
@@ -55,7 +55,7 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
     /**
      * Releases the semaphore when the Runnable r finished executing.
-     * 
+     *
      * @param r
      *          The runnable that finished executing.
      * @param t

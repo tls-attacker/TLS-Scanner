@@ -1,18 +1,17 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,9 +33,16 @@ public class OcspCertificateResult {
         this.certificate = certificate;
     }
 
-    public OcspCertificateResult(CertificateChain certificate, Boolean supportsOcsp, boolean supportsStapling,
-        boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
-        OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
+    public OcspCertificateResult(
+            CertificateChain certificate,
+            Boolean supportsOcsp,
+            boolean supportsStapling,
+            boolean mustStaple,
+            boolean supportsNonce,
+            OCSPResponse stapledResponse,
+            OCSPResponse firstResponse,
+            OCSPResponse secondResponse,
+            OCSPResponse httpGetResponse) {
         this.certificate = certificate;
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -119,12 +125,15 @@ public class OcspCertificateResult {
     public boolean isStapledResponseExpired() {
         if (firstResponse != null && firstResponse.getResponseStatus() == 0) {
             if (stapledResponse != null && stapledResponse.getResponseStatus() == 0) {
-                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
+                DateTimeFormatter inputFormatter =
+                        DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
 
                 // Check if status is actually outdated and not valid anymore
-                CertificateStatus certificateStatus = stapledResponse.getCertificateStatusList().get(0);
+                CertificateStatus certificateStatus =
+                        stapledResponse.getCertificateStatusList().get(0);
                 LocalDateTime certificateStatusUpdateValidTill =
-                    LocalDateTime.parse(certificateStatus.getTimeOfNextUpdate(), inputFormatter);
+                        LocalDateTime.parse(
+                                certificateStatus.getTimeOfNextUpdate(), inputFormatter);
                 LocalDateTime currentTime = LocalDateTime.now();
 
                 if (certificateStatusUpdateValidTill.isBefore(currentTime)) {
@@ -133,7 +142,6 @@ public class OcspCertificateResult {
             }
         }
         return false;
-
     }
 
     public long getDifferenceHoursStapled() {
@@ -141,9 +149,12 @@ public class OcspCertificateResult {
             if (stapledResponse != null && stapledResponse.getResponseStatus() == 0) {
                 // Check if stapled response is older than a freshly requested
                 // one
-                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
-                LocalDateTime firstResponseTime = LocalDateTime.parse(stapledResponse.getProducedAt(), inputFormatter);
-                LocalDateTime secondResponseTime = LocalDateTime.parse(firstResponse.getProducedAt(), inputFormatter);
+                DateTimeFormatter inputFormatter =
+                        DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
+                LocalDateTime firstResponseTime =
+                        LocalDateTime.parse(stapledResponse.getProducedAt(), inputFormatter);
+                LocalDateTime secondResponseTime =
+                        LocalDateTime.parse(firstResponse.getProducedAt(), inputFormatter);
 
                 // Check how long the stapled response has been cached for, in
                 // hours
@@ -173,10 +184,6 @@ public class OcspCertificateResult {
     }
 
     public boolean isSupportsStapledNonce() {
-        if (stapledResponse != null && stapledResponse.getNonce() != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return stapledResponse != null && stapledResponse.getNonce() != null;
     }
 }

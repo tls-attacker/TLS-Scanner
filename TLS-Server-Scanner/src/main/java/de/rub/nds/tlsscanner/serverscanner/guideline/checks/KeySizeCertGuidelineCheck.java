@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -14,15 +13,15 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Locale;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -37,8 +36,13 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         super(null, null);
     }
 
-    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, Integer minimumDsaKeyLength,
-        Integer minimumRsaKeyLength, Integer minimumEcKeyLength, Integer minimumDhKeyLength) {
+    public KeySizeCertGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            Integer minimumDsaKeyLength,
+            Integer minimumRsaKeyLength,
+            Integer minimumEcKeyLength,
+            Integer minimumDhKeyLength) {
         super(name, requirementLevel);
         this.minimumDsaKeyLength = minimumDsaKeyLength;
         this.minimumRsaKeyLength = minimumRsaKeyLength;
@@ -46,9 +50,14 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         this.minimumDhKeyLength = minimumDhKeyLength;
     }
 
-    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate,
-        Integer minimumDsaKeyLength, Integer minimumRsaKeyLength, Integer minimumEcKeyLength,
-        Integer minimumDhKeyLength) {
+    public KeySizeCertGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            boolean onlyOneCertificate,
+            Integer minimumDsaKeyLength,
+            Integer minimumRsaKeyLength,
+            Integer minimumEcKeyLength,
+            Integer minimumDhKeyLength) {
         super(name, requirementLevel, onlyOneCertificate);
         this.minimumDsaKeyLength = minimumDsaKeyLength;
         this.minimumRsaKeyLength = minimumRsaKeyLength;
@@ -56,9 +65,15 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         this.minimumDhKeyLength = minimumDhKeyLength;
     }
 
-    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
-        boolean onlyOneCertificate, Integer minimumDsaKeyLength, Integer minimumRsaKeyLength,
-        Integer minimumEcKeyLength, Integer minimumDhKeyLength) {
+    public KeySizeCertGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            boolean onlyOneCertificate,
+            Integer minimumDsaKeyLength,
+            Integer minimumRsaKeyLength,
+            Integer minimumEcKeyLength,
+            Integer minimumDhKeyLength) {
         super(name, requirementLevel, condition, onlyOneCertificate);
         this.minimumDsaKeyLength = minimumDsaKeyLength;
         this.minimumRsaKeyLength = minimumRsaKeyLength;
@@ -81,8 +96,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             switch (report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH)) {
                 case "DSA":
                     if (this.minimumDsaKeyLength != null) {
-                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(),
-                            this.minimumDsaKeyLength, key.keySize()));
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumDsaKeyLength,
+                                        key.keySize()));
                         if (key.keySize() < this.minimumDsaKeyLength) {
                             failedFlag = true;
                         } else {
@@ -92,8 +110,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                     break;
                 case "RSA":
                     if (this.minimumRsaKeyLength != null) {
-                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(),
-                            this.minimumRsaKeyLength, key.keySize()));
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumRsaKeyLength,
+                                        key.keySize()));
                         if (key.keySize() < this.minimumRsaKeyLength) {
                             failedFlag = true;
                         } else {
@@ -104,8 +125,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                     break;
                 case "EC":
                     if (this.minimumEcKeyLength != null) {
-                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(), this.minimumEcKeyLength,
-                            key.keySize()));
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumEcKeyLength,
+                                        key.keySize()));
                         if (key.keySize() < this.minimumEcKeyLength) {
                             failedFlag = true;
                         } else {
@@ -115,8 +139,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                     break;
                 case "DH":
                     if (this.minimumDhKeyLength != null) {
-                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(), this.minimumDhKeyLength,
-                            key.keySize()));
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumDhKeyLength,
+                                        key.keySize()));
                         if (key.keySize() < this.minimumDhKeyLength) {
                             failedFlag = true;
                         } else {
@@ -143,8 +170,9 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                 return new GuidelineCheckResult(TestResults.FALSE) {
                     @Override
                     public String display() {
-                        return String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(),
-                            minimumDhKeyLength);
+                        return String.format(
+                                "Weakest DH size %d<%d",
+                                report.getWeakestDhStrength(), minimumDhKeyLength);
                     }
                 };
             }
@@ -154,8 +182,16 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
 
     @Override
     public String getId() {
-        return "KeySizeCert_" + getRequirementLevel() + "_" + minimumDsaKeyLength + "_" + minimumRsaKeyLength + "_"
-            + minimumEcKeyLength + "_" + minimumDhKeyLength;
+        return "KeySizeCert_"
+                + getRequirementLevel()
+                + "_"
+                + minimumDsaKeyLength
+                + "_"
+                + minimumRsaKeyLength
+                + "_"
+                + minimumEcKeyLength
+                + "_"
+                + minimumDhKeyLength;
     }
 
     public Integer getMinimumDsaKeyLength() {

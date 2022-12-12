@@ -1,20 +1,19 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -45,9 +44,12 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport, Esni
 
         TlsContext context = state.getTlsContext();
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
-        boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-            && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        boolean isReceivedCorrectNonce =
+                context.getEsniServerNonce() != null
+                        && Arrays.equals(
+                                context.getEsniServerNonce(), context.getEsniClientNonce());
+        if (!WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new EsniResult(TestResults.ERROR_DURING_TEST);
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
             return (new EsniResult(TestResults.TRUE));
@@ -59,16 +61,14 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport, Esni
     @Override
     public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-            && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
+                && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     public EsniResult getCouldNotExecuteResult() {
         return new EsniResult(TestResults.COULD_NOT_TEST);
     }
-
 }

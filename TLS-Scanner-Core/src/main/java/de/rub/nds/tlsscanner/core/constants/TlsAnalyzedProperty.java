@@ -1,24 +1,22 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
-
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS),
@@ -107,18 +105,18 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_SESSION_ID_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
-    SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
-    SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION(
+            TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION(
+            TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SECURE_RENEGOTIATION_EXTENSION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
-    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE(TlsAnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE(
+            TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_COMPRESSION(TlsAnalyzedPropertyCategory.COMPRESSION),
-    SUPPORTS_COMMON_DH_PRIMES(TlsAnalyzedPropertyCategory.FFDHE),
-    SUPPORTS_ONLY_PRIME_MODULI(TlsAnalyzedPropertyCategory.FFDHE),
-    SUPPORTS_ONLY_SAFEPRIME_MODULI(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_INSECURE_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_HTTPS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
@@ -143,85 +141,48 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(TlsAnalyzedPropertyCategory.SNI),
     STRICT_ALPN(TlsAnalyzedPropertyCategory.EXTENSIONS),
-    /**
-     * does it handle unknown versions correctly?
-     */
+    /** does it handle unknown versions correctly */
     HAS_VERSION_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle unknown cipher suites correctly?
-     */
+    /** does it handle unknown cipher suites correctly */
     HAS_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle unknown extensions correctly?
-     */
+    /** does it handle unknown extensions correctly */
     HAS_EXTENSION_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle long cipher suite length values correctly?
-     */
+    /** does it handle long cipher suite length values correctly */
     HAS_CIPHER_SUITE_LENGTH_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle unknown compression algorithms correctly
-     */
+    /** does it handle unknown compression algorithms correctly */
     HAS_COMPRESSION_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle unknown alpn strings correctly?
-     */
+    /** does it handle unknown alpn strings correctly */
     HAS_ALPN_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * 256 - 511 <-- ch should be bigger than this
-     */
+    /** 256 - 511 &lt;-- ch should be bigger than this */
     HAS_CLIENT_HELLO_LENGTH_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it break on empty last extension
-     */
+    /** does it break on empty last extension */
     HAS_EMPTY_LAST_EXTENSION_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle signature and hash algorithms correctly
-     */
+    /** does it handle signature and hash algorithms correctly */
     HAS_SIG_HASH_ALGORITHM_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * server does not like really big client hello messages
-     */
+    /** server does not like really big client hello messages */
     HAS_BIG_CLIENT_HELLO_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle unknown groups correctly
-     */
+    /** does it handle unknown groups correctly */
     HAS_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * is only the second byte of the cipher suite evaluated
-     */
+    /** is only the second byte of the cipher suite evaluated */
     HAS_SECOND_CIPHER_SUITE_BYTE_BUG(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it ignore the offered cipher suites
-     */
+    /** does it ignore the offered cipher suites */
     REFLECTS_OFFERED_CIPHER_SUITES(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it ignore the offered cipher suites
-     */
+    /** does it ignore the offered cipher suites */
     IGNORES_OFFERED_CIPHER_SUITES(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it ignore the offered named groups
-     */
+    /** does it ignore the offered named groups */
     IGNORES_OFFERED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it ignore the sig hash algorithms
-     */
+    /** does it ignore the sig hash algorithms */
     IGNORES_OFFERED_SIG_HASH_ALGOS(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it accept that named groups for ecdsa are missing
-     */
+    /** does it accept that named groups for ecdsa are missing */
     IGNORES_ECDSA_GROUP_DISPARITY(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it handle a http false start
-     */
+    /** does it handle a http false start */
     SUPPORTS_HTTP_FALSE_START(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
-    /**
-     * does it have a grease value intolerance?
-     */
+    /** does it have a grease value intolerance? */
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
+    HAS_EC_POINT_FORMAT_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     USES_UNIX_TIMESTAMPS_IN_RANDOM(TlsAnalyzedPropertyCategory.QUIRKS),
     SENDS_HELLO_RETRY_REQUEST(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ISSUES_COOKIE_IN_HELLO_RETRY(TlsAnalyzedPropertyCategory.EXTENSIONS),
@@ -244,6 +205,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     VULNERABLE_TO_BREACH(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_LOGJAM(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(TlsAnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_FREAK_DOWNGRADE(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -270,20 +232,27 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     REUSES_GCM_NONCES(TlsAnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(TlsAnalyzedPropertyCategory.SNI),
     HAS_GNU_TLS_MAGIC_BYTES(TlsAnalyzedPropertyCategory.SESSION_TICKET),
-    /**
-     * CCA Properties
-     */
+    /** CCA Properties */
     SUPPORTS_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     VULNERABLE_TO_CCA_BYPASS(TlsAnalyzedPropertyCategory.ATTACKS),
-    /**
-     * DTLS
-     */
+    /** FFDHE Properties */
+    SUPPORTS_COMMON_DH_PRIMES(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_ONLY_PRIME_MODULI(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_ONLY_SAFEPRIME_MODULI(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_EVEN_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_MOD3_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_MODULUS_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_GENERATOR_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    /** DTLS */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
     DTLS_FRAGMENTATION_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS(TlsAnalyzedPropertyCategory.QUIRKS),
-    DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),
+    DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION(
+            TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_REORDERING(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_RECORD_REORDERING(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_DTLS_COOKIE_EXCHANGE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     HAS_HVR_RETRANSMISSIONS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     HAS_COOKIE_CHECKS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_IP_ADDRESS_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
@@ -305,9 +274,16 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     PROCESSES_RETRANSMISSIONS(TlsAnalyzedPropertyCategory.QUIRKS),
     CHANGES_PORT(TlsAnalyzedPropertyCategory.QUIRKS),
     CHANGES_PORT_TO_RANDOM_PORTS(TlsAnalyzedPropertyCategory.QUIRKS),
-    // CLIENT SPECIFIC PROPERTIES
+    ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    ACCEPTS_HVR_RECORD_SEQUENCE_NUMBER_MISMATCH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    ACCEPTS_SERVER_HELLO_RECORD_SEQUENCE_NUMBER_MISMATCH(
+            TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    HAS_CLIENT_HELLO_MISMATCH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    ACCEPTS_EMPTY_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    /** Client Specific Properties */
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
-    FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS);
+    FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS),
+    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS);
 
     private final TlsAnalyzedPropertyCategory category;
 

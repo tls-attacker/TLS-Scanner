@@ -671,7 +671,7 @@ public class StatisticalTests {
      * * This Test inspects the total number of runs in a sequence, i.e. the uninterrupted sequences of identical bits.
      * The purpose of this test is to determine whether the number of runs of ones and zeroes are as expected as from
      * random sequences. NOTE: This test requires frequencyTest to be ran beforehand! Recommended Input Size is 100
-     * bits. For cryptographic applications the P-Value should be > 0.01.
+     * bits. For cryptographic applications the P-Value should be &gt; 0.01.
      *
      * @param  byteSequence
      *                      The sequence of random bytes to be inspected.
@@ -686,7 +686,7 @@ public class StatisticalTests {
      * * This Test inspects the total number of runs in a sequence, i.e. the uninterrupted sequences of identical bits.
      * The purpose of this test is to determine whether the number of runs of ones and zeroes are as expected as from
      * random sequences. NOTE: This test requires frequencyTest to be ran beforehand! Recommended Input Size is 100
-     * bits. For cryptographic applications the P-Value should be > 0.01.
+     * bits. For cryptographic applications the P-Value should be &gt; 0.01.
      *
      * @param  bitString
      *                   The sequence of random bytes to be inspected.
@@ -731,8 +731,8 @@ public class StatisticalTests {
      * * Simple Frequency-Test. For truly random sequences, the count of 0 and 1 in the bit-sequence should be
      * converging towards 50% in each block. For blockLength 1, the Test is equal to the general Monobit-Test where the
      * number of 0's and 1's are compared on the full Sequence. Recommended minimum-length of bits by NIST: 100.
-     * Recommended Block size M : M=>20, M>.01n and N<100, with n = Sequence Length, N = Number of Blocks. For
-     * cryptographic Applications the P-Value should be > 0.01
+     * Recommended Block size M : M=&gt;20, M&gt;.01n and N&lt;100, with n = Sequence Length, N = Number of Blocks. For
+     * cryptographic Applications the P-Value should be &gt; 0.01
      *
      * @param  byteSequence
      *                      A ComparableByteArray-Array of the collected byte sequences in order
@@ -747,8 +747,8 @@ public class StatisticalTests {
      * * Simple Frequency-Test. For truly random sequences, the count of 0 and 1 in the bit-sequence should be
      * converging towards 50% in each block. For blockLength 1, the Test is equal to the general Monobit-Test where the
      * number of 0's and 1's are compared on the full Sequence. Recommended minimum-length of bits by NIST: 100.
-     * Recommended Block size M : M=>20, M>.01n and N<100, with n = Sequence Length, N = Number of Blocks. For
-     * cryptographic Applications the P-Value should be > 0.01
+     * Recommended Block size M : M=&gt;20, M&gt;.01n and N&lt;100, with n = Sequence Length, N = Number of Blocks. For
+     * cryptographic Applications the P-Value should be &gt; 0.01
      *
      * @param  bitString
      *                   A ComparableByteArray-Array of the collected byte sequences in order

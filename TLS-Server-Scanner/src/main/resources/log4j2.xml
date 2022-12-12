@@ -12,9 +12,6 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="de.rub.nds.scanner.core.util.ConsoleLogger" level="INFO" additivity="false">
-            <AppenderRef ref="Direct"/>
-        </Logger> 
         <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
             <AppenderRef ref="Direct"/>
         </Logger>

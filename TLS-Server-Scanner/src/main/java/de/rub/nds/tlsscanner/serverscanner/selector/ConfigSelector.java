@@ -1,35 +1,30 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.ConfigIO;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -49,6 +44,7 @@ public class ConfigSelector {
     }
 
     private final ServerScannerConfig scannerConfig;
+    private final ParallelExecutor parallelExecutor;
     private Config workingConfig;
     private String configProfileIdentifier;
     private Config workingTl13Config;
@@ -65,8 +61,9 @@ public class ConfigSelector {
     private boolean speaksProtocol = false;
     private boolean isHandshaking = false;
 
-    public ConfigSelector(ServerScannerConfig scannerConfig) {
+    public ConfigSelector(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         this.scannerConfig = scannerConfig;
+        this.parallelExecutor = parallelExecutor;
     }
 
     public boolean findWorkingConfigs() {
@@ -90,11 +87,12 @@ public class ConfigSelector {
     }
 
     public Config getConfigForProfile(String startingConfigFile, ConfigFilterProfile configProfile)
-        throws ConfigurationException {
+            throws ConfigurationException {
         if (scannerConfig.isConfigSearchCooldown()) {
             pauseSearch();
         }
-        Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
+        Config baseConfig =
+                Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
         ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
         prepareBaseConfig(baseConfig);
         return baseConfig;
@@ -103,8 +101,9 @@ public class ConfigSelector {
     public void reportLimitation(ConfigFilterProfile configProfile, String versionText) {
         if (configProfile.getConfigFilterTypes().length > 0) {
             LOGGER.warn(
-                "Unable to perform handshake with extensive Config for {}.\nScanning with reduced Config ({}), which may affect the extent of some probes.",
-                versionText, configProfile.getIdentifier());
+                    "Unable to perform handshake with extensive Config for {}.\nScanning with reduced Config ({}), which may affect the extent of some probes.",
+                    versionText,
+                    configProfile.getIdentifier());
         }
     }
 
@@ -139,30 +138,32 @@ public class ConfigSelector {
 
     private boolean configWorks(Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                factory.createWorkflowTrace(
+                        WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
-        WorkflowExecutor executor =
-            WorkflowExecutorFactory.createWorkflowExecutor(state.getConfig().getWorkflowExecutorType(), state);
-        executor.executeWorkflow();
+        parallelExecutor.bulkExecuteStateTasks(state);
 
-        List<AbstractRecord> reveicedRecords = state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
-        if ((reveicedRecords != null && !reveicedRecords.isEmpty() && reveicedRecords.get(0) instanceof Record)
-            || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, trace)
-            || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
-            || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
+        List<Record> reveicedRecords =
+                state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
+        if ((reveicedRecords != null
+                        && !reveicedRecords.isEmpty()
+                        && reveicedRecords.get(0) instanceof Record)
+                || WorkflowTraceUtil.didReceiveMessage(
+                        HandshakeMessageType.HELLO_VERIFY_REQUEST, trace)
+                || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
+                || WorkflowTraceUtil.didReceiveMessage(
+                        HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
             speaksProtocol = true;
         }
         return trace.executedAsPlanned();
     }
 
     private void applyPerformanceParamters(Config config) {
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
-        config.setStopReceivingAfterWarning(false);
         config.setStopActionsAfterWarning(false);
         config.setEnforceSettings(false);
     }
@@ -187,7 +188,7 @@ public class ConfigSelector {
 
     private void repairSni(Config config) {
         if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-            || scannerConfig.getClientDelegate().getSniHostname() != null) {
+                || scannerConfig.getClientDelegate().getSniHostname() != null) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);
@@ -207,9 +208,14 @@ public class ConfigSelector {
     }
 
     public void adjustEccExtensionsPreTls13(Config config) {
-        boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
-            .filter(CipherSuite::isRealCipherSuite).filter(Predicate.not(CipherSuite::isTLS13))
-            .anyMatch(cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isEC());
+        boolean containsEc =
+                config.getDefaultClientSupportedCipherSuites().stream()
+                        .filter(CipherSuite::isRealCipherSuite)
+                        .filter(Predicate.not(CipherSuite::isTLS13))
+                        .anyMatch(
+                                cipherSuite ->
+                                        AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
+                                                .isEC());
         config.setAddEllipticCurveExtension(containsEc);
         config.setAddECPointFormatExtension(containsEc);
     }
@@ -218,30 +224,46 @@ public class ConfigSelector {
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(false);
         if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
-            config.setDefaultClientKeyShareNamedGroups(new LinkedList<>(config.getDefaultClientNamedGroups()));
+            config.setDefaultClientKeyShareNamedGroups(
+                    new LinkedList<>(config.getDefaultClientNamedGroups()));
         } else {
-            config.setDefaultClientKeyShareNamedGroups(config.getDefaultClientKeyShareNamedGroups().stream()
-                .filter(config.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+            config.setDefaultClientKeyShareNamedGroups(
+                    config.getDefaultClientKeyShareNamedGroups().stream()
+                            .filter(config.getDefaultClientNamedGroups()::contains)
+                            .collect(Collectors.toList()));
         }
     }
 
     public void setDefaultSelectedCipherSuites(Config config) {
-        CipherSuite defaultSelectedCipherSuite = config.getDefaultClientSupportedCipherSuites().stream()
-            .filter(CipherSuite::isRealCipherSuite).findFirst().orElse(config.getDefaultSelectedCipherSuite());
+        CipherSuite defaultSelectedCipherSuite =
+                config.getDefaultClientSupportedCipherSuites().stream()
+                        .filter(CipherSuite::isRealCipherSuite)
+                        .findFirst()
+                        .orElse(config.getDefaultSelectedCipherSuite());
         config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
     }
 
     public void restrictBasicFeatures(Config config) {
-        Config relevantConfig = config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
+        Config relevantConfig =
+                config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
         if (relevantConfig != null) {
-            config.setDefaultClientSupportedCipherSuites(config.getDefaultClientSupportedCipherSuites().stream()
-                .filter(relevantConfig.getDefaultClientSupportedCipherSuites()::contains).collect(Collectors.toList()));
-            config.setDefaultClientNamedGroups(config.getDefaultClientNamedGroups().stream()
-                .filter(relevantConfig.getDefaultClientNamedGroups()::contains).collect(Collectors.toList()));
+            config.setDefaultClientSupportedCipherSuites(
+                    config.getDefaultClientSupportedCipherSuites().stream()
+                            .filter(
+                                    relevantConfig.getDefaultClientSupportedCipherSuites()
+                                            ::contains)
+                            .collect(Collectors.toList()));
+            config.setDefaultClientNamedGroups(
+                    config.getDefaultClientNamedGroups().stream()
+                            .filter(relevantConfig.getDefaultClientNamedGroups()::contains)
+                            .collect(Collectors.toList()));
             config.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                config.getDefaultClientSupportedSignatureAndHashAlgorithms().stream()
-                    .filter(relevantConfig.getDefaultClientSupportedSignatureAndHashAlgorithms()::contains)
-                    .collect(Collectors.toList()));
+                    config.getDefaultClientSupportedSignatureAndHashAlgorithms().stream()
+                            .filter(
+                                    relevantConfig
+                                                    .getDefaultClientSupportedSignatureAndHashAlgorithms()
+                                            ::contains)
+                            .collect(Collectors.toList()));
         }
     }
 

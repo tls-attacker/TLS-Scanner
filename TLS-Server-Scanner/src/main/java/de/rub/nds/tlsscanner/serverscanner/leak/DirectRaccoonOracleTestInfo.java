@@ -1,18 +1,19 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.leak;
 
-import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
+import java.util.Arrays;
+import java.util.List;
 
 public class DirectRaccoonOracleTestInfo extends TestInfo {
 
@@ -22,8 +23,10 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
 
     private final DirectRaccoonWorkflowType directWorkflowType;
 
-    public DirectRaccoonOracleTestInfo(CipherSuite suite, ProtocolVersion version,
-        DirectRaccoonWorkflowType directWorkflowType) {
+    public DirectRaccoonOracleTestInfo(
+            CipherSuite suite,
+            ProtocolVersion version,
+            DirectRaccoonWorkflowType directWorkflowType) {
         this.cipherSuite = suite;
         this.version = version;
         this.directWorkflowType = directWorkflowType;
@@ -32,6 +35,16 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
     @Override
     public String getTechnicalName() {
         return directWorkflowType.name() + ":" + version.name() + ":" + cipherSuite.name();
+    }
+
+    @Override
+    public List<String> getFieldNames() {
+        return Arrays.asList("Workflow Type", "Version", "CipherSuite");
+    }
+
+    @Override
+    public List<String> getFieldValues() {
+        return Arrays.asList(directWorkflowType.name(), version.name(), cipherSuite.name());
     }
 
     @Override

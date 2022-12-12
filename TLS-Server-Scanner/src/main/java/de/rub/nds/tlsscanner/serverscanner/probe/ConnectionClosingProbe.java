@@ -1,21 +1,18 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
+import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -27,26 +24,26 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ConnectionClosingResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 
 /**
- * Determines when the server closes the connection. It's meant for tests in the lab so we limit the probe. Note that
- * NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server didn't close the connection within
- * our limit or the probe could not be executed.
+ * Determines when the server closes the connection. It's meant for tests in the lab so we limit the
+ * probe. Note that NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server
+ * didn't close the connection within our limit or the probe could not be executed.
  */
-public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport, ConnectionClosingResult> {
+public class ConnectionClosingProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, ConnectionClosingResult> {
 
     public static final long NO_RESULT = -1;
     private static final long LIMIT = 5000;
 
     private boolean useHttpAppData = false;
 
-    public ConnectionClosingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public ConnectionClosingProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, configSelector);
     }
 
@@ -60,13 +57,15 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
         WorkflowTrace handshakeOnly = getWorkflowTrace(tlsConfig);
         WorkflowTrace handshakeWithAppData = getWorkflowTrace(tlsConfig);
         if (useHttpAppData) {
-            handshakeWithAppData.addTlsAction(new SendAction(new HttpsRequestMessage(tlsConfig)));
+            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+            handshakeWithAppData.addTlsAction(new SendAction(new HttpRequestMessage()));
         } else {
-            handshakeWithAppData.addTlsAction(new SendAction(new ApplicationMessage(tlsConfig)));
+            handshakeWithAppData.addTlsAction(new SendAction(new ApplicationMessage()));
         }
 
-        return new ConnectionClosingResult(evaluateClosingDelta(tlsConfig, handshakeOnly),
-            evaluateClosingDelta(tlsConfig, handshakeWithAppData));
+        return new ConnectionClosingResult(
+                evaluateClosingDelta(tlsConfig, handshakeOnly),
+                evaluateClosingDelta(tlsConfig, handshakeWithAppData));
     }
 
     public WorkflowTrace getWorkflowTrace(Config tlsConfig) {
@@ -81,7 +80,9 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
         SocketState socketState = null;
         do {
             try {
-                socketState = (((TcpTransportHandler) (state.getTlsContext().getTransportHandler())).getSocketState());
+                socketState =
+                        (((TcpTransportHandler) (state.getTlsContext().getTransportHandler()))
+                                .getSocketState());
                 switch (socketState) {
                     case CLOSED:
                     case IO_EXCEPTION:
@@ -122,5 +123,4 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     public void adjustConfig(ServerReport report) {
         useHttpAppData = report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
     }
-
 }
