@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendRecordsFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -73,7 +73,7 @@ public class DtlsRetransmissionsProbe
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
         State state = new State(config, trace);

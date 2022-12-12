@@ -68,7 +68,9 @@ public class ConfigSelector {
 
     public boolean findWorkingConfigs() {
         findWorkingConfig();
-        findWorkingTls13Config();
+        if (!scannerConfig.getDtlsDelegate().isDTLS()) {
+            findWorkingTls13Config();
+        }
         return workingConfig != null || workingTl13Config != null;
     }
 
@@ -163,7 +165,11 @@ public class ConfigSelector {
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        config.setStopTraceAfterUnexpected(true);
+        if (scannerConfig.getDtlsDelegate().isDTLS()) {
+            config.setStopTraceAfterUnexpected(false);
+        } else {
+            config.setStopTraceAfterUnexpected(true);
+        }
         config.setStopActionsAfterWarning(false);
         config.setEnforceSettings(false);
     }
@@ -203,7 +209,6 @@ public class ConfigSelector {
             adjustEccExtensionsPreTls13(config);
         }
         setDefaultSelectedCipherSuites(config);
-        applyDelegates(config);
         return config;
     }
 

@@ -62,10 +62,14 @@ public class CompressionProbe
             }
         }
         TestResult forcedCompression;
-        if (!clientAdvertisedCompressions.containsAll(supportedCompressions)) {
-            forcedCompression = TestResults.TRUE;
+        if (clientAdvertisedCompressions != null) {
+            if (!clientAdvertisedCompressions.containsAll(supportedCompressions)) {
+                forcedCompression = TestResults.TRUE;
+            } else {
+                forcedCompression = TestResults.FALSE;
+            }
         } else {
-            forcedCompression = TestResults.FALSE;
+            forcedCompression = TestResults.UNCERTAIN;
         }
         return new CompressionResult(supportedCompressions, forcedCompression);
     }
