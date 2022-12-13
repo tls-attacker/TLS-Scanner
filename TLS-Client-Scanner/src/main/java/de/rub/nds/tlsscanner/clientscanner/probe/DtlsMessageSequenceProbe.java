@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteMessageSequenceAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -55,7 +55,7 @@ public class DtlsMessageSequenceProbe
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 3));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(3));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
@@ -82,7 +82,7 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
         trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
@@ -107,11 +107,11 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
         trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
         trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
@@ -133,11 +133,11 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
         trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
         trace.addTlsAction(new SendAction(new CertificateMessage()));
         trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 

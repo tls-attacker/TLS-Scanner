@@ -65,7 +65,7 @@ public class DtlsFragmentationProbe
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(150);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -83,7 +83,7 @@ public class DtlsFragmentationProbe
             boolean individualTransportPackets) {
         Config config = configSelector.getBaseConfig();
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -114,7 +114,7 @@ public class DtlsFragmentationProbe
         config.setAddMaxFragmentLengthExtension(true);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 

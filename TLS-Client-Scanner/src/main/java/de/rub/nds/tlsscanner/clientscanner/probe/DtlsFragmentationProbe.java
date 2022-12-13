@@ -64,7 +64,7 @@ public class DtlsFragmentationProbe
         Config config = scannerConfig.createConfig();
         config.setDtlsMaximumFragmentLength(15);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -88,7 +88,7 @@ public class DtlsFragmentationProbe
             boolean individualTransportPackets) {
         Config config = scannerConfig.createConfig();
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -123,7 +123,7 @@ public class DtlsFragmentationProbe
         config.setAddMaxFragmentLengthExtension(true);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
