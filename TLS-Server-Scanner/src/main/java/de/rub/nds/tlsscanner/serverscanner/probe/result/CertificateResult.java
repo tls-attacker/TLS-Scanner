@@ -52,5 +52,9 @@ public class CertificateResult extends ProbeResult<ServerReport> {
         }
         report.setEcdsaPkGroupsStatic(ecdsaPkGroupsStatic);
         report.setEcdsaPkGroupsEphemeral(ecdsaPkGroupsEphemeral);
+        report.setEcdsaPkGroupsTls13(ecdsaPkGroupsTls13);
+        report.setEcdsaSigGroupsStatic(ecdsaSigGroupsStatic);
+        report.setEcdsaSigGroupsEphemeral(ecdsaSigGroupsEphemeral);
+        report.setEcdsaSigGroupsTls13(ecdsaCertSigGroupsTls13);
     }
 }
