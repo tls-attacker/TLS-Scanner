@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -25,14 +26,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-<<<<<<< HEAD
 public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult enforced;
-=======
-public class CipherSuiteOrderProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CipherSuiteOrderResult> {
->>>>>>> master
 
     public CipherSuiteOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);
@@ -48,14 +44,7 @@ public class CipherSuiteOrderProbe
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-<<<<<<< HEAD
         enforced = (firstSelectedCipherSuite == secondSelectedCipherSuite) ? TestResults.TRUE : TestResults.FALSE;
-=======
-        return new CipherSuiteOrderResult(
-                firstSelectedCipherSuite == secondSelectedCipherSuite
-                        ? TestResults.TRUE
-                        : TestResults.FALSE);
->>>>>>> master
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -69,17 +58,8 @@ public class CipherSuiteOrderProbe
     }
 
     @Override
-<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
->>>>>>> master
 
     @Override
     protected Requirement getRequirements() {
