@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -29,21 +30,12 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-<<<<<<< HEAD
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult supportsReordering;
-=======
-import de.rub.nds.tlsscanner.core.probe.result.DtlsReorderingResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-public class DtlsReorderingProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DtlsReorderingResult<ServerReport>> {
->>>>>>> master
 
     public DtlsReorderingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_REORDERING, configSelector);
@@ -53,21 +45,17 @@ public class DtlsReorderingProbe
     @Override
     public void executeTest() {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
         trace.addTlsAction(new ChangeWriteEpochAction(0));
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        trace.addTlsAction(
-                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-<<<<<<< HEAD
         supportsReordering =
             WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())
                 ? TestResults.TRUE : TestResults.FALSE;
@@ -86,28 +74,4 @@ public class DtlsReorderingProbe
     protected Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
-
 }
-=======
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsReorderingResult getCouldNotExecuteResult() {
-        return new DtlsReorderingResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
-}
->>>>>>> master
