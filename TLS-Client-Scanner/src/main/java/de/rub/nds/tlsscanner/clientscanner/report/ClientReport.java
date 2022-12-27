@@ -10,46 +10,6 @@ package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
-<<<<<<< HEAD
-import de.rub.nds.tlsscanner.core.report.TlsReport;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement()
-@XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends TlsReport {
-
-    private Integer lowestPossibleDheModulusSize;
-
-    /**
-     * @return the lowestPossibleDheModulusSize
-     */
-    public Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
-
-    /**
-     * @param lowestPossibleDheModulusSize
-     *                                     the lowestPossibleDheModulusSize to set
-     */
-    public void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
-    }
-
-    public ClientReport() {
-        super();
-    }
-
-    @Override
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        ClientContainerReportCreator creator = new ClientContainerReportCreator();
-        ReportContainer createReport = creator.createReport(this);
-        StringBuilder builder = new StringBuilder();
-        createReport.print(builder, 0, printColorful);
-        return builder.toString();
-    }
-=======
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -68,138 +28,129 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsScanReport {
 
-    // Ciphers
-    private List<CipherSuite> clientAdvertisedCipherSuites;
+	// Ciphers
+	private List<CipherSuite> clientAdvertisedCipherSuites;
 
-    // Compression
-    private List<CompressionMethod> clientAdvertisedCompressions;
+	// Compression
+	private List<CompressionMethod> clientAdvertisedCompressions;
 
-    // DHE
-    private Integer lowestPossibleDheModulusSize;
-    private Integer highestPossibleDheModulusSize;
+	// DHE
+	private Integer lowestPossibleDheModulusSize;
+	private Integer highestPossibleDheModulusSize;
 
-    // Extensions
-    private Set<ExtensionType> clientAdvertisedExtensions;
-    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
-    private List<NamedGroup> clientAdvertisedNamedGroupsList;
-    private List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList;
-    private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    private List<String> clientAdvertisedAlpns;
+	// Extensions
+	private Set<ExtensionType> clientAdvertisedExtensions;
+	private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
+	private List<NamedGroup> clientAdvertisedNamedGroupsList;
+	private List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList;
+	private List<ECPointFormat> clientAdvertisedPointFormatsList;
+	private List<String> clientAdvertisedAlpns;
 
-    public ClientReport() {
-        super();
-    }
+	public ClientReport() {
+		super();
+	}
 
-    public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {
-        return clientAdvertisedCompressions;
-    }
+	public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {
+		return clientAdvertisedCompressions;
+	}
 
-    public synchronized void setClientAdvertisedCompressions(
-            List<CompressionMethod> clientAdvertisedCompressions) {
-        this.clientAdvertisedCompressions = clientAdvertisedCompressions;
-    }
+	public synchronized void setClientAdvertisedCompressions(List<CompressionMethod> clientAdvertisedCompressions) {
+		this.clientAdvertisedCompressions = clientAdvertisedCompressions;
+	}
 
-    public synchronized List<SignatureAndHashAlgorithm>
-            getClientAdvertisedSignatureAndHashAlgorithms() {
-        return clientAdvertisedSignatureAndHashAlgorithms;
-    }
+	public synchronized List<SignatureAndHashAlgorithm> getClientAdvertisedSignatureAndHashAlgorithms() {
+		return clientAdvertisedSignatureAndHashAlgorithms;
+	}
 
-    public synchronized void setClientAdvertisedSignatureAndHashAlgorithms(
-            List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
-        this.clientAdvertisedSignatureAndHashAlgorithms =
-                clientAdvertisedSignatureAndHashAlgorithms;
-    }
+	public synchronized void setClientAdvertisedSignatureAndHashAlgorithms(
+			List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
+		this.clientAdvertisedSignatureAndHashAlgorithms = clientAdvertisedSignatureAndHashAlgorithms;
+	}
 
-    public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
-        return clientAdvertisedExtensions;
-    }
+	public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
+		return clientAdvertisedExtensions;
+	}
 
-    public synchronized void setClientAdvertisedExtensions(
-            Set<ExtensionType> clientAdvertisedExtensions) {
-        this.clientAdvertisedExtensions = clientAdvertisedExtensions;
-    }
+	public synchronized void setClientAdvertisedExtensions(Set<ExtensionType> clientAdvertisedExtensions) {
+		this.clientAdvertisedExtensions = clientAdvertisedExtensions;
+	}
 
-    public synchronized List<NamedGroup> getClientAdvertisedNamedGroupsList() {
-        return clientAdvertisedNamedGroupsList;
-    }
+	public synchronized List<NamedGroup> getClientAdvertisedNamedGroupsList() {
+		return clientAdvertisedNamedGroupsList;
+	}
 
-    public synchronized void setClientAdvertisedNamedGroupsList(
-            List<NamedGroup> clientAdvertisedNamedGroupsList) {
-        this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
-    }
+	public synchronized void setClientAdvertisedNamedGroupsList(List<NamedGroup> clientAdvertisedNamedGroupsList) {
+		this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
+	}
 
-    public synchronized List<ECPointFormat> getClientAdvertisedPointFormatsList() {
-        return clientAdvertisedPointFormatsList;
-    }
+	public synchronized List<ECPointFormat> getClientAdvertisedPointFormatsList() {
+		return clientAdvertisedPointFormatsList;
+	}
 
-    public synchronized void setClientAdvertisedPointFormatsList(
-            List<ECPointFormat> clientAdvertisedPointFormatsList) {
-        this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
-    }
+	public synchronized void setClientAdvertisedPointFormatsList(List<ECPointFormat> clientAdvertisedPointFormatsList) {
+		this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
+	}
 
-    public synchronized Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
+	public synchronized Integer getLowestPossibleDheModulusSize() {
+		return lowestPossibleDheModulusSize;
+	}
 
-    public Integer getHighestPossibleDheModulusSize() {
-        return highestPossibleDheModulusSize;
-    }
+	public Integer getHighestPossibleDheModulusSize() {
+		return highestPossibleDheModulusSize;
+	}
 
-    public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
-        this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
-    }
+	public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
+		this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
+	}
 
-    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
-    }
+	public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
+		this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
+	}
 
-    public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {
-        return clientAdvertisedCipherSuites;
-    }
+	public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {
+		return clientAdvertisedCipherSuites;
+	}
 
-    public synchronized void setClientAdvertisedCipherSuites(
-            List<CipherSuite> clientAdvertisedCipherSuites) {
-        this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
-    }
+	public synchronized void setClientAdvertisedCipherSuites(List<CipherSuite> clientAdvertisedCipherSuites) {
+		this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
+	}
 
-    public synchronized void addClientAdvertisedCipherSuites(
-            List<CipherSuite> clientAdvertisedCipherSuites) {
-        if (this.clientAdvertisedCipherSuites == null) {
-            this.clientAdvertisedCipherSuites = new LinkedList<>();
-        }
-        this.clientAdvertisedCipherSuites.addAll(clientAdvertisedCipherSuites);
-    }
+	public synchronized void addClientAdvertisedCipherSuites(List<CipherSuite> clientAdvertisedCipherSuites) {
+		if (this.clientAdvertisedCipherSuites == null) {
+			this.clientAdvertisedCipherSuites = new LinkedList<>();
+		}
+		this.clientAdvertisedCipherSuites.addAll(clientAdvertisedCipherSuites);
+	}
 
-    public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
-        return clientAdvertisedKeyShareNamedGroupsList;
-    }
+	public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
+		return clientAdvertisedKeyShareNamedGroupsList;
+	}
 
-    public synchronized void setClientAdvertisedKeyShareNamedGroupsList(
-            List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
-        this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
-    }
+	public synchronized void setClientAdvertisedKeyShareNamedGroupsList(
+			List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
+		this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
+	}
 
-    public synchronized List<String> getClientAdvertisedAlpns() {
-        return clientAdvertisedAlpns;
-    }
+	public synchronized List<String> getClientAdvertisedAlpns() {
+		return clientAdvertisedAlpns;
+	}
 
-    public synchronized void setClientAdvertisedAlpns(List<String> clientAdvertisedAlpns) {
-        this.clientAdvertisedAlpns = clientAdvertisedAlpns;
-    }
+	public synchronized void setClientAdvertisedAlpns(List<String> clientAdvertisedAlpns) {
+		this.clientAdvertisedAlpns = clientAdvertisedAlpns;
+	}
 
-    @Override
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        // TODO: Implement ClientReportPrinter and use them.
-        ClientContainerReportCreator creator = new ClientContainerReportCreator(detail);
-        ReportContainer createReport = creator.createReport(this);
-        StringBuilder builder = new StringBuilder();
-        createReport.print(builder, 0, printColorful);
-        return builder.toString();
-    }
+	@Override
+	public String getFullReport(ScannerDetail detail, boolean printColorful) {
+		// TODO: Implement ClientReportPrinter and use them.
+		ClientContainerReportCreator creator = new ClientContainerReportCreator(detail);
+		ReportContainer createReport = creator.createReport(this);
+		StringBuilder builder = new StringBuilder();
+		createReport.print(builder, 0, printColorful);
+		return builder.toString();
+	}
 
-    @Override
-    public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
-    }
->>>>>>> master
+	@Override
+	public synchronized String toString() {
+		return getFullReport(ScannerDetail.NORMAL, false);
+	}
 }
