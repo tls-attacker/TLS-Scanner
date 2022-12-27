@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -84,8 +85,8 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         return new ArrayList<>(allSupportedExtensions);
     }
 
-    private List<ExtensionType> getCommonExtension(
-            ProtocolVersion highestVersion, Predicate<CipherSuite> cipherSuitePredicate) {
+    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion,
+        Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig;
         if (highestVersion.isTLS13()) {
             tlsConfig = configSelector.getTls13BaseConfig();
@@ -129,17 +130,10 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
 
         State state = new State(tlsConfig);
         executeState(state);
-<<<<<<< HEAD
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
-=======
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
->>>>>>> master
         } else {
-            LOGGER.debug(
-                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
@@ -151,18 +145,10 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
 
     @Override
     public void adjustConfig(ServerReport report) {
-<<<<<<< HEAD
         supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-=======
-        this.supportsTls13 =
-                TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-        this.supportsPreTls13 =
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
-                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1)
-                                == TestResults.TRUE
-                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2)
-                                == TestResults.TRUE;
->>>>>>> master
+        supportsPreTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
+            || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE;
     }
 
     @Override
@@ -170,18 +156,24 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
         put(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, allSupportedExtensions);
         if (allSupportedExtensions != null) {
             for (ExtensionType type : allSupportedExtensions) {
-                if (type == ExtensionType.ENCRYPT_THEN_MAC)
+                if (type == ExtensionType.ENCRYPT_THEN_MAC) {
                     encryptThenMac = TestResults.TRUE;
-                if (type == ExtensionType.EXTENDED_MASTER_SECRET)
+                }
+                if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
                     extendedMasterSecret = TestResults.TRUE;
-                if (type == ExtensionType.RENEGOTIATION_INFO)
+                }
+                if (type == ExtensionType.RENEGOTIATION_INFO) {
                     secureRenegotiation = TestResults.TRUE;
-                if (type == ExtensionType.SESSION_TICKET)
+                }
+                if (type == ExtensionType.SESSION_TICKET) {
                     sessionTickets = TestResults.TRUE;
-                if (type == ExtensionType.STATUS_REQUEST)
+                }
+                if (type == ExtensionType.STATUS_REQUEST) {
                     certStatusRequest = TestResults.TRUE;
-                if (type == ExtensionType.STATUS_REQUEST_V2)
+                }
+                if (type == ExtensionType.STATUS_REQUEST_V2) {
                     certStatusRequestV2 = TestResults.TRUE;
+                }
             }
         } else {
             encryptThenMac = TestResults.COULD_NOT_TEST;
