@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -22,145 +24,213 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.ProtocolVersionResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProtocolVersionProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, ProtocolVersionResult<ClientReport>> {
+public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private List<ProtocolVersion> toTestList;
-    private List<CipherSuite> clientAdvertisedCipherSuites = null;
+	private List<ProtocolVersion> toTestList;
+	private List<CipherSuite> clientAdvertisedCipherSuites = null;
+	private List<ProtocolVersion> supportedProtocolVersions;
+	private List<ProtocolVersion> unsupportedProtocolVersions;
 
-    public ProtocolVersionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
-    }
+	public ProtocolVersionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+		super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
+		register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
+				TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TlsAnalyzedProperty.SUPPORTS_SSL_2,
+				TlsAnalyzedProperty.SUPPORTS_SSL_3, TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+				TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+				TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
+	}
 
-    @Override
-    public ProtocolVersionResult executeTest() {
-        List<ProtocolVersion> supportedVersions = new LinkedList<>();
-        List<ProtocolVersion> unsupportedVersions = new LinkedList<>();
-        for (ProtocolVersion version : toTestList) {
-            LOGGER.debug("Testing version {}", version);
+	@Override
+	public void executeTest() {
+		supportedProtocolVersions = new LinkedList<>();
+		unsupportedProtocolVersions = new LinkedList<>();
+		for (ProtocolVersion version : toTestList) {
+			LOGGER.debug("Testing version {}", version);
 
-            Config config;
-            if (version.isTLS13()) {
-                config = getTls13Config();
-            } else {
-                config = getBaseConfig();
-            }
-            config.setSupportedVersions(version);
-            config.setHighestProtocolVersion(version);
-            config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultSelectedCompressionMethod(CompressionMethod.NULL);
-            config.setEnforceSettings(true);
+			Config config;
+			if (version.isTLS13()) {
+				config = getTls13Config();
+			} else {
+				config = getBaseConfig();
+			}
+			config.setSupportedVersions(version);
+			config.setHighestProtocolVersion(version);
+			config.setDefaultSelectedProtocolVersion(version);
+			config.setDefaultSelectedCompressionMethod(CompressionMethod.NULL);
+			config.setEnforceSettings(true);
 
-            List<CipherSuite> suitableCiphersuites = getSuitableCipherSuites(version);
-            config.setDefaultServerSupportedCipherSuites(suitableCiphersuites);
+			List<CipherSuite> suitableCiphersuites = getSuitableCipherSuites(version);
+			config.setDefaultServerSupportedCipherSuites(suitableCiphersuites);
 
-            if (testProtocolVersion(config, suitableCiphersuites)) {
-                supportedVersions.add(version);
-            } else {
-                unsupportedVersions.add(version);
-            }
-        }
-        return new ProtocolVersionResult(supportedVersions, unsupportedVersions);
-    }
+			if (testProtocolVersion(config, suitableCiphersuites)) {
+				supportedProtocolVersions.add(version);
+			} else {
+				unsupportedProtocolVersions.add(version);
+			}
+		}
+	}
 
-    private List<CipherSuite> getSuitableCipherSuites(ProtocolVersion version) {
-        List<CipherSuite> suitableCiphersuites =
-                clientAdvertisedCipherSuites.stream()
-                        .filter(suite -> suite.isSupportedInProtocol(version))
-                        .collect(Collectors.toList());
-        if (suitableCiphersuites.isEmpty()) {
-            CipherSuite fallbackCipherSuite;
-            List<CipherSuite> nonPskCipherSuites =
-                    clientAdvertisedCipherSuites.stream()
-                            .filter(suite -> !suite.isPsk())
-                            .collect(Collectors.toList());
-            if (!nonPskCipherSuites.isEmpty()) {
-                fallbackCipherSuite = nonPskCipherSuites.get(0);
-            } else {
-                fallbackCipherSuite = clientAdvertisedCipherSuites.get(0);
-            }
-            LOGGER.warn(
-                    "No suitable cipher suite found for {}. Using {} instead.",
-                    version,
-                    fallbackCipherSuite);
-            suitableCiphersuites.add(fallbackCipherSuite);
-        }
-        return suitableCiphersuites;
-    }
+	private List<CipherSuite> getSuitableCipherSuites(ProtocolVersion version) {
+		List<CipherSuite> suitableCiphersuites = clientAdvertisedCipherSuites.stream()
+				.filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());
+		if (suitableCiphersuites.isEmpty()) {
+			CipherSuite fallbackCipherSuite;
+			List<CipherSuite> nonPskCipherSuites = clientAdvertisedCipherSuites.stream().filter(suite -> !suite.isPsk())
+					.collect(Collectors.toList());
+			if (!nonPskCipherSuites.isEmpty()) {
+				fallbackCipherSuite = nonPskCipherSuites.get(0);
+			} else {
+				fallbackCipherSuite = clientAdvertisedCipherSuites.get(0);
+			}
+			LOGGER.warn("No suitable cipher suite found for {}. Using {} instead.", version, fallbackCipherSuite);
+			suitableCiphersuites.add(fallbackCipherSuite);
+		}
+		return suitableCiphersuites;
+	}
 
-    private boolean testProtocolVersion(Config config, List<CipherSuite> suitableCiphersuites) {
-        for (CipherSuite currentCipher : suitableCiphersuites) {
-            config.setDefaultSelectedCipherSuite(currentCipher);
-            WorkflowTrace trace =
-                    new WorkflowConfigurationFactory(config)
-                            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
-            trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+	private boolean testProtocolVersion(Config config, List<CipherSuite> suitableCiphersuites) {
+		for (CipherSuite currentCipher : suitableCiphersuites) {
+			config.setDefaultSelectedCipherSuite(currentCipher);
+			WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+					RunningModeType.SERVER);
+			trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-            State state = new State(config, trace);
-            executeState(state);
-            if (state.getWorkflowTrace().executedAsPlanned()) {
-                return true;
-            }
-        }
-        return false;
-    }
+			State state = new State(config, trace);
+			executeState(state);
+			if (state.getWorkflowTrace().executedAsPlanned()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private Config getBaseConfig() {
-        Config config = scannerConfig.createConfig();
-        config.setEarlyStop(true);
-        config.setQuickReceive(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setAddRenegotiationInfoExtension(false);
-        return config;
-    }
+	private Config getBaseConfig() {
+		Config config = scannerConfig.createConfig();
+		config.setEarlyStop(true);
+		config.setQuickReceive(true);
+		config.setStopReceivingAfterFatal(true);
+		config.setStopActionsAfterFatal(true);
+		config.setAddRenegotiationInfoExtension(false);
+		return config;
+	}
 
-    private Config getTls13Config() {
-        Config config = getBaseConfig();
-        config.setAddECPointFormatExtension(false);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setAddSupportedVersionsExtension(true);
-        config.setAddKeyShareExtension(true);
-        return config;
-    }
+	private Config getTls13Config() {
+		Config config = getBaseConfig();
+		config.setAddECPointFormatExtension(false);
+		config.setAddEllipticCurveExtension(true);
+		config.setAddSignatureAndHashAlgorithmsExtension(true);
+		config.setAddSupportedVersionsExtension(true);
+		config.setAddKeyShareExtension(true);
+		return config;
+	}
 
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.BASIC)
-                && report.getClientAdvertisedCipherSuites() != null;
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return new ProbeRequirement(TlsProbeType.BASIC)
+				.requires(new PropertyRequirement(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES));
+	}
 
-    @Override
-    public ProtocolVersionResult getCouldNotExecuteResult() {
-        return new ProtocolVersionResult(null, null);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		if (supportedProtocolVersions != null) {
+			for (ProtocolVersion version : supportedProtocolVersions) {
+				if (version == ProtocolVersion.DTLS10_DRAFT) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.DTLS10) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.DTLS12) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.SSL2) {
+					put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.SSL3) {
+					put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.TLS10) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.TLS11) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.TLS12) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+				}
+				if (version == ProtocolVersion.TLS13) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+				}
+			}
 
-    @Override
-    public void adjustConfig(ClientReport report) {
-        toTestList = new LinkedList<>();
-        if (scannerConfig.getDtlsDelegate().isDTLS()) {
-            toTestList.add(ProtocolVersion.DTLS10_DRAFT);
-            toTestList.add(ProtocolVersion.DTLS10);
-            toTestList.add(ProtocolVersion.DTLS12);
-        } else {
-            toTestList.add(ProtocolVersion.SSL2);
-            toTestList.add(ProtocolVersion.SSL3);
-            toTestList.add(ProtocolVersion.TLS10);
-            toTestList.add(ProtocolVersion.TLS11);
-            toTestList.add(ProtocolVersion.TLS12);
-            toTestList.add(ProtocolVersion.TLS13);
-        }
-        clientAdvertisedCipherSuites =
-                report.getClientAdvertisedCipherSuites().stream()
-                        .filter(suite -> suite.isRealCipherSuite())
-                        .collect(Collectors.toList());
-    }
+			for (ProtocolVersion version : unsupportedProtocolVersions) {
+				if (version == ProtocolVersion.DTLS10_DRAFT) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.DTLS10) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.DTLS12) {
+					put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.SSL2) {
+					put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.SSL3) {
+					put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.TLS10) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.TLS11) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.TLS12) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.FALSE);
+				}
+				if (version == ProtocolVersion.TLS13) {
+					put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
+				}
+			}
+		} else {
+			put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+			put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+		}
+
+		put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
+	}
+
+	@Override
+	public void adjustConfig(ClientReport report) {
+		toTestList = new LinkedList<>();
+		if (scannerConfig.getDtlsDelegate().isDTLS()) {
+			toTestList.add(ProtocolVersion.DTLS10_DRAFT);
+			toTestList.add(ProtocolVersion.DTLS10);
+			toTestList.add(ProtocolVersion.DTLS12);
+		} else {
+			toTestList.add(ProtocolVersion.SSL2);
+			toTestList.add(ProtocolVersion.SSL3);
+			toTestList.add(ProtocolVersion.TLS10);
+			toTestList.add(ProtocolVersion.TLS11);
+			toTestList.add(ProtocolVersion.TLS12);
+			toTestList.add(ProtocolVersion.TLS13);
+		}
+		clientAdvertisedCipherSuites = report.getClientAdvertisedCipherSuites().stream()
+				.filter(suite -> suite.isRealCipherSuite()).collect(Collectors.toList());
+	}
 }
