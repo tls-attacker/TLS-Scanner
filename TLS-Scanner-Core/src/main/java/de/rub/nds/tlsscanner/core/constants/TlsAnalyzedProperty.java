@@ -66,6 +66,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
 	CLIENT_ADVERTISED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.EC),
 	CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS(TlsAnalyzedPropertyCategory.EC),
 	CLIENT_ADVERTISED_POINTFORMATS(TlsAnalyzedPropertyCategory.EC),
+	CLIENT_ADVERTISED_ALPNS(TlsAnalyzedPropertyCategory.EC),
 
 	SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI), SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
 	SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS), SUPPORTS_TLS_1_0(TlsAnalyzedPropertyCategory.VERSIONS),

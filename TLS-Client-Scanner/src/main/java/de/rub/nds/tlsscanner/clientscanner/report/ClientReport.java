@@ -131,6 +131,7 @@ public class ClientReport extends TlsScanReport {
 		this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
 	}
 
+	// TODO remove/change
 	public synchronized List<String> getClientAdvertisedAlpns() {
 		return clientAdvertisedAlpns;
 	}
