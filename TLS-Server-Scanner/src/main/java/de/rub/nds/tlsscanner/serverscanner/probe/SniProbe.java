@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -32,40 +33,23 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-<<<<<<< HEAD
     public void executeTest() {
-        Config config = configSelector.getBaseConfig();
-=======
-    public SniResult executeTest() {
         Config config = configSelector.getAnyWorkingBaseConfig();
->>>>>>> master
         config.setAddServerNameIndicationExtension(false);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-<<<<<<< HEAD
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             requiresSni = TestResults.FALSE;
             return;
-=======
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return new SniResult(TestResults.FALSE);
->>>>>>> master
         }
         // Test if we can get a hello with SNI
         config.setAddServerNameIndicationExtension(true);
         state = new State(config);
         executeState(state);
-<<<<<<< HEAD
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             requiresSni = TestResults.TRUE;
             return;
-=======
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return new SniResult(TestResults.TRUE);
->>>>>>> master
         }
         // We cannot get a ServerHello from this Server...
         LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
@@ -77,13 +61,9 @@ public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
     }
 
-<<<<<<< HEAD
+    @Override
     public void adjustConfig(ServerReport report) {
     }
-=======
-    @Override
-    public void adjustConfig(ServerReport report) {}
->>>>>>> master
 
     @Override
     protected Requirement getRequirements() {
