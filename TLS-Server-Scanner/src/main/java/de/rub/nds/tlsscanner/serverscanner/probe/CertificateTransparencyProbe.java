@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
@@ -29,7 +30,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.time.Duration;
@@ -38,12 +38,7 @@ import java.util.Date;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
-<<<<<<< HEAD
 public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
-=======
-public class CertificateTransparencyProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CertificateTransparencyResult> {
->>>>>>> master
 
     private Certificate serverCertChain;
 
@@ -56,8 +51,7 @@ public class CertificateTransparencyProbe
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyProbe(
-            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
         register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
             TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
@@ -68,60 +62,37 @@ public class CertificateTransparencyProbe
         getPrecertificateSCTs();
         getTlsHandshakeSCTs();
         evaluateChromeCtPolicy();
-
-<<<<<<< HEAD
-=======
-        TestResult supportsPrecertificateSCTsResult =
-                (supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult supportsHandshakeSCTsResult =
-                (supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult supportsOcspSCTsResult =
-                (supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
-        TestResult meetsChromeCTPolicyResult =
-                (meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
-        return new CertificateTransparencyResult(
-                supportsPrecertificateSCTsResult,
-                supportsHandshakeSCTsResult,
-                supportsOcspSCTsResult,
-                meetsChromeCTPolicyResult,
-                precertificateSctList,
-                handshakeSctList,
-                ocspSctList);
->>>>>>> master
     }
 
     private void getPrecertificateSCTs() {
         supportsPrecertificateSCTs = false;
         org.bouncycastle.asn1.x509.Certificate singleCert = serverCertChain.getCertificateAt(0);
-        CertificateInformationExtractor certInformationExtractor =
-                new CertificateInformationExtractor(singleCert);
+        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
 
         Asn1Sequence precertificateSctExtension = certInformationExtractor.getPrecertificateSCTs();
         if (precertificateSctExtension != null) {
             supportsPrecertificateSCTs = true;
 
             Asn1EncapsulatingOctetString outerContentEncapsulation =
-                    (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
+                (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
 
             byte[] encodedSctList = null;
 
             // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an
             // Asn1EncapsulatingOctetString
             // instead of an Asn1PrimitiveOctetString
-            Asn1Field innerContentEncapsulation =
-                    (Asn1Field) outerContentEncapsulation.getChildren().get(0);
+            Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
             if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
                 Asn1PrimitiveOctetString innerPrimitiveOctetString =
-                        (Asn1PrimitiveOctetString) innerContentEncapsulation;
+                    (Asn1PrimitiveOctetString) innerContentEncapsulation;
                 encodedSctList = innerPrimitiveOctetString.getValue();
             } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
                 Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
-                        (Asn1EncapsulatingOctetString) innerContentEncapsulation;
+                    (Asn1EncapsulatingOctetString) innerContentEncapsulation;
                 encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
             }
             SignedCertificateTimestampListParser sctListParser =
-                    new SignedCertificateTimestampListParser(
-                            0, encodedSctList, serverCertChain, true);
+                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
             precertificateSctList = sctListParser.parse();
         }
     }
@@ -136,14 +107,12 @@ public class CertificateTransparencyProbe
         executeState(state);
 
         SignedCertificateTimestampExtensionMessage sctExtensionMessage =
-                getNegotiatedExtension(
-                        state.getWorkflowTrace(), SignedCertificateTimestampExtensionMessage.class);
+            getNegotiatedExtension(state.getWorkflowTrace(), SignedCertificateTimestampExtensionMessage.class);
         if (sctExtensionMessage != null) {
             byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
             SignedCertificateTimestampListParser sctListParser =
-                    new SignedCertificateTimestampListParser(
-                            0, encodedSctList, serverCertChain, false);
+                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
             handshakeSctList = sctListParser.parse();
 
             supportsHandshakeSCTs = true;
@@ -151,9 +120,8 @@ public class CertificateTransparencyProbe
     }
 
     /**
-     * Evaluates if Chrome's CT Policy is met. See
-     * https://github.com/chromium/ct-policy/blob/master/ct_policy.md for detailed information about
-     * Chrome's CT Policy.
+     * Evaluates if Chrome's CT Policy is met. See https://github.com/chromium/ct-policy/blob/master/ct_policy.md for
+     * detailed information about Chrome's CT Policy.
      */
     private void evaluateChromeCtPolicy() {
         if (!supportsPrecertificateSCTs) {
@@ -168,52 +136,29 @@ public class CertificateTransparencyProbe
         } else if (precertificateSctList != null) {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
             Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
-            Duration validityDuration =
-                    Duration.between(startDate.toInstant(), endDate.toInstant());
+            Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());
 
             boolean hasEnoughPrecertificateSCTs = false;
             if (validityDuration.minusDays(30 * 15).isNegative()) {
-<<<<<<< HEAD
-                // Certificate is valid for 15 months or less, two embedded precertificate SCTs
-                // are required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 2;
-            } else if (validityDuration.minusDays(30 * 27).isNegative()) {
-                // Certificate is valid for 15 to 27 months, three embedded precertificate SCTs
-                // are required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 3;
-            } else if (validityDuration.minusDays(30 * 39).isNegative()) {
-                // Certificate is valid for 27 to 39 months, four embedded precertificate SCTs
-                // are required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 4;
-            } else {
-                // Certificate is valid for more than 39 months, five embedded precertificate
-                // SCTs are required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
-=======
                 // Certificate is valid for 15 months or less, two embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs =
-                        precertificateSctList.getCertificateTimestampList().size() >= 2;
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 2;
             } else if (validityDuration.minusDays(30 * 27).isNegative()) {
                 // Certificate is valid for 15 to 27 months, three embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs =
-                        precertificateSctList.getCertificateTimestampList().size() >= 3;
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 3;
             } else if (validityDuration.minusDays(30 * 39).isNegative()) {
                 // Certificate is valid for 27 to 39 months, four embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs =
-                        precertificateSctList.getCertificateTimestampList().size() >= 4;
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 4;
             } else {
                 // Certificate is valid for more than 39 months, five embedded precertificate SCTs
                 // are required
-                hasEnoughPrecertificateSCTs =
-                        precertificateSctList.getCertificateTimestampList().size() >= 5;
->>>>>>> master
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
             }
 
             boolean hasGoogleAndNonGoogleScts =
-                    hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
+                hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts && hasEnoughPrecertificateSCTs;
         }
     }
@@ -237,33 +182,14 @@ public class CertificateTransparencyProbe
         return hasGoogleSct && hasNonGoogleSct;
     }
 
-<<<<<<< HEAD
     @Override
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.CERTIFICATE)
-                && report.getCertificateChainList() != null
-                && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
-    }
-
-    @Override
-    public CertificateTransparencyResult getCouldNotExecuteResult() {
-        return new CertificateTransparencyResult(
-                TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST,
-                TestResults.ERROR_DURING_TEST,
-                new SignedCertificateTimestampList(),
-                new SignedCertificateTimestampList(),
-                new SignedCertificateTimestampList());
->>>>>>> master
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        serverCertChain = ((CertificateChain) report.getCertificateChainList().get(0)).getCertificate();
+        serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 
     @Override
@@ -272,6 +198,7 @@ public class CertificateTransparencyProbe
         report.setHandshakeSctList(handshakeSctList);
         report.setOcspSctList(ocspSctList);
 
+        // TODO wann ERROR DURING TEST setzen???
         put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
             supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
         put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
