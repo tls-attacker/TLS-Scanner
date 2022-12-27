@@ -117,7 +117,7 @@ public abstract class TlsScanReport extends ScanReport {
 		return mapResult == null ? null : (Map<HandshakeMessageType, Integer>) mapResult.getMap();
 	}
 
-	List<EntropyReport> list;
+	List<NamedGroup> list;
 
 	public synchronized Set<CipherSuite> getSupportedCipherSuites() {
 		SetResult<?> setResult = getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES);

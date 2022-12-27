@@ -18,7 +18,6 @@ import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTim
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -50,10 +49,6 @@ public class ServerReport extends TlsScanReport {
     private Boolean isHandshaking = null;
 
     // Attacks
-    private KnownPaddingOracleVulnerability knownVulnerability = null;
-
-    private List<InvalidCurveResponse> invalidCurveResultList;
-
     private NamedGroup helloRetryRequestSelectedNamedGroup = null;
 
     // RFC
