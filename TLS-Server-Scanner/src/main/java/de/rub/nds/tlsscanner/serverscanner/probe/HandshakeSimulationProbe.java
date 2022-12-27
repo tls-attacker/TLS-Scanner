@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
@@ -36,35 +37,24 @@ import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-<<<<<<< HEAD
 public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
-=======
-public class HandshakeSimulationProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HandshakeSimulationResult> {
->>>>>>> master
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulationRequest> simulationRequestList;
     private List<SimulatedClientResult> simulatedClientList;
 
-    public HandshakeSimulationProbe(
-            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public HandshakeSimulationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, configSelector);
         register(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
 
         simulationRequestList = new LinkedList<>();
-        ConfigFileList configFileList =
-                ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
+        ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
                 TlsClientConfig tlsClientConfig =
-                        TlsClientConfig.createTlsClientConfig(
-                                RESOURCE_FOLDER + "/" + configFileName);
-                if (configSelector
-                        .getScannerConfig()
-                        .getScanDetail()
-                        .isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
+                if (configSelector.getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
@@ -99,41 +89,33 @@ public class HandshakeSimulationProbe
         Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
-        simulatedClient.setClientSupportedCipherSuites(
-                config.getDefaultClientSupportedCipherSuites());
+        simulatedClient.setClientSupportedCipherSuites(config.getDefaultClientSupportedCipherSuites());
         if (config.isAddAlpnExtension()) {
             simulatedClient.setAlpnAnnouncedProtocols(config.getDefaultProposedAlpnProtocols());
         } else {
             simulatedClient.setAlpnAnnouncedProtocols(new LinkedList<>());
         }
-        simulatedClient.setSupportedVersionList(
-                simulatedClient.getTlsClientConfig().getSupportedVersionList());
+        simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCipherSuiteList(
-                simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCipherSuiteList());
-        simulatedClient.setSupportedRsaKeySizeList(
-                simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
-        simulatedClient.setSupportedDheKeySizeList(
-                simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
+            simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCipherSuiteList());
+        simulatedClient.setSupportedRsaKeySizeList(simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
+        simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
 
     private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        simulatedClient.setReceivedServerHello(
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
-        simulatedClient.setReceivedCertificate(
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
+        simulatedClient
+            .setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
+        simulatedClient
+            .setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
         simulatedClient.setReceivedServerKeyExchange(
-                WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
         simulatedClient.setReceivedCertificateRequest(
-                WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
         simulatedClient.setReceivedServerHelloDone(
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
-        simulatedClient.setReceivedAlert(
-                WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
-        simulatedClient.setReceivedUnknown(
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
+        simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
+        simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
         if (!simulatedClient.getReceivedAlert()) {
             boolean receivedAllMandatoryMessages = true;
             if (!simulatedClient.getReceivedServerHello()) {
@@ -182,13 +164,11 @@ public class HandshakeSimulationProbe
         } else {
             simulatedClient.setForwardSecrecy(false);
         }
-        simulatedClient.setKeyExchangeAlgorithm(
-                AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite));
+        simulatedClient.setKeyExchangeAlgorithm(AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite));
         simulatedClient.setSelectedCompressionMethod(context.getSelectedCompressionMethod());
         if (context.getNegotiatedExtensionSet() != null) {
             if (!context.getNegotiatedExtensionSet().isEmpty()) {
-                simulatedClient.setNegotiatedExtensions(
-                        context.getNegotiatedExtensionSet().toString());
+                simulatedClient.setNegotiatedExtensions(context.getNegotiatedExtensionSet().toString());
             } else {
                 simulatedClient.setNegotiatedExtensions("-");
             }
@@ -197,28 +177,24 @@ public class HandshakeSimulationProbe
 
     private void evaluateCertificate(TlsContext context, SimulatedClientResult simulatedClient) {
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
-            simulatedClient.setServerPublicKeyParameter(
-                    getRsaPublicKeyFromCert(context.getServerCertificate()));
+            simulatedClient.setServerPublicKeyParameter(getRsaPublicKeyFromCert(context.getServerCertificate()));
         }
     }
 
-    private void evaluateServerKeyExchange(
-            TlsContext context, SimulatedClientResult simulatedClient) {
-        if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh()
-                && context.getServerDhPublicKey() != null) {
+    private void evaluateServerKeyExchange(TlsContext context, SimulatedClientResult simulatedClient) {
+        if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh() && context.getServerDhPublicKey() != null) {
             simulatedClient.setServerPublicKeyParameter(context.getServerDhModulus().bitLength());
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh()) {
             if (context.getSelectedGroup() != null) {
                 simulatedClient.setSelectedNamedGroup(context.getSelectedGroup().name());
                 if (context.getSelectedGroup().getCoordinateSizeInBit() != null) {
-                    simulatedClient.setServerPublicKeyParameter(
-                            context.getSelectedGroup().getCoordinateSizeInBit());
+                    simulatedClient.setServerPublicKeyParameter(context.getSelectedGroup().getCoordinateSizeInBit());
                 }
             }
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
                     simulatedClient.setServerPublicKeyParameter(
-                            context.getServerEcPublicKey().getFieldX().getData().bitLength() * 8);
+                        context.getServerEcPublicKey().getFieldX().getData().bitLength() * 8);
                 }
             }
         }
@@ -242,17 +218,8 @@ public class HandshakeSimulationProbe
     }
 
     @Override
-<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
->>>>>>> master
 
     @Override
     protected void mergeData(ServerReport report) {
