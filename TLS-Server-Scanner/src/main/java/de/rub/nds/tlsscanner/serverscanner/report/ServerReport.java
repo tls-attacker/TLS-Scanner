@@ -272,7 +272,6 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    // TODO never called? in which context usewd? unnecessary?
     public synchronized List<OcspCertificateResult> getOcspResults() {
         @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> listResult =
