@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -23,79 +24,81 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAct
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsRetransmissionsResult;
 
-public class DtlsRetransmissionsProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, DtlsRetransmissionsResult<ClientReport>> {
+public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
-    }
+	private TestResult sendsRetransmissions;
+	private TestResult processesRetransmissions;
 
-    @Override
-    public DtlsRetransmissionsResult executeTest() {
-        return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
-    }
+	public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+		super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+		register(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+	}
 
-    private TestResult doesRetransmissions() {
-        Config config = scannerConfig.createConfig();
-        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-        config.setAcceptContentRewritingDtlsFragments(true);
+	@Override
+	public void executeTest() {
+		sendsRetransmissions = doesRetransmissions();
+		processesRetransmissions = processesRetransmissions();
+	}
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+	private TestResult doesRetransmissions() {
+		Config config = scannerConfig.createConfig();
+		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+		config.setAcceptContentRewritingDtlsFragments(true);
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+		trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
-    private TestResult processesRetransmissions() {
-        Config config = scannerConfig.createConfig();
-        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-        config.setAcceptContentRewritingDtlsFragments(true);
+		State state = new State(config, trace);
+		executeState(state);
+		if (state.getWorkflowTrace().executedAsPlanned()) {
+			return TestResults.TRUE;
+		} else {
+			return TestResults.FALSE;
+		}
+	}
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+	private TestResult processesRetransmissions() {
+		Config config = scannerConfig.createConfig();
+		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+		config.setAcceptContentRewritingDtlsFragments(true);
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+		trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
+		State state = new State(config, trace);
+		executeState(state);
+		if (state.getWorkflowTrace().executedAsPlanned()) {
+			return TestResults.TRUE;
+		} else {
+			return TestResults.FALSE;
+		}
+	}
 
-    @Override
-    public DtlsRetransmissionsResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(
-                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
+		put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
+	}
+
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 }
