@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -59,12 +60,10 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
             LOGGER.debug("Not vulnerable (definitely), Alert message found");
             return TestResults.FALSE;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             LOGGER.debug("Vulnerable (definitely), Finished message found");
             return TestResults.TRUE;
         } else {
@@ -74,42 +73,29 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     }
 
     private WorkflowTrace getTrace(Config tlsConfig, TargetVersion targetVersion) {
-        WorkflowTrace workflowTrace =
-                new WorkflowConfigurationFactory(tlsConfig)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         workflowTrace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
         workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
         workflowTrace.addTlsAction(new ActivateEncryptionAction());
-        workflowTrace.addTlsAction(
-                new EarlyCcsAction(targetVersion == TargetVersion.OPENSSL_1_0_0));
+        workflowTrace.addTlsAction(new EarlyCcsAction(targetVersion == TargetVersion.OPENSSL_1_0_0));
         if (targetVersion != TargetVersion.OPENSSL_1_0_0) {
             workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
         }
         workflowTrace.addTlsAction(new SendAction(new FinishedMessage(tlsConfig)));
-        workflowTrace.addTlsAction(
-                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        workflowTrace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         return workflowTrace;
     }
 
     @Override
-<<<<<<< HEAD
     public void adjustConfig(ServerReport report) {
     }
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return configSelector.foundWorkingConfig();
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
->>>>>>> master
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (earlyCcsVulnerabilityType == null)
+        if (earlyCcsVulnerabilityType == null) {
             put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
-        else {
+        } else {
             switch (earlyCcsVulnerabilityType) {
                 case VULN_EXPLOITABLE:
                 case VULN_NOT_EXPLOITABLE:
