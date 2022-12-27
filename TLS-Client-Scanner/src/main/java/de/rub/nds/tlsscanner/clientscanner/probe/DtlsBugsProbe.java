@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -26,80 +27,80 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsBugsResult;
 
-public class DtlsBugsProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, DtlsBugsResult<ClientReport>> {
+public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
-    }
+	private TestResult isEarlyFinished;
+	private TestResult isAcceptingUnencryptedFinished;
 
-    @Override
-    public DtlsBugsResult executeTest() {
-        return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
-    }
+	public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+		super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
+		register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+	}
 
-    private TestResult isAcceptingUnencryptedFinished() {
-        Config config = scannerConfig.createConfig();
-        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+	@Override
+	public void executeTest() {
+		isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished();
+		isEarlyFinished = isEarlyFinished();
+	}
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        GenericReceiveAction receiveAction = new GenericReceiveAction();
-        trace.addTlsAction(receiveAction);
+	private TestResult isAcceptingUnencryptedFinished() {
+		Config config = scannerConfig.createConfig();
+		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()
-                && receiveAction.getReceivedMessages().isEmpty()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+		trace.addTlsAction(new ChangeWriteEpochAction(0));
+		trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+		GenericReceiveAction receiveAction = new GenericReceiveAction();
+		trace.addTlsAction(receiveAction);
 
-    private TestResult isEarlyFinished() {
-        Config config = scannerConfig.createConfig();
-        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+		State state = new State(config, trace);
+		executeState(state);
+		if (state.getWorkflowTrace().executedAsPlanned() && receiveAction.getReceivedMessages().isEmpty()) {
+			return TestResults.TRUE;
+		} else {
+			return TestResults.FALSE;
+		}
+	}
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        GenericReceiveAction receiveAction = new GenericReceiveAction();
-        trace.addTlsAction(receiveAction);
+	private TestResult isEarlyFinished() {
+		Config config = scannerConfig.createConfig();
+		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()
-                && receiveAction.getReceivedMessages().isEmpty()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+		trace.addTlsAction(new ActivateEncryptionAction());
+		trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+		GenericReceiveAction receiveAction = new GenericReceiveAction();
+		trace.addTlsAction(receiveAction);
 
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
+		State state = new State(config, trace);
+		executeState(state);
+		if (state.getWorkflowTrace().executedAsPlanned() && receiveAction.getReceivedMessages().isEmpty()) {
+			return TestResults.TRUE;
+		} else {
+			return TestResults.FALSE;
+		}
+	}
 
-    @Override
-    public DtlsBugsResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+		put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+	}
+
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 }
