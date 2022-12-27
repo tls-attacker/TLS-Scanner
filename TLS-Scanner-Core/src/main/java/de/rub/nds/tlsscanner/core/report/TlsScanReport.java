@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.report;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.SetResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -24,6 +25,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.ArrayList;
@@ -102,100 +104,12 @@ public abstract class TlsScanReport extends ScanReport {
 		this.scanEndTime = scanEndTime;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public synchronized List getPaddingOracleTestResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
-		return listResult == null ? null : listResult.getList();
+	public synchronized Boolean getCcaSupported() {
+		return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public synchronized List getBleichenbacherTestResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getRaccoonTestResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getRaccoonAttackProbabilities() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getInvalidCurveTestResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getCcaTestResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getNormalHpkpPins() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getReportOnlyHpkpPins() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getSimulatedClientsResultList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getCertificateChainList() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getGuidelineReports() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getSupportedApplicationProtocols() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized List getEntropyReports() {
-		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.ENTROPY_REPORTS);
-		return listResult == null ? null : listResult.getList();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized Set getCommonDhValues() {
-		SetResult<?> setResult = getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
-		return setResult == null ? null : setResult.getSet();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized Map getSupportedNamedGroupsWitnesses() {
-		MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
-		return mapResult == null ? null : mapResult.getMap();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public synchronized Map getSupportedNamedGroupsWitnessesTls13() {
-		MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
-		return mapResult == null ? null : mapResult.getMap();
+	public synchronized Boolean getCcaRequired() {
+		return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
 	}
 
 	public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
@@ -203,9 +117,23 @@ public abstract class TlsScanReport extends ScanReport {
 		return mapResult == null ? null : (Map<HandshakeMessageType, Integer>) mapResult.getMap();
 	}
 
+	List<EntropyReport> list;
+
 	public synchronized Set<CipherSuite> getSupportedCipherSuites() {
 		SetResult<?> setResult = getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES);
 		return setResult == null ? null : (Set<CipherSuite>) setResult.getSet();
+	}
+
+	public synchronized List<EntropyReport> getEntropyReports() {
+		ListResult<EntropyReport> listResult = (ListResult<EntropyReport>) getListResult(
+				TlsAnalyzedProperty.ENTROPY_REPORTS);
+		return listResult == null ? null : listResult.getList();
+	}
+
+	public synchronized List<CertificateChain> getCertificateChainList() {
+		ListResult<CertificateChain> listResult = (ListResult<CertificateChain>) getListResult(
+				TlsAnalyzedProperty.CERTIFICATE_CHAINS);
+		return listResult == null ? null : listResult.getList();
 	}
 
 	public synchronized List<CipherSuite> getClientAdvertisedCiphersuites() {

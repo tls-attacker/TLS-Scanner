@@ -9,29 +9,36 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
-import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerReport extends TlsScanReport {
 
@@ -45,22 +52,7 @@ public class ServerReport extends TlsScanReport {
     // Attacks
     private KnownPaddingOracleVulnerability knownVulnerability = null;
 
-    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList;
-    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
-    private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
-
-    // Extensions
-    private List<ExtensionType> supportedExtensions = null;
-    private List<NamedGroup> supportedNamedGroups = null;
-    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses;
-    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13;
-    private List<NamedGroup> supportedTls13Groups = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13 = null;
-    private List<TokenBindingVersion> supportedTokenBindingVersion = null;
-    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
 
     private NamedGroup helloRetryRequestSelectedNamedGroup = null;
 
@@ -103,8 +95,6 @@ public class ServerReport extends TlsScanReport {
 
     private Long closedAfterFinishedDelta;
     private Long closedAfterAppDataDelta;
-
-    private int performedTcpConnections = 0;
 
     // Rating
     private int score;
@@ -273,40 +263,111 @@ public class ServerReport extends TlsScanReport {
         this.weakestDhStrength = weakestDhStrength;
     }
 
-    // TODO to tlsscanreport
-    public synchronized Boolean getCcaSupported() {
-        return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
-    }
-
-    // TODO to tlsscanreport
-    public synchronized Boolean getCcaRequired() {
-        return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
-    }
-
-    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
-        return invalidCurveResultList;
-    }
-
-    public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
-        this.invalidCurveResultList = invalidCurveResultList;
+    public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InvalidCurveResponse> listResult =
+            (ListResult<InvalidCurveResponse>) getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
-        return raccoonAttackProbabilities;
+        @SuppressWarnings("unchecked")
+        ListResult<RaccoonAttackProbabilities> listResult =
+            (ListResult<RaccoonAttackProbabilities>) this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
+        return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized void
-        setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
-        this.raccoonAttackProbabilities = raccoonAttackProbabilities;
+    // TODO never called? in which context usewd? unnecessary?
+    public synchronized List<OcspCertificateResult> getOcspResults() {
+        @SuppressWarnings("unchecked")
+        ListResult<OcspCertificateResult> listResult =
+            (ListResult<OcspCertificateResult>) this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
+        return listResult == null ? null : listResult.getList();
     }
 
-    // TODO transfer to tlsscanreport and fix!
-    /*
-     * public synchronized List<OcspCertificateResult> getOcspResults() { return ocspResults; }
-     * 
-     * public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) { this.ocspResults =
-     * ocspResults; }
-     */
+    public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult = (ListResult<
+            InformationLeakTest<PaddingOracleTestInfo>>) getListResult(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getRaccoonTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>> listResult =
+            (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>) getListResult(
+                TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>> getBleichenbacherTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
+            (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>) getListResult(
+                TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<CcaTestResult> getCcaTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<CcaTestResult> listResult =
+            (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<HpkpPin> getNormalHpkpPins() {
+        @SuppressWarnings("unchecked")
+        ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
+        @SuppressWarnings("unchecked")
+        ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<SimulatedClientResult> listResult =
+            (ListResult<SimulatedClientResult>) getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<GuidelineReport> getGuidelineReports() {
+        @SuppressWarnings("unchecked")
+        ListResult<GuidelineReport> listResult =
+            (ListResult<GuidelineReport>) getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
+        @SuppressWarnings("unchecked")
+        ListResult<ApplicationProtocol> listResult =
+            (ListResult<ApplicationProtocol>) getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized Set<CommonDhValues> getCommonDhValues() {
+        @SuppressWarnings("unchecked")
+        SetResult<CommonDhValues> setResult =
+            (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
+        return setResult == null ? null : setResult.getSet();
+    }
+
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
+        @SuppressWarnings("unchecked")
+        MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
+            NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
+        return mapResult == null ? null : mapResult.getMap();
+    }
+
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
+        @SuppressWarnings("unchecked")
+        MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
+            NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+        return mapResult == null ? null : mapResult.getMap();
+    }
 
     public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
         return precertificateSctList;
