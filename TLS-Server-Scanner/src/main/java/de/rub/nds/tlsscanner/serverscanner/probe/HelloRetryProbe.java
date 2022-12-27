@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -28,16 +29,10 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 
-<<<<<<< HEAD
 /**
  * Test the servers Hello Retry Request
  */
 public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
-=======
-/** Test the servers Hello Retry Request */
-public class HelloRetryProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HelloRetryResult> {
->>>>>>> master
 
     private TestResult sendsHelloRetryRequest = TestResults.FALSE;
     private TestResult issuesCookie = TestResults.FALSE;
@@ -54,25 +49,14 @@ public class HelloRetryProbe
     }
 
     @Override
-<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
             .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION));
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
-    public HelloRetryResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(
-                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST, serversChosenGroup);
->>>>>>> master
+    public void adjustConfig(ServerReport report) {
     }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
 
     private void testHelloRetry() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -81,37 +65,30 @@ public class HelloRetryProbe
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
-                && ((ServerHelloMessage)
-                                WorkflowTraceUtil.getFirstReceivedMessage(
-                                        HandshakeMessageType.SERVER_HELLO,
-                                        state.getWorkflowTrace()))
-                        .isTls13HelloRetryRequest()) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+            && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
+                state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
-            if (((ServerHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
-                    .containsExtension(ExtensionType.COOKIE)) {
+            if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
+                state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;
             }
         }
     }
-<<<<<<< HEAD
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (issuesCookie != null)
+        if (issuesCookie != null) {
             put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
-        else
+        } else {
             put(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.ERROR_DURING_TEST);
-        if (sendsHelloRetryRequest != null)
+        }
+        if (sendsHelloRetryRequest != null) {
             put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
-        else
+        } else {
             put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
+        }
         report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
     }
-=======
->>>>>>> master
 }

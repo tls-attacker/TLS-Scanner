@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -34,87 +35,82 @@ import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-<<<<<<< HEAD
+<<<<<<<HEAD
+
 public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult supportsFalseStart;
-=======
-public class HttpFalseStartProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
->>>>>>> master
+    private TestResult supportsFalseStart;=======
 
-    public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
-    }
+    public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
+        >>>>>>>master
 
-    @Override
-    public void executeTest() {
-        Config tlsConfig = configSelector.getBaseConfig();
-        tlsConfig.setHttpsParsingEnabled(true);
+        public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+            super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
+            register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
+        }
 
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace =
-                factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(
-                new SendAction(
-                        new ChangeCipherSpecMessage(),
-                        new FinishedMessage(),
-                        new HttpsRequestMessage(tlsConfig)));
-        trace.addTlsAction(
-                new ReceiveAction(
-                        new ChangeCipherSpecMessage(),
-                        new FinishedMessage(),
-                        new HttpsResponseMessage()));
+        @Override
+        public void executeTest() {
+            Config tlsConfig = configSelector.getBaseConfig();
+            tlsConfig.setHttpsParsingEnabled(true);
 
-        State state = new State(tlsConfig, trace);
-        executeState(state);
+            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(),
+                new HttpsRequestMessage(tlsConfig)));
+            trace.addTlsAction(
+                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
 
-        boolean receivedServerFinishedMessage = false;
-        ReceivingAction action = trace.getLastReceivingAction();
-        if (action.getReceivedMessages() != null) {
-            for (ProtocolMessage message : action.getReceivedMessages()) {
-                if (message instanceof HttpsResponseMessage) {
-                    // if http response was received the server handled the
-                    // false start
+            State state = new State(tlsConfig, trace);
+            executeState(state);
 
-                    supportsFalseStart = TestResults.TRUE;
-                    return;
-                } else if (message instanceof FinishedMessage) {
-                    receivedServerFinishedMessage = true;
+            boolean receivedServerFinishedMessage = false;
+            ReceivingAction action = trace.getLastReceivingAction();
+            if (action.getReceivedMessages() != null) {
+                for (ProtocolMessage message : action.getReceivedMessages()) {
+                    if (message instanceof HttpsResponseMessage) {
+                        // if http response was received the server handled the
+                        // false start
+
+                        supportsFalseStart = TestResults.TRUE;
+                        return;
+                    } else if (message instanceof FinishedMessage) {
+                        receivedServerFinishedMessage = true;
+                    }
                 }
             }
+            if (!receivedServerFinishedMessage) {
+                // server sent no finished message, false start messed up the
+                // handshake
+                supportsFalseStart = TestResults.FALSE;
+                return;
+            }
+            // received no http response -> maybe server did not understand
+            // request
+            supportsFalseStart = TestResults.UNCERTAIN;
         }
-        if (!receivedServerFinishedMessage) {
-            // server sent no finished message, false start messed up the
-            // handshake
-            supportsFalseStart = TestResults.FALSE;
-            return;
-        }
-        // received no http response -> maybe server did not understand
-        // request
-        supportsFalseStart = TestResults.UNCERTAIN;
-    }
 
     @Override
 <<<<<<< HEAD
     protected Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
 =======
+
     public boolean canBeExecuted(ServerReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
                 && configSelector.foundWorkingConfig();
 >>>>>>> master
     }
 
-    @Override
-    public void adjustConfig(ServerReport report) {}
+        @Override
+        public void adjustConfig(ServerReport report) {
+        }
 
-    @Override
-    protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
-    }
+        @Override
+        protected void mergeData(ServerReport report) {
+            put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
+        }
 }
