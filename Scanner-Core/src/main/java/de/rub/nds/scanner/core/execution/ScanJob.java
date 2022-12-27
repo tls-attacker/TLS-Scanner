@@ -14,19 +14,19 @@ import java.util.List;
 
 public class ScanJob {
 
-    private final List<ScannerProbe> probeList;
-    private final List<AfterProbe> afterList;
+	private final List<ScannerProbe> probeList;
+	private final List<AfterProbe> afterList;
 
-    public ScanJob(List<ScannerProbe> probeList, List<AfterProbe> afterList) {
-        this.probeList = probeList;
-        this.afterList = afterList;
-    }
+	public ScanJob(List<ScannerProbe> probeList, List<AfterProbe> afterList) {
+		this.probeList = probeList;
+		this.afterList = afterList;
+	}
 
-    public List<ScannerProbe> getProbeList() {
-        return probeList;
-    }
+	public List<ScannerProbe> getProbeList() {
+		return probeList;
+	}
 
-    public List<AfterProbe> getAfterList() {
-        return afterList;
-    }
+	public List<AfterProbe> getAfterList() {
+		return afterList;
+	}
 }

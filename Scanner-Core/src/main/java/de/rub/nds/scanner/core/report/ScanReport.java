@@ -37,7 +37,7 @@ public abstract class ScanReport extends Observable implements Serializable {
 
 	private final List<PerformanceData> performanceList;
 
-	private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
+	private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
 
 	private int performedTcpConnections = 0;
 
@@ -56,12 +56,12 @@ public abstract class ScanReport extends Observable implements Serializable {
 		this.performedTcpConnections = performedTcpConnections;
 	}
 
-	public synchronized Map<TrackableValue, ExtractedValueContainer<?>> getExtractedValueContainerMap() {
+	public synchronized Map<TrackableValue, ExtractedValueContainer> getExtractedValueContainerMap() {
 		return extractedValueContainerMap;
 	}
 
 	public synchronized void setExtractedValueContainerList(
-			Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap) {
+			Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap) {
 		this.extractedValueContainerMap = extractedValueContainerMap;
 	}
 
