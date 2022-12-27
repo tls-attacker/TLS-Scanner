@@ -34,6 +34,9 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -261,21 +264,21 @@ public class ServerReport extends TlsScanReport {
         @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> listResult =
             (ListResult<InvalidCurveResponse>) getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
         @SuppressWarnings("unchecked")
         ListResult<RaccoonAttackProbabilities> listResult =
             (ListResult<RaccoonAttackProbabilities>) this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<OcspCertificateResult> getOcspResults() {
         @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> listResult =
             (ListResult<OcspCertificateResult>) this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getRaccoonTestResultList() {
@@ -283,7 +286,7 @@ public class ServerReport extends TlsScanReport {
         ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>> listResult =
             (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>) getListResult(
                 TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>> getBleichenbacherTestResultList() {
@@ -291,68 +294,68 @@ public class ServerReport extends TlsScanReport {
         ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
             (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>) getListResult(
                 TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {
         @SuppressWarnings("unchecked")
         ListResult<CcaTestResult> listResult =
             (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getNormalHpkpPins() {
         @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
         @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
         @SuppressWarnings("unchecked")
         ListResult<SimulatedClientResult> listResult =
             (ListResult<SimulatedClientResult>) getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<GuidelineReport> getGuidelineReports() {
         @SuppressWarnings("unchecked")
         ListResult<GuidelineReport> listResult =
             (ListResult<GuidelineReport>) getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
         @SuppressWarnings("unchecked")
         ListResult<ApplicationProtocol> listResult =
             (ListResult<ApplicationProtocol>) getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
-        return listResult == null ? null : listResult.getList();
+        return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized Set<CommonDhValues> getCommonDhValues() {
         @SuppressWarnings("unchecked")
         SetResult<CommonDhValues> setResult =
             (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
-        return setResult == null ? null : setResult.getSet();
+        return setResult == null ? new HashSet<>(9) : setResult.getSet();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
         @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
             NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
-        return mapResult == null ? null : mapResult.getMap();
+        return mapResult == null ? new HashMap<>() : mapResult.getMap();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
         @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
             NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
-        return mapResult == null ? null : mapResult.getMap();
+        return mapResult == null ? new HashMap<>() : mapResult.getMap();
     }
 
     public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
