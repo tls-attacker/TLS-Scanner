@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -27,11 +28,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-<<<<<<< HEAD
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-=======
-import de.rub.nds.tlsscanner.core.probe.result.CipherSuiteResult;
->>>>>>> master
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -43,12 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-<<<<<<< HEAD
 public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
-=======
-public class CipherSuiteProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CipherSuiteResult<ServerReport>> {
->>>>>>> master
 
     private List<ProtocolVersion> protocolVersions;
 
@@ -128,13 +120,10 @@ public class CipherSuiteProbe
             if (version.isTLS13()) {
                 pairLists.add(new VersionSuiteListPair(version, getSupportedTls13CipherSuites()));
             } else {
-                List<CipherSuite> toTestList =
-                        new LinkedList<>(Arrays.asList(CipherSuite.values()));
-                List<CipherSuite> versionSupportedSuites =
-                        getSupportedCipherSuites(toTestList, version);
+                List<CipherSuite> toTestList = new LinkedList<>(Arrays.asList(CipherSuite.values()));
+                List<CipherSuite> versionSupportedSuites = getSupportedCipherSuites(toTestList, version);
                 if (versionSupportedSuites.isEmpty()) {
-                    versionSupportedSuites =
-                            getSupportedCipherSuites(CipherSuite.getImplemented(), version);
+                    versionSupportedSuites = getSupportedCipherSuites(CipherSuite.getImplemented(), version);
                 }
                 if (versionSupportedSuites.size() > 0) {
                     pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
@@ -143,12 +132,9 @@ public class CipherSuiteProbe
         }
     }
 
-    private List<CipherSuite> getCipherSuitesForVersion(
-            List<CipherSuite> baseList, ProtocolVersion version) {
-        List<CipherSuite> applicableCipherSuites =
-                baseList.stream()
-                        .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version))
-                        .collect(Collectors.toList());
+    private List<CipherSuite> getCipherSuitesForVersion(List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> applicableCipherSuites = baseList.stream()
+            .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version)).collect(Collectors.toList());
         applicableCipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         applicableCipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         return applicableCipherSuites;
@@ -180,11 +166,10 @@ public class CipherSuiteProbe
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.HELLO_RETRY_REQUEST, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
+            state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -193,8 +178,7 @@ public class CipherSuiteProbe
         }
     }
 
-    public List<CipherSuite> getSupportedCipherSuites(
-            List<CipherSuite> baseList, ProtocolVersion version) {
+    public List<CipherSuite> getSupportedCipherSuites(List<CipherSuite> baseList, ProtocolVersion version) {
         List<CipherSuite> listWeSupport = getCipherSuitesForVersion(baseList, version);
         List<CipherSuite> supported = new LinkedList<>();
 
@@ -209,14 +193,12 @@ public class CipherSuiteProbe
             configSelector.repairConfig(config);
             State state = new State(config);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
                 }
-                LOGGER.debug(
-                        "Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
+                LOGGER.debug("Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
                 if (listWeSupport.contains(state.getTlsContext().getSelectedCipherSuite())) {
                     supportsMore = true;
                     supported.add(state.getTlsContext().getSelectedCipherSuite());
@@ -231,10 +213,8 @@ public class CipherSuiteProbe
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert =
-                            (AlertMessage)
-                                    WorkflowTraceUtil.getFirstReceivedMessage(
-                                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil
+                        .getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
                 }
             }
