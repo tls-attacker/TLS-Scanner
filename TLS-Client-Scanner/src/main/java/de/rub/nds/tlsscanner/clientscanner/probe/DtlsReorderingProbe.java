@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -26,57 +27,49 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsReorderingResult;
 
-public class DtlsReorderingProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, DtlsReorderingResult<ClientReport>> {
+public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);
-    }
+	private TestResult supportsReordering;
 
-    @Override
-    public DtlsReorderingResult executeTest() {
-        return new DtlsReorderingResult(supportsReordering());
-    }
+	public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+		super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);
+		register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
+	}
 
-    private TestResult supportsReordering() {
-        Config config = scannerConfig.createConfig();
+	@Override
+	public void executeTest() {
+		Config config = scannerConfig.createConfig();
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        GenericReceiveAction receiveAction = new GenericReceiveAction();
-        trace.addTlsAction(receiveAction);
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+		trace.addTlsAction(new ActivateEncryptionAction());
+		trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+		trace.addTlsAction(new ChangeWriteEpochAction(0));
+		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+		GenericReceiveAction receiveAction = new GenericReceiveAction();
+		trace.addTlsAction(receiveAction);
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()
-                && receiveAction.getReceivedMessages().isEmpty()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+		State state = new State(config, trace);
+		executeState(state);
+		supportsReordering = state.getWorkflowTrace().executedAsPlanned()
+				&& receiveAction.getReceivedMessages().isEmpty() ? TestResults.TRUE : TestResults.FALSE;
+	}
 
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-    @Override
-    public DtlsReorderingResult getCouldNotExecuteResult() {
-        return new DtlsReorderingResult(TestResults.COULD_NOT_TEST);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 }
