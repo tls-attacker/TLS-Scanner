@@ -6,15 +6,13 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-<<<<<<< HEAD
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-=======
->>>>>>> master
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -35,12 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-<<<<<<< HEAD
 public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
-=======
-public class BleichenbacherProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, BleichenbacherResult> {
->>>>>>> master
 
     private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
@@ -60,22 +53,11 @@ public class BleichenbacherProbe
     public BleichenbacherProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.BLEICHENBACHER, configSelector);
         scanDetail = configSelector.getScannerConfig().getScanDetail();
-<<<<<<< HEAD
         numberOfIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ITERATIONS
             : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
         numberOfAddtionalIterations = scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL) ? NUMBER_OF_ADDTIONAL_ITERATIONS
             : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
         register(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
-=======
-        numberOfIterations =
-                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
-                        ? NUMBER_OF_ITERATIONS
-                        : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
-        numberOfAddtionalIterations =
-                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
-                        ? NUMBER_OF_ADDTIONAL_ITERATIONS
-                        : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
->>>>>>> master
     }
 
     @Override
@@ -87,32 +69,22 @@ public class BleichenbacherProbe
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
-                        if (AlgorithmResolver.getKeyExchangeAlgorithm(suite)
-                                        == KeyExchangeAlgorithm.RSA
-                                && CipherSuite.getImplemented().contains(suite)) {
-                            BleichenbacherScanType recordGeneratorType =
-                                    scanDetail.isGreaterEqualTo(ScannerDetail.ALL)
-                                            ? BleichenbacherScanType.FULL
-                                            : BleichenbacherScanType.FAST;
-                            testResultList.add(
-                                    getBleichenbacherOracleInformationLeakTest(
-                                            recordGeneratorType,
-                                            workflowType,
-                                            numberOfIterations,
-                                            pair.getVersion(),
-                                            suite));
+                        if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                            && CipherSuite.getImplemented().contains(suite)) {
+                            BleichenbacherScanType recordGeneratorType = scanDetail.isGreaterEqualTo(ScannerDetail.ALL)
+                                ? BleichenbacherScanType.FULL : BleichenbacherScanType.FAST;
+                            testResultList.add(getBleichenbacherOracleInformationLeakTest(recordGeneratorType,
+                                workflowType, numberOfIterations, pair.getVersion(), suite));
                         }
                     }
                 }
             }
         }
         LOGGER.debug("Finished evaluation");
-        if (isPotentiallyVulnerable(testResultList)
-                || scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+        if (isPotentiallyVulnerable(testResultList) || scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
             for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
-                if (fingerprint.isDistinctAnswers()
-                        || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                if (fingerprint.isDistinctAnswers() || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                 }
             }
@@ -131,22 +103,11 @@ public class BleichenbacherProbe
         return vectorTypeList;
     }
 
-    private InformationLeakTest<BleichenbacherOracleTestInfo>
-            getBleichenbacherOracleInformationLeakTest(
-                    BleichenbacherScanType scanType,
-                    BleichenbacherWorkflowType workflowType,
-                    int numberOfIterations,
-                    ProtocolVersion testedVersion,
-                    CipherSuite testedSuite) {
-        BleichenbacherAttacker attacker =
-                new BleichenbacherAttacker(
-                        configSelector.getBaseConfig(),
-                        getParallelExecutor(),
-                        scanType,
-                        workflowType,
-                        numberOfIterations,
-                        testedVersion,
-                        testedSuite);
+    private InformationLeakTest<BleichenbacherOracleTestInfo> getBleichenbacherOracleInformationLeakTest(
+        BleichenbacherScanType scanType, BleichenbacherWorkflowType workflowType, int numberOfIterations,
+        ProtocolVersion testedVersion, CipherSuite testedSuite) {
+        BleichenbacherAttacker attacker = new BleichenbacherAttacker(configSelector.getBaseConfig(),
+            getParallelExecutor(), scanType, workflowType, numberOfIterations, testedVersion, testedSuite);
         if (scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
@@ -155,26 +116,14 @@ public class BleichenbacherProbe
         }
         attacker.isVulnerable();
         return new InformationLeakTest<>(
-                new BleichenbacherOracleTestInfo(
-                        testedVersion, testedSuite, workflowType, scanType),
-                attacker.getFullResponseMap());
+            new BleichenbacherOracleTestInfo(testedVersion, testedSuite, workflowType, scanType),
+            attacker.getFullResponseMap());
     }
 
     @Override
-<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
             .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_RSA));
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA), TestResults.TRUE);
-        } else {
-            return false;
-        }
->>>>>>> master
     }
 
     @Override
@@ -182,38 +131,17 @@ public class BleichenbacherProbe
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 
-<<<<<<< HEAD
     private void extendFingerPrint(InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,
         int numberOfAdditionalIterations) {
-=======
-    @Override
-    public BleichenbacherResult getCouldNotExecuteResult() {
-        return new BleichenbacherResult(TestResults.COULD_NOT_TEST);
-    }
-
-    private void extendFingerPrint(
-            InformationLeakTest<BleichenbacherOracleTestInfo> informationLeakTest,
-            int numberOfAdditionalIterations) {
->>>>>>> master
         InformationLeakTest<BleichenbacherOracleTestInfo> intermediateResponseMap =
-                getBleichenbacherOracleInformationLeakTest(
-                        informationLeakTest.getTestInfo().getBleichenbacherType(),
-                        informationLeakTest.getTestInfo().getBleichenbacherWorkflowType(),
-                        numberOfAdditionalIterations,
-                        informationLeakTest.getTestInfo().getVersion(),
-                        informationLeakTest.getTestInfo().getCipherSuite());
-        informationLeakTest.extendTestWithVectorContainers(
-                intermediateResponseMap.getVectorContainerList());
+            getBleichenbacherOracleInformationLeakTest(informationLeakTest.getTestInfo().getBleichenbacherType(),
+                informationLeakTest.getTestInfo().getBleichenbacherWorkflowType(), numberOfAdditionalIterations,
+                informationLeakTest.getTestInfo().getVersion(), informationLeakTest.getTestInfo().getCipherSuite());
+        informationLeakTest.extendTestWithVectorContainers(intermediateResponseMap.getVectorContainerList());
     }
 
-<<<<<<< HEAD
     private boolean isPotentiallyVulnerable(List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList) {
-        for (InformationLeakTest<?> fingerprint : testResultList) {
-=======
-    private boolean isPotentiallyVulnerable(
-            List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList) {
         for (InformationLeakTest fingerprint : testResultList) {
->>>>>>> master
             if (fingerprint.isDistinctAnswers()) {
                 return true;
             }
@@ -226,11 +154,13 @@ public class BleichenbacherProbe
         if (testResultList != null) {
             vulnerable = TestResults.FALSE;
             for (InformationLeakTest<?> informationLeakTest : testResultList) {
-                if (informationLeakTest.isSignificantDistinctAnswers())
+                if (informationLeakTest.isSignificantDistinctAnswers()) {
                     vulnerable = TestResults.TRUE;
+                }
             }
-        } else
+        } else {
             vulnerable = TestResults.ERROR_DURING_TEST;
+        }
         put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
         put(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT, testResultList);
     }
