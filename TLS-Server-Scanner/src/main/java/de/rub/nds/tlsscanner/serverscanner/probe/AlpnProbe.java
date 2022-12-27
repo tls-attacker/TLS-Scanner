@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -71,18 +72,15 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         tlsConfig.setDefaultProposedAlpnProtocols(alpnList);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedAlpnProtocol();
         } else {
-            LOGGER.debug(
-                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
 
     @Override
-<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.EXTENSIONS).requires(new ExtensionRequirement(ExtensionType.ALPN));
     }
@@ -96,18 +94,3 @@ public class AlpnProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         put(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS, supportedAlpnProtocols);
     }
 }
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
-                && report.getSupportedExtensions().contains(ExtensionType.ALPN);
-    }
-
-    @Override
-    public AlpnResult getCouldNotExecuteResult() {
-        return new AlpnResult(new LinkedList<>());
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {}
-}
->>>>>>> master
