@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
@@ -41,13 +42,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-<<<<<<< HEAD
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-=======
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
->>>>>>> master
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -103,8 +99,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
         org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
-        CertificateInformationExtractor certInformationExtractor =
-                new CertificateInformationExtractor(singleCert);
+        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
         try {
             certResult.setMustStaple(certInformationExtractor.getMustStaple());
         } catch (Exception e) {
@@ -124,19 +119,15 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         State state = new State(tlsConfig);
         executeState(state);
-        List<ExtensionType> supportedExtensions =
-                new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
+        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
         CertificateStatusMessage certificateStatusMessage = null;
         if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
             certResult.setSupportsStapling(true);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace())) {
-                certificateStatusMessage =
-                        (CertificateStatusMessage)
-                                WorkflowTraceUtil.getFirstReceivedMessage(
-                                        HandshakeMessageType.CERTIFICATE_STATUS,
-                                        state.getWorkflowTrace());
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS,
+                state.getWorkflowTrace())) {
+                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil
+                    .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
             }
         } else {
             certResult.setSupportsStapling(false);
@@ -145,8 +136,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         if (certificateStatusMessage != null) {
             try {
                 certResult.setStapledResponse(
-                        OCSPResponseParser.parseResponse(
-                                certificateStatusMessage.getOcspResponseBytes().getValue()));
+                    OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
             } catch (Exception e) {
                 if (e.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on " + getProbeName());
@@ -157,10 +147,9 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         }
     }
 
-    private void performRequest(
-            Certificate serverCertificateChain, OcspCertificateResult certResult) {
+    private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
         CertificateInformationExtractor mainCertExtractor =
-                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
+            new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
         URL ocspResponderUrl;
 
         try {
@@ -183,8 +172,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         // If nonce is supported used, check if server actually replies
         // with a different one immediately after
-        if (certResult.getFirstResponse() != null
-                && certResult.getFirstResponse().getNonce() != null) {
+        if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
             certResult.setSupportsNonce(true);
             OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
             ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
@@ -226,31 +214,22 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
-=======
-    public boolean canBeExecuted(ServerReport report) {
-        // We also need the tls13 groups to perform a tls13 handshake
-        return report.getCertificateChainList() != null
-                && !report.getCertificateChainList().isEmpty()
-                && report.isProbeAlreadyExecuted(TlsProbeType.NAMED_GROUPS);
->>>>>>> master
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
-        for (CertificateChain chain : (List<CertificateChain>) report.getCertificateChainList()) {
+        for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
             ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)).getList();
     }
 
-    private List<CertificateStatusRequestExtensionMessage>
-            getCertificateStatusFromCertificateEntryExtension() {
+    private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
         List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -262,19 +241,14 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
-            CertificateMessage certificateMessage =
-                    (CertificateMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
-            List<CertificateEntry> certificateEntries =
-                    certificateMessage.getCertificatesListAsEntry();
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
+            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
             for (CertificateEntry certificateEntry : certificateEntries) {
                 for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
                     if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
-                        certificateStatuses.add(
-                                (CertificateStatusRequestExtensionMessage) extensionMessage);
+                        certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
                     }
                 }
             }
