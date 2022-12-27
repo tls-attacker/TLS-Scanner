@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unchecked")
 public abstract class TlsScanReport extends ScanReport {
 
 	private ProtocolType protocolType = null;
@@ -115,6 +114,7 @@ public abstract class TlsScanReport extends ScanReport {
 		return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
 		MapResult<?, ?> mapResult = getMapResult(TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS);
 		return mapResult == null ? new HashMap<>() : (Map<HandshakeMessageType, Integer>) mapResult.getMap();
@@ -122,54 +122,64 @@ public abstract class TlsScanReport extends ScanReport {
 
 	List<NamedGroup> list;
 
+	@SuppressWarnings("unchecked")
 	public synchronized Set<CipherSuite> getSupportedCipherSuites() {
 		SetResult<?> setResult = getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES);
 		return setResult == null ? new HashSet<>() : (Set<CipherSuite>) setResult.getSet();
 	}
 
 	public synchronized List<EntropyReport> getEntropyReports() {
+		@SuppressWarnings("unchecked")
 		ListResult<EntropyReport> listResult = (ListResult<EntropyReport>) getListResult(
 				TlsAnalyzedProperty.ENTROPY_REPORTS);
 		return listResult == null ? new LinkedList<>() : listResult.getList();
 	}
 
 	public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
+		@SuppressWarnings("unchecked")
 		ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult = (ListResult<InformationLeakTest<PaddingOracleTestInfo>>) getListResult(
 				TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
 		return listResult == null ? new LinkedList<>() : listResult.getList();
 	}
 
 	public synchronized List<CertificateChain> getCertificateChainList() {
+		@SuppressWarnings("unchecked")
 		ListResult<CertificateChain> listResult = (ListResult<CertificateChain>) getListResult(
 				TlsAnalyzedProperty.CERTIFICATE_CHAINS);
 		return listResult == null ? new LinkedList<>() : listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<CipherSuite> getClientAdvertisedCiphersuites() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES);
 		return listResult == null ? new LinkedList<>() : (List<CipherSuite>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS);
 		return listResult == null ? new LinkedList<>() : (List<VersionSuiteListPair>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<ProtocolVersion> getSupportedProtocolVersions() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
 		return listResult == null ? new LinkedList<>() : (List<ProtocolVersion>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
 		return listResult == null ? new LinkedList<>() : (List<SignatureAndHashAlgorithm>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
 		return listResult == null ? new LinkedList<>() : (List<SignatureAndHashAlgorithm>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
 		return listResult == null ? new LinkedList<>() : (List<SignatureAndHashAlgorithm>) listResult.getList();
@@ -186,61 +196,73 @@ public abstract class TlsScanReport extends ScanReport {
 		return new LinkedList<>(combined);
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<ExtensionType> getSupportedExtensions() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
 		return listResult == null ? new LinkedList<>() : (List<ExtensionType>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<CompressionMethod> getSupportedCompressionMethods() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS);
 		return listResult == null ? new LinkedList<>() : (List<CompressionMethod>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getSupportedTls13Groups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getSupportedNamedGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getTls13EcdsaPkgGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getStaticEcdsaSigGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getEphemeralEcdsaSigGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<NamedGroup> getTls13EcdsaSigGroups() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
 		return listResult == null ? new LinkedList<>() : (List<NamedGroup>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<HttpsHeader> getHttpsHeader() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.HTTPS_HEADER);
 		return listResult == null ? new LinkedList<>() : (List<HttpsHeader>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<TokenBindingVersion> getSupportedTokenbindingVersions() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS);
 		return listResult == null ? new LinkedList<>() : (List<TokenBindingVersion>) listResult.getList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public synchronized List<TokenBindingKeyParameters> getSupportedTokenbindingKeyParameters() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
 		return listResult == null ? new LinkedList<>() : (List<TokenBindingKeyParameters>) listResult.getList();
