@@ -59,7 +59,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
 import javax.swing.SortOrder;
 
 public class DheParameterProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, DheParameterResult> {
+        extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private final Random random;
     private final List<PrimeModulus> primeModuli;
