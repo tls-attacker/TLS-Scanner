@@ -76,8 +76,6 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     @Override
     public void executeTest() {
         namedGroupsMap = new HashMap<>();
-
-<<<<<<< HEAD
         addGroupsFound(namedGroupsMap,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
             KeyExchangeAlgorithm.DHE_RSA);
@@ -105,53 +103,11 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             KeyExchangeAlgorithm.ECDH_ECDSA);
         supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
         supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
-        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS())
+        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
             namedGroupsMapTls13 = getTls13SupportedGroups();
+        }
         groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(namedGroupsMap);
-=======
-        TestResult supportsExplicitPrime = TestResults.CANNOT_BE_TESTED;
-        TestResult supportsExplicitChar2 = TestResults.CANNOT_BE_TESTED;
-        if (configSelector.foundWorkingConfig()) {
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-                KeyExchangeAlgorithm.DHE_RSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-                KeyExchangeAlgorithm.DHE_DSS);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-                KeyExchangeAlgorithm.DH_ANON);
 
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-                KeyExchangeAlgorithm.ECDH_ANON);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(
-                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
-                KeyExchangeAlgorithm.ECDHE_RSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
-                KeyExchangeAlgorithm.ECDHE_ECDSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                    ecdsaCertSigGroupsStatic),
-                KeyExchangeAlgorithm.ECDH_ECDSA);
-            supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-            supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
-        }
-
-        Map<NamedGroup, NamedGroupWitness> groupsTls13 = new HashMap<>();
-        if (configSelector.foundWorkingTls13Config()) {
-            groupsTls13 = getTls13SupportedGroups();
-        }
-
-        TestResult groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(overallSupported);
-
-        return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
-            groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
-
->>>>>>> master
     }
 
     private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,
@@ -480,11 +436,13 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     @Override
     protected void mergeData(ServerReport report) {
         LinkedList<NamedGroup> allGroups = new LinkedList<>();
-        if (namedGroupsMap != null)
+        if (namedGroupsMap != null) {
             allGroups.addAll(namedGroupsMap.keySet());
+        }
         LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
-        if (namedGroupsMapTls13 != null)
+        if (namedGroupsMapTls13 != null) {
             tls13Groups.addAll(namedGroupsMapTls13.keySet());
+        }
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, allGroups);
         put(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, tls13Groups);
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES, namedGroupsMap);
