@@ -38,9 +38,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         int isSuccessfulCounter = 0;
         int isInsecureCounter = 0;
 
-        @SuppressWarnings("unchecked")
-        List<SimulatedClientResult> simulatedclients =
-            (List<SimulatedClientResult>) report.getSimulatedClientsResultList();
+        List<SimulatedClientResult> simulatedclients = report.getSimulatedClientsResultList();
         if (simulatedclients != null) {
             for (SimulatedClientResult simulatedClient : simulatedclients) {
                 if (simulatedClient.getReceivedAlert()) {
@@ -71,9 +69,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
             report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
             report.setHandshakeFailedCounter(simulatedclients.size() - isSuccessfulCounter);
             report.setConnectionInsecureCounter(isInsecureCounter);
-        } else
+        } else {
             LOGGER.debug("property " + TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+        }
     }
 
     private void checkWhyAlert(ServerReport report, SimulatedClientResult simulatedClient) {
@@ -92,9 +91,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                     }
                 }
             }
-        } else
+        } else {
             LOGGER.debug("property " + TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+        }
         return true;
     }
 
@@ -117,9 +117,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
             } else {
                 simulatedClient.setHighestPossibleProtocolVersionSelected(false);
             }
-        } else
+        } else {
             LOGGER.debug("property " + TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()
                 + " requires a TestResult for the HandshakeSimulationAfterProbe but is null!");
+        }
     }
 
     private void checkIfHandshakeWouldBeSuccessful(SimulatedClientResult simulatedClient) {

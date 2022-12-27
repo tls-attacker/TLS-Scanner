@@ -12,12 +12,9 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttributor;
+import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttributor;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,10 +32,9 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
     public void analyze(ServerReport report) {
         if (Objects.equals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResults.TRUE)) {
             try {
-                @SuppressWarnings("unchecked")
-                KnownPaddingOracleVulnerability knownVulnerability = attributor.getKnownVulnerability(
-                    (List<InformationLeakTest<PaddingOracleTestInfo>>) report.getPaddingOracleTestResultList());
-                report.setKnownVulnerability(knownVulnerability);
+                KnownPaddingOracleVulnerability knownVulnerability =
+                    attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
+                report.setKnownPaddingOracleVulnerability(knownVulnerability);
             } catch (Exception e) {
                 LOGGER.debug("property " + TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT.name()
                     + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
