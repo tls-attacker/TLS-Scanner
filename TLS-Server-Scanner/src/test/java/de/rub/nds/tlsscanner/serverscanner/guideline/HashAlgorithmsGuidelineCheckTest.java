@@ -9,21 +9,17 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-<<<<<<< HEAD
-import de.rub.nds.scanner.core.constants.ListResult;
-=======
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
->>>>>>> master
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 public class HashAlgorithmsGuidelineCheckTest {
 

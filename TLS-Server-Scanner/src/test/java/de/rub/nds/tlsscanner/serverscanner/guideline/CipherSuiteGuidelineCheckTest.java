@@ -9,12 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-<<<<<<< HEAD
-import de.rub.nds.scanner.core.constants.ListResult;
-=======
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
->>>>>>> master
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -23,10 +20,9 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 public class CipherSuiteGuidelineCheckTest {
 
