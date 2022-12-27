@@ -266,6 +266,7 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
+                    // TODO why 3 different if clauses with same condition??q
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
                     }
