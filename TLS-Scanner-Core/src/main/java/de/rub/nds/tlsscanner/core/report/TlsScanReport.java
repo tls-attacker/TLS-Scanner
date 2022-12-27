@@ -25,9 +25,11 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -127,6 +129,12 @@ public abstract class TlsScanReport extends ScanReport {
 	public synchronized List<EntropyReport> getEntropyReports() {
 		ListResult<EntropyReport> listResult = (ListResult<EntropyReport>) getListResult(
 				TlsAnalyzedProperty.ENTROPY_REPORTS);
+		return listResult == null ? null : listResult.getList();
+	}
+
+	public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
+		ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult = (ListResult<InformationLeakTest<PaddingOracleTestInfo>>) getListResult(
+				TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
 		return listResult == null ? null : listResult.getList();
 	}
 

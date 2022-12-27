@@ -17,7 +17,6 @@ import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -276,13 +275,6 @@ public class ServerReport extends TlsScanReport {
         @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> listResult =
             (ListResult<OcspCertificateResult>) this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
-        return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
-        @SuppressWarnings("unchecked")
-        ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult = (ListResult<
-            InformationLeakTest<PaddingOracleTestInfo>>) getListResult(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
