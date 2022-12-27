@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
@@ -20,51 +21,42 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.ApplicationMessageResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
-public class ApplicationMessageProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, ApplicationMessageResult> {
+public class ApplicationMessageProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    public ApplicationMessageProbe(
-            ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-        super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
-    }
+	private TestResult sendsApplicationMessage;
 
-    @Override
-    public ApplicationMessageResult executeTest() {
-        return new ApplicationMessageResult(sendsApplicationMessage());
-    }
+	public ApplicationMessageProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+		super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
+		register(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE);
+	}
 
-    private TestResult sendsApplicationMessage() {
-        Config config = scannerConfig.createConfig();
+	@Override
+	public void executeTest() {
+		Config config = scannerConfig.createConfig();
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+				RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
+		State state = new State(config, trace);
+		executeState(state);
+		sendsApplicationMessage = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+	}
 
-        State state = new State(config, trace);
-        executeState(state);
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return TestResults.TRUE;
-        } else {
-            return TestResults.FALSE;
-        }
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE, sendsApplicationMessage);
+	}
 
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ApplicationMessageResult getCouldNotExecuteResult() {
-        return new ApplicationMessageResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 }
