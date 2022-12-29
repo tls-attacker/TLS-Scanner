@@ -43,6 +43,7 @@ public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, Cli
 	public void executeTest() {
 		Config config = scannerConfig.createConfig();
 
+<<<<<<< HEAD
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
@@ -52,6 +53,19 @@ public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, Cli
 		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
 		GenericReceiveAction receiveAction = new GenericReceiveAction();
 		trace.addTlsAction(receiveAction);
+=======
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        trace.addTlsAction(new ActivateEncryptionAction());
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
+        trace.addTlsAction(new ChangeWriteEpochAction(0));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
+        GenericReceiveAction receiveAction = new GenericReceiveAction();
+        trace.addTlsAction(receiveAction);
+>>>>>>> master
 
 		State state = new State(config, trace);
 		executeState(state);

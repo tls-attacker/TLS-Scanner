@@ -4,12 +4,12 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>1.2.1</version>
+        <version>2.2.0</version>
     </parent>
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>5.1.2-SNAPSHOT</version>
+    <version>5.2.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
@@ -407,6 +407,16 @@
                             <file>${main.basedir}/license_header_plain.txt</file>
                         </licenseHeader>
                     </java>
+                    <pom>
+                        <excludes>
+                            <exclude>trust_stores_observatory/**</exclude>
+                        </excludes>
+                    </pom>
+                    <markdown>
+                        <excludes>
+                            <exclude>trust_stores_observatory/**</exclude>
+                        </excludes>
+                    </markdown>
                 </configuration>
             </plugin>
             <!-- Flatten pom.xml before install / deploy phases -->

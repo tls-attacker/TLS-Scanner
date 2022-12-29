@@ -1,7 +1,7 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -130,7 +130,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         Arrays.fill(cookie, (byte) 255);
         clientHelloMessage.setCookie(Modifiable.xor(cookie, 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         state = new State(config, trace);
         return getResult(state);
     }
@@ -143,7 +143,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ResetConnectionAction(false));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -158,7 +158,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -168,13 +168,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         byte[] random = new byte[HandshakeByteLength.RANDOM];
         Arrays.fill(random, (byte) 255);
         clientHelloMessage.setRandom(Modifiable.xor(random, 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -184,11 +184,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setSessionId(Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -198,11 +198,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCipherSuites(Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -212,11 +212,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCompressions(Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
         return getResult(state);
     }

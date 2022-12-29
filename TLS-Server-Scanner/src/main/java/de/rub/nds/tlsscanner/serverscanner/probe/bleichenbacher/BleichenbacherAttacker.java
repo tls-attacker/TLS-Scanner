@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.Bleiche
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.BleichenbacherWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
+import java.security.cert.CertificateParsingException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
@@ -216,7 +217,11 @@ public class BleichenbacherAttacker {
     }
 
     private RSAPublicKey getServerPublicKey() {
-        RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(tlsConfig);
+        RSAPublicKey publicKey = null;
+        try {
+            publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(tlsConfig);
+        } catch (CertificateParsingException ignored) {
+        }
         if (publicKey == null) {
             LOGGER.debug("Could not retrieve PublicKey from Server - is the Server running?");
             return null;
@@ -232,7 +237,6 @@ public class BleichenbacherAttacker {
         tlsConfig.setAddEllipticCurveExtension(false);
         tlsConfig.setStopReceivingAfterFatal(false);
         tlsConfig.setStopActionsAfterFatal(false);
-        tlsConfig.setStopReceivingAfterWarning(false);
         tlsConfig.setStopActionsAfterWarning(false);
         tlsConfig.setWorkflowExecutorShouldClose(false);
     }

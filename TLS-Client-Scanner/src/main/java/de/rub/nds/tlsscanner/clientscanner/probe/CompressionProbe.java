@@ -58,6 +58,7 @@ public class CompressionProbe extends TlsClientProbe<ClientScannerConfig, Client
 			State state = new State(config, workflowTrace);
 			executeState(state);
 
+<<<<<<< HEAD
 			if (state.getWorkflowTrace().executedAsPlanned()) {
 				supportedCompressions.add(compressionMethod);
 			}
@@ -66,6 +67,24 @@ public class CompressionProbe extends TlsClientProbe<ClientScannerConfig, Client
 				? forcedCompression = TestResults.TRUE
 				: TestResults.FALSE;
 	}
+=======
+            if (state.getWorkflowTrace().executedAsPlanned()) {
+                supportedCompressions.add(compressionMethod);
+            }
+        }
+        TestResult forcedCompression;
+        if (clientAdvertisedCompressions != null) {
+            if (!clientAdvertisedCompressions.containsAll(supportedCompressions)) {
+                forcedCompression = TestResults.TRUE;
+            } else {
+                forcedCompression = TestResults.FALSE;
+            }
+        } else {
+            forcedCompression = TestResults.UNCERTAIN;
+        }
+        return new CompressionResult(supportedCompressions, forcedCompression);
+    }
+>>>>>>> master
 
 	@Override
 	public void adjustConfig(ClientReport report) {

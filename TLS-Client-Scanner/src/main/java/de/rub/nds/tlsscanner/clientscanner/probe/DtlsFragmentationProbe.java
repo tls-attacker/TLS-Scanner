@@ -52,6 +52,7 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 				TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION);
 	}
 
+<<<<<<< HEAD
 	@Override
 	public void executeTest() {
 		supportsDirectly = supportsFragmentationDirectly(false);
@@ -61,6 +62,15 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 		supportsWithExtension = supportsFragmentationWithExtension(false);
 		supportsWithExtensionIndPackets = supportsFragmentationWithExtension(true);
 	}
+=======
+    private TestResult supportsFragmentationDirectly(boolean individualTransportPackets) {
+        Config config = scannerConfig.createConfig();
+        config.setDtlsMaximumFragmentLength(15);
+        if (individualTransportPackets) {
+            config.setIndividualTransportPacketsForFragments(true);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
+        }
+>>>>>>> master
 
 	private TestResult supportsFragmentationDirectly(boolean individualTransportPackets) {
 		Config config = scannerConfig.createConfig();
@@ -76,6 +86,7 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
 
+<<<<<<< HEAD
 		State state = new State(config, trace);
 		executeState(state);
 		if (state.getWorkflowTrace().executedAsPlanned()) {
@@ -91,6 +102,32 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 			config.setCreateIndividualTransportPackets(true);
 			config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
 		}
+=======
+    private TestResult supportsFragmentationAfterCookieExchange(
+            boolean individualTransportPackets) {
+        Config config = scannerConfig.createConfig();
+        if (individualTransportPackets) {
+            config.setIndividualTransportPacketsForFragments(true);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
+        }
+
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        SendAction action = new SendAction(new CertificateMessage());
+        action.setFragments(
+                new DtlsHandshakeMessageFragment(config, 20),
+                new DtlsHandshakeMessageFragment(config, 20));
+        trace.addTlsAction(action);
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+>>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -106,6 +143,7 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
+<<<<<<< HEAD
 		State state = new State(config, trace);
 		executeState(state);
 		if (state.getWorkflowTrace().executedAsPlanned()) {
@@ -123,6 +161,33 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 			config.setCreateIndividualTransportPackets(true);
 			config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
 		}
+=======
+    private TestResult supportsFragmentationWithExtension(boolean individualTransportPackets) {
+        Config config = scannerConfig.createConfig();
+        config.setAddMaxFragmentLengthExtension(true);
+        config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
+        if (individualTransportPackets) {
+            config.setIndividualTransportPacketsForFragments(true);
+            config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
+        }
+
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        SendAction action = new SendAction(new CertificateMessage());
+        action.setFragments(
+                new DtlsHandshakeMessageFragment(config, 20),
+                new DtlsHandshakeMessageFragment(config, 20));
+        trace.addTlsAction(action);
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+>>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());

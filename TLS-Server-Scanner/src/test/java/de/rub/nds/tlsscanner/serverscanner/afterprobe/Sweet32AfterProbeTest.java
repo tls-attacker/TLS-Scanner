@@ -43,11 +43,10 @@ public class Sweet32AfterProbeTest {
 
     @BeforeEach
     public void setup() {
-        report = new ServerReport("sweet32afterprobetest", 443);
+        report = new ServerReport();
         probe = new Sweet32AfterProbe();
     }
 
-    /** Test if probe recognizes use of cipher suites using a 64 bit block size cipher. */
     @ParameterizedTest
     @MethodSource("provideVulnerableCipherSuites")
     public void testVulnerableCipherSuites(CipherSuite providedCipherSuite) {
@@ -60,19 +59,15 @@ public class Sweet32AfterProbeTest {
         // test reports that use both vulnerable and safe ciphers
         Set<CipherSuite> ciphers = new HashSet<>();
         ciphers.add(providedCipherSuite);
-        // add a number of "random" safe cipher suites to the mix
-        ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 10));
+        ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
 
-        report.getSupportedCipherSuites().clear();
+        // add a number of "random" safe cipher suites to the mix
         report.getSupportedCipherSuites().addAll(ciphers);
         probe.analyze(report);
 
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 
-    /**
-     * Test if probe correctly identifies cipher suites not using 64 bit blocksize ciphers as safe
-     */
     @ParameterizedTest
     @MethodSource("provideSafeCipherSuites")
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
@@ -82,11 +77,9 @@ public class Sweet32AfterProbeTest {
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 
-    /** Test if probe recognizes ServerReport without any ciphers as invulnerable to Sweet32. */
     @Test
     public void testNoCipherSuites() {
-        ServerReport report = new ServerReport();
-        report.getSupportedCipherSuites().clear();
+        report.getSupportedCipherSuites().addAll(new HashSet<>());
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
@@ -96,8 +89,7 @@ public class Sweet32AfterProbeTest {
      */
     @Test
     public void testEmptyServerReport() {
-        ServerReport emptyReport = new ServerReport();
-        probe.analyze(emptyReport);
-        assertEquals(TestResults.UNCERTAIN, emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
+        probe.analyze(report);
+        assertEquals(TestResults.UNCERTAIN, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 }

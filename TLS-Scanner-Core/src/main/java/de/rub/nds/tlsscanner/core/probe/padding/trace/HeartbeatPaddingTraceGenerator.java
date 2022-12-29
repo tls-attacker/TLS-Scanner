@@ -45,9 +45,9 @@ public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
                         .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, runningMode);
         if (runningMode == RunningModeType.SERVER) {
             // we assume that the client sends the first application message
-            trace.addTlsAction(new ReceiveAction(new ApplicationMessage(config)));
+            trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         }
-        ApplicationMessage applicationMessage = new ApplicationMessage(config);
+        ApplicationMessage applicationMessage = new ApplicationMessage();
         HeartbeatMessage heartbeat = new HeartbeatMessage();
         SendAction sendAction = new SendAction(applicationMessage, heartbeat);
         sendAction.setRecords(new LinkedList<>());

@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.trace;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
@@ -36,11 +35,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidC
 
 public class InvalidCurveWorkflowGenerator {
 
-    private InvalidCurveWorkflowGenerator() {
-    }
+    private InvalidCurveWorkflowGenerator() {}
 
-    public static WorkflowTrace generateWorkflow(InvalidCurveWorkflowType type, ModifiableByteArray serializedPublicKey,
-        ModifiableByteArray pms, byte[] explicitPMS, Config tlsConfig) {
+    public static WorkflowTrace generateWorkflow(
+            InvalidCurveWorkflowType type,
+            ModifiableByteArray serializedPublicKey,
+            ModifiableByteArray pms,
+            byte[] explicitPMS,
+            Config tlsConfig) {
         switch (type) {
             case REGULAR:
                 return prepareRegularTrace(serializedPublicKey, pms, explicitPMS, tlsConfig);
@@ -51,21 +53,27 @@ public class InvalidCurveWorkflowGenerator {
         }
     }
 
-    private static WorkflowTrace prepareRegularTrace(ModifiableByteArray serializedPublicKey, ModifiableByteArray pms,
-        byte[] explicitPMS, Config individualConfig) {
+    private static WorkflowTrace prepareRegularTrace(
+            ModifiableByteArray serializedPublicKey,
+            ModifiableByteArray pms,
+            byte[] explicitPMS,
+            Config individualConfig) {
         if (individualConfig.getHighestProtocolVersion() != ProtocolVersion.TLS13) {
-            individualConfig
-                .setDefaultSelectedCipherSuite(individualConfig.getDefaultClientSupportedCipherSuites().get(0));
+            individualConfig.setDefaultSelectedCipherSuite(
+                    individualConfig.getDefaultClientSupportedCipherSuites().get(0));
         }
-        WorkflowTrace trace = new WorkflowConfigurationFactory(individualConfig)
-            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(individualConfig)
+                        .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
         if (individualConfig.getHighestProtocolVersion().isTLS13()) {
             // replace specific receive action with generic
             trace.removeTlsAction(trace.getTlsActions().size() - 1);
             trace.addTlsAction(new GenericReceiveAction());
 
             ClientHelloMessage clientHello =
-                (ClientHelloMessage) WorkflowTraceUtil.getFirstSendMessage(HandshakeMessageType.CLIENT_HELLO, trace);
+                    (ClientHelloMessage)
+                            WorkflowTraceUtil.getFirstSendMessage(
+                                    HandshakeMessageType.CLIENT_HELLO, trace);
             KeyShareExtensionMessage ksExt;
             for (ExtensionMessage ext : clientHello.getExtensions()) {
                 if (ext instanceof KeyShareExtensionMessage) {
@@ -79,12 +87,17 @@ public class InvalidCurveWorkflowGenerator {
             // TLS 1.3
             individualConfig.setDefaultPreMasterSecret(explicitPMS);
         } else {
-            trace.addTlsAction(new SendAction(new ECDHClientKeyExchangeMessage(individualConfig),
-                new ChangeCipherSpecMessage(individualConfig), new FinishedMessage(individualConfig)));
+            trace.addTlsAction(
+                    new SendAction(
+                            new ECDHClientKeyExchangeMessage(),
+                            new ChangeCipherSpecMessage(),
+                            new FinishedMessage()));
             trace.addTlsAction(new GenericReceiveAction());
 
-            ECDHClientKeyExchangeMessage message = (ECDHClientKeyExchangeMessage) WorkflowTraceUtil
-                .getFirstSendMessage(HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+            ECDHClientKeyExchangeMessage message =
+                    (ECDHClientKeyExchangeMessage)
+                            WorkflowTraceUtil.getFirstSendMessage(
+                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);
@@ -93,13 +106,21 @@ public class InvalidCurveWorkflowGenerator {
         return trace;
     }
 
-    private static WorkflowTrace prepareRenegotiationTrace(ModifiableByteArray serializedPublicKey,
-        ModifiableByteArray pms, byte[] explicitPMS, Config individualConfig) {
+    private static WorkflowTrace prepareRenegotiationTrace(
+            ModifiableByteArray serializedPublicKey,
+            ModifiableByteArray pms,
+            byte[] explicitPMS,
+            Config individualConfig) {
         WorkflowTrace trace;
         if (individualConfig.getHighestProtocolVersion().isTLS13()) {
-            trace = new WorkflowConfigurationFactory(individualConfig).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-                RunningModeType.CLIENT);
-            trace.addTlsAction(new ReceiveAction(ActionOption.CHECK_ONLY_EXPECTED, new NewSessionTicketMessage(false)));
+            trace =
+                    new WorkflowConfigurationFactory(individualConfig)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+            trace.addTlsAction(
+                    new ReceiveAction(
+                            ActionOption.CHECK_ONLY_EXPECTED,
+                            new NewSessionTicketMessage(individualConfig, false)));
             trace.addTlsAction(new ResetConnectionAction());
 
             // make sure no explicit PreMasterSecret is set upon execution
@@ -111,7 +132,7 @@ public class InvalidCurveWorkflowGenerator {
             individualConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
 
             WorkflowTrace secondHandshake =
-                prepareRegularTrace(serializedPublicKey, pms, explicitPMS, individualConfig);
+                    prepareRegularTrace(serializedPublicKey, pms, explicitPMS, individualConfig);
 
             // subsequent ClientHellos don't need a PSKExtension
             individualConfig.setAddPreSharedKeyExtension(Boolean.FALSE);
@@ -125,12 +146,17 @@ public class InvalidCurveWorkflowGenerator {
                 trace.addTlsAction(action);
             }
         } else {
-            individualConfig
-                .setDefaultSelectedCipherSuite(individualConfig.getDefaultClientSupportedCipherSuites().get(0));
-            trace = new WorkflowConfigurationFactory(individualConfig)
-                .createWorkflowTrace(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION, RunningModeType.CLIENT);
-            ECDHClientKeyExchangeMessage message = (ECDHClientKeyExchangeMessage) WorkflowTraceUtil
-                .getLastSendMessage(HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+            individualConfig.setDefaultSelectedCipherSuite(
+                    individualConfig.getDefaultClientSupportedCipherSuites().get(0));
+            trace =
+                    new WorkflowConfigurationFactory(individualConfig)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION,
+                                    RunningModeType.CLIENT);
+            ECDHClientKeyExchangeMessage message =
+                    (ECDHClientKeyExchangeMessage)
+                            WorkflowTraceUtil.getLastSendMessage(
+                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);

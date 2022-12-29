@@ -54,13 +54,13 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        SendAction sendAction = new SendAction(new FinishedMessage(config));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
+        SendAction sendAction = new SendAction(new FinishedMessage());
         Record record = new Record(config);
         record.setEpoch(Modifiable.explicit(0));
         sendAction.setRecords(record);
         trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -75,8 +75,8 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {

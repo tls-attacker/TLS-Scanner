@@ -1,7 +1,7 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -17,8 +17,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
-import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
+import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -111,9 +112,9 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
             WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
                 .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             if (configSelector.getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
-                config.setHttpsParsingEnabled(true);
-                workflowTrace.addTlsAction(new SendAction(new HttpsRequestMessage(config)));
-                workflowTrace.addTlsAction(new ReceiveAction(new HttpsResponseMessage(config)));
+                config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+                workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
+                workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));
             } else {
                 // TODO: Add application specific app data to provoke data transmission
             }

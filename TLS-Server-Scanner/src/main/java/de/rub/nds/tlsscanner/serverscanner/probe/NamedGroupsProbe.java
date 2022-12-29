@@ -1,7 +1,7 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -20,10 +20,10 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -86,28 +86,44 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
             KeyExchangeAlgorithm.DH_ANON);
 
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-            KeyExchangeAlgorithm.ECDH_ANON);
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedGroups(
-                getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
-            KeyExchangeAlgorithm.ECDHE_RSA);
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
-            KeyExchangeAlgorithm.ECDHE_ECDSA);
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                ecdsaCertSigGroupsStatic),
-            KeyExchangeAlgorithm.ECDH_ECDSA);
-        supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-        supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
-        if (!configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
+        supportsExplicitPrime = TestResults.CANNOT_BE_TESTED;
+        supportsExplicitChar2 = TestResults.CANNOT_BE_TESTED;
+        if (configSelector.foundWorkingConfig()) {
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
+                KeyExchangeAlgorithm.DHE_RSA);
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
+                KeyExchangeAlgorithm.DHE_DSS);
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
+                KeyExchangeAlgorithm.DH_ANON);
+
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
+                KeyExchangeAlgorithm.ECDH_ANON);
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedGroups(
+                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
+                KeyExchangeAlgorithm.ECDHE_RSA);
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
+                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
+                KeyExchangeAlgorithm.ECDHE_ECDSA);
+            addGroupsFound(namedGroupsMap,
+                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
+                    ecdsaCertSigGroupsStatic),
+                KeyExchangeAlgorithm.ECDH_ECDSA);
+            supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+            supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+        }
+
+        namedGroupsMapTls13 = new HashMap<>();
+        if (configSelector.foundWorkingTls13Config()) {
             namedGroupsMapTls13 = getTls13SupportedGroups();
         }
-        groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(namedGroupsMap);
 
+        groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(namedGroupsMap);
     }
 
     private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,
@@ -205,7 +221,6 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 } else {
                     namedCurveMap.put(selectedGroup,
                         new NamedGroupWitness(null, certificateSigGroup, null, context.getSelectedCipherSuite()));
-
                 }
 
                 toTestList.remove(selectedGroup);
@@ -402,7 +417,6 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 case ECDHE_ECDSA:
                     witness.setEcdsaPkGroupEphemeral(newlyFoundGroups.get(group).getEcdsaPkGroupEphemeral());
                     witness.setEcdsaSigGroupEphemeral(newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
-                    break;
                 default:
                     break;
             }

@@ -112,6 +112,7 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
 		return false;
 	}
 
+<<<<<<< HEAD
 	private Config getBaseConfig() {
 		Config config = scannerConfig.createConfig();
 		config.setEarlyStop(true);
@@ -121,6 +122,15 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
 		config.setAddRenegotiationInfoExtension(false);
 		return config;
 	}
+=======
+    private Config getBaseConfig() {
+        Config config = scannerConfig.createConfig();
+        config.setStopReceivingAfterFatal(true);
+        config.setStopActionsAfterFatal(true);
+        config.setAddRenegotiationInfoExtension(false);
+        return config;
+    }
+>>>>>>> master
 
 	private Config getTls13Config() {
 		Config config = getBaseConfig();

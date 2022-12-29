@@ -1,21 +1,13 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
-
-import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.util.BigIntegers;
 
 import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
@@ -47,6 +39,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.InvalidCurve
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.TwistedCurvePoint;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.trace.InvalidCurveWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
+import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.BigIntegers;
 
 public class InvalidCurveAttacker {
 
@@ -297,7 +295,7 @@ public class InvalidCurveAttacker {
         if (vector.getNamedGroup() == NamedGroup.ECDH_X25519 || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
             protocolFlows = 1;
         } else {
-            double errorAttempt = (double) (1 - 2 * infinityProbability);
+            double errorAttempt = 1 - 2 * infinityProbability;
             int attempts = (int) Math.ceil(Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt));
 
             switch (scanType) {
@@ -383,7 +381,6 @@ public class InvalidCurveAttacker {
         }
         tlsConfig.setStopReceivingAfterFatal(false);
         tlsConfig.setStopActionsAfterFatal(false);
-        tlsConfig.setStopReceivingAfterWarning(false);
         tlsConfig.setStopActionsAfterWarning(false);
         tlsConfig.setWorkflowExecutorShouldClose(false);
     }

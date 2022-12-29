@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteMessageSequenceAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -63,14 +63,13 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 8));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-        trace.addTlsAction(new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -86,14 +85,13 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-        trace.addTlsAction(new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 8));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -109,13 +107,12 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 4));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -129,11 +126,11 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(0, new ChangeContextValueAction<>("dtlsWriteHandshakeMessageSequence", 3));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(3));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
 
         State state = new State(config, trace);
         executeState(state);

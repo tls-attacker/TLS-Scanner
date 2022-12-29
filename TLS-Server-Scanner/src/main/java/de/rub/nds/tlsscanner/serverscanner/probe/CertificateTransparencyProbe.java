@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,9 +48,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     private boolean supportsOcspSCTs;
     private boolean meetsChromeCTPolicy = false;
 
-    private SignedCertificateTimestampList precertificateSctList;
-    private SignedCertificateTimestampList handshakeSctList;
-    private SignedCertificateTimestampList ocspSctList;
+    private final SignedCertificateTimestampList precertificateSctList = new SignedCertificateTimestampList();
+    private final SignedCertificateTimestampList handshakeSctList = new SignedCertificateTimestampList();;
+    private final SignedCertificateTimestampList ocspSctList = new SignedCertificateTimestampList();;
 
     public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
@@ -91,9 +92,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
                     (Asn1EncapsulatingOctetString) innerContentEncapsulation;
                 encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
             }
-            SignedCertificateTimestampListParser sctListParser =
-                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
-            precertificateSctList = sctListParser.parse();
+            SignedCertificateTimestampListParser sctListParser = new SignedCertificateTimestampListParser(
+                new ByteArrayInputStream(encodedSctList), serverCertChain, true);
+            sctListParser.parse(precertificateSctList);
         }
     }
 
@@ -111,9 +112,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         if (sctExtensionMessage != null) {
             byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
-            SignedCertificateTimestampListParser sctListParser =
-                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
-            handshakeSctList = sctListParser.parse();
+            SignedCertificateTimestampListParser sctListParser = new SignedCertificateTimestampListParser(
+                new ByteArrayInputStream(encodedSctList), serverCertChain, false);
+            sctListParser.parse(handshakeSctList);
 
             supportsHandshakeSCTs = true;
         }

@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
@@ -251,9 +251,9 @@ public abstract class TlsScanReport extends ScanReport {
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized List<HttpsHeader> getHttpsHeader() {
+	public synchronized List<HttpHeader> getHttpHeader() {
 		ListResult<?> listResult = getListResult(TlsAnalyzedProperty.HTTPS_HEADER);
-		return listResult == null ? new LinkedList<>() : (List<HttpsHeader>) listResult.getList();
+		return listResult == null ? new LinkedList<>() : (List<HttpHeader>) listResult.getList();
 	}
 
 	@SuppressWarnings("unchecked")

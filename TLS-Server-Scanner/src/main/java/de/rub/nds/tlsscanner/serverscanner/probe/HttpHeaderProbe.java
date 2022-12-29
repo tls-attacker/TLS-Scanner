@@ -13,9 +13,10 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.http.HttpMessage;
+import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
@@ -35,7 +36,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private List<HttpsHeader> headerList;
+    private List<HttpHeader> headerList;
     private TestResult speaksHttps;
     private TestResult supportsHsts = TestResults.FALSE;
     private Long hstsMaxAge;
@@ -61,17 +62,17 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
-        tlsConfig.setHttpsParsingEnabled(true);
+        tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
         executeState(state);
 
         ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
-        HttpsResponseMessage responseMessage = null;
-        if (action.getReceivedMessages() != null) {
-            for (ProtocolMessage message : action.getReceivedMessages()) {
-                if (message instanceof HttpsResponseMessage) {
-                    responseMessage = (HttpsResponseMessage) message;
+        HttpResponseMessage responseMessage = null;
+        if (action.getReceivedHttpMessages() != null) {
+            for (HttpMessage<?> httpMsg : action.getReceivedHttpMessages()) {
+                if (httpMsg instanceof HttpResponseMessage) {
+                    responseMessage = (HttpResponseMessage) httpMsg;
                     break;
                 }
             }
@@ -96,7 +97,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         if (headerList != null) {
-            for (HttpsHeader header : headerList) {
+            for (HttpHeader header : headerList) {
                 if (header.getHeaderName().getValue().toLowerCase().equals("strict-transport-security")) {
                     supportsHsts = TestResults.TRUE;
                     boolean preload = false;

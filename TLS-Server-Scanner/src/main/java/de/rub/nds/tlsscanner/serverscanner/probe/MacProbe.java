@@ -23,16 +23,16 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
-import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
-import de.rub.nds.tlsattacker.core.https.header.HostHeader;
+import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
+import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
+import de.rub.nds.tlsattacker.core.http.header.GenericHttpHeader;
+import de.rub.nds.tlsattacker.core.http.header.HostHeader;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.TlsMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -93,9 +93,8 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
         for (ProtocolMessage message : fingerprint.getMessageList()) {
-            if (message instanceof TlsMessage
-                    && ((TlsMessage) message).getProtocolMessageType()
-                            == ProtocolMessageType.APPLICATION_DATA) {
+            if (message instanceof ProtocolMessage
+                    && message.getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 return true;
             }
         }
@@ -104,50 +103,49 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private ResponseFingerprint getCorrectAppDataFingerprint() {
         Config config = configSelector.getBaseConfig();
-        config.setHttpsParsingEnabled(true);
         if (suiteList != null) {
             config.setDefaultClientSupportedCipherSuites(suiteList.get(0));
         }
         config.setWorkflowExecutorShouldClose(false);
         configSelector.repairConfig(config);
-
+        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
+        HttpRequestMessage httpsRequestMessage = new HttpRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
+        httpsRequestMessage.getHeader().add(new GenericHttpHeader("Connection", "keep-alive"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept",
                                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept-Encoding",
                                 "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
         httpsRequestMessage
                 .getHeader()
-                .add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+                .add(new GenericHttpHeader("Upgrade-Insecure-Requests", "1"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "User-Agent",
                                 "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
         trace.addTlsAction(new SendAction(httpsRequestMessage));
-        trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
+        trace.addTlsAction(new ReceiveAction(new HttpResponseMessage()));
 
         State state = new State(config, trace);
         executeState(state);
@@ -169,43 +167,44 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
+        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
+        HttpRequestMessage httpsRequestMessage = new HttpRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
+        httpsRequestMessage.getHeader().add(new GenericHttpHeader("Connection", "keep-alive"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept",
                                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept-Encoding",
                                 "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
         httpsRequestMessage
                 .getHeader()
-                .add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+                .add(new GenericHttpHeader("Upgrade-Insecure-Requests", "1"));
         httpsRequestMessage
                 .getHeader()
                 .add(
-                        new GenericHttpsHeader(
+                        new GenericHttpHeader(
                                 "User-Agent",
                                 "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
         trace.addTlsAction(new SendAction(httpsRequestMessage));
-        trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
+        trace.addTlsAction(new ReceiveAction(new HttpResponseMessage()));
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
         Record r = new Record();
         r.prepareComputations();
@@ -217,7 +216,6 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         modMac.setModification(xor);
         lastSendingAction.setRecords(r);
         trace.addTlsAction(new GenericReceiveAction());
-        config.setHttpsParsingEnabled(Boolean.TRUE);
         return trace;
     }
 
@@ -342,7 +340,6 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         config.setDefaultClientSupportedCipherSuites(suite);
         config.setDefaultSelectedCipherSuite(suite);
         config.setWorkflowExecutorShouldClose(false);
-        config.setHttpsParsingEnabled(true);
         configSelector.repairConfig(config);
         List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < macSize; i++) {

@@ -168,9 +168,6 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
-        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
-            state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());

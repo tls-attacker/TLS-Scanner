@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendRecordsFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -43,10 +43,21 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig
 		processesRetransmissions = processesRetransmissions();
 	}
 
+<<<<<<< HEAD
 	private TestResult doesRetransmissions() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 		config.setAcceptContentRewritingDtlsFragments(true);
+=======
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+>>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
@@ -65,10 +76,21 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig
 		}
 	}
 
+<<<<<<< HEAD
 	private TestResult processesRetransmissions() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 		config.setAcceptContentRewritingDtlsFragments(true);
+=======
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+>>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());

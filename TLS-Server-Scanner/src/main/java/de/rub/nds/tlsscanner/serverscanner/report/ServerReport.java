@@ -76,7 +76,7 @@ public class ServerReport extends TlsScanReport {
 
     // HTTPS Header
     private Long hstsMaxAge = null;
-    private Integer hpkpMaxAge = null;// <<<<<<<HEAD
+    private Integer hpkpMaxAge = null;//
 
     // DTLS
     private Integer cookieLength = null;

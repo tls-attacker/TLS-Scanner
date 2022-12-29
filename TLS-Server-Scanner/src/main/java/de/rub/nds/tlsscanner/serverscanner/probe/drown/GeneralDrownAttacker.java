@@ -1,18 +1,17 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.SSL2MessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientMasterKeyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerVerifyMessage;
@@ -41,38 +40,46 @@ public class GeneralDrownAttacker extends BaseDrownAttacker {
 
     @Override
     public DrownVulnerabilityType getDrownVulnerabilityType() {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-            .createWorkflowTrace(WorkflowTraceType.SSL2_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createWorkflowTrace(WorkflowTraceType.SSL2_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new SSL2ClientMasterKeyMessage()));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerVerifyMessage()));
         State state = new State(tlsConfig, trace);
         WorkflowExecutor workflowExecutor =
-            WorkflowExecutorFactory.createWorkflowExecutor(tlsConfig.getWorkflowExecutorType(), state);
+                WorkflowExecutorFactory.createWorkflowExecutor(
+                        tlsConfig.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
         // See if the server talks SSLv2 at all
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SSL2_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
             return DrownVulnerabilityType.NONE;
         }
 
         // See if export ciphers are announced
-        SSL2ServerHelloMessage serverHello = (SSL2ServerHelloMessage) WorkflowTraceUtil
-            .getFirstReceivedMessage(HandshakeMessageType.SSL2_SERVER_HELLO, trace);
+        SSL2ServerHelloMessage serverHello =
+                (SSL2ServerHelloMessage)
+                        WorkflowTraceUtil.getFirstReceivedMessage(
+                                SSL2MessageType.SSL_SERVER_HELLO, trace);
         List<SSL2CipherSuite> serverCipherSuites =
-            SSL2CipherSuite.getCipherSuites(serverHello.getCipherSuites().getValue());
+                SSL2CipherSuite.getCipherSuites(serverHello.getCipherSuites().getValue());
         for (SSL2CipherSuite cipherSuite : serverCipherSuites) {
             if (cipherSuite.isWeak()) {
-                LOGGER.debug("Declaring host as vulnerable based on weak cipher suite in ServerHello.");
+                LOGGER.debug(
+                        "Declaring host as vulnerable based on weak cipher suite in ServerHello.");
                 return DrownVulnerabilityType.GENERAL;
             }
         }
 
         // See if server supports export ciphers even though they have not
         // been announced (CVE-2015-3197)
-        SSL2ServerVerifyMessage message = (SSL2ServerVerifyMessage) WorkflowTraceUtil
-            .getFirstReceivedMessage(HandshakeMessageType.SSL2_SERVER_VERIFY, trace);
+        SSL2ServerVerifyMessage message =
+                (SSL2ServerVerifyMessage)
+                        WorkflowTraceUtil.getFirstReceivedMessage(
+                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
         if (message != null && ServerVerifyChecker.check(message, state.getTlsContext(), false)) {
-            LOGGER.debug("Declaring host as vulnerable based on export cipher suite selection (CVE-2015-3197).");
+            LOGGER.debug(
+                    "Declaring host as vulnerable based on export cipher suite selection (CVE-2015-3197).");
             return DrownVulnerabilityType.GENERAL;
         }
 

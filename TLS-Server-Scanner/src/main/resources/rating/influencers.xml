@@ -317,6 +317,28 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <tlsAnalyzedProperty>SUPPORTS_DHE</tlsAnalyzedProperty>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <tlsAnalyzedProperty>SUPPORTS_ECDHE</tlsAnalyzedProperty>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <tlsAnalyzedProperty>SUPPORTS_STATIC_DH</tlsAnalyzedProperty>
         <propertyRatingInfluencers>
             <result>TRUE</result>
@@ -325,17 +347,6 @@
         <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>100</influence>
-        </propertyRatingInfluencers>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <tlsAnalyzedProperty>SUPPORTS_STATIC_ECDH</tlsAnalyzedProperty>
-        <propertyRatingInfluencers>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyRatingInfluencers>
-        <propertyRatingInfluencers>
-            <result>FALSE</result>
-            <influence>-50</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -417,17 +428,6 @@
     </ratingInfluencer>
     <ratingInfluencer>
         <tlsAnalyzedProperty>SUPPORTS_NEWHOPE</tlsAnalyzedProperty>
-        <propertyRatingInfluencers>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyRatingInfluencers>
-        <propertyRatingInfluencers>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyRatingInfluencers>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <tlsAnalyzedProperty>SUPPORTS_ECMQV</tlsAnalyzedProperty>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>50</influence>

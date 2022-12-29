@@ -1,7 +1,7 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -19,7 +19,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -137,7 +136,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendAction(new ApplicationMessage(config, data)));
+        trace.addTlsAction(new SendAction(new ApplicationMessage(data)));
         ReceiveAction receiveAction = new ReceiveAction(new ApplicationMessage());
         trace.addTlsAction(receiveAction);
         State state = new State(config, trace);
@@ -145,7 +144,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         if (receiveAction.getReceivedRecords() != null && !receiveAction.getReceivedRecords().isEmpty()) {
             ByteArrayOutputStream receivedAppData = new ByteArrayOutputStream();
             try {
-                for (AbstractRecord record : receiveAction.getReceivedRecords()) {
+                for (Record record : receiveAction.getReceivedRecords()) {
                     receivedAppData.write(record.getCleanProtocolMessageBytes().getValue());
                 }
             } catch (IOException ex) {
@@ -161,15 +160,15 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendAction(new ApplicationMessage(config, data)));
+        trace.addTlsAction(new SendAction(new ApplicationMessage(data)));
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         State state = new State(config, trace);
         executeState(state);
-        ProtocolMessage receivedMessage = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        ProtocolMessage<?> receivedMessage = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
 
         trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
             RunningModeType.CLIENT);
-        SendAction sendAction = new SendAction(new ApplicationMessage(config, data));
+        SendAction sendAction = new SendAction(new ApplicationMessage(data));
         Record record = new Record(config);
         record.setEpoch(Modifiable.explicit(0));
         sendAction.setRecords(record);
@@ -177,7 +176,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         state = new State(config, trace);
         executeState(state);
-        ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        ProtocolMessage<?> receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
         if (receivedMessage != null && receivedMessageModified != null && receivedMessage.getCompleteResultingMessage()
             .equals(receivedMessageModified.getCompleteResultingMessage())) {
             isAcceptingUnencryptedAppData = TestResults.TRUE;

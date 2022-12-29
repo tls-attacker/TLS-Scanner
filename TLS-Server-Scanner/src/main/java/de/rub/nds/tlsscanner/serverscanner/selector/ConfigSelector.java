@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -69,7 +68,9 @@ public class ConfigSelector {
 
     public boolean findWorkingConfigs() {
         findWorkingConfig();
-        findWorkingTls13Config();
+        if (!scannerConfig.getDtlsDelegate().isDTLS()) {
+            findWorkingTls13Config();
+        }
         return workingConfig != null || workingTl13Config != null;
     }
 
@@ -145,7 +146,7 @@ public class ConfigSelector {
         State state = new State(config, trace);
         parallelExecutor.bulkExecuteStateTasks(state);
 
-        List<AbstractRecord> reveicedRecords =
+        List<Record> reveicedRecords =
                 state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
         if ((reveicedRecords != null
                         && !reveicedRecords.isEmpty()
@@ -161,13 +162,14 @@ public class ConfigSelector {
     }
 
     private void applyPerformanceParamters(Config config) {
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        config.setStopTraceAfterUnexpected(true);
-        config.setStopReceivingAfterWarning(false);
+        if (scannerConfig.getDtlsDelegate().isDTLS()) {
+            config.setStopTraceAfterUnexpected(false);
+        } else {
+            config.setStopTraceAfterUnexpected(true);
+        }
         config.setStopActionsAfterWarning(false);
         config.setEnforceSettings(false);
     }
@@ -207,7 +209,6 @@ public class ConfigSelector {
             adjustEccExtensionsPreTls13(config);
         }
         setDefaultSelectedCipherSuites(config);
-        applyDelegates(config);
         return config;
     }
 

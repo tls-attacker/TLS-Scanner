@@ -21,6 +21,9 @@ public class Pkcs1Vector implements Vector {
 
     private byte[] encryptedValue;
 
+    // keep default constructor for (de)serialization
+    private Pkcs1Vector() {}
+
     public Pkcs1Vector(String name, byte[] value) {
         this.name = name;
         this.plainValue = value;

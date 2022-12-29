@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendRecordsFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -55,9 +55,9 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage());
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);
@@ -78,9 +78,9 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-        trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
+        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage());
         trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);

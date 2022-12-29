@@ -106,7 +106,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -165,7 +165,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -236,6 +236,8 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setAddPreSharedKeyExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
+                // allow an early NewSessionTicket without aborting execution
+                tlsConfig.setStopTraceAfterUnexpected(false);
                 State state = new State(tlsConfig);
                 executeState(state);
 
@@ -258,7 +260,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 LOGGER.error("Timeout on " + getProbeName());
                 throw new RuntimeException(e);
             } else {
-                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + ")");
+                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + "): ", e);
             }
             return TestResults.ERROR_DURING_TEST;
         }
@@ -305,7 +307,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
                 State state = new State(tlsConfig);
                 state.getWorkflowTrace().addTlsAction(new ReceiveAction(
-                    tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage(false)));
+                    tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage()));
                 executeState(state);
 
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET,

@@ -75,14 +75,14 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     private WorkflowTrace getTrace(Config tlsConfig, TargetVersion targetVersion) {
         WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(tlsConfig)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        workflowTrace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
+        workflowTrace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
         workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
         workflowTrace.addTlsAction(new ActivateEncryptionAction());
         workflowTrace.addTlsAction(new EarlyCcsAction(targetVersion == TargetVersion.OPENSSL_1_0_0));
         if (targetVersion != TargetVersion.OPENSSL_1_0_0) {
             workflowTrace.addTlsAction(new ChangeMasterSecretAction(new byte[0]));
         }
-        workflowTrace.addTlsAction(new SendAction(new FinishedMessage(tlsConfig)));
+        workflowTrace.addTlsAction(new SendAction(new FinishedMessage()));
         workflowTrace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         return workflowTrace;
     }

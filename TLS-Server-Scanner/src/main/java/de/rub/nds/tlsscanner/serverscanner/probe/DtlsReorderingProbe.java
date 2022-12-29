@@ -49,11 +49,10 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
         trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         supportsReordering =

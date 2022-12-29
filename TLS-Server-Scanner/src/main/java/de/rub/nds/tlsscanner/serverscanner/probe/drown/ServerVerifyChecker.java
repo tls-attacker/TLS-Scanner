@@ -1,20 +1,19 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.SSL2MessageType;
 import de.rub.nds.tlsattacker.core.constants.ssl.SSL2ByteLength;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerVerifyMessage;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
@@ -31,24 +30,25 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
 /**
- * Checks if a Server-Verify message successfully decrypts to the expected Client Random value, i.e. the client's
- * challenge. TLS-Attacker's SSLv2 implementation does not actually implement symmetric encryption, so we build the
- * minimal required parts here.
+ * Checks if a Server-Verify message successfully decrypts to the expected Client Random value, i.e.
+ * the client's challenge. TLS-Attacker's SSLv2 implementation does not actually implement symmetric
+ * encryption, so we build the minimal required parts here.
  */
 public class ServerVerifyChecker {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * Checks if the given message decrypts to the Client Random value from the given TLS context under the cipher suite
-     * from the TLS context.
+     * Checks if the given message decrypts to the Client Random value from the given TLS context
+     * under the cipher suite from the TLS context.
      *
-     * @param  message
-     * @param  context
-     * @param  decreaseLogNoise
-     * @return                  True for successful decryption to the expected value
+     * @param message
+     * @param context
+     * @param decreaseLogNoise
+     * @return True for successful decryption to the expected value
      */
-    public static boolean check(SSL2ServerVerifyMessage message, TlsContext context, boolean decreaseLogNoise) {
+    public static boolean check(
+            SSL2ServerVerifyMessage message, TlsContext context, boolean decreaseLogNoise) {
         SSL2CipherSuite cipherSuite = context.getChooser().getSSL2CipherSuite();
         byte[] decryptedPart;
 
@@ -68,7 +68,8 @@ public class ServerVerifyChecker {
                 decryptedPart = decryptCbcDesEde3(message, context);
                 break;
             default:
-                throw new UnsupportedOperationException("Check not implemented for the selected cipher suite");
+                throw new UnsupportedOperationException(
+                        "Check not implemented for the selected cipher suite");
         }
         return compareDecrypted(decryptedPart, context.getClientRandom(), decreaseLogNoise);
     }
@@ -80,14 +81,15 @@ public class ServerVerifyChecker {
         }
         int typeOffset = SSL2ByteLength.MAC_DATA;
         // All protocol fields after the record header are part of the message
-        if (decrypted[typeOffset] != HandshakeMessageType.SSL2_SERVER_VERIFY.getValue()) {
+        if (decrypted[typeOffset] != SSL2MessageType.SSL_SERVER_VERIFY.getType()) {
             if (!silent) {
                 LOGGER.warn("Wrong message type in decrypted Server-Verify message");
             }
             return false;
         }
         int challengeOffset = typeOffset + SSL2ByteLength.MESSAGE_TYPE;
-        byte[] decryptedChallenge = Arrays.copyOfRange(decrypted, challengeOffset, decrypted.length);
+        byte[] decryptedChallenge =
+                Arrays.copyOfRange(decrypted, challengeOffset, decrypted.length);
 
         return Arrays.equals(decryptedChallenge, clientRandom);
     }
@@ -114,8 +116,11 @@ public class ServerVerifyChecker {
         byte[] clientReadKey = makeKeyMaterial(context, "0");
         byte[] iv = context.getSSL2Iv();
 
-        return decryptRC2(clientReadKey, message.getEncryptedPart().getValue(), iv,
-            message.getPaddingLength().getValue());
+        return decryptRC2(
+                clientReadKey,
+                message.getEncryptedPart().getValue(),
+                iv,
+                message.getPaddingLength().getValue());
     }
 
     static byte[] decryptRC2(byte[] clientReadKey, byte[] encrypted, byte[] iv, int paddingLength) {
@@ -140,8 +145,10 @@ public class ServerVerifyChecker {
         ParametersWithIV cbcDesParams = new ParametersWithIV(new DESParameters(clientReadKey), iv);
         cbcDes.init(false, cbcDesParams);
 
-        return processEncryptedBlocks(cbcDes, message.getEncryptedPart().getValue(),
-            message.getPaddingLength().getValue());
+        return processEncryptedBlocks(
+                cbcDes,
+                message.getEncryptedPart().getValue(),
+                message.getPaddingLength().getValue());
     }
 
     private static byte[] decryptCbcDesEde3(SSL2ServerVerifyMessage message, TlsContext context) {
@@ -156,18 +163,18 @@ public class ServerVerifyChecker {
         ParametersWithIV params = new ParametersWithIV(new KeyParameter(clientReadKey), iv);
         cbcDesEde.init(false, params);
 
-        return processEncryptedBlocks(cbcDesEde, message.getEncryptedPart().getValue(),
-            message.getPaddingLength().getValue());
+        return processEncryptedBlocks(
+                cbcDesEde,
+                message.getEncryptedPart().getValue(),
+                message.getPaddingLength().getValue());
     }
 
     /**
      * Computes KEY-MATERIAL from information contained in the TLS context using MD5.
      *
-     * @param tlsContext
-     *                   The TLS context to get information for key derivation from.
-     * @param index
-     *                   Additional characters to mix into key derivation. This will usually either be an empty String,
-     *                   or one of "0" and "1" for KEY-MATERIAL-0 resp. KEY-MATERIAL-1.
+     * @param tlsContext The TLS context to get information for key derivation from.
+     * @param index Additional characters to mix into key derivation. This will usually either be an
+     *     empty String, or one of "0" and "1" for KEY-MATERIAL-0 resp. KEY-MATERIAL-1.
      */
     private static byte[] makeKeyMaterial(TlsContext tlsContext, String index) {
         SSL2CipherSuite cipherSuite = tlsContext.getChooser().getSSL2CipherSuite();
@@ -178,15 +185,18 @@ public class ServerVerifyChecker {
         byte[] secretKey = tlsContext.getPreMasterSecret();
         if (clearKey.length != cipherSuite.getClearKeyByteNumber()) {
             // Special DROWN with "extra clear" oracle
-            int remainingLength = secretKey.length - (clearKey.length - cipherSuite.getClearKeyByteNumber());
+            int remainingLength =
+                    secretKey.length - (clearKey.length - cipherSuite.getClearKeyByteNumber());
             secretKey = Arrays.copyOfRange(secretKey, 0, remainingLength);
         }
 
         byte[] masterKey = ArrayConverter.concatenate(clearKey, secretKey);
-        return makeKeyMaterial(masterKey, tlsContext.getClientRandom(), tlsContext.getServerRandom(), index);
+        return makeKeyMaterial(
+                masterKey, tlsContext.getClientRandom(), tlsContext.getServerRandom(), index);
     }
 
-    static byte[] makeKeyMaterial(byte[] masterKey, byte[] clientRandom, byte[] serverRandom, String index) {
+    static byte[] makeKeyMaterial(
+            byte[] masterKey, byte[] clientRandom, byte[] serverRandom, String index) {
         MD5Digest md5 = new MD5Digest();
         md5Update(md5, masterKey);
         md5Update(md5, index.getBytes(Charset.forName("US-ASCII")));
@@ -202,7 +212,8 @@ public class ServerVerifyChecker {
         md5.update(bytes, 0, bytes.length);
     }
 
-    private static byte[] processEncryptedBlocks(BlockCipher cipher, byte[] encrypted, int paddingLength) {
+    private static byte[] processEncryptedBlocks(
+            BlockCipher cipher, byte[] encrypted, int paddingLength) {
         if (encrypted.length % cipher.getBlockSize() != 0) {
             LOGGER.warn("Server-Verify payload has invalid length");
             return new byte[0];
@@ -211,10 +222,10 @@ public class ServerVerifyChecker {
         byte[] decrypted = new byte[encrypted.length];
         int processedLength = 0;
         while (processedLength < encrypted.length) {
-            processedLength += cipher.processBlock(encrypted, processedLength, decrypted, processedLength);
+            processedLength +=
+                    cipher.processBlock(encrypted, processedLength, decrypted, processedLength);
         }
 
         return Arrays.copyOfRange(decrypted, 0, decrypted.length - paddingLength);
     }
-
 }

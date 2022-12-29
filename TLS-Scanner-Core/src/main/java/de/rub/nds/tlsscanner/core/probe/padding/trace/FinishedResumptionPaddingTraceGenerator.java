@@ -12,7 +12,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
@@ -48,7 +47,7 @@ public class FinishedResumptionPaddingTraceGenerator extends PaddingTraceGenerat
             trace.removeTlsAction(trace.getTlsActions().size() - 1);
         }
         SendAction sendAction = (SendAction) trace.getLastSendingAction();
-        LinkedList<AbstractRecord> recordList = new LinkedList<>();
+        LinkedList<Record> recordList = new LinkedList<>();
         for (ProtocolMessage msg : sendAction.getMessages()) {
             if (msg instanceof FinishedMessage) {
                 recordList.add(vector.createRecord());

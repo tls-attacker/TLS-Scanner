@@ -114,7 +114,6 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
             config.setDefaultClientSupportedCipherSuites(suite);
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterWarning(false);
-            config.setStopReceivingAfterWarning(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
             WorkflowTrace trace =

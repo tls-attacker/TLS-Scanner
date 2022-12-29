@@ -1,19 +1,18 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.SSL2MessageType;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientMasterKeyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerVerifyMessage;
@@ -51,13 +50,19 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
     private boolean generateCheckData;
     private boolean analyzeCheckData;
 
-    public SpecialDrownAttacker(Config baseConfig, ParallelExecutor executor, DrownOracleType oracleType) {
+    public SpecialDrownAttacker(
+            Config baseConfig, ParallelExecutor executor, DrownOracleType oracleType) {
         super(baseConfig, executor);
         this.oracleType = oracleType;
     }
 
-    public SpecialDrownAttacker(Config baseConfig, ParallelExecutor executor, DrownOracleType oracleType,
-        String checkDataFilePath, boolean generateCheckData, boolean analyzeCheckData) {
+    public SpecialDrownAttacker(
+            Config baseConfig,
+            ParallelExecutor executor,
+            DrownOracleType oracleType,
+            String checkDataFilePath,
+            boolean generateCheckData,
+            boolean analyzeCheckData) {
         super(baseConfig, executor);
         this.oracleType = oracleType;
         this.checkDataFilePath = checkDataFilePath;
@@ -76,7 +81,8 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                 throw new ConfigurationException("Check data file is required");
             }
             if (!generateCheckData && !analyzeCheckData) {
-                throw new ConfigurationException("Specify whether to generate or analyze check data");
+                throw new ConfigurationException(
+                        "Specify whether to generate or analyze check data");
             }
             if (generateCheckData) {
                 vulnerabilityType = generateLeakyExportCheckData(tlsConfig, checkDataFilePath);
@@ -92,28 +98,33 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
         SSL2CipherSuite cipherSuite = config.getDefaultSSL2CipherSuite();
 
         // Overwrite all but 1 byte of the full key with null bytes
-        int clearKeyLength = cipherSuite.getClearKeyByteNumber() + cipherSuite.getSecretKeyByteNumber() - 1;
+        int clearKeyLength =
+                cipherSuite.getClearKeyByteNumber() + cipherSuite.getSecretKeyByteNumber() - 1;
         byte[] clearKey = new byte[clearKeyLength];
         SSL2ClientMasterKeyMessage clientMasterKeyMessage = new SSL2ClientMasterKeyMessage();
         clientMasterKeyMessage.setClearKeyData(Modifiable.explicit(clearKey));
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SSL2_HELLO,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.SSL2_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(clientMasterKeyMessage));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerVerifyMessage()));
         State state = new State(config, trace);
         WorkflowExecutor workflowExecutor =
-            WorkflowExecutorFactory.createWorkflowExecutor(config.getWorkflowExecutorType(), state);
+                WorkflowExecutorFactory.createWorkflowExecutor(
+                        config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SSL2_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
             return DrownVulnerabilityType.NONE;
         }
 
-        SSL2ServerVerifyMessage serverVerifyMessage = (SSL2ServerVerifyMessage) WorkflowTraceUtil
-            .getFirstReceivedMessage(HandshakeMessageType.SSL2_SERVER_VERIFY, trace);
+        SSL2ServerVerifyMessage serverVerifyMessage =
+                (SSL2ServerVerifyMessage)
+                        WorkflowTraceUtil.getFirstReceivedMessage(
+                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
         if (serverVerifyMessage != null
-            && ServerVerifyChecker.check(serverVerifyMessage, state.getTlsContext(), true)) {
+                && ServerVerifyChecker.check(serverVerifyMessage, state.getTlsContext(), true)) {
             return DrownVulnerabilityType.SPECIAL;
         }
 
@@ -121,14 +132,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
     }
 
     /**
-     * Connects to a target host and writes a file to disk which will allow checkForLeakyExport() to check whether the
-     * server is affected by the "leaky export" oracle bug (CVE-2016-0704).
+     * Connects to a target host and writes a file to disk which will allow checkForLeakyExport() to
+     * check whether the server is affected by the "leaky export" oracle bug (CVE-2016-0704).
      *
-     * @param  dataFilePath
-     *                      Name of the data dump file for checkForLeakyExport().
-     * @return              Information whether the server is vulnerable, if already known
+     * @param dataFilePath Name of the data dump file for checkForLeakyExport().
+     * @return Information whether the server is vulnerable, if already known
      */
-    private DrownVulnerabilityType generateLeakyExportCheckData(Config config, String dataFilePath) {
+    private DrownVulnerabilityType generateLeakyExportCheckData(
+            Config config, String dataFilePath) {
         SSL2CipherSuite cipherSuite = config.getDefaultSSL2CipherSuite();
 
         // Produce correctly-padded SECRET-KEY-DATA of the wrong length (case 2
@@ -144,24 +155,29 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
         // The Premaster Secret is SECRET-KEY-DATA for SSLv2
         clientMasterKeyMessage.getComputations().setPremasterSecret(Modifiable.explicit(secretKey));
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SSL2_HELLO,
-            RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.SSL2_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(clientMasterKeyMessage));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerVerifyMessage()));
         State state = new State(config, trace);
         WorkflowExecutor workflowExecutor =
-            WorkflowExecutorFactory.createWorkflowExecutor(config.getWorkflowExecutorType(), state);
+                WorkflowExecutorFactory.createWorkflowExecutor(
+                        config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SSL2_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
             return DrownVulnerabilityType.NONE;
         }
 
-        SSL2ServerVerifyMessage serverVerifyMessage = (SSL2ServerVerifyMessage) WorkflowTraceUtil
-            .getFirstReceivedMessage(HandshakeMessageType.SSL2_SERVER_VERIFY, trace);
+        SSL2ServerVerifyMessage serverVerifyMessage =
+                (SSL2ServerVerifyMessage)
+                        WorkflowTraceUtil.getFirstReceivedMessage(
+                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
         if (serverVerifyMessage != null) {
             LeakyExportCheckData checkData =
-                new LeakyExportCheckData(state.getTlsContext(), clientMasterKeyMessage, serverVerifyMessage);
+                    new LeakyExportCheckData(
+                            state.getTlsContext(), clientMasterKeyMessage, serverVerifyMessage);
             try {
                 FileOutputStream fileStream = new FileOutputStream(dataFilePath);
                 ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
@@ -177,14 +193,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
     }
 
     /**
-     * Checks whether the server is affected by the "leaky export" oracle bug (CVE-2016-0704) based on data from
-     * genLeakyExportCheckData(). The bug allows to distinguish between an invalid ENCRYPTED-KEY-DATA ciphertext and a
-     * valid ciphertext decrypting to a message of the wrong length. This method performs brute-force computations and
-     * may take some time to run. It does not connect ot any remote hosts and can run completely offline.
+     * Checks whether the server is affected by the "leaky export" oracle bug (CVE-2016-0704) based
+     * on data from genLeakyExportCheckData(). The bug allows to distinguish between an invalid
+     * ENCRYPTED-KEY-DATA ciphertext and a valid ciphertext decrypting to a message of the wrong
+     * length. This method performs brute-force computations and may take some time to run. It does
+     * not connect ot any remote hosts and can run completely offline.
      *
-     * @param  dataFilePath
-     *                      Name of the data dump file from genLeakyExportCheckData().
-     * @return              Indication whether the server is vulnerable to the "leaky export" oracle attack
+     * @param dataFilePath Name of the data dump file from genLeakyExportCheckData().
+     * @return Indication whether the server is vulnerable to the "leaky export" oracle attack
      */
     private DrownVulnerabilityType checkForLeakyExport(Config config, String dataFilePath) {
         LeakyExportCheckData checkData;
@@ -197,7 +213,10 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        LOGGER.debug("Check data read from " + dataFilePath + ", now trying to brute-force server randomness");
+        LOGGER.debug(
+                "Check data read from "
+                        + dataFilePath
+                        + ", now trying to brute-force server randomness");
 
         int threadNumber = Runtime.getRuntime().availableProcessors();
         LOGGER.debug("Using " + threadNumber + " threads");
@@ -216,7 +235,8 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                 firstByteTo = firstByteFrom + firstBytesPerThread;
             }
 
-            LeakyExportCheckCallable callable = new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
+            LeakyExportCheckCallable callable =
+                    new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
             allCallables.add(callable);
             allResults.add(executor.submit(callable));
         }
@@ -227,7 +247,8 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
         // and more accurate progress indicator than processing the first bytes
         int processedSecondBytes;
 
-        outer: do {
+        outer:
+        do {
             processedSecondBytes = 0;
             for (LeakyExportCheckCallable callable : allCallables) {
                 processedSecondBytes += callable.getProcessedSecondBytes();

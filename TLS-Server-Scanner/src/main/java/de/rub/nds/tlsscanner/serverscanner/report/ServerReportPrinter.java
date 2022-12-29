@@ -40,7 +40,7 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -1536,7 +1536,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpsHeader header : report.getHttpsHeader()) {
+                for (HttpHeader header : report.getHttpHeader()) {
                     prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
                 }
                 prettyAppendHeading(builder, "HTTP False Start");

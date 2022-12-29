@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.core.passive;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.scanner.core.passive.StatExtractor;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
-import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -29,13 +28,12 @@ public class CbcIvExtractor extends StatExtractor<ComparableByteArray> {
         if (state.getTlsContext().getSelectedCipherSuite() != null
                 && state.getTlsContext().getSelectedCipherSuite().isCBC()) {
             WorkflowTrace trace = state.getWorkflowTrace();
-            List<AbstractRecord> allReceivedRecords =
-                    WorkflowTraceUtil.getAllReceivedRecords(trace);
-            for (AbstractRecord abstractRecord : allReceivedRecords) {
-                if (abstractRecord instanceof Record) {
-                    if (((Record) abstractRecord).getComputations() != null) {
+            List<Record> allReceivedRecords = WorkflowTraceUtil.getAllReceivedRecords(trace);
+            for (Record receivedRecord : allReceivedRecords) {
+                if (receivedRecord instanceof Record) {
+                    if (((Record) receivedRecord).getComputations() != null) {
                         ModifiableByteArray cbcInitialisationVector =
-                                ((Record) abstractRecord)
+                                ((Record) receivedRecord)
                                         .getComputations()
                                         .getCbcInitialisationVector();
                         if (cbcInitialisationVector != null) {

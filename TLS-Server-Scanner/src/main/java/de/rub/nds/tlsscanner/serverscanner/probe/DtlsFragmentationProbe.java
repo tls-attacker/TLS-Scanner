@@ -67,7 +67,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(150);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -83,7 +83,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
     private TestResult supportsFragmentationAfterCookieExchange(boolean individualTransportPackets) {
         Config config = configSelector.getBaseConfig();
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -92,9 +92,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
         action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -109,7 +108,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
         config.setAddMaxFragmentLengthExtension(true);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         if (individualTransportPackets) {
-            config.setCreateIndividualTransportPackets(true);
+            config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
@@ -118,9 +117,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
         action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
-
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
