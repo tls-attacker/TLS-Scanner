@@ -64,27 +64,12 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
 		acceptsEmptyCookie = acceptsEmptyCookie();
 	}
 
-<<<<<<< HEAD
 	private TestResult acceptsLegacyServerVersionMismatch() {
 		Config config = scannerConfig.createConfig();
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
-        HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage();
-        hvrMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS10.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
-                trace, HandshakeMessageType.HELLO_VERIFY_REQUEST, hvrMessage);
-        ServerHelloMessage serverHello = new ServerHelloMessage(config);
-        serverHello.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
-                trace, HandshakeMessageType.SERVER_HELLO, serverHello);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
 				RunningModeType.SERVER);
-		HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage(config);
+		HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage();
 		hvrMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS10.getValue()));
 		WorkflowTraceMutator.replaceSendingMessage(trace, HandshakeMessageType.HELLO_VERIFY_REQUEST, hvrMessage);
 		ServerHelloMessage serverHello = new ServerHelloMessage(config);
@@ -101,34 +86,19 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
 		}
 	}
 
-<<<<<<< HEAD
 	private TestResult acceptsHvrSequenceNumberMismatch() {
 		Config config = scannerConfig.createConfig();
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeWriteSequenceNumberAction(5));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendDynamicServerCertificateAction());
-        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 		trace.addTlsAction(new ChangeWriteSequenceNumberAction(5));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
 		trace.addTlsAction(new SendDynamicServerCertificateAction());
 		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
 		State state = new State(config, trace);
@@ -140,34 +110,19 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
 		}
 	}
 
-<<<<<<< HEAD
 	private TestResult acceptsServerHelloSequenceNumberMismatch() {
 		Config config = scannerConfig.createConfig();
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeWriteSequenceNumberAction(5));
-        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-        trace.addTlsAction(new SendDynamicServerCertificateAction());
-        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 		trace.addTlsAction(new ChangeWriteSequenceNumberAction(5));
 		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
 		trace.addTlsAction(new SendDynamicServerCertificateAction());
 		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage(config)));
+		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
 		State state = new State(config, trace);
@@ -179,22 +134,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
 		}
 	}
 
-<<<<<<< HEAD
 	private TestResult hasClientHelloMismatch() {
 		Config config = scannerConfig.createConfig();
-=======
-        WorkflowTrace trace = new WorkflowTrace();
-        ReceiveAction firstReceiveAction = new ReceiveAction(new ClientHelloMessage());
-        trace.addTlsAction(firstReceiveAction);
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-        ReceiveAction secondReceiveAction = new ReceiveAction(new ClientHelloMessage());
-        trace.addTlsAction(secondReceiveAction);
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowTrace();
 		ReceiveAction firstReceiveAction = new ReceiveAction(new ClientHelloMessage());
 		trace.addTlsAction(firstReceiveAction);
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		ReceiveAction secondReceiveAction = new ReceiveAction(new ClientHelloMessage());
 		trace.addTlsAction(secondReceiveAction);
 

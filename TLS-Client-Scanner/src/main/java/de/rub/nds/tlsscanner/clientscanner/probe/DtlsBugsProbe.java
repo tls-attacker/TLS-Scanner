@@ -46,29 +46,16 @@ public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientRep
 		isEarlyFinished = isEarlyFinished();
 	}
 
-<<<<<<< HEAD
 	private TestResult isAcceptingUnencryptedFinished() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
-        trace.addTlsAction(new ChangeWriteEpochAction(0));
-        trace.addTlsAction(new SendAction(new FinishedMessage()));
-        GenericReceiveAction receiveAction = new GenericReceiveAction();
-        trace.addTlsAction(receiveAction);
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
 		trace.addTlsAction(new ChangeWriteEpochAction(0));
-		trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+		trace.addTlsAction(new SendAction(new FinishedMessage()));
 		GenericReceiveAction receiveAction = new GenericReceiveAction();
 		trace.addTlsAction(receiveAction);
 
@@ -81,27 +68,15 @@ public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientRep
 		}
 	}
 
-<<<<<<< HEAD
 	private TestResult isEarlyFinished() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new ActivateEncryptionAction());
-        trace.addTlsAction(new SendAction(new FinishedMessage()));
-        GenericReceiveAction receiveAction = new GenericReceiveAction();
-        trace.addTlsAction(receiveAction);
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 		trace.addTlsAction(new ActivateEncryptionAction());
-		trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+		trace.addTlsAction(new SendAction(new FinishedMessage()));
 		GenericReceiveAction receiveAction = new GenericReceiveAction();
 		trace.addTlsAction(receiveAction);
 

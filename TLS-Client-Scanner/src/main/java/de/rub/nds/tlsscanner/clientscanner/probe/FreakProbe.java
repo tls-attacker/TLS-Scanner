@@ -72,25 +72,13 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 		config.setDefaultServerRSAPublicKey(publicKey);
 		config.setDefaultServerRSAPrivateKey(privateKey);
 
-<<<<<<< HEAD
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new SendAction(new CertificateMessage(config)));
+		trace.addTlsAction(new SendAction(new CertificateMessage()));
 		trace.addTlsAction(new ChangeServerRsaParametersAction(modulus, publicKey, privateKey));
-		trace.addTlsAction(new SendAction(new RSAServerKeyExchangeMessage(config), new ServerHelloDoneMessage(config)));
+		trace.addTlsAction(new SendAction(new RSAServerKeyExchangeMessage(), new ServerHelloDoneMessage()));
 		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 		executeState(new State(config, trace));
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new SendAction(new CertificateMessage()));
-        trace.addTlsAction(new ChangeServerRsaParametersAction(modulus, publicKey, privateKey));
-        trace.addTlsAction(
-                new SendAction(new RSAServerKeyExchangeMessage(), new ServerHelloDoneMessage()));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        executeState(new State(config, trace));
->>>>>>> master
 
 		HandshakeMessage ckeMessage = WorkflowTraceUtil
 				.getFirstReceivedMessage(HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);

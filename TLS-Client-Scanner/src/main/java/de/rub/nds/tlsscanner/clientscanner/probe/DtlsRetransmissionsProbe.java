@@ -43,26 +43,15 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig
 		processesRetransmissions = processesRetransmissions();
 	}
 
-<<<<<<< HEAD
 	private TestResult doesRetransmissions() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 		config.setAcceptContentRewritingDtlsFragments(true);
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 		trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
@@ -76,28 +65,17 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig
 		}
 	}
 
-<<<<<<< HEAD
 	private TestResult processesRetransmissions() {
 		Config config = scannerConfig.createConfig();
 		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 		config.setAcceptContentRewritingDtlsFragments(true);
-=======
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
->>>>>>> master
 
 		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
 				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage(config)));
+		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
+		trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
 		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
 		State state = new State(config, trace);

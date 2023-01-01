@@ -31,6 +31,8 @@ import java.util.List;
 
 public class CompressionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
+	private List<CompressionMethod> clientAdvertisedCompressions;
+
 	private List<CompressionMethod> supportedCompressions;
 	private TestResult forcedCompression;
 
@@ -58,37 +60,24 @@ public class CompressionProbe extends TlsClientProbe<ClientScannerConfig, Client
 			State state = new State(config, workflowTrace);
 			executeState(state);
 
-<<<<<<< HEAD
 			if (state.getWorkflowTrace().executedAsPlanned()) {
 				supportedCompressions.add(compressionMethod);
 			}
 		}
-		forcedCompression = !supportedCompressions.containsAll(supportedCompressions)
-				? forcedCompression = TestResults.TRUE
-				: TestResults.FALSE;
+		if (clientAdvertisedCompressions != null) {
+			if (!clientAdvertisedCompressions.containsAll(supportedCompressions)) {
+				forcedCompression = TestResults.TRUE;
+			} else {
+				forcedCompression = TestResults.FALSE;
+			}
+		} else {
+			forcedCompression = TestResults.UNCERTAIN;
+		}
 	}
-=======
-            if (state.getWorkflowTrace().executedAsPlanned()) {
-                supportedCompressions.add(compressionMethod);
-            }
-        }
-        TestResult forcedCompression;
-        if (clientAdvertisedCompressions != null) {
-            if (!clientAdvertisedCompressions.containsAll(supportedCompressions)) {
-                forcedCompression = TestResults.TRUE;
-            } else {
-                forcedCompression = TestResults.FALSE;
-            }
-        } else {
-            forcedCompression = TestResults.UNCERTAIN;
-        }
-        return new CompressionResult(supportedCompressions, forcedCompression);
-    }
->>>>>>> master
 
 	@Override
 	public void adjustConfig(ClientReport report) {
-		supportedCompressions = report.getClientAdvertisedCompressions();
+		clientAdvertisedCompressions = report.getClientAdvertisedCompressions();
 	}
 
 	@Override

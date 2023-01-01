@@ -157,7 +157,7 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
 		}
 	}
 
-<<<<<<< HEAD
+	@SuppressWarnings("unchecked")
 	private List<CipherSuite> getToTestCipherSuitesByVersion(ProtocolVersion version) {
 		if (version == ProtocolVersion.SSL3) {
 			return (List<CipherSuite>) CipherSuite.SSL3_SUPPORTED_CIPHERSUITES;
@@ -178,18 +178,17 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
 			return realCipherSuites;
 		}
 	}
-=======
-    private Config getBaseConfig() {
-        Config config = scannerConfig.createConfig();
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopTraceAfterUnexpected(true);
-        config.setStopActionsAfterWarning(true);
-        config.setAddRenegotiationInfoExtension(false);
-        return config;
-    }
->>>>>>> master
+
+	private Config getBaseConfig() {
+		Config config = scannerConfig.createConfig();
+		config.setStopReceivingAfterFatal(true);
+		config.setStopActionsAfterFatal(true);
+		config.setStopActionsAfterIOException(true);
+		config.setStopTraceAfterUnexpected(true);
+		config.setStopActionsAfterWarning(true);
+		config.setAddRenegotiationInfoExtension(false);
+		return config;
+	}
 
 	private List<CipherSuite> filterForVersionSupported(Collection<CipherSuite> suites, ProtocolVersion version) {
 		return suites.stream().filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());
@@ -197,20 +196,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
 
 	private List<CipherSuite> filterPskCipherSuites(Collection<CipherSuite> suites) {
 		return suites.stream().filter(suite -> !suite.isPsk()).collect(Collectors.toList());
-	}
-
-	private Config getBaseConfig() {
-		Config config = scannerConfig.createConfig();
-		config.setEarlyStop(true);
-		config.setQuickReceive(true);
-		config.setStopReceivingAfterFatal(true);
-		config.setStopActionsAfterFatal(true);
-		config.setStopActionsAfterIOException(true);
-		config.setStopTraceAfterUnexpected(true);
-		config.setStopReceivingAfterWarning(true);
-		config.setStopActionsAfterWarning(true);
-		config.setAddRenegotiationInfoExtension(false);
-		return config;
 	}
 
 	private Config getTls13Config() {
