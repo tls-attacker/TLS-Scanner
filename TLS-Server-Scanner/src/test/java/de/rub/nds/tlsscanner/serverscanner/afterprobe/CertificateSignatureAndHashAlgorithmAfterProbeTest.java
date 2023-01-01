@@ -6,10 +6,10 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -44,13 +44,12 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     public void testMissingCertificateChain() {
         report.getCertificateChainList().add(null);
         probe.analyze(report);
-        assertNull(report.getSupportedSignatureAndHashAlgorithmsCert());
+        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
     }
 
     @Test
     public void testEmptyCertificateChain() {
-        report.getCertificateChainList()
-                .addAll(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
+        report.getCertificateChainList().addAll(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
         probe.analyze(report);
         assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
     }
@@ -58,22 +57,15 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     @Test
     public void testSingleCertificate() {
         try {
-            File certificateFile =
-                    new File(
-                            CertificateSignatureAndHashAlgorithmAfterProbeTest.class
-                                    .getClassLoader()
-                                    .getResource(PATH_TO_CERTIFICATE)
-                                    .toURI());
+            File certificateFile = new File(CertificateSignatureAndHashAlgorithmAfterProbeTest.class.getClassLoader()
+                .getResource(PATH_TO_CERTIFICATE).toURI());
             Certificate certificate = PemUtil.readCertificate(certificateFile);
-            report.getCertificateChainList()
-                    .addAll(List.of(new CertificateChain(certificate, "a.com")));
+            report.getCertificateChainList().addAll(List.of(new CertificateChain(certificate, "a.com")));
             probe.analyze(report);
         } catch (IOException | URISyntaxException | CertificateException e) {
             fail("Could not load certificate from resources");
         }
         assertEquals(1, report.getSupportedSignatureAndHashAlgorithmsCert().size());
-        assertTrue(
-                report.getSupportedSignatureAndHashAlgorithmsCert()
-                        .contains(SignatureAndHashAlgorithm.RSA_SHA256));
+        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().contains(SignatureAndHashAlgorithm.RSA_SHA256));
     }
 }
