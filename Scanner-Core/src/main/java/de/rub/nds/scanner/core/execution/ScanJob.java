@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -14,19 +14,19 @@ import java.util.List;
 
 public class ScanJob {
 
-	private final List<ScannerProbe> probeList;
-	private final List<AfterProbe> afterList;
+    private final List<ScannerProbe> probeList;
+    private final List<AfterProbe> afterList;
 
-	public ScanJob(List<ScannerProbe> probeList, List<AfterProbe> afterList) {
-		this.probeList = probeList;
-		this.afterList = afterList;
-	}
+    public ScanJob(List<ScannerProbe> probeList, List<AfterProbe> afterList) {
+        this.probeList = probeList;
+        this.afterList = afterList;
+    }
 
-	public List<ScannerProbe> getProbeList() {
-		return probeList;
-	}
+    public List<ScannerProbe> getProbeList() {
+        return probeList;
+    }
 
-	public List<AfterProbe> getAfterList() {
-		return afterList;
-	}
+    public List<AfterProbe> getAfterList() {
+        return afterList;
+    }
 }

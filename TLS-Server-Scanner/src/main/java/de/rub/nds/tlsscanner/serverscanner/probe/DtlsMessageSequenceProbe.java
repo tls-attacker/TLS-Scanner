@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -41,12 +40,15 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsSkippedMessageNumbersMultiple;
     private TestResult acceptsRandomMessageNumbers;
 
-    public DtlsMessageSequenceProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsMessageSequenceProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, configSelector);
-        register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
-            TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
-            TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
-            TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+                TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override
@@ -60,7 +62,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsRandomMessageNumbers() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
@@ -72,7 +75,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -82,7 +86,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsSkippedMessageNumbersMultiple() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
@@ -94,7 +99,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -104,7 +110,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsSkippedMessageNumbersOnce() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
@@ -115,7 +122,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -125,7 +133,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     private TestResult acceptsStartedWithInvalidMessageNumber() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new ChangeWriteMessageSequenceAction(3));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
@@ -134,7 +143,8 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -147,18 +157,23 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE, acceptsStartedWithInvalidMessageNumber);
-        put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
-        put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, acceptsSkippedMessageNumbersMultiple);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                acceptsStartedWithInvalidMessageNumber);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                acceptsSkippedMessageNumbersOnce);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                acceptsSkippedMessageNumbersMultiple);
         put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
         if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
-            && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
-            && acceptsRandomMessageNumbers == TestResults.FALSE) {
+                && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+                && acceptsRandomMessageNumbers == TestResults.FALSE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
         } else {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);

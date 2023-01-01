@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -32,44 +32,48 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult supportsReordering;
+    private TestResult supportsReordering;
 
-	public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);
-		register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
-	}
+    public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);
+        register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
+    }
 
-	@Override
-	public void executeTest() {
-		Config config = scannerConfig.createConfig();
+    @Override
+    public void executeTest() {
+        Config config = scannerConfig.createConfig();
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-		trace.addTlsAction(new ActivateEncryptionAction());
-		trace.addTlsAction(new SendAction(new FinishedMessage()));
-		trace.addTlsAction(new ChangeWriteEpochAction(0));
-		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
-		GenericReceiveAction receiveAction = new GenericReceiveAction();
-		trace.addTlsAction(receiveAction);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        trace.addTlsAction(new ActivateEncryptionAction());
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
+        trace.addTlsAction(new ChangeWriteEpochAction(0));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
+        GenericReceiveAction receiveAction = new GenericReceiveAction();
+        trace.addTlsAction(receiveAction);
 
-		State state = new State(config, trace);
-		executeState(state);
-		supportsReordering = state.getWorkflowTrace().executedAsPlanned()
-				&& receiveAction.getReceivedMessages().isEmpty() ? TestResults.TRUE : TestResults.FALSE;
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        supportsReordering =
+                state.getWorkflowTrace().executedAsPlanned()
+                                && receiveAction.getReceivedMessages().isEmpty()
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -66,54 +65,81 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE,
-            TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
-            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
-            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
-            TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
+                TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE,
+                TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER,
+                TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY,
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
     }
 
     @Override
     public void executeTest() {
         namedGroupsMap = new HashMap<>();
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-            KeyExchangeAlgorithm.DHE_RSA);
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-            KeyExchangeAlgorithm.DHE_DSS);
-        addGroupsFound(namedGroupsMap,
-            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-            KeyExchangeAlgorithm.DH_ANON);
+        addGroupsFound(
+                namedGroupsMap,
+                getSupportedNamedGroups(
+                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
+                KeyExchangeAlgorithm.DHE_RSA);
+        addGroupsFound(
+                namedGroupsMap,
+                getSupportedNamedGroups(
+                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
+                KeyExchangeAlgorithm.DHE_DSS);
+        addGroupsFound(
+                namedGroupsMap,
+                getSupportedNamedGroups(
+                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
+                KeyExchangeAlgorithm.DH_ANON);
 
         supportsExplicitPrime = TestResults.CANNOT_BE_TESTED;
         supportsExplicitChar2 = TestResults.CANNOT_BE_TESTED;
         if (configSelector.foundWorkingConfig()) {
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-                KeyExchangeAlgorithm.DHE_RSA);
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-                KeyExchangeAlgorithm.DHE_DSS);
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-                KeyExchangeAlgorithm.DH_ANON);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedGroups(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
+                    KeyExchangeAlgorithm.DHE_RSA);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedGroups(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
+                    KeyExchangeAlgorithm.DHE_DSS);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedGroups(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
+                    KeyExchangeAlgorithm.DH_ANON);
 
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-                KeyExchangeAlgorithm.ECDH_ANON);
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedGroups(
-                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
-                KeyExchangeAlgorithm.ECDHE_RSA);
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
-                KeyExchangeAlgorithm.ECDHE_ECDSA);
-            addGroupsFound(namedGroupsMap,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                    ecdsaCertSigGroupsStatic),
-                KeyExchangeAlgorithm.ECDH_ECDSA);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedGroups(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
+                    KeyExchangeAlgorithm.ECDH_ANON);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedGroups(
+                            getCipherSuiteByKeyExchange(
+                                    KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA),
+                            true),
+                    KeyExchangeAlgorithm.ECDHE_RSA);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedCurvesEcdsa(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
+                            ecdsaPkGroupsEphemeral,
+                            ecdsaCertSigGroupsEphemeral),
+                    KeyExchangeAlgorithm.ECDHE_ECDSA);
+            addGroupsFound(
+                    namedGroupsMap,
+                    getSupportedNamedCurvesEcdsa(
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA),
+                            null,
+                            ecdsaCertSigGroupsStatic),
+                    KeyExchangeAlgorithm.ECDH_ECDSA);
             supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
             supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
         }
@@ -126,8 +152,8 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(namedGroupsMap);
     }
 
-    private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,
-        boolean useCurves) {
+    private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(
+            List<CipherSuite> cipherSuites, boolean useCurves) {
         Map<NamedGroup, NamedGroupWitness> supportedNamedGroups = new HashMap<>();
 
         if (cipherSuites.isEmpty()) {
@@ -136,13 +162,17 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
         Config tlsConfig = getBasicConfig();
         tlsConfig.setDefaultClientSupportedCipherSuites((cipherSuites));
-        List<NamedGroup> toTestList = Arrays.asList(NamedGroup.values()).stream().filter(group -> {
-            if (useCurves) {
-                return group.isCurve();
-            } else {
-                return group.isDhGroup();
-            }
-        }).collect(Collectors.toList());
+        List<NamedGroup> toTestList =
+                Arrays.asList(NamedGroup.values()).stream()
+                        .filter(
+                                group -> {
+                                    if (useCurves) {
+                                        return group.isCurve();
+                                    } else {
+                                        return group.isDhGroup();
+                                    }
+                                })
+                        .collect(Collectors.toList());
 
         TlsContext context;
         NamedGroup selectedGroup = null;
@@ -158,15 +188,16 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                     break;
                 }
 
-                supportedNamedGroups.put(selectedGroup, new NamedGroupWitness(context.getSelectedCipherSuite()));
+                supportedNamedGroups.put(
+                        selectedGroup, new NamedGroupWitness(context.getSelectedCipherSuite()));
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && !toTestList.isEmpty());
         return supportedNamedGroups;
     }
 
-    private Map<NamedGroup, NamedGroupWitness> getSupportedNamedCurvesEcdsa(List<CipherSuite> cipherSuites,
-        List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
+    private Map<NamedGroup, NamedGroupWitness> getSupportedNamedCurvesEcdsa(
+            List<CipherSuite> cipherSuites, List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
         HashMap<NamedGroup, NamedGroupWitness> namedCurveMap = new HashMap<>();
 
         if (cipherSuites.isEmpty()) {
@@ -216,11 +247,21 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                     break;
                 }
                 if (cipherSuites.get(0).isEphemeral()) {
-                    namedCurveMap.put(selectedGroup, new NamedGroupWitness(certificateGroup, null, certificateSigGroup,
-                        context.getSelectedCipherSuite()));
+                    namedCurveMap.put(
+                            selectedGroup,
+                            new NamedGroupWitness(
+                                    certificateGroup,
+                                    null,
+                                    certificateSigGroup,
+                                    context.getSelectedCipherSuite()));
                 } else {
-                    namedCurveMap.put(selectedGroup,
-                        new NamedGroupWitness(null, certificateSigGroup, null, context.getSelectedCipherSuite()));
+                    namedCurveMap.put(
+                            selectedGroup,
+                            new NamedGroupWitness(
+                                    null,
+                                    certificateSigGroup,
+                                    null,
+                                    context.getSelectedCipherSuite()));
                 }
 
                 toTestList.remove(selectedGroup);
@@ -239,10 +280,12 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext();
         } else {
-            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug(
+                    "Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }
@@ -251,8 +294,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         List<CipherSuite> chosenCipherSuites = new LinkedList<>();
         List<KeyExchangeAlgorithm> algorithmList = Arrays.asList(algorithms);
         for (CipherSuite cipherSuite : supportedCipherSuites) {
-            if (cipherSuite.isRealCipherSuite() && !cipherSuite.isTLS13()
-                && algorithmList.contains(AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite))) {
+            if (cipherSuite.isRealCipherSuite()
+                    && !cipherSuite.isTLS13()
+                    && algorithmList.contains(
+                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite))) {
                 chosenCipherSuites.add(cipherSuite);
             }
         }
@@ -262,8 +307,9 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private List<CipherSuite> getAllEcCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : supportedCipherSuites) {
-            if (suite.isRealCipherSuite() && !suite.isTLS13()
-                && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
+            if (suite.isRealCipherSuite()
+                    && !suite.isTLS13()
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
                 suiteList.add(suite);
             }
         }
@@ -302,12 +348,14 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         State state = new State(tlsConfig);
         executeState(state);
 
-        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
             return TestResults.UNCERTAIN;
-        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
-            state.getWorkflowTrace())) {
-            HandshakeMessage skeMsg = WorkflowTraceUtil
-                .getFirstReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+        } else if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+            HandshakeMessage skeMsg =
+                    WorkflowTraceUtil.getFirstReceivedMessage(
+                            HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
@@ -372,8 +420,13 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                     break;
                 }
 
-                namedGroupMap.put(selectedGroup, new NamedGroupWitness(certificateGroup, null, certificateSigGroup,
-                    context.getSelectedCipherSuite()));
+                namedGroupMap.put(
+                        selectedGroup,
+                        new NamedGroupWitness(
+                                certificateGroup,
+                                null,
+                                certificateSigGroup,
+                                context.getSelectedCipherSuite()));
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && !toTestList.isEmpty());
@@ -388,7 +441,8 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -397,8 +451,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
     }
 
-    private void addGroupsFound(Map<NamedGroup, NamedGroupWitness> supportedMap,
-        Map<NamedGroup, NamedGroupWitness> newlyFoundGroups, KeyExchangeAlgorithm keyExchangeAlgorithm) {
+    private void addGroupsFound(
+            Map<NamedGroup, NamedGroupWitness> supportedMap,
+            Map<NamedGroup, NamedGroupWitness> newlyFoundGroups,
+            KeyExchangeAlgorithm keyExchangeAlgorithm) {
 
         for (NamedGroup group : newlyFoundGroups.keySet()) {
             NamedGroupWitness witness;
@@ -412,34 +468,52 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             witness.getCipherSuites().addAll(newlyFoundGroups.get(group).getCipherSuites());
             switch (keyExchangeAlgorithm) {
                 case ECDH_ECDSA:
-                    witness.setEcdsaSigGroupStatic(newlyFoundGroups.get(group).getEcdsaSigGroupStatic());
+                    witness.setEcdsaSigGroupStatic(
+                            newlyFoundGroups.get(group).getEcdsaSigGroupStatic());
                     break;
                 case ECDHE_ECDSA:
-                    witness.setEcdsaPkGroupEphemeral(newlyFoundGroups.get(group).getEcdsaPkGroupEphemeral());
-                    witness.setEcdsaSigGroupEphemeral(newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
+                    witness.setEcdsaPkGroupEphemeral(
+                            newlyFoundGroups.get(group).getEcdsaPkGroupEphemeral());
+                    witness.setEcdsaSigGroupEphemeral(
+                            newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
                 default:
                     break;
             }
         }
     }
 
-    private TestResult getGroupsDependOnCipherSuite(Map<NamedGroup, NamedGroupWitness> overallSupported) {
+    private TestResult getGroupsDependOnCipherSuite(
+            Map<NamedGroup, NamedGroupWitness> overallSupported) {
         Set<CipherSuite> joinedCurveCipherSuites = new HashSet<>();
         Set<CipherSuite> joinedFfdheCipherSuites = new HashSet<>();
-        overallSupported.keySet().forEach(group -> {
-            if (group.isCurve()) {
-                joinedCurveCipherSuites.addAll(overallSupported.get(group).getCipherSuites());
-            } else {
-                joinedFfdheCipherSuites.addAll(overallSupported.get(group).getCipherSuites());
-            }
-        });
+        overallSupported
+                .keySet()
+                .forEach(
+                        group -> {
+                            if (group.isCurve()) {
+                                joinedCurveCipherSuites.addAll(
+                                        overallSupported.get(group).getCipherSuites());
+                            } else {
+                                joinedFfdheCipherSuites.addAll(
+                                        overallSupported.get(group).getCipherSuites());
+                            }
+                        });
 
-        boolean foundMismatch = overallSupported.keySet().stream().anyMatch(group -> {
-            return (group.isCurve()
-                && !overallSupported.get(group).getCipherSuites().containsAll(joinedCurveCipherSuites))
-                || (!group.isCurve()
-                    && !overallSupported.get(group).getCipherSuites().containsAll(joinedFfdheCipherSuites));
-        });
+        boolean foundMismatch =
+                overallSupported.keySet().stream()
+                        .anyMatch(
+                                group -> {
+                                    return (group.isCurve()
+                                                    && !overallSupported
+                                                            .get(group)
+                                                            .getCipherSuites()
+                                                            .containsAll(joinedCurveCipherSuites))
+                                            || (!group.isCurve()
+                                                    && !overallSupported
+                                                            .get(group)
+                                                            .getCipherSuites()
+                                                            .containsAll(joinedFfdheCipherSuites));
+                                });
 
         if (foundMismatch) {
             return TestResults.TRUE;

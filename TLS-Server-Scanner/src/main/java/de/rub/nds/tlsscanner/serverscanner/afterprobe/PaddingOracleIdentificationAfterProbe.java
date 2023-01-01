@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -30,15 +29,19 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
 
     @Override
     public void analyze(ServerReport report) {
-        if (Objects.equals(report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResults.TRUE)) {
+        if (Objects.equals(
+                report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE),
+                TestResults.TRUE)) {
             try {
                 KnownPaddingOracleVulnerability knownVulnerability =
-                    attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
+                        attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
                 report.setKnownPaddingOracleVulnerability(knownVulnerability);
             } catch (Exception e) {
-                LOGGER.debug("property " + TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT.name()
-                    + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
-                    + e.getMessage());
+                LOGGER.debug(
+                        "property "
+                                + TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT.name()
+                                + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
+                                + e.getMessage());
             }
         }
     }

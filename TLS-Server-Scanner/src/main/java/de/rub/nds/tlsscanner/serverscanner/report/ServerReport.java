@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.scanner.core.constants.ListResult;
@@ -76,7 +75,7 @@ public class ServerReport extends TlsScanReport {
 
     // HTTPS Header
     private Long hstsMaxAge = null;
-    private Integer hpkpMaxAge = null;//
+    private Integer hpkpMaxAge = null; //
 
     // DTLS
     private Integer cookieLength = null;
@@ -205,7 +204,8 @@ public class ServerReport extends TlsScanReport {
         return connectionRfc7918SecureCounter;
     }
 
-    public synchronized void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
+    public synchronized void setConnectionRfc7918SecureCounter(
+            Integer connectionRfc7918SecureCounter) {
         this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
     }
 
@@ -219,8 +219,12 @@ public class ServerReport extends TlsScanReport {
 
     @Override
     public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new ServerReportPrinter(this, detail, DefaultPrintingScheme.getDefaultPrintingScheme(), printColorful)
-            .getFullReport();
+        return new ServerReportPrinter(
+                        this,
+                        detail,
+                        DefaultPrintingScheme.getDefaultPrintingScheme(),
+                        printColorful)
+                .getFullReport();
     }
 
     @Override
@@ -263,98 +267,109 @@ public class ServerReport extends TlsScanReport {
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
         @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> listResult =
-            (ListResult<InvalidCurveResponse>) getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
+                (ListResult<InvalidCurveResponse>)
+                        getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
         @SuppressWarnings("unchecked")
         ListResult<RaccoonAttackProbabilities> listResult =
-            (ListResult<RaccoonAttackProbabilities>) this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
+                (ListResult<RaccoonAttackProbabilities>)
+                        this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<OcspCertificateResult> getOcspResults() {
         @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> listResult =
-            (ListResult<OcspCertificateResult>) this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
+                (ListResult<OcspCertificateResult>)
+                        this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
-    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getRaccoonTestResultList() {
+    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>
+            getRaccoonTestResultList() {
         @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>> listResult =
-            (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>) getListResult(
-                TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
+                (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>)
+                        getListResult(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
-    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>> getBleichenbacherTestResultList() {
+    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>>
+            getBleichenbacherTestResultList() {
         @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
-            (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>) getListResult(
-                TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
+                (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>)
+                        getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {
         @SuppressWarnings("unchecked")
         ListResult<CcaTestResult> listResult =
-            (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
+                (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getNormalHpkpPins() {
         @SuppressWarnings("unchecked")
-        ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
+        ListResult<HpkpPin> listResult =
+                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
         @SuppressWarnings("unchecked")
-        ListResult<HpkpPin> listResult = (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+        ListResult<HpkpPin> listResult =
+                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
         @SuppressWarnings("unchecked")
         ListResult<SimulatedClientResult> listResult =
-            (ListResult<SimulatedClientResult>) getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
+                (ListResult<SimulatedClientResult>)
+                        getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<GuidelineReport> getGuidelineReports() {
         @SuppressWarnings("unchecked")
         ListResult<GuidelineReport> listResult =
-            (ListResult<GuidelineReport>) getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
+                (ListResult<GuidelineReport>) getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
         @SuppressWarnings("unchecked")
         ListResult<ApplicationProtocol> listResult =
-            (ListResult<ApplicationProtocol>) getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
+                (ListResult<ApplicationProtocol>)
+                        getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
         return listResult == null ? new LinkedList<>() : listResult.getList();
     }
 
     public synchronized Set<CommonDhValues> getCommonDhValues() {
         @SuppressWarnings("unchecked")
         SetResult<CommonDhValues> setResult =
-            (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
+                (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
         return setResult == null ? new HashSet<>(9) : setResult.getSet();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
         @SuppressWarnings("unchecked")
-        MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
-            NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
+        MapResult<NamedGroup, NamedGroupWitness> mapResult =
+                (MapResult<NamedGroup, NamedGroupWitness>)
+                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
         return mapResult == null ? new HashMap<>() : mapResult.getMap();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
         @SuppressWarnings("unchecked")
-        MapResult<NamedGroup, NamedGroupWitness> mapResult = (MapResult<NamedGroup,
-            NamedGroupWitness>) getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+        MapResult<NamedGroup, NamedGroupWitness> mapResult =
+                (MapResult<NamedGroup, NamedGroupWitness>)
+                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
         return mapResult == null ? new HashMap<>() : mapResult.getMap();
     }
 
@@ -362,7 +377,8 @@ public class ServerReport extends TlsScanReport {
         return precertificateSctList;
     }
 
-    public synchronized void setPrecertificateSctList(SignedCertificateTimestampList precertificateSctList) {
+    public synchronized void setPrecertificateSctList(
+            SignedCertificateTimestampList precertificateSctList) {
         this.precertificateSctList = precertificateSctList;
     }
 
@@ -418,7 +434,8 @@ public class ServerReport extends TlsScanReport {
         return helloRetryRequestSelectedNamedGroup;
     }
 
-    public synchronized void setHelloRetryRequestSelectedNamedGroup(NamedGroup helloRetryRequestSelectedNamedGroup) {
+    public synchronized void setHelloRetryRequestSelectedNamedGroup(
+            NamedGroup helloRetryRequestSelectedNamedGroup) {
         this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
     }
 

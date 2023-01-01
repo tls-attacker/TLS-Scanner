@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -30,7 +29,9 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, configSelector);
-        register(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,
+                TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
@@ -41,24 +42,26 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResults testForGeneralDrown() {
         GeneralDrownAttacker attacker =
-            new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
+                new GeneralDrownAttacker(configSelector.getSSL2BaseConfig(), getParallelExecutor());
         return attacker.isVulnerable();
     }
 
     private TestResults testForExtraClearDrown() {
-        SpecialDrownAttacker attacker = new SpecialDrownAttacker(configSelector.getSSL2BaseConfig(),
-            getParallelExecutor(), DrownOracleType.EXTRA_CLEAR);
+        SpecialDrownAttacker attacker =
+                new SpecialDrownAttacker(
+                        configSelector.getSSL2BaseConfig(),
+                        getParallelExecutor(),
+                        DrownOracleType.EXTRA_CLEAR);
         return attacker.isVulnerable();
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
-            .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_2));
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_2));
     }
 
     @Override

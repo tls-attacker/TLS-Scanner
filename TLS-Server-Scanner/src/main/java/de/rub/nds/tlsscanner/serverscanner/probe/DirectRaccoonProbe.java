@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -56,7 +55,9 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
-        register(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
+                TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
     }
 
     @Override
@@ -67,8 +68,8 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
-                            createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
-                                DirectRaccoonWorkflowType.CKE);
+                                createDirectRaccoonInformationLeakTest(
+                                        pair.getVersion(), suite, DirectRaccoonWorkflowType.CKE);
                         testResultList.add(informationLeakTest);
                     }
                 }
@@ -77,23 +78,32 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
-        ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
+            ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
         List<VectorResponse> responseMap =
-            createVectorResponseList(version, suite, workflowType, ITERATIONS_PER_HANDSHAKE);
+                createVectorResponseList(version, suite, workflowType, ITERATIONS_PER_HANDSHAKE);
         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
-            new InformationLeakTest<>(new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
+                new InformationLeakTest<>(
+                        new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
 
         if (informationLeakTest.isDistinctAnswers()) {
-            LOGGER.debug("Found non identical answers, performing " + ITERATIONS_PER_HANDSHAKE + " additional tests");
-            responseMap = createVectorResponseList(version, suite, workflowType, ADDITIONAL_ITERATIONS_PER_HANDSHAKE);
+            LOGGER.debug(
+                    "Found non identical answers, performing "
+                            + ITERATIONS_PER_HANDSHAKE
+                            + " additional tests");
+            responseMap =
+                    createVectorResponseList(
+                            version, suite, workflowType, ADDITIONAL_ITERATIONS_PER_HANDSHAKE);
             informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
         return informationLeakTest;
     }
 
-    private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite,
-        DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
+    private List<VectorResponse> createVectorResponseList(
+            ProtocolVersion version,
+            CipherSuite suite,
+            DirectRaccoonWorkflowType type,
+            int numberOfExecutionsEach) {
         Random r = new Random();
         BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
@@ -105,8 +115,12 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
         return getVectorResponseList(version, suite, type, initialDhSecret, booleanList);
     }
 
-    private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite,
-        DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
+    private List<VectorResponse> getVectorResponseList(
+            ProtocolVersion version,
+            CipherSuite suite,
+            DirectRaccoonWorkflowType workflowType,
+            BigInteger initialClientDhSecret,
+            List<Boolean> withNullByteList) {
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
             Config config = configSelector.getBaseConfig();
@@ -117,7 +131,8 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
             WorkflowTrace trace =
-                DirectRaccoonWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
+                    DirectRaccoonWorkflowGenerator.generateWorkflow(
+                            config, workflowType, initialClientDhSecret, nullByte);
             // Store
             trace.setName("" + nullByte);
             State state = new State(config, trace);
@@ -130,9 +145,11 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
         List<VectorResponse> responseList = new LinkedList<>();
         for (TlsTask task : taskList) {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
-            Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
+            Boolean nullByte =
+                    Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
             VectorResponse vectorResponse =
-                evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask);
+                    evaluateFingerPrintTask(
+                            version, suite, workflowType, nullByte, fingerPrintTask);
             if (vectorResponse != null) {
                 responseList.add(vectorResponse);
             }
@@ -140,12 +157,25 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
         return responseList;
     }
 
-    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite,
-        DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
-        DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
+    private VectorResponse evaluateFingerPrintTask(
+            ProtocolVersion version,
+            CipherSuite suite,
+            DirectRaccoonWorkflowType workflowType,
+            boolean withNullByte,
+            FingerPrintTask fingerPrintTask) {
+        DirectRaccoonVector raccoonVector =
+                new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
-            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + workflowType + ", version=" + version
-                + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
+            LOGGER.warn(
+                    "Could not extract fingerprint for WorkflowType="
+                            + workflowType
+                            + ", version="
+                            + version
+                            + ", suite="
+                            + suite
+                            + ", pmsWithNullByte="
+                            + withNullByte
+                            + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
@@ -155,14 +185,21 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     @Override
     protected Requirement getRequirements() {
         PropertyRequirement pReqSsl3 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        PropertyRequirement pReqTls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        PropertyRequirement pReqTls11 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        PropertyRequirement pReqTls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        PropertyRequirement pReqDtls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
-        PropertyRequirement pReqDtls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+        PropertyRequirement pReqTls10 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
+        PropertyRequirement pReqTls11 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
+        PropertyRequirement pReqTls12 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
+        PropertyRequirement pReqDtls10 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
+        PropertyRequirement pReqDtls12 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
         return new ProbeRequirement(TlsProbeType.CIPHER_SUITE)
-            .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE))
-            .requires(new OrRequirement(pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12));
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE))
+                .requires(
+                        new OrRequirement(
+                                pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12));
     }
 
     @Override
@@ -174,7 +211,8 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     protected void mergeData(ServerReport report) {
         if (testResultList != null) {
             vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest : testResultList) {
+            for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
+                    testResultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {
                     vulnerable = TestResults.TRUE;
                 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import com.google.common.primitives.Bytes;
@@ -44,9 +43,12 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     private List<ApplicationProtocol> supportedApplications;
     private TestResult isAcceptingUnencryptedAppData;
 
-    public DtlsApplicationFingerprintProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsApplicationFingerprintProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
+        register(
+                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
     }
 
     @Override
@@ -62,7 +64,8 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     }
 
     private boolean isEchoServer() {
-        byte[] appData = ArrayConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
+        byte[] appData =
+                ArrayConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
         byte[] data = isProtocolSupported(appData);
         if (Arrays.equals(data, appData)) {
             supportedApplications.add(ApplicationProtocol.ECHO);
@@ -73,15 +76,21 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     private void isVpnSupported() {
         byte[] length = ArrayConverter.hexStringToByteArray("0118");
-        byte[] string = ArrayConverter.hexStringToByteArray("0047467479706500636c7468656c6c6f005356504e434f4f4b494500");
-        byte[] cookie = ArrayConverter.hexStringToByteArray("34626a384f64735a486a6f644e736859512b59");
+        byte[] string =
+                ArrayConverter.hexStringToByteArray(
+                        "0047467479706500636c7468656c6c6f005356504e434f4f4b494500");
+        byte[] cookie =
+                ArrayConverter.hexStringToByteArray("34626a384f64735a486a6f644e736859512b59");
         byte[] appData = ArrayConverter.concatenate(length, string, cookie);
         byte[] data = isProtocolSupported(appData);
         byte[] fortinetHandshakeFail =
-            ArrayConverter.hexStringToByteArray("00214746747970650073767268656C6C6F0068616E647368616B65006661696C00");
+                ArrayConverter.hexStringToByteArray(
+                        "00214746747970650073767268656C6C6F0068616E647368616B65006661696C00");
         byte[] fortinetHandshakeOk =
-            ArrayConverter.hexStringToByteArray("001f4746747970650073767268656C6C6F0068616E647368616B65006f6b00");
-        byte[] citrixResponse = ArrayConverter.hexStringToByteArray("FF0000010000000000000000000000000000000001");
+                ArrayConverter.hexStringToByteArray(
+                        "001f4746747970650073767268656C6C6F0068616E647368616B65006f6b00");
+        byte[] citrixResponse =
+                ArrayConverter.hexStringToByteArray("FF0000010000000000000000000000000000000001");
         if (Bytes.indexOf(data, fortinetHandshakeFail) != -1) {
             supportedApplications.add(ApplicationProtocol.VPN_FORTINET);
             isAcceptingUnencryptedAppData(appData);
@@ -113,7 +122,8 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         byte[] cookie = ArrayConverter.hexStringToByteArray("2112a442");
         byte[] transactionId = ArrayConverter.hexStringToByteArray("112233445566778899001122");
         byte[] requestedTransport = ArrayConverter.hexStringToByteArray("0019000411000000");
-        byte[] appData = ArrayConverter.concatenate(type, length, cookie, transactionId, requestedTransport);
+        byte[] appData =
+                ArrayConverter.concatenate(type, length, cookie, transactionId, requestedTransport);
         byte[] data = isProtocolSupported(appData);
         if (Bytes.indexOf(data, transactionId) != -1) {
             supportedApplications.add(ApplicationProtocol.TURN);
@@ -134,14 +144,17 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     private byte[] isProtocolSupported(byte[] data) {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ApplicationMessage(data)));
         ReceiveAction receiveAction = new ReceiveAction(new ApplicationMessage());
         trace.addTlsAction(receiveAction);
         State state = new State(config, trace);
         executeState(state);
-        if (receiveAction.getReceivedRecords() != null && !receiveAction.getReceivedRecords().isEmpty()) {
+        if (receiveAction.getReceivedRecords() != null
+                && !receiveAction.getReceivedRecords().isEmpty()) {
             ByteArrayOutputStream receivedAppData = new ByteArrayOutputStream();
             try {
                 for (Record record : receiveAction.getReceivedRecords()) {
@@ -158,16 +171,21 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
 
     private void isAcceptingUnencryptedAppData(byte[] data) {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ApplicationMessage(data)));
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         State state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessage = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        ProtocolMessage<?> receivedMessage =
+                WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
 
-        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
-            RunningModeType.CLIENT);
+        trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         SendAction sendAction = new SendAction(new ApplicationMessage(data));
         Record record = new Record(config);
         record.setEpoch(Modifiable.explicit(0));
@@ -176,16 +194,19 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
-        if (receivedMessage != null && receivedMessageModified != null && receivedMessage.getCompleteResultingMessage()
-            .equals(receivedMessageModified.getCompleteResultingMessage())) {
+        ProtocolMessage<?> receivedMessageModified =
+                WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        if (receivedMessage != null
+                && receivedMessageModified != null
+                && receivedMessage
+                        .getCompleteResultingMessage()
+                        .equals(receivedMessageModified.getCompleteResultingMessage())) {
             isAcceptingUnencryptedAppData = TestResults.TRUE;
         }
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {
@@ -197,5 +218,4 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     protected Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
-
 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -44,12 +43,14 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
 
     private static final int INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN = 200;
 
-    public DtlsFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsFragmentationProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_FRAGMENTATION, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
-            TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
-            TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
-            TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+                TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION);
     }
 
     @Override
@@ -73,30 +74,37 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
 
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
         }
     }
 
-    private TestResult supportsFragmentationAfterCookieExchange(boolean individualTransportPackets) {
+    private TestResult supportsFragmentationAfterCookieExchange(
+            boolean individualTransportPackets) {
         Config config = configSelector.getBaseConfig();
         if (individualTransportPackets) {
             config.setIndividualTransportPacketsForFragments(true);
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
+        action.setFragments(
+                new DtlsHandshakeMessageFragment(config, 20),
+                new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -112,16 +120,21 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
             config.setIndividualTransportPacketCooldown(INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN);
         }
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
+        action.setFragments(
+                new DtlsHandshakeMessageFragment(config, 20),
+                new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -134,8 +147,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {
@@ -154,17 +166,37 @@ public class DtlsFragmentationProbe extends TlsServerProbe<ConfigSelector, Serve
         }
 
         if (supportsDirectlyIndPackets == TestResults.TRUE) {
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.TRUE);
-            put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION, TestResults.FALSE);
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.TRUE);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.FALSE);
         } else if (supportsAfterCookieExchangeIndPackets == TestResults.TRUE) {
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.PARTIALLY);
-            put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION, TestResults.FALSE);
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.PARTIALLY);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.FALSE);
         } else if (supportsWithExtensionIndPackets == TestResults.TRUE) {
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.PARTIALLY);
-            put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION, TestResults.TRUE);
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.PARTIALLY);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.TRUE);
         } else {
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS, TestResults.FALSE);
-            put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION, TestResults.FALSE);
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.FALSE);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.FALSE);
         }
     }
 }

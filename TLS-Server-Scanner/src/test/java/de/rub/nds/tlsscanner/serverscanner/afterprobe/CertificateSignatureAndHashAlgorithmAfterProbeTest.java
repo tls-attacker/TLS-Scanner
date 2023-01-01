@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,7 +49,8 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
 
     @Test
     public void testEmptyCertificateChain() {
-        report.getCertificateChainList().addAll(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
+        report.getCertificateChainList()
+                .addAll(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
         probe.analyze(report);
         assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
     }
@@ -58,15 +58,22 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     @Test
     public void testSingleCertificate() {
         try {
-            File certificateFile = new File(CertificateSignatureAndHashAlgorithmAfterProbeTest.class.getClassLoader()
-                .getResource(PATH_TO_CERTIFICATE).toURI());
+            File certificateFile =
+                    new File(
+                            CertificateSignatureAndHashAlgorithmAfterProbeTest.class
+                                    .getClassLoader()
+                                    .getResource(PATH_TO_CERTIFICATE)
+                                    .toURI());
             Certificate certificate = PemUtil.readCertificate(certificateFile);
-            report.getCertificateChainList().addAll(List.of(new CertificateChain(certificate, "a.com")));
+            report.getCertificateChainList()
+                    .addAll(List.of(new CertificateChain(certificate, "a.com")));
             probe.analyze(report);
         } catch (IOException | URISyntaxException | CertificateException e) {
             fail("Could not load certificate from resources");
         }
         assertEquals(1, report.getSupportedSignatureAndHashAlgorithmsCert().size());
-        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().contains(SignatureAndHashAlgorithm.RSA_SHA256));
+        assertTrue(
+                report.getSupportedSignatureAndHashAlgorithmsCert()
+                        .contains(SignatureAndHashAlgorithm.RSA_SHA256));
     }
 }

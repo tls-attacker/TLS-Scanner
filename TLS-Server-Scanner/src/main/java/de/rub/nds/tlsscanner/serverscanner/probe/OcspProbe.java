@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
@@ -71,11 +70,17 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.OCSP, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_OCSP, TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
-            TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
-            TlsAnalyzedProperty.MUST_STAPLE, TlsAnalyzedProperty.SUPPORTS_NONCE,
-            TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
-            TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TlsAnalyzedProperty.OCSP_RESULTS);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_OCSP,
+                TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
+                TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
+                TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
+                TlsAnalyzedProperty.MUST_STAPLE,
+                TlsAnalyzedProperty.SUPPORTS_NONCE,
+                TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
+                TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                TlsAnalyzedProperty.OCSP_RESULTS);
     }
 
     @Override
@@ -99,7 +104,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
         org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
-        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
+        CertificateInformationExtractor certInformationExtractor =
+                new CertificateInformationExtractor(singleCert);
         try {
             certResult.setMustStaple(certInformationExtractor.getMustStaple());
         } catch (Exception e) {
@@ -119,15 +125,19 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         State state = new State(tlsConfig);
         executeState(state);
-        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
+        List<ExtensionType> supportedExtensions =
+                new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
         CertificateStatusMessage certificateStatusMessage = null;
         if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
             certResult.setSupportsStapling(true);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS,
-                state.getWorkflowTrace())) {
-                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil
-                    .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
+            if (WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace())) {
+                certificateStatusMessage =
+                        (CertificateStatusMessage)
+                                WorkflowTraceUtil.getFirstReceivedMessage(
+                                        HandshakeMessageType.CERTIFICATE_STATUS,
+                                        state.getWorkflowTrace());
             }
         } else {
             certResult.setSupportsStapling(false);
@@ -136,7 +146,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         if (certificateStatusMessage != null) {
             try {
                 certResult.setStapledResponse(
-                    OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
+                        OCSPResponseParser.parseResponse(
+                                certificateStatusMessage.getOcspResponseBytes().getValue()));
             } catch (Exception e) {
                 if (e.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on " + getProbeName());
@@ -147,9 +158,10 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         }
     }
 
-    private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
+    private void performRequest(
+            Certificate serverCertificateChain, OcspCertificateResult certResult) {
         CertificateInformationExtractor mainCertExtractor =
-            new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
+                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
         URL ocspResponderUrl;
 
         try {
@@ -172,7 +184,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         // If nonce is supported used, check if server actually replies
         // with a different one immediately after
-        if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
+        if (certResult.getFirstResponse() != null
+                && certResult.getFirstResponse().getNonce() != null) {
             certResult.setSupportsNonce(true);
             OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
             ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
@@ -226,10 +239,13 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
-            ((ListResult<NamedGroup>) report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)).getList();
+                ((ListResult<NamedGroup>)
+                                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS))
+                        .getList();
     }
 
-    private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
+    private List<CertificateStatusRequestExtensionMessage>
+            getCertificateStatusFromCertificateEntryExtension() {
         List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -241,14 +257,19 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
-            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil
-                .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
-            List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
+            CertificateMessage certificateMessage =
+                    (CertificateMessage)
+                            WorkflowTraceUtil.getFirstReceivedMessage(
+                                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            List<CertificateEntry> certificateEntries =
+                    certificateMessage.getCertificatesListAsEntry();
             for (CertificateEntry certificateEntry : certificateEntries) {
                 for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
                     if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
-                        certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
+                        certificateStatuses.add(
+                                (CertificateStatusRequestExtensionMessage) extensionMessage);
                     }
                 }
             }
@@ -261,7 +282,9 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         put(TlsAnalyzedProperty.OCSP_RESULTS, certResults);
         put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
         put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-        put(TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
+        put(
+                TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
+                getConclusiveIncludesCertMessage());
         put(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
         put(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
         put(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
@@ -269,18 +292,28 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         if (tls13CertStatus != null) {
             if (tls13CertStatus.size() == 1) {
-                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.TRUE);
                 put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             } else if (tls13CertStatus.size() > 1) {
-                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.TRUE);
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.TRUE);
                 put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
             } else {
-                put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.FALSE);
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.FALSE);
                 put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
             }
         } else {
-            put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                    TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                    TestResults.COULD_NOT_TEST);
         }
     }
 
@@ -326,7 +359,8 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     private TestResult getConclusiveSupportsStapledNonce() {
         if (certResults != null) {
             for (OcspCertificateResult result : certResults) {
-                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) {
+                if (result.getStapledResponse() != null
+                        && result.getStapledResponse().getNonce() != null) {
                     return TestResults.TRUE;
                 }
             }

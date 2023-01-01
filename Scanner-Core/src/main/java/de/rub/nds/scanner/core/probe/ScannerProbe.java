@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.probe;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
@@ -19,75 +18,70 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class ScannerProbe<Report extends ScanReport> implements Callable {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ProbeType type;
+    private final ProbeType type;
 
-	private StatsWriter writer;
+    private StatsWriter writer;
 
-	private long startTime;
-	private long stopTime;
+    private long startTime;
+    private long stopTime;
 
-	/**
-	 * @return the startTime
-	 */
-	public long getStartTime() {
-		return startTime;
-	}
+    /**
+     * @return the startTime
+     */
+    public long getStartTime() {
+        return startTime;
+    }
 
-	/**
-	 * @return the stopTime
-	 */
-	public long getStopTime() {
-		return stopTime;
-	}
+    /**
+     * @return the stopTime
+     */
+    public long getStopTime() {
+        return stopTime;
+    }
 
-	public ScannerProbe(ProbeType type) {
-		this.type = type;
-	}
+    public ScannerProbe(ProbeType type) {
+        this.type = type;
+    }
 
-	public ProbeType getType() {
-		return type;
-	}
+    public ProbeType getType() {
+        return type;
+    }
 
-	public String getProbeName() {
-		return getType().getName();
-	}
+    public String getProbeName() {
+        return getType().getName();
+    }
 
-	public abstract void executeTest();
+    public abstract void executeTest();
 
-	public abstract void adjustConfig(Report report);
+    public abstract void adjustConfig(Report report);
 
-	@Override
-	public ScannerProbe<?> call() {
-		LOGGER.debug("Executing: {}", getProbeName());
-		this.startTime = System.currentTimeMillis();
-		executeTest();
-		this.stopTime = System.currentTimeMillis();
+    @Override
+    public ScannerProbe<?> call() {
+        LOGGER.debug("Executing: {}", getProbeName());
+        this.startTime = System.currentTimeMillis();
+        executeTest();
+        this.stopTime = System.currentTimeMillis();
 
-		LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
-		return this;
-	}
+        LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
+        return this;
+    }
 
-	/**
-	 * Override for individual requirements.
-	 * 
-	 * @param report
-	 * @return ProbeRequirement object without requirements (default)
-	 */
-	protected abstract Requirement getRequirements();
+    /** Override for individual requirements. */
+    protected abstract Requirement getRequirements();
 
-	public abstract void merge(Report report);
+    public abstract void merge(Report report);
 
-	public final boolean canBeExecuted(Report report) {
-		return getRequirements().evaluate(report);
-	}
+    public final boolean canBeExecuted(Report report) {
+        return getRequirements().evaluate(report);
+    }
 
-	public StatsWriter getWriter() {
-		return writer;
-	}
+    public StatsWriter getWriter() {
+        return writer;
+    }
 
-	public void setWriter(StatsWriter writer) {
-		this.writer = writer;
-	}
+    public void setWriter(StatsWriter writer) {
+        this.writer = writer;
+    }
 }

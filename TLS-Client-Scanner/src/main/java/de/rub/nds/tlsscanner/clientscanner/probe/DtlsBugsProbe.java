@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -32,75 +32,82 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult isEarlyFinished;
-	private TestResult isAcceptingUnencryptedFinished;
+    private TestResult isEarlyFinished;
+    private TestResult isAcceptingUnencryptedFinished;
 
-	public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
-		register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
-	}
+    public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+    }
 
-	@Override
-	public void executeTest() {
-		isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished();
-		isEarlyFinished = isEarlyFinished();
-	}
+    @Override
+    public void executeTest() {
+        isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished();
+        isEarlyFinished = isEarlyFinished();
+    }
 
-	private TestResult isAcceptingUnencryptedFinished() {
-		Config config = scannerConfig.createConfig();
-		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+    private TestResult isAcceptingUnencryptedFinished() {
+        Config config = scannerConfig.createConfig();
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-		trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
-		trace.addTlsAction(new ChangeWriteEpochAction(0));
-		trace.addTlsAction(new SendAction(new FinishedMessage()));
-		GenericReceiveAction receiveAction = new GenericReceiveAction();
-		trace.addTlsAction(receiveAction);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
+        trace.addTlsAction(new ChangeWriteEpochAction(0));
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
+        GenericReceiveAction receiveAction = new GenericReceiveAction();
+        trace.addTlsAction(receiveAction);
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned() && receiveAction.getReceivedMessages().isEmpty()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()
+                && receiveAction.getReceivedMessages().isEmpty()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	private TestResult isEarlyFinished() {
-		Config config = scannerConfig.createConfig();
-		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+    private TestResult isEarlyFinished() {
+        Config config = scannerConfig.createConfig();
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-		trace.addTlsAction(new ActivateEncryptionAction());
-		trace.addTlsAction(new SendAction(new FinishedMessage()));
-		GenericReceiveAction receiveAction = new GenericReceiveAction();
-		trace.addTlsAction(receiveAction);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        trace.addTlsAction(new ActivateEncryptionAction());
+        trace.addTlsAction(new SendAction(new FinishedMessage()));
+        GenericReceiveAction receiveAction = new GenericReceiveAction();
+        trace.addTlsAction(receiveAction);
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned() && receiveAction.getReceivedMessages().isEmpty()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()
+                && receiveAction.getReceivedMessages().isEmpty()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
-		put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

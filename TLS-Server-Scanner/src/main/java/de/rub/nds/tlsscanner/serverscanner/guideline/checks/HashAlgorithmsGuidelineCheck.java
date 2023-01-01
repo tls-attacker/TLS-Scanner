@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -18,13 +17,13 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -36,21 +35,27 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
         super(null, null);
     }
 
-    public HashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<HashAlgorithm> recommendedAlgorithms) {
+    public HashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<HashAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    public HashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, List<HashAlgorithm> recommendedAlgorithms) {
+    public HashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<HashAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel, condition);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms = report.getSupportedSignatureAndHashAlgorithms();
+        List<SignatureAndHashAlgorithm> algorithms =
+                report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms != null) {
             Set<HashAlgorithm> nonRecommended = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -58,9 +63,11 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
                     nonRecommended.add(alg.getHashAlgorithm());
                 }
             }
-            return new HashAlgorithmsGuidelineCheckResult(TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+            return new HashAlgorithmsGuidelineCheckResult(
+                    TestResults.of(nonRecommended.isEmpty()), nonRecommended);
         } else {
-            return new HashAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, Collections.emptySet());
+            return new HashAlgorithmsGuidelineCheckResult(
+                    TestResults.UNCERTAIN, Collections.emptySet());
         }
     }
 

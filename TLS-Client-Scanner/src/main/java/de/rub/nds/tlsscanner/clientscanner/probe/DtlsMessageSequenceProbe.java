@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -34,147 +34,157 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsMessageSequenceProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult acceptsStartedWithInvalidMessageNumber;
-	private TestResult acceptsSkippedMessageNumbersOnce;
-	private TestResult acceptsSkippedMessageNumbersMultiple;
-	private TestResult acceptsRandomMessageNumbers;
+    private TestResult acceptsStartedWithInvalidMessageNumber;
+    private TestResult acceptsSkippedMessageNumbersOnce;
+    private TestResult acceptsSkippedMessageNumbersMultiple;
+    private TestResult acceptsRandomMessageNumbers;
 
-	public DtlsMessageSequenceProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
-		register(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
-				TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
-				TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
-				TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
-				TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
-	}
+    public DtlsMessageSequenceProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+                TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+    }
 
-	@Override
-	public void executeTest() {
-		acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber();
-		acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce();
-		acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple();
-		acceptsRandomMessageNumbers = acceptsRandomMessageNumbers();
-	}
+    @Override
+    public void executeTest() {
+        acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber();
+        acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce();
+        acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple();
+        acceptsRandomMessageNumbers = acceptsRandomMessageNumbers();
+    }
 
-	private TestResult acceptsStartedWithInvalidMessageNumber() {
-		Config config = scannerConfig.createConfig();
+    private TestResult acceptsStartedWithInvalidMessageNumber() {
+        Config config = scannerConfig.createConfig();
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(3));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
-		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-		trace.addTlsAction(new SendAction(new CertificateMessage()));
-		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(3));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	private TestResult acceptsSkippedMessageNumbersOnce() {
-		Config config = scannerConfig.createConfig();
+    private TestResult acceptsSkippedMessageNumbersOnce() {
+        Config config = scannerConfig.createConfig();
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
-		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-		trace.addTlsAction(new SendAction(new CertificateMessage()));
-		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	private TestResult acceptsSkippedMessageNumbersMultiple() {
-		Config config = scannerConfig.createConfig();
+    private TestResult acceptsSkippedMessageNumbersMultiple() {
+        Config config = scannerConfig.createConfig();
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
-		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-		trace.addTlsAction(new SendAction(new CertificateMessage()));
-		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	private TestResult acceptsRandomMessageNumbers() {
-		Config config = scannerConfig.createConfig();
+    private TestResult acceptsRandomMessageNumbers() {
+        Config config = scannerConfig.createConfig();
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
-		trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
-		trace.addTlsAction(new SendAction(new CertificateMessage()));
-		trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
-		trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
-		trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(8));
+        trace.addTlsAction(new SendAction(new ServerHelloMessage(config)));
+        trace.addTlsAction(new SendAction(new CertificateMessage()));
+        trace.addTlsAction(new SendDynamicServerKeyExchangeAction());
+        trace.addTlsAction(new ChangeWriteMessageSequenceAction(4));
+        trace.addTlsAction(new SendAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE, acceptsStartedWithInvalidMessageNumber);
-		put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
-		put(TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE, acceptsSkippedMessageNumbersMultiple);
-		put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
-		if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
-				&& acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
-				&& acceptsRandomMessageNumbers == TestResults.FALSE) {
-			put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
-		} else {
-			put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
-		}
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                acceptsStartedWithInvalidMessageNumber);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                acceptsSkippedMessageNumbersOnce);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                acceptsSkippedMessageNumbersMultiple);
+        put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
+                && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+                && acceptsRandomMessageNumbers == TestResults.FALSE) {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
+        } else {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+        }
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

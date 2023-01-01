@@ -1,12 +1,11 @@
-/**
- * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -41,10 +40,14 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
 
     public VersionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
-        register(TlsAnalyzedProperty.SUPPORTS_SSL_2, TlsAnalyzedProperty.SUPPORTS_SSL_3,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-            TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_SSL_2,
+                TlsAnalyzedProperty.SUPPORTS_SSL_3,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
     }
 
     protected Config getTls13Config() {
@@ -61,8 +64,13 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
 
     @Override
     public void executeTest() {
-        ProtocolVersion[] versionsToTest = { ProtocolVersion.SSL3, ProtocolVersion.TLS10, ProtocolVersion.TLS11,
-            ProtocolVersion.TLS12, ProtocolVersion.TLS13 };
+        ProtocolVersion[] versionsToTest = {
+            ProtocolVersion.SSL3,
+            ProtocolVersion.TLS10,
+            ProtocolVersion.TLS11,
+            ProtocolVersion.TLS12,
+            ProtocolVersion.TLS13
+        };
         supportedProtocolVersions = new LinkedList<>();
         unsupportedProtocolVersions = new LinkedList<>();
         for (ProtocolVersion version : versionsToTest) {
@@ -73,11 +81,16 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
             } else {
                 config = scannerConfig.createConfig();
             }
-            List<CipherSuite> suitableCiphersuites = clientAdvertisedCipherSuites.stream()
-                .filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());
+            List<CipherSuite> suitableCiphersuites =
+                    clientAdvertisedCipherSuites.stream()
+                            .filter(suite -> suite.isSupportedInProtocol(version))
+                            .collect(Collectors.toList());
             if (suitableCiphersuites.size() == 0) {
                 CipherSuite fallback = clientAdvertisedCipherSuites.get(0);
-                LOGGER.warn("No suitable cipher suite found for {}. Using {} instead.", version, fallback);
+                LOGGER.warn(
+                        "No suitable cipher suite found for {}. Using {} instead.",
+                        version,
+                        fallback);
                 suitableCiphersuites.add(fallback);
             }
 
@@ -85,9 +98,12 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
             config.setDefaultSelectedCipherSuite(suitableCiphersuites.get(0));
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-            trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
+            WorkflowTrace trace =
+                    new WorkflowConfigurationFactory(config)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
+            trace.removeTlsAction(
+                    trace.getTlsActions().size() - 1); // remove last action as it is not needed to
             // confirm success
             State state = new State(config, trace);
             executeState(state);

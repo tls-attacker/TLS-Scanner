@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
@@ -48,14 +47,22 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     private boolean supportsOcspSCTs;
     private boolean meetsChromeCTPolicy = false;
 
-    private final SignedCertificateTimestampList precertificateSctList = new SignedCertificateTimestampList();
-    private final SignedCertificateTimestampList handshakeSctList = new SignedCertificateTimestampList();;
-    private final SignedCertificateTimestampList ocspSctList = new SignedCertificateTimestampList();;
+    private final SignedCertificateTimestampList precertificateSctList =
+            new SignedCertificateTimestampList();
+    private final SignedCertificateTimestampList handshakeSctList =
+            new SignedCertificateTimestampList();
+    ;
+    private final SignedCertificateTimestampList ocspSctList = new SignedCertificateTimestampList();
+    ;
 
-    public CertificateTransparencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public CertificateTransparencyProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
-            TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
+                TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
+                TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP,
+                TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
     }
 
     @Override
@@ -68,32 +75,35 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     private void getPrecertificateSCTs() {
         supportsPrecertificateSCTs = false;
         org.bouncycastle.asn1.x509.Certificate singleCert = serverCertChain.getCertificateAt(0);
-        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
+        CertificateInformationExtractor certInformationExtractor =
+                new CertificateInformationExtractor(singleCert);
 
         Asn1Sequence precertificateSctExtension = certInformationExtractor.getPrecertificateSCTs();
         if (precertificateSctExtension != null) {
             supportsPrecertificateSCTs = true;
 
             Asn1EncapsulatingOctetString outerContentEncapsulation =
-                (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
+                    (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
 
             byte[] encodedSctList = null;
 
             // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an
             // Asn1EncapsulatingOctetString
             // instead of an Asn1PrimitiveOctetString
-            Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
+            Asn1Field innerContentEncapsulation =
+                    (Asn1Field) outerContentEncapsulation.getChildren().get(0);
             if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
                 Asn1PrimitiveOctetString innerPrimitiveOctetString =
-                    (Asn1PrimitiveOctetString) innerContentEncapsulation;
+                        (Asn1PrimitiveOctetString) innerContentEncapsulation;
                 encodedSctList = innerPrimitiveOctetString.getValue();
             } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
                 Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
-                    (Asn1EncapsulatingOctetString) innerContentEncapsulation;
+                        (Asn1EncapsulatingOctetString) innerContentEncapsulation;
                 encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
             }
-            SignedCertificateTimestampListParser sctListParser = new SignedCertificateTimestampListParser(
-                new ByteArrayInputStream(encodedSctList), serverCertChain, true);
+            SignedCertificateTimestampListParser sctListParser =
+                    new SignedCertificateTimestampListParser(
+                            new ByteArrayInputStream(encodedSctList), serverCertChain, true);
             sctListParser.parse(precertificateSctList);
         }
     }
@@ -108,12 +118,14 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         executeState(state);
 
         SignedCertificateTimestampExtensionMessage sctExtensionMessage =
-            getNegotiatedExtension(state.getWorkflowTrace(), SignedCertificateTimestampExtensionMessage.class);
+                getNegotiatedExtension(
+                        state.getWorkflowTrace(), SignedCertificateTimestampExtensionMessage.class);
         if (sctExtensionMessage != null) {
             byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
-            SignedCertificateTimestampListParser sctListParser = new SignedCertificateTimestampListParser(
-                new ByteArrayInputStream(encodedSctList), serverCertChain, false);
+            SignedCertificateTimestampListParser sctListParser =
+                    new SignedCertificateTimestampListParser(
+                            new ByteArrayInputStream(encodedSctList), serverCertChain, false);
             sctListParser.parse(handshakeSctList);
 
             supportsHandshakeSCTs = true;
@@ -121,8 +133,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     }
 
     /**
-     * Evaluates if Chrome's CT Policy is met. See https://github.com/chromium/ct-policy/blob/master/ct_policy.md for
-     * detailed information about Chrome's CT Policy.
+     * Evaluates if Chrome's CT Policy is met. See
+     * https://github.com/chromium/ct-policy/blob/master/ct_policy.md for detailed information about
+     * Chrome's CT Policy.
      */
     private void evaluateChromeCtPolicy() {
         if (!supportsPrecertificateSCTs) {
@@ -137,29 +150,34 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         } else if (precertificateSctList != null) {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
             Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
-            Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());
+            Duration validityDuration =
+                    Duration.between(startDate.toInstant(), endDate.toInstant());
 
             boolean hasEnoughPrecertificateSCTs = false;
             if (validityDuration.minusDays(30 * 15).isNegative()) {
                 // Certificate is valid for 15 months or less, two embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 2;
+                hasEnoughPrecertificateSCTs =
+                        precertificateSctList.getCertificateTimestampList().size() >= 2;
             } else if (validityDuration.minusDays(30 * 27).isNegative()) {
                 // Certificate is valid for 15 to 27 months, three embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 3;
+                hasEnoughPrecertificateSCTs =
+                        precertificateSctList.getCertificateTimestampList().size() >= 3;
             } else if (validityDuration.minusDays(30 * 39).isNegative()) {
                 // Certificate is valid for 27 to 39 months, four embedded precertificate SCTs are
                 // required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 4;
+                hasEnoughPrecertificateSCTs =
+                        precertificateSctList.getCertificateTimestampList().size() >= 4;
             } else {
                 // Certificate is valid for more than 39 months, five embedded precertificate SCTs
                 // are required
-                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
+                hasEnoughPrecertificateSCTs =
+                        precertificateSctList.getCertificateTimestampList().size() >= 5;
             }
 
             boolean hasGoogleAndNonGoogleScts =
-                hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
+                    hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts && hasEnoughPrecertificateSCTs;
         }
     }
@@ -200,10 +218,17 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         report.setOcspSctList(ocspSctList);
 
         // TODO wann ERROR DURING TEST setzen???
-        put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
-            supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
+                supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
+                supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP,
+                supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY,
+                meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
     }
 }

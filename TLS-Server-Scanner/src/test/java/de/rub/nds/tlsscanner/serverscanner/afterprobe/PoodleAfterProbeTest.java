@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,7 +48,7 @@ public class PoodleAfterProbeTest {
     public void testVulnerableCipherSuitesWithoutSSL3(CipherSuite providedCipherSuite) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
         VersionSuiteListPair versionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(providedCipherSuite));
+                new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(providedCipherSuite));
         report.getVersionSuitePairs().addAll(List.of(versionSuiteListPair));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
@@ -60,7 +59,7 @@ public class PoodleAfterProbeTest {
     public void testVulnerableCipherSuitesWithSSL3(CipherSuite providedCipherSuite) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
         VersionSuiteListPair versionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
+                new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
         report.getVersionSuitePairs().addAll(List.of(versionSuiteListPair));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
@@ -72,17 +71,22 @@ public class PoodleAfterProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
 
         VersionSuiteListPair vulnerableVersionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
+                new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
         VersionSuiteListPair safeVersionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
-        report.getVersionSuitePairs().addAll(List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
+                new VersionSuiteListPair(
+                        ProtocolVersion.TLS12, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
+        report.getVersionSuitePairs()
+                .addAll(List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
 
-        vulnerableVersionSuiteListPair = new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(providedCipherSuite));
+        vulnerableVersionSuiteListPair =
+                new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(providedCipherSuite));
         safeVersionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
-        report.getVersionSuitePairs().addAll(List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
+                new VersionSuiteListPair(
+                        ProtocolVersion.SSL3, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
+        report.getVersionSuitePairs()
+                .addAll(List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }
@@ -92,7 +96,7 @@ public class PoodleAfterProbeTest {
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
         VersionSuiteListPair versionSuiteListPair =
-            new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
+                new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
         report.getVersionSuitePairs().addAll(List.of(versionSuiteListPair));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
@@ -103,7 +107,9 @@ public class PoodleAfterProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
 
         probe.analyze(report);
-        assertEquals(TestResults.ERROR_DURING_TEST, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
+        assertEquals(
+                TestResults.ERROR_DURING_TEST,
+                report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
 
         report.getVersionSuitePairs().addAll(new LinkedList<>());
         probe.analyze(report);

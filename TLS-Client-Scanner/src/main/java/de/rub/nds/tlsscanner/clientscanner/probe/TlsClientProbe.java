@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -15,14 +15,18 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsClientProbe<ClientScannerConfig, Report extends TlsScanReport> extends TlsProbe<Report> {
+public abstract class TlsClientProbe<ClientScannerConfig, Report extends TlsScanReport>
+        extends TlsProbe<Report> {
 
-	protected static final Logger LOGGER = LogManager.getLogger();
+    protected static final Logger LOGGER = LogManager.getLogger();
 
-	protected final ClientScannerConfig scannerConfig;
+    protected final ClientScannerConfig scannerConfig;
 
-	protected TlsClientProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ClientScannerConfig scannerConfig) {
-		super(parallelExecutor, type);
-		this.scannerConfig = scannerConfig;
-	}
+    protected TlsClientProbe(
+            ParallelExecutor parallelExecutor,
+            TlsProbeType type,
+            ClientScannerConfig scannerConfig) {
+        super(parallelExecutor, type);
+        this.scannerConfig = scannerConfig;
+    }
 }

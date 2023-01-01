@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,10 +46,13 @@ public class ServerRandomnessAfterProbeTest {
 
     // generates "cryptographically strong random numbers" with constant seed for deterministic
     // tests
-    private final SecureRandom secureRandom = new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
+    private final SecureRandom secureRandom =
+            new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
     // generates a single fixed, but "secure" 32 byte sequence over and over again
-    private final FixedSecureRandom fixedSecureRandom = new FixedSecureRandom(
-        ArrayConverter.hexStringToByteArray("88fd513f45ae0f96756b0984aa674c607ef076385da9f2b9a8e171087fb1bfca"));
+    private final FixedSecureRandom fixedSecureRandom =
+            new FixedSecureRandom(
+                    ArrayConverter.hexStringToByteArray(
+                            "88fd513f45ae0f96756b0984aa674c607ef076385da9f2b9a8e171087fb1bfca"));
 
     @BeforeEach
     public void setup() {
@@ -72,26 +74,34 @@ public class ServerRandomnessAfterProbeTest {
 
     @Test
     public void testDoesNotUseUnixTime() {
-        ComparableByteArray beginningOfTime = new ComparableByteArray(ByteBuffer.allocate(32).putInt(1).array());
+        ComparableByteArray beginningOfTime =
+                new ComparableByteArray(ByteBuffer.allocate(32).putInt(1).array());
         serverRandomContainer.put(beginningOfTime);
         probe.analyze(report);
-        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+        assertEquals(
+                TestResults.FALSE,
+                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
 
-        ComparableByteArray endOfTime = new ComparableByteArray(ByteBuffer.allocate(32).putInt(0xFFFFFFFF).array());
+        ComparableByteArray endOfTime =
+                new ComparableByteArray(ByteBuffer.allocate(32).putInt(0xFFFFFFFF).array());
         serverRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
         serverRandomContainer.put(endOfTime);
         probe.analyze(report);
-        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+        assertEquals(
+                TestResults.FALSE,
+                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
     }
 
     @Test
     public void testUsesUnixTime() {
         int currentTimeStamp = (int) (System.currentTimeMillis() / 1000);
         ComparableByteArray currentTime =
-            new ComparableByteArray(ByteBuffer.allocate(32).putInt(currentTimeStamp).array());
+                new ComparableByteArray(ByteBuffer.allocate(32).putInt(currentTimeStamp).array());
         serverRandomContainer.put(currentTime);
         probe.analyze(report);
-        assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+        assertEquals(
+                TestResults.TRUE,
+                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
     }
 
     @Disabled
@@ -136,9 +146,13 @@ public class ServerRandomnessAfterProbeTest {
 
         // it should be noticed by at least one of the tests
         for (EntropyReport entropyReport : report.getEntropyReports()) {
-            assertTrue(entropyReport.isFailedEntropyTest() || entropyReport.isFailedFourierTest()
-                || entropyReport.isFailedFrequencyTest() || entropyReport.isFailedRunsTest()
-                || entropyReport.isFailedLongestRunTest() || entropyReport.isFailedMonoBitTest());
+            assertTrue(
+                    entropyReport.isFailedEntropyTest()
+                            || entropyReport.isFailedFourierTest()
+                            || entropyReport.isFailedFrequencyTest()
+                            || entropyReport.isFailedRunsTest()
+                            || entropyReport.isFailedLongestRunTest()
+                            || entropyReport.isFailedMonoBitTest());
         }
     }
 
@@ -155,9 +169,13 @@ public class ServerRandomnessAfterProbeTest {
 
         // it should be noticed by at least one of the tests
         for (EntropyReport entropyReport : report.getEntropyReports()) {
-            assertTrue(entropyReport.isFailedEntropyTest() || entropyReport.isFailedFourierTest()
-                || entropyReport.isFailedFrequencyTest() || entropyReport.isFailedRunsTest()
-                || entropyReport.isFailedLongestRunTest() || entropyReport.isFailedMonoBitTest());
+            assertTrue(
+                    entropyReport.isFailedEntropyTest()
+                            || entropyReport.isFailedFourierTest()
+                            || entropyReport.isFailedFrequencyTest()
+                            || entropyReport.isFailedRunsTest()
+                            || entropyReport.isFailedLongestRunTest()
+                            || entropyReport.isFailedMonoBitTest());
         }
     }
 }

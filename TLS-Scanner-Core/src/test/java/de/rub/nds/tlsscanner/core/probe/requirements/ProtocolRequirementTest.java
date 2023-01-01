@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -24,7 +23,7 @@ public class ProtocolRequirementTest {
     @Test
     public void testProtocolRequirement() {
         TestReport report = new TestReport();
-        ProtocolVersion[] protocolVersion = new ProtocolVersion[] { ProtocolVersion.TLS10 };
+        ProtocolVersion[] protocolVersion = new ProtocolVersion[] {ProtocolVersion.TLS10};
 
         ProtocolRequirement requirement = new ProtocolRequirement();
         assertTrue(requirement.evaluate(report));
@@ -38,10 +37,13 @@ public class ProtocolRequirementTest {
 
         Requirement requirementMissing = requirement.getMissingRequirements(report);
         assertFalse(requirement.evaluate(report));
-        assertArrayEquals(((ProtocolRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
+        assertArrayEquals(
+                ((ProtocolRequirement) requirementMissing).getRequirement(),
+                requirement.getRequirement());
 
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
-            new ListResult<>(Arrays.asList(protocolVersion), "SUPPORTED_PROTOCOL_VERSIONS"));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
+                new ListResult<>(Arrays.asList(protocolVersion), "SUPPORTED_PROTOCOL_VERSIONS"));
         assertTrue(requirement.evaluate(report));
     }
 }

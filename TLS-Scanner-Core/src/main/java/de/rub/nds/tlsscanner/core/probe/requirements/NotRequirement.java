@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -35,7 +34,8 @@ public class NotRequirement extends Requirement {
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
         if (evaluateIntern(report) == false) {
-            return next.getMissingRequirementIntern(missing.requires(new NotRequirement(notRequirement)), report);
+            return next.getMissingRequirementIntern(
+                    missing.requires(new NotRequirement(notRequirement)), report);
         }
         return next.getMissingRequirementIntern(missing, report);
     }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -66,13 +65,16 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
-            TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
-            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
-            TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
-            TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override
@@ -82,9 +84,10 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
             supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
 
             supportsDtlsCookieExchangeInSessionTicketResumption =
-                getSupportsDtlsCookieExchangeInSessionTicketResumption();
+                    getSupportsDtlsCookieExchangeInSessionTicketResumption();
             supportsTls13SessionTicket =
-                supportsTls13PskDhe = supportsTls13Psk = supportsTls13_0rtt = TestResults.NOT_TESTED_YET;
+                    supportsTls13PskDhe =
+                            supportsTls13Psk = supportsTls13_0rtt = TestResults.NOT_TESTED_YET;
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
@@ -101,15 +104,20 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
         try {
             Config tlsConfig = configSelector.getBaseConfig();
             tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
-            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+            WorkflowTrace trace =
+                    new WorkflowConfigurationFactory(tlsConfig)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                    tlsConfig.getDefaultRunningMode());
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
-            return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+            return state.getWorkflowTrace().executedAsPlanned()
+                    ? TestResults.TRUE
+                    : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -126,17 +134,26 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
             if (configSelector.foundWorkingConfig()) {
                 Config tlsConfig = configSelector.getBaseConfig();
                 tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
-                WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-                    .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+                WorkflowTrace trace =
+                        new WorkflowConfigurationFactory(tlsConfig)
+                                .createWorkflowTrace(
+                                        WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                        tlsConfig.getDefaultRunningMode());
                 addAlertToTrace(trace);
                 trace.addTlsAction(new ResetConnectionAction());
-                tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInResumption == TestResults.TRUE);
-                trace.addTlsActions(new WorkflowConfigurationFactory(tlsConfig)
-                    .createWorkflowTrace(WorkflowTraceType.RESUMPTION, tlsConfig.getDefaultRunningMode())
-                    .getTlsActions());
+                tlsConfig.setDtlsCookieExchange(
+                        supportsDtlsCookieExchangeInResumption == TestResults.TRUE);
+                trace.addTlsActions(
+                        new WorkflowConfigurationFactory(tlsConfig)
+                                .createWorkflowTrace(
+                                        WorkflowTraceType.RESUMPTION,
+                                        tlsConfig.getDefaultRunningMode())
+                                .getTlsActions());
                 State state = new State(tlsConfig, trace);
                 executeState(state);
-                return state.getWorkflowTrace().executedAsPlanned() == true ? TestResults.TRUE : TestResults.FALSE;
+                return state.getWorkflowTrace().executedAsPlanned() == true
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
             } else {
                 return TestResults.FALSE;
             }
@@ -156,25 +173,34 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
             Config tlsConfig = configSelector.getBaseConfig();
             tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
             tlsConfig.setAddSessionTicketTLSExtension(true);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            WorkflowTrace trace =
+                    new WorkflowConfigurationFactory(tlsConfig)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
             trace.addTlsAction(
-                new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(), new FinishedMessage()));
+                    new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+            trace.addTlsAction(
+                    new ReceiveAction(
+                            new NewSessionTicketMessage(),
+                            new ChangeCipherSpecMessage(),
+                            new FinishedMessage()));
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
-            return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+            return state.getWorkflowTrace().executedAsPlanned()
+                    ? TestResults.TRUE
+                    : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
                 throw new RuntimeException(e);
             } else {
-                LOGGER.error("Could not test for support for dtls cookie exchange in SessionTicketResumption");
+                LOGGER.error(
+                        "Could not test for support for dtls cookie exchange in SessionTicketResumption");
             }
             return TestResults.ERROR_DURING_TEST;
         }
@@ -186,21 +212,33 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 Config tlsConfig = configSelector.getBaseConfig();
                 tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
                 tlsConfig.setAddSessionTicketTLSExtension(true);
-                WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-                    .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+                WorkflowTrace trace =
+                        new WorkflowConfigurationFactory(tlsConfig)
+                                .createWorkflowTrace(
+                                        WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
                 trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-                trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-                trace.addTlsAction(new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(),
-                    new FinishedMessage()));
+                trace.addTlsAction(
+                        new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+                trace.addTlsAction(
+                        new ReceiveAction(
+                                new NewSessionTicketMessage(),
+                                new ChangeCipherSpecMessage(),
+                                new FinishedMessage()));
                 addAlertToTrace(trace);
                 trace.addTlsAction(new ResetConnectionAction());
-                tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInResumption == TestResults.TRUE);
-                trace.addTlsActions(new WorkflowConfigurationFactory(tlsConfig)
-                    .createWorkflowTrace(WorkflowTraceType.RESUMPTION, tlsConfig.getDefaultRunningMode())
-                    .getTlsActions());
+                tlsConfig.setDtlsCookieExchange(
+                        supportsDtlsCookieExchangeInResumption == TestResults.TRUE);
+                trace.addTlsActions(
+                        new WorkflowConfigurationFactory(tlsConfig)
+                                .createWorkflowTrace(
+                                        WorkflowTraceType.RESUMPTION,
+                                        tlsConfig.getDefaultRunningMode())
+                                .getTlsActions());
                 State state = new State(tlsConfig, trace);
                 executeState(state);
-                return state.getWorkflowTrace().executedAsPlanned() == true ? TestResults.TRUE : TestResults.FALSE;
+                return state.getWorkflowTrace().executedAsPlanned() == true
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
             } else {
                 return TestResults.FALSE;
             }
@@ -216,14 +254,20 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     private TestResult isKeyShareExtensionNegotiated(State state) {
-        List<HandshakeMessage> handshakes = WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
-        List<ServerHelloMessage> hellos = handshakes.stream().filter(message -> message instanceof ServerHelloMessage)
-            .map(message -> (ServerHelloMessage) message).collect(Collectors.toList());
+        List<HandshakeMessage> handshakes =
+                WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
+        List<ServerHelloMessage> hellos =
+                handshakes.stream()
+                        .filter(message -> message instanceof ServerHelloMessage)
+                        .map(message -> (ServerHelloMessage) message)
+                        .collect(Collectors.toList());
         if (hellos.size() < 2) {
             return TestResults.COULD_NOT_TEST;
         }
         ServerHelloMessage second = hellos.get(1);
-        return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResults.TRUE : TestResults.FALSE;
+        return second.containsExtension(ExtensionType.KEY_SHARE)
+                ? TestResults.TRUE
+                : TestResults.FALSE;
     }
 
     private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
@@ -241,11 +285,13 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 State state = new State(tlsConfig);
                 executeState(state);
 
-                MessageAction lastRcv = (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
+                MessageAction lastRcv =
+                        (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
                 if (lastRcv.executedAsPlanned()) {
                     // Check PSK Modes
                     TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
-                    TestResult keyShareRequired = TestResults.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
+                    TestResult keyShareRequired =
+                            TestResults.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
                     if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
                         if (!TestResults.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
                             respectsPskModes = TestResults.FALSE;
@@ -278,7 +324,8 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 executeState(state);
 
                 EncryptedExtensionsMessage encExt =
-                    state.getWorkflowTrace().getLastReceivedMessage(EncryptedExtensionsMessage.class);
+                        state.getWorkflowTrace()
+                                .getLastReceivedMessage(EncryptedExtensionsMessage.class);
                 if (encExt != null && encExt.containsExtension(ExtensionType.EARLY_DATA)) {
                     return TestResults.TRUE;
                 }
@@ -306,12 +353,15 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
                 State state = new State(tlsConfig);
-                state.getWorkflowTrace().addTlsAction(new ReceiveAction(
-                    tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage()));
+                state.getWorkflowTrace()
+                        .addTlsAction(
+                                new ReceiveAction(
+                                        tlsConfig.getDefaultClientConnection().getAlias(),
+                                        new NewSessionTicketMessage()));
                 executeState(state);
 
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET,
-                    state.getWorkflowTrace())) {
+                if (WorkflowTraceUtil.didReceiveMessage(
+                        HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
                     return TestResults.TRUE;
                 }
             }
@@ -348,15 +398,19 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
-        put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+                supportsSessionTicketResumption);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
-        put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
-            supportsDtlsCookieExchangeInResumption);
-        put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
-            supportsDtlsCookieExchangeInSessionTicketResumption);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                supportsDtlsCookieExchangeInResumption);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                supportsDtlsCookieExchangeInSessionTicketResumption);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -32,9 +31,9 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 
 /**
- * Determines when the server closes the connection. It's meant for tests in the lab so we limit the probe. Note that
- * NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server didn't close the connection within
- * our limit or the probe could not be executed.
+ * Determines when the server closes the connection. It's meant for tests in the lab so we limit the
+ * probe. Note that NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server
+ * didn't close the connection within our limit or the probe could not be executed.
  */
 public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -45,7 +44,8 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     private long closedAfterFinishedDelta = NO_RESULT;
     private long closedAfterAppDataDelta = NO_RESULT;
 
-    public ConnectionClosingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public ConnectionClosingProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, configSelector);
     }
 
@@ -80,7 +80,9 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
         SocketState socketState = null;
         do {
             try {
-                socketState = (((TcpTransportHandler) (state.getTlsContext().getTransportHandler())).getSocketState());
+                socketState =
+                        (((TcpTransportHandler) (state.getTlsContext().getTransportHandler()))
+                                .getSocketState());
                 switch (socketState) {
                     case CLOSED:
                     case IO_EXCEPTION:
@@ -122,5 +124,4 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.HTTP_HEADER);
     }
-
 }

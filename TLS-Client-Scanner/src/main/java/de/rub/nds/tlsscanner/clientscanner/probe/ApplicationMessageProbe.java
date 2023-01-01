@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -27,36 +27,38 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class ApplicationMessageProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult sendsApplicationMessage;
+    private TestResult sendsApplicationMessage;
 
-	public ApplicationMessageProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-		super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
-		register(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE);
-	}
+    public ApplicationMessageProbe(
+            ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+        super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
+        register(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE);
+    }
 
-	@Override
-	public void executeTest() {
-		Config config = scannerConfig.createConfig();
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
-				RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
+    @Override
+    public void executeTest() {
+        Config config = scannerConfig.createConfig();
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		sendsApplicationMessage = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        sendsApplicationMessage =
+                state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE, sendsApplicationMessage);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE, sendsApplicationMessage);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

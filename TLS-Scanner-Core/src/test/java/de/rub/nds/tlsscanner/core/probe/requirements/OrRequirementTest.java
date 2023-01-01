@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -34,12 +33,15 @@ public class OrRequirementTest {
         assertTrue(requirement.evaluate(report));
 
         requirement = new OrRequirement(requirement0, requirement1);
-        assertArrayEquals(requirement.getRequirement(), new Requirement[] { requirement0, requirement1 });
+        assertArrayEquals(
+                requirement.getRequirement(), new Requirement[] {requirement0, requirement1});
         assertFalse(requirement.evaluate(report));
 
         Requirement requirementMissing = requirement.getMissingRequirements(report);
         assertFalse(requirement.evaluate(report));
-        assertArrayEquals(((OrRequirement) requirementMissing).getRequirement(), requirement.getRequirement());
+        assertArrayEquals(
+                ((OrRequirement) requirementMissing).getRequirement(),
+                requirement.getRequirement());
 
         report.markProbeAsExecuted(TlsProbeType.BASIC);
         assertTrue(requirement.evaluate(report));

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -45,8 +44,10 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
     @Override
     public void executeTest() {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage()));
@@ -56,13 +57,14 @@ public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerRe
         State state = new State(config, trace);
         executeState(state);
         supportsReordering =
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())
-                ? TestResults.TRUE : TestResults.FALSE;
+                WorkflowTraceUtil.didReceiveMessage(
+                                HandshakeMessageType.FINISHED, state.getWorkflowTrace())
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

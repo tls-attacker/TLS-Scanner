@@ -1,22 +1,12 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.probe;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
@@ -30,6 +20,14 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProbe<Report> {
 
@@ -90,12 +88,16 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
         if (propertiesMap.containsKey(property)) {
             propertiesMap.replace(property, result);
         } else {
-            LOGGER.error(property.name() + " was set in " + getClass() + " but had not been registered!");
+            LOGGER.error(
+                    property.name()
+                            + " was set in "
+                            + getClass()
+                            + " but had not been registered!");
             propertiesMap.put(property, result);
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected final void addToList(TlsAnalyzedProperty property, List<?> result) {
         if (property == null) {
             LOGGER.error("Property to add (addToList) to in " + getClass() + " is null!");
@@ -111,7 +113,11 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
                 }
             }
         } else {
-            LOGGER.error(property.name() + " was set in " + getClass() + " but had not been registered!");
+            LOGGER.error(
+                    property.name()
+                            + " was set in "
+                            + getClass()
+                            + " but had not been registered!");
             propertiesMap.put(property, new ListResult<>(result, property.name()));
         }
     }
@@ -120,7 +126,8 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
 
     public final void merge(Report report) {
         if (getStartTime() != 0 && getStopTime() != 0) {
-            report.getPerformanceList().add(new PerformanceData(getType(), getStartTime(), getStopTime()));
+            report.getPerformanceList()
+                    .add(new PerformanceData(getType(), getStartTime(), getStopTime()));
         }
         mergeData(report);
         TestResult result;

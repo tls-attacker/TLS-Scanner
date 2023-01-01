@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
@@ -38,7 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
+ * A probe which samples random material from the target host using ServerHello randoms, SessionIDs
+ * and IVs.
  */
 public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -52,7 +52,8 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     @Override
     protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION, TlsProbeType.EXTENSIONS);
+        return new ProbeRequirement(
+                TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION, TlsProbeType.EXTENSIONS);
     }
 
     @Override
@@ -63,23 +64,27 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     @Override
     public void adjustConfig(ServerReport report) {
         chooseBestCipherAndVersion(report);
-        supportsExtendedRandom = report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
+        supportsExtendedRandom =
+                report.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
     }
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
         @SuppressWarnings("unchecked")
         List<VersionSuiteListPair> versionSuitePairs =
-            ((ListResult<VersionSuiteListPair>) report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
-                .getList();
+                ((ListResult<VersionSuiteListPair>)
+                                report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
+                        .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;
                 if (!pair.getVersion().isTLS13()) {
                     score += 64; // random + session id
                     if (suite.isCBC()
-                        && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)
-                        || pair.getVersion() == ProtocolVersion.DTLS12 || pair.getVersion() == ProtocolVersion.DTLS10) {
+                                    && (pair.getVersion() == ProtocolVersion.TLS12
+                                            || pair.getVersion() == ProtocolVersion.TLS11)
+                            || pair.getVersion() == ProtocolVersion.DTLS12
+                            || pair.getVersion() == ProtocolVersion.DTLS10) {
                         score += AlgorithmResolver.getCipher(suite).getBlocksize();
                     }
                 } else {
@@ -109,9 +114,12 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 config.setAddExtendedRandomExtension(true);
             }
             configSelector.repairConfig(config);
-            WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (configSelector.getScannerConfig().getApplicationProtocol() == ApplicationProtocol.HTTP) {
+            WorkflowTrace workflowTrace =
+                    new WorkflowConfigurationFactory(config)
+                            .createWorkflowTrace(
+                                    WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+            if (configSelector.getScannerConfig().getApplicationProtocol()
+                    == ApplicationProtocol.HTTP) {
                 config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
                 workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
                 workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));

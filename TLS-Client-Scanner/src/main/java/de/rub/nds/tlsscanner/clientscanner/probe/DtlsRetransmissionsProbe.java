@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -29,76 +29,79 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private TestResult sendsRetransmissions;
-	private TestResult processesRetransmissions;
+    private TestResult sendsRetransmissions;
+    private TestResult processesRetransmissions;
 
-	public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
-		register(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
-	}
+    public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+        register(
+                TlsAnalyzedProperty.SENDS_RETRANSMISSIONS,
+                TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
+    }
 
-	@Override
-	public void executeTest() {
-		sendsRetransmissions = doesRetransmissions();
-		processesRetransmissions = processesRetransmissions();
-	}
+    @Override
+    public void executeTest() {
+        sendsRetransmissions = doesRetransmissions();
+        processesRetransmissions = processesRetransmissions();
+    }
 
-	private TestResult doesRetransmissions() {
-		Config config = scannerConfig.createConfig();
-		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-		config.setAcceptContentRewritingDtlsFragments(true);
+    private TestResult doesRetransmissions() {
+        Config config = scannerConfig.createConfig();
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+        config.setAcceptContentRewritingDtlsFragments(true);
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	private TestResult processesRetransmissions() {
-		Config config = scannerConfig.createConfig();
-		config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-		config.setAcceptContentRewritingDtlsFragments(true);
+    private TestResult processesRetransmissions() {
+        Config config = scannerConfig.createConfig();
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+        config.setAcceptContentRewritingDtlsFragments(true);
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.TRUE;
-		} else {
-			return TestResults.FALSE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
-		put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
+        put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -36,11 +35,17 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     public ProtocolVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PROTOCOL_VERSION, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
-            TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TlsAnalyzedProperty.SUPPORTS_SSL_2,
-            TlsAnalyzedProperty.SUPPORTS_SSL_3, TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-            TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_1_2,
+                TlsAnalyzedProperty.SUPPORTS_SSL_2,
+                TlsAnalyzedProperty.SUPPORTS_SSL_3,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
     }
 
     @Override
@@ -92,23 +97,28 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         executeState(state);
 
         if (toTest == ProtocolVersion.DTLS10_DRAFT) {
-            Record record = (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
+            Record record =
+                    (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
             if (record != null) {
-                ProtocolVersion version = ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
+                ProtocolVersion version =
+                        ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
                 if (version != null) {
                     return version == ProtocolVersion.DTLS10_DRAFT;
                 }
             }
             return false;
         } else {
-            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (!WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 LOGGER.debug("Did not receive ServerHello Message");
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 return false;
             } else {
                 LOGGER.debug("Received ServerHelloMessage");
                 LOGGER.debug(state.getWorkflowTrace().toString());
-                LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+                LOGGER.debug(
+                        "Selected Version:"
+                                + state.getTlsContext().getSelectedProtocolVersion().name());
                 return state.getTlsContext().getSelectedProtocolVersion() == toTest;
             }
         }

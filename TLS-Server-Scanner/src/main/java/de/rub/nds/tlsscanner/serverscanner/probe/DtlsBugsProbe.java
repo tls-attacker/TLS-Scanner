@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -40,7 +39,9 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
-        register(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
@@ -51,8 +52,10 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     private TestResult isAcceptingUnencryptedFinished() {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage()));
         SendAction sendAction = new SendAction(new FinishedMessage());
@@ -63,7 +66,8 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -72,14 +76,17 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     private TestResult isEarlyFinished() {
         Config config = configSelector.getBaseConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new FinishedMessage()));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -92,13 +99,11 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
         put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
-
 }

@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -52,15 +51,19 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
         tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace =
+                factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new SendAction(new HttpRequestMessage()));
         trace.addTlsAction(
-            new ReceiveAction(new LinkedList<>(Arrays.asList(new ChangeCipherSpecMessage(), new FinishedMessage())),
-                new LinkedList<>(Arrays.asList(new HttpResponseMessage()))));
+                new ReceiveAction(
+                        new LinkedList<>(
+                                Arrays.asList(
+                                        new ChangeCipherSpecMessage(), new FinishedMessage())),
+                        new LinkedList<>(Arrays.asList(new HttpResponseMessage()))));
         State state = new State(tlsConfig, trace);
         executeState(state);
 
@@ -69,10 +72,12 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
         if (action.getReceivedMessages() != null) {
             receivedServerFinishedMessage =
-                action.getReceivedMessages().stream().anyMatch(FinishedMessage.class::isInstance);
+                    action.getReceivedMessages().stream()
+                            .anyMatch(FinishedMessage.class::isInstance);
         }
 
-        if (action.getReceivedHttpMessages() != null && !action.getReceivedHttpMessages().isEmpty()) {
+        if (action.getReceivedHttpMessages() != null
+                && !action.getReceivedHttpMessages().isEmpty()) {
             // review once HTTP layer is re-implemented to ensure that
             // other app data does not appear as http response
             supportsFalseStart = TestResults.TRUE;
@@ -86,13 +91,12 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
     }
 
-//    public boolean canBeExecuted(ServerReport report) {
-//        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
-//                && configSelector.foundWorkingConfig();
+    //    public boolean canBeExecuted(ServerReport report) {
+    //        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
+    //                && configSelector.foundWorkingConfig();
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

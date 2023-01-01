@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -43,12 +42,17 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAutoSelectCertificate(false);
         CcaCertificateManager ccaCertificateManager =
-            new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
-            CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
+                new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
+        WorkflowTrace trace =
+                CcaWorkflowGenerator.generateWorkflow(
+                        tlsConfig,
+                        ccaCertificateManager,
+                        CcaWorkflowType.CRT_CKE_CCS_FIN,
+                        CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             requiresCca = TestResults.FALSE;
         } else {
             requiresCca = TestResults.TRUE;
@@ -58,12 +62,11 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     @Override
     protected Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_CCA)
-            .requires(new WorkingConfigRequirement(configSelector));
+                .requires(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -32,7 +32,10 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public AlpacaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, configSelector);
-        register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.STRICT_ALPN, TlsAnalyzedProperty.ALPACA_MITIGATED);
+        register(
+                TlsAnalyzedProperty.STRICT_SNI,
+                TlsAnalyzedProperty.STRICT_ALPN,
+                TlsAnalyzedProperty.ALPACA_MITIGATED);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     protected void mergeData(ServerReport report) {
         if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
-            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
+                && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
             TestResult alpacaMitigated;
             if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
                 alpacaMitigated = TestResults.TRUE;

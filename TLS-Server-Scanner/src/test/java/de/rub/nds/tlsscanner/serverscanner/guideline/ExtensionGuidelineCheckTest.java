@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,10 +25,13 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-            new ListResult<>(Collections.singletonList(ExtensionType.COOKIE), "SUPPORTED_EXTENSIONS"));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                new ListResult<>(
+                        Collections.singletonList(ExtensionType.COOKIE), "SUPPORTED_EXTENSIONS"));
 
-        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        ExtensionGuidelineCheck check =
+                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(TestResults.TRUE, result.getResult());
     }
@@ -37,10 +39,12 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-            new ListResult<>(Collections.emptyList(), "SUPPORTED_EXTENSIONS"));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                new ListResult<>(Collections.emptyList(), "SUPPORTED_EXTENSIONS"));
 
-        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        ExtensionGuidelineCheck check =
+                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(TestResults.FALSE, result.getResult());
     }

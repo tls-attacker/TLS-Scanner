@@ -1,23 +1,12 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.afterprobe;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -31,6 +20,15 @@ import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends AfterProbe<T> {
 
@@ -91,20 +89,23 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
     public void analyze(TlsScanReport report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
+                report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
         ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
+                report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
         ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
-        List<ComparableByteArray> extractedCookieList = cookieExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedCookieList =
+                cookieExtractedValueContainer.getExtractedValueList();
         List<ComparableByteArray> extractedRandomList =
-            filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
-        List<ComparableByteArray> extractedIvList = cbcIvExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedSessionIdList = sessionIdExtractedValueContainer.getExtractedValueList();
+                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
+        List<ComparableByteArray> extractedIvList =
+                cbcIvExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedSessionIdList =
+                sessionIdExtractedValueContainer.getExtractedValueList();
 
         List<EntropyReport> entropyReport = new LinkedList<>();
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
@@ -112,8 +113,9 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS,
-            new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+        report.putResult(
+                TlsAnalyzedProperty.ENTROPY_REPORTS,
+                new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
     }
 
     public EntropyReport createEntropyReport(

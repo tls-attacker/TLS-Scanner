@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -44,7 +43,10 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        enforced = (firstSelectedCipherSuite == secondSelectedCipherSuite) ? TestResults.TRUE : TestResults.FALSE;
+        enforced =
+                (firstSelectedCipherSuite == secondSelectedCipherSuite)
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -58,8 +60,7 @@ public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected Requirement getRequirements() {

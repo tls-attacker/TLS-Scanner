@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -33,8 +32,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 /**
- * Determines whether the server uses the client IP address for the DTLS cookie generation. It requires a proxy so we
- * limit the probe.
+ * Determines whether the server uses the client IP address for the DTLS cookie generation. It
+ * requires a proxy so we limit the probe.
  */
 public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -45,7 +44,8 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
 
     private TestResult usesIpAdressInCookie;
 
-    public DtlsIpAddressInCookieProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsIpAddressInCookieProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
         register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
     }
@@ -59,17 +59,20 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
         config.getDefaultClientConnection().setProxyDataHostname(PROXY_DATA_HOSTNAME);
         config.getDefaultClientConnection().setProxyDataPort(PROXY_DATA_PORT);
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         State state = new State(config, trace);
         TlsContext oldContext = state.getTlsContext();
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
             config = configSelector.getBaseConfig();
             config.getDefaultClientConnection().setSourcePort(3333);
-            trace = new WorkflowConfigurationFactory(config)
-                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+            trace =
+                    new WorkflowConfigurationFactory(config)
+                            .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
             state = new State(config, trace);
@@ -77,16 +80,17 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
             state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
             executeState(state);
             usesIpAdressInCookie =
-                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
-                    ? TestResults.TRUE : TestResults.FALSE;
+                    WorkflowTraceUtil.didReceiveMessage(
+                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+                            ? TestResults.TRUE
+                            : TestResults.FALSE;
         } else {
             usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
         }
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

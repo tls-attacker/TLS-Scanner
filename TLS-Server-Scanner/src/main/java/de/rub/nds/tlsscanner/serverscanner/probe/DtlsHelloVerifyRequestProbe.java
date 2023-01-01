@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -53,12 +52,18 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
 
     private Integer cookieLength;
 
-    public DtlsHelloVerifyRequestProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public DtlsHelloVerifyRequestProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, configSelector);
-        register(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
-            TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
-            TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
-            TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+        register(
+                TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS,
+                TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
+                TlsAnalyzedProperty.USES_PORT_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override
@@ -75,8 +80,15 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             hasHvrRetransmissions =
-                checksCookie = usesPortInCookie = usesVersionInCookie = usesRandomInCookie = usesSessionIdInCookie =
-                    usesCiphersuitesInCookie = usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
+                    checksCookie =
+                            usesPortInCookie =
+                                    usesVersionInCookie =
+                                            usesRandomInCookie =
+                                                    usesSessionIdInCookie =
+                                                            usesCiphersuitesInCookie =
+                                                                    usesCompressionsInCookie =
+                                                                            TestResults
+                                                                                    .COULD_NOT_TEST;
             cookieLength = -1;
         }
     }
@@ -85,15 +97,17 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         Config config = configSelector.getBaseConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        HandshakeMessage message = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST,
-            state.getWorkflowTrace());
+        HandshakeMessage message =
+                WorkflowTraceUtil.getLastReceivedMessage(
+                        HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace());
         if (message != null) {
             if (message.isRetransmission()) {
                 return TestResults.TRUE;
@@ -110,7 +124,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             if (state.getTlsContext().getDtlsCookie() != null) {
                 cookieLength = state.getTlsContext().getDtlsCookie().length;
                 if (cookieLength == 0) {
@@ -122,7 +137,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         }
         config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -138,7 +154,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     private TestResult usesPortInCookie() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ResetConnectionAction(false));
@@ -152,11 +169,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         Config config = configSelector.getBaseConfig();
         config.setHighestProtocolVersion(ProtocolVersion.DTLS10);
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        clientHelloMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
+        clientHelloMessage.setProtocolVersion(
+                Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -166,7 +185,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     private TestResult usesRandomInCookie() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -182,11 +202,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     private TestResult usesSessionIdInCookie() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        clientHelloMessage.setSessionId(Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
+        clientHelloMessage.setSessionId(
+                Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -196,11 +218,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     private TestResult usesCiphersuitesInCookie() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        clientHelloMessage.setCipherSuites(Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
+        clientHelloMessage.setCipherSuites(
+                Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -210,11 +234,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     private TestResult usesCompressionsInCookie() {
         Config config = configSelector.getBaseConfig();
         WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        clientHelloMessage.setCompressions(Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
+        clientHelloMessage.setCompressions(
+                Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -223,8 +249,10 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
 
     private TestResult getResult(State state) {
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 return TestResults.FALSE;
             } else {
                 return TestResults.TRUE;
@@ -240,8 +268,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

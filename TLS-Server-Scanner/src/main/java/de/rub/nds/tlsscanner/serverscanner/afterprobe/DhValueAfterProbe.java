@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -98,8 +98,9 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, usesCommonDhPrimes);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, onlySafePrime);
-        report.putResult(TlsAnalyzedProperty.COMMON_DH_VALUES,
-            new SetResult<>(usedCommonValues, TlsAnalyzedProperty.COMMON_DH_VALUES.name()));
+        report.putResult(
+                TlsAnalyzedProperty.COMMON_DH_VALUES,
+                new SetResult<>(usedCommonValues, TlsAnalyzedProperty.COMMON_DH_VALUES.name()));
         report.putResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
             report.setWeakestDhStrength(shortestBitLength);

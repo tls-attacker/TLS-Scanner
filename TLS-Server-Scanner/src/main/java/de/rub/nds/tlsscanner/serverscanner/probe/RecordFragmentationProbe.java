@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -28,7 +27,8 @@ public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, Ser
 
     private TestResult supported;
 
-    public RecordFragmentationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public RecordFragmentationProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, configSelector);
         register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
     }
@@ -41,15 +41,17 @@ public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, Ser
         State state = new State(config);
         executeState(state);
         HandshakeMessageType expectedFinalMessage =
-            state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13 ? HandshakeMessageType.FINISHED
-                : HandshakeMessageType.SERVER_HELLO_DONE;
-        supported = WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())
-            ? TestResults.TRUE : TestResults.FALSE;
+                state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13
+                        ? HandshakeMessageType.FINISHED
+                        : HandshakeMessageType.SERVER_HELLO_DONE;
+        supported =
+                WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected Requirement getRequirements() {

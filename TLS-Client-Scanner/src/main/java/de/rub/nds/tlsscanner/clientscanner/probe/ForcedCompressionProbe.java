@@ -1,12 +1,11 @@
-/**
- * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -39,19 +38,21 @@ public class ForcedCompressionProbe extends TlsClientProbe<ClientScannerConfig, 
     public void executeTest() {
         Config config = scannerConfig.createConfig();
         config.setEnforceSettings(true);
-        config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
+        config.setDefaultServerSupportedCompressionMethods(
+                CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        WorkflowTrace workflowTrace =
+                factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, workflowTrace);
         executeState(state);
-        result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+        result =
+                state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
-    public void adjustConfig(ClientReport report) {
-    }
+    public void adjustConfig(ClientReport report) {}
 
     @Override
     protected Requirement getRequirements() {

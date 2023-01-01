@@ -1,12 +1,11 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -51,9 +50,12 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
         TlsContext context = state.getTlsContext();
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
-        boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-            && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        boolean isReceivedCorrectNonce =
+                context.getEsniServerNonce() != null
+                        && Arrays.equals(
+                                context.getEsniServerNonce(), context.getEsniClientNonce());
+        if (!WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
             receivedCorrectNonce = TestResults.TRUE;
@@ -63,13 +65,12 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
-            .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override
