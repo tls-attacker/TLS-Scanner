@@ -14,56 +14,71 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 
 public class OptionsRequirement extends Requirement {
 
-    private ClientScannerConfig scannerConfig;
-    private String type;
-    private String domain;
+	private ClientScannerConfig scannerConfig;
+	private String type; // String name of the respective option
+	private String domain; // domain for sni option (optional)
 
-    public OptionsRequirement(ClientScannerConfig scannerConfig, String type) {
-        super();
-        this.scannerConfig = scannerConfig;
-        this.type = type;
-    }
+	/**
+	 * 
+	 * @param scannerConfig the ClientScannerConfig
+	 * @param type          the name of the option
+	 */
+	public OptionsRequirement(ClientScannerConfig scannerConfig, String type) {
+		super();
+		this.scannerConfig = scannerConfig;
+		this.type = type;
+	}
 
-    public OptionsRequirement(ClientScannerConfig scannerConfig, String type, String domain) {
-        super();
-        this.scannerConfig = scannerConfig;
-        this.type = type;
-        this.domain = domain;
-    }
+	/**
+	 * 
+	 * @param scannerConfig the ClientScannerConfig
+	 * @param type          the name of the option
+	 * @param domain        the domain for the sni option
+	 */
+	public OptionsRequirement(ClientScannerConfig scannerConfig, String type, String domain) {
+		super();
+		this.scannerConfig = scannerConfig;
+		this.type = type;
+		this.domain = domain;
+	}
 
-    @Override
-    protected boolean evaluateIntern(ScanReport report) {
-        if (scannerConfig == null || type == null) {
-            return false;
-        }
-        if (type == "ALPN") {
-            return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
-        }
+	@Override
+	protected boolean evaluateIntern(ScanReport report) {
+		if (scannerConfig == null || type == null) {
+			return false;
+		}
+		if (type == "ALPN") {
+			return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
+		}
 
-        // TODO is this correct for null domains?
-        if (type == "SNI") {
-            if (domain != null) {
-                return scannerConfig.getClientParameterDelegate().getSniOptions(domain) != null;
-            } else {
-                return false;
-            }
-        }
-        if (type == "RESUMPTION") {
-            return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
-        }
-        return false;
-    }
+		// TODO is this correct for null domains?
+		if (type == "SNI") {
+			if (domain != null) {
+				return scannerConfig.getClientParameterDelegate().getSniOptions(domain) != null;
+			} else {
+				return false;
+			}
+		}
+		if (type == "RESUMPTION") {
+			return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
+		}
+		return false;
+	}
 
-    public String getRequirement() {
-        return type;
-    }
+	/**
+	 * 
+	 * @return the name of the option
+	 */
+	public String getRequirement() {
+		return type;
+	}
 
-    @Override
-    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false) {
-            return next.getMissingRequirementIntern(
-                    missing.requires(new OptionsRequirement(scannerConfig, type)), report);
-        }
-        return next.getMissingRequirementIntern(missing, report);
-    }
+	@Override
+	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+		if (evaluateIntern(report) == false) {
+			return next.getMissingRequirementIntern(missing.requires(new OptionsRequirement(scannerConfig, type)),
+					report);
+		}
+		return next.getMissingRequirementIntern(missing, report);
+	}
 }
