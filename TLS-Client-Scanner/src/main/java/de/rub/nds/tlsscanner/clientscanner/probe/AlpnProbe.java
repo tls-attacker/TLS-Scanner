@@ -23,6 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -91,11 +92,6 @@ public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport>
 	}
 
 	@Override
-	public boolean canBeExecuted(ClientReport report) {
-		return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
-	}
-
-	@Override
 	public void adjustConfig(ClientReport report) {
 	}
 
@@ -107,7 +103,6 @@ public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport>
 
 	@Override
 	protected Requirement getRequirements() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OptionsRequirement(scannerConfig, "ALPN");
 	}
 }
