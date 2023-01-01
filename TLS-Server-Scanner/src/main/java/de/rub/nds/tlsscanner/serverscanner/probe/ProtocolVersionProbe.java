@@ -50,10 +50,11 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void executeTest() {
-        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+        supportedProtocolVersions = new LinkedList<>();
+        unsupportedProtocolVersions = new LinkedList<>();
         if (configSelector.foundWorkingTls13Config()) {
             // the ConfigSelector is currently better at determining 1.3 support
-            supportedVersionList.add(ProtocolVersion.TLS13);
+            supportedProtocolVersions.add(ProtocolVersion.TLS13);
         }
 
         for (ProtocolVersion version : toTestList) {
@@ -64,7 +65,6 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
             }
         }
         if (supportedProtocolVersions.isEmpty()) {
-            unsupportedProtocolVersions = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
                 if (isProtocolVersionSupported(version, true)) {
                     supportedProtocolVersions.add(version);
@@ -97,8 +97,7 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         executeState(state);
 
         if (toTest == ProtocolVersion.DTLS10_DRAFT) {
-            Record record =
-                    (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
+            Record record = WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
             if (record != null) {
                 ProtocolVersion version =
                         ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
@@ -157,6 +156,16 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
+        put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
         if (supportedProtocolVersions != null) {
             for (ProtocolVersion version : supportedProtocolVersions) {
                 if (version == ProtocolVersion.DTLS10_DRAFT) {
@@ -217,18 +226,6 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
                 }
             }
-        } else {
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
         }
-
-        put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
     }
 }
