@@ -17,29 +17,31 @@ import de.rub.nds.scanner.core.report.ScanReport;
  *         Abstract class to represent requirements of probes which can be
  *         chained to a "chain of Requirements", which can be evaluated for
  *         fulfillness, which return their respective "requirement", and which
- *         allow to retrieve the not yet fulfilled Requirements
+ *         allow to retrieve the not yet fulfilled Requirements.
  */
 public abstract class Requirement {
 
-	// holds the "next" Requirement. Holds the NO_REQUIREMENT by default if no
-	// requirement is set
+	/**
+	 * Holds the "next" Requirement. Holds the NO_REQUIREMENT by default if no
+	 * Requirement is set as next.
+	 */
 	protected Requirement next = Requirement.NO_REQUIREMENT;
 
-	// no requirement, always evaluates to true
+	/** no requirement, always evaluates to true */
 	public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
 
 	/**
 	 * 
-	 * Evaluation of "this" Requirement itself
+	 * Evaluation of "this" Requirement itself.
 	 * 
-	 * @param report
-	 * @return
+	 * @param report the ScanReport.
+	 * @return result of the evaluation of this Requirement as Boolean.
 	 */
 	protected abstract boolean evaluateIntern(ScanReport report);
 
 	/**
 	 * 
-	 * Evaluation of "all" Requirement. This and the next ones
+	 * Evaluation of "all" Requirement. This and the next ones.
 	 * 
 	 * @param report the ScanReport
 	 * @return result of the evaluation of this and the next Requirement as Boolean
@@ -56,10 +58,10 @@ public abstract class Requirement {
 	 * 
 	 * Either
 	 * exampleRequirement.requires(nextRequirement).requires(anotherRequirement) XOR
-	 * exampleRequirement.requires(nextRequirement.requires(anotherRequirement))
+	 * exampleRequirement.requires(nextRequirement.requires(anotherRequirement)).
 	 * 
-	 * @param next the requirement object to add
-	 * @return reference to the next requirement
+	 * @param next the requirement object to add.
+	 * @return reference to the next requirement.
 	 */
 	public Requirement requires(Requirement next) {
 		next.next = this;
@@ -68,10 +70,10 @@ public abstract class Requirement {
 
 	/**
 	 * 
-	 * Add this Requirement to a chain of not positively evaluated requirements
+	 * Add this Requirement to a chain of not positively evaluated requirements.
 	 * 
-	 * @param report the ScanReport
-	 * @return this and the next Requirement if they evaluate to false respectively
+	 * @param report the ScanReport.
+	 * @return this and the next Requirement if they evaluate to false respectively.
 	 */
 	public Requirement getMissingRequirements(ScanReport report) {
 		Requirement missing = NO_REQUIREMENT;
@@ -80,7 +82,7 @@ public abstract class Requirement {
 
 	/**
 	 * 
-	 * @return next Requirement
+	 * @return the next Requirement.
 	 */
 	public Requirement getNext() {
 		return next;
@@ -89,14 +91,14 @@ public abstract class Requirement {
 	/**
 	 * 
 	 * Evaluates if this Requirement and the next are fulfilled or not and adds them
-	 * to a Requirement chain of missing Requirements of not fulfilled
+	 * to a Requirement chain of missing Requirements of not fulfilled.
 	 * 
 	 * @param missing reference to the "first" missing Requirement of the missing
 	 *                Requirements chain onto which the next missing Requirement is
-	 *                attached as next Requirement
-	 * @param report  the ScanReport
+	 *                attached as next Requirement.
+	 * @param report  the ScanReport.
 	 * @return a reference to the "first" currently missing Requirement of the
-	 *         missing Requirement chain
+	 *         missing Requirement chain.
 	 */
 	public abstract Requirement getMissingRequirementIntern(Requirement missing, ScanReport report);
 
