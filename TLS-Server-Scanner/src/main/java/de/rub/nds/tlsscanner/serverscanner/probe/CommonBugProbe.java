@@ -51,43 +51,43 @@ import java.util.List;
 public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     // does it handle unknown extensions correctly?
-    private TestResult extensionIntolerance;
+    private TestResult extensionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown cipher suites correctly?
-    private TestResult cipherSuiteIntolerance;
+    private TestResult cipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle long cipher suite length values correctly?
-    private TestResult cipherSuiteLengthIntolerance512;
+    private TestResult cipherSuiteLengthIntolerance512 = TestResults.COULD_NOT_TEST;
     // does it handle unknown compression algorithms correctly?
-    private TestResult compressionIntolerance;
+    private TestResult compressionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown versions correctly?
-    private TestResult versionIntolerance;
+    private TestResult versionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown alpn strings correctly?
-    private TestResult alpnIntolerance;
+    private TestResult alpnIntolerance = TestResults.COULD_NOT_TEST;
     // 256 - 511 <-- ch should be bigger than this?
-    private TestResult clientHelloLengthIntolerance;
+    private TestResult clientHelloLengthIntolerance = TestResults.COULD_NOT_TEST;
     // does it break on empty last extension?
-    private TestResult emptyLastExtensionIntolerance;
+    private TestResult emptyLastExtensionIntolerance = TestResults.COULD_NOT_TEST;
     // is only the second byte of the cipher suite evaluated?
-    private TestResult onlySecondCipherSuiteByteEvaluated;
+    private TestResult onlySecondCipherSuiteByteEvaluated = TestResults.COULD_NOT_TEST;
     // does it handle unknown groups correctly?
-    private TestResult namedGroupIntolerant;
+    private TestResult namedGroupIntolerant = TestResults.COULD_NOT_TEST;
     // does it handle signature and hash algorithms correctly?
-    private TestResult namedSignatureAndHashAlgorithmIntolerance;
+    private TestResult namedSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
     // does it ignore the offered cipher suites?
-    private TestResult ignoresCipherSuiteOffering;
+    private TestResult ignoresCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it reflect the offered cipher suites?
-    private TestResult reflectsCipherSuiteOffering;
+    private TestResult reflectsCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it ignore the offered named groups?
-    private TestResult ignoresOfferedNamedGroups;
+    private TestResult ignoresOfferedNamedGroups = TestResults.COULD_NOT_TEST;
     // does it ignore the sig hash algorithms?
-    private TestResult ignoresOfferedSignatureAndHashAlgorithms;
+    private TestResult ignoresOfferedSignatureAndHashAlgorithms = TestResults.COULD_NOT_TEST;
     // server does not like really big client hello messages
-    private TestResult maxLengthClientHelloIntolerant;
+    private TestResult maxLengthClientHelloIntolerant = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the supported groups extension?
-    private TestResult greaseNamedGroupIntolerance;
+    private TestResult greaseNamedGroupIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the cipher suites list?
-    private TestResult greaseCipherSuiteIntolerance;
+    private TestResult greaseCipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the signature and hash algorithms extension?
-    private TestResult greaseSignatureAndHashAlgorithmIntolerance;
+    private TestResult greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
 
     public CommonBugProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMMON_BUGS, configSelector);

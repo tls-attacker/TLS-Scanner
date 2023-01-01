@@ -34,7 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DtlsReorderingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult supportsReordering;
+    private TestResult supportsReordering = TestResults.COULD_NOT_TEST;
 
     public DtlsReorderingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_REORDERING, configSelector);

@@ -58,10 +58,10 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private Map<NamedGroup, NamedGroupWitness> namedGroupsMap;
     private Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13;
 
-    private TestResult supportsExplicitPrime;
-    private TestResult supportsExplicitChar2;
-    private TestResult groupsDependOnCipherSuite;
-    private TestResult ignoresEcdsaGroupDisparity = TestResults.FALSE;
+    private TestResult supportsExplicitPrime = TestResults.COULD_NOT_TEST;
+    private TestResult supportsExplicitChar2 = TestResults.COULD_NOT_TEST;
+    private TestResult groupsDependOnCipherSuite = TestResults.COULD_NOT_TEST;
+    private TestResult ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
@@ -79,6 +79,7 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     @Override
     public void executeTest() {
         namedGroupsMap = new HashMap<>();
+        ignoresEcdsaGroupDisparity = TestResults.FALSE;
         addGroupsFound(
                 namedGroupsMap,
                 getSupportedNamedGroups(

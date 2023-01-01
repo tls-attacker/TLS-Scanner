@@ -53,15 +53,16 @@ import java.util.stream.Collectors;
 public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
-    private TestResult supportsDtlsCookieExchangeInResumption;
-    private TestResult respectsPskModes;
-    private TestResult supportsResumption;
-    private TestResult supportsSessionTicketResumption;
-    private TestResult supportsTls13SessionTicket;
-    private TestResult supportsTls13PskDhe;
-    private TestResult supportsTls13Psk;
-    private TestResult supportsTls13_0rtt;
-    private TestResult supportsDtlsCookieExchangeInSessionTicketResumption;
+    private TestResult supportsDtlsCookieExchangeInResumption = TestResults.COULD_NOT_TEST;
+    private TestResult respectsPskModes = TestResults.COULD_NOT_TEST;
+    private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13SessionTicket = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13_0rtt = TestResults.COULD_NOT_TEST;
+    private TestResult supportsDtlsCookieExchangeInSessionTicketResumption =
+            TestResults.COULD_NOT_TEST;
 
     public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, configSelector);

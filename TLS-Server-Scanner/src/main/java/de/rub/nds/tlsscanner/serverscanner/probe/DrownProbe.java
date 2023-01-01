@@ -24,8 +24,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult generalDrown;
-    private TestResult extraClear;
+    private TestResult generalDrown = TestResults.COULD_NOT_TEST;
+    private TestResult extraClear = TestResults.COULD_NOT_TEST;
 
     public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, configSelector);

@@ -38,7 +38,7 @@ import java.util.LinkedList;
 
 public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult supportsFalseStart = TestResults.UNCERTAIN;
+    private TestResult supportsFalseStart = TestResults.COULD_NOT_TEST;
 
     public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
@@ -75,7 +75,7 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
                     action.getReceivedMessages().stream()
                             .anyMatch(FinishedMessage.class::isInstance);
         }
-
+        supportsFalseStart = TestResults.UNCERTAIN;
         if (action.getReceivedHttpMessages() != null
                 && !action.getReceivedHttpMessages().isEmpty()) {
             // review once HTTP layer is re-implemented to ensure that
@@ -91,9 +91,9 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
     }
 
-    //    public boolean canBeExecuted(ServerReport report) {
-    //        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
-    //                && configSelector.foundWorkingConfig();
+    // public boolean canBeExecuted(ServerReport report) {
+    // return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
+    // && configSelector.foundWorkingConfig();
 
     @Override
     public void adjustConfig(ServerReport report) {}

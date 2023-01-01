@@ -35,7 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);

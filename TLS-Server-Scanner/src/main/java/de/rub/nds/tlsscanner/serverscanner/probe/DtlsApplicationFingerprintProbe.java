@@ -41,7 +41,7 @@ import java.util.List;
 public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<ApplicationProtocol> supportedApplications;
-    private TestResult isAcceptingUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedAppData = TestResults.COULD_NOT_TEST;
 
     public DtlsApplicationFingerprintProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {

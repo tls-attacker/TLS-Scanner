@@ -27,7 +27,7 @@ import java.util.List;
 
 public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult enforced;
+    private TestResult enforced = TestResults.COULD_NOT_TEST;
 
     public CipherSuiteOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);

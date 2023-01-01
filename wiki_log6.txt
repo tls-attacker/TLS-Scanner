@@ -1,0 +1,603 @@
+INFO : Main - Performing Scan, this may take some time...
+INFO : ThreadedScanJobExecutor - Common bugs probe executed
+INFO : ThreadedScanJobExecutor - Server name indication (SNI) probe executed
+INFO : ThreadedScanJobExecutor - Compression probe executed
+INFO : ThreadedScanJobExecutor - Protocol version probe executed
+INFO : ThreadedScanJobExecutor - Cipher suite order probe executed
+INFO : ThreadedScanJobExecutor - Client certificate authentication support probe executed
+INFO : ThreadedScanJobExecutor - Signature Hash Algorithm Order probe executed
+INFO : ThreadedScanJobExecutor - Record fragmentation probe executed
+INFO : ThreadedScanJobExecutor - Early CCS probe executed
+INFO : ThreadedScanJobExecutor - Tokenbinding probe executed
+INFO : ThreadedScanJobExecutor - HTTP header probe executed
+INFO : ThreadedScanJobExecutor - Cipher suite probe executed
+INFO : ThreadedScanJobExecutor - Extensions probe executed
+INFO : ThreadedScanJobExecutor - Signature and hash algorithm probe executed
+INFO : ThreadedScanJobExecutor - TLS Fallback SCSV probe executed
+INFO : ThreadedScanJobExecutor - Hello retry probe executed
+INFO : ThreadedScanJobExecutor - ESNI probe executed
+INFO : ThreadedScanJobExecutor - HTTP false start probe executed
+INFO : ThreadedScanJobExecutor - Certificate probe executed
+INFO : ThreadedScanJobExecutor - EC point formats probe executed
+INFO : ThreadedScanJobExecutor - Resumption probe executed
+INFO : ThreadedScanJobExecutor - Renegotiation probe executed
+INFO : ThreadedScanJobExecutor - ALPN probe executed
+INFO : ThreadedScanJobExecutor - Alpaca attack probe executed
+INFO : ThreadedScanJobExecutor - Named groups probe executed
+INFO : ThreadedScanJobExecutor - Named groups order probe executed
+INFO : ThreadedScanJobExecutor - OCSP probe executed
+INFO : ThreadedScanJobExecutor - Invalid curve probe executed
+INFO : ThreadedScanJobExecutor - Certificate transparency (CT) probe executed
+INFO : ThreadedScanJobExecutor - Finished scan
+INFO : Main - [0mScanned in: 210s
+Report for wikipedia.org:443
+[0;1m[34m
+------------------------------------------------------------
+Versions
+
+[0mDTLS 1.0			 : [34mcould not test[0m
+DTLS 1.2			 : [34mcould not test[0m
+SSL 2.0				 : [32mfalse[0m
+SSL 3.0				 : [32mfalse[0m
+TLS 1.0				 : [32mfalse[0m
+TLS 1.1				 : false
+TLS 1.2				 : [32mtrue[0m
+TLS 1.3				 : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported Cipher suites
+
+[0m[32mTLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256[0m
+[32mTLS_AES_128_GCM_SHA256[0m
+[32mTLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384[0m
+[32mTLS_AES_256_GCM_SHA384[0m
+[32mTLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256[0m
+[32mTLS_CHACHA20_POLY1305_SHA256[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported in TLS 1.2(server order)
+
+[0m[32mTLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384[0m
+[32mTLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256[0m
+[32mTLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported in TLS 1.3(server order)
+
+[0m[32mTLS_AES_256_GCM_SHA384[0m
+[32mTLS_CHACHA20_POLY1305_SHA256[0m
+[32mTLS_AES_128_GCM_SHA256[0m
+[0;1m[34m
+------------------------------------------------------------
+Perfect Forward Secrecy
+
+[0mSupports PFS			 : [32mtrue[0m
+Prefers PFS			 : [32mtrue[0m
+Supports Only PFS		 : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+CipherSuite General
+
+[0mEnforces CipherSuite ordering	 : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+Perfect Forward Secrecy
+
+[0mSupports PFS			 : [32mtrue[0m
+Prefers PFS			 : [32mtrue[0m
+Supports Only PFS		 : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+CipherSuite General
+
+[0mEnforces CipherSuite ordering	 : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported Extensions
+
+[0mKEY_SHARE
+ALPN
+SUPPORTED_VERSIONS
+SERVER_NAME_INDICATION
+MAX_FRAGMENT_LENGTH
+ELLIPTIC_CURVES
+[0;1m[34m
+------------------------------------------------------------
+Extensions
+
+[0mSecure Renegotiation		 : [33mfalse[0m
+Extended Master Secret		 : false
+Encrypt Then Mac		 : false
+Tokenbinding			 : false
+Certificate Status Request	 : false
+Certificate Status Request v2	 : false
+ESNI				 : false
+[0;1m[34m
+------------------------------------------------------------
+TLS 1.3 Named Groups
+
+[0mSECP521R1
+SECP384R1
+ECDH_X448
+SECP256R1
+ECDH_X25519
+[0;1m[34m
+------------------------------------------------------------
+Supported Named Groups
+
+[0mECDH_X25519
+SECP256R1
+[0;1m[34m
+------------------------------------------------------------
+NamedGroups General
+
+[0mEnforces client's named group ordering : [33mfalse[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported Signature and Hash Algorithms
+
+[0mECDSA_SHA512
+ECDSA_SHA256
+ECDSA_SHA384
+RSA_SHA256
+ECDSA_SHA224
+[0;1m[34m
+------------------------------------------------------------
+Signature and Hash Algorithms General
+
+[0mEnforces client's signature has algorithm ordering : [32mtrue[0m
+[0;1m[34m
+------------------------------------------------------------
+Supported Signature and Hash Algorithms TLS 1.3
+
+[0mRSA_PSS_RSAE_SHA512
+RSA_PSS_RSAE_SHA256
+RSA_PSS_RSAE_SHA384
+[0;1m[34m
+------------------------------------------------------------
+Supported Compressions
+
+[0mNULL
+[0;1m[34m
+------------------------------------------------------------
+Elliptic Curve Point Formats
+
+[0mUncompressed			 : true
+ANSIX962 Prime			 : true
+ANSIX962 Char2			 : false
+TLS 1.3 ANSIX962  SECP		 : true
+[0;1m[34m
+------------------------------------------------------------
+Record Fragmentation
+
+[0mSupports Record Fragmentation	 : true
+[0;1m[34m
+------------------------------------------------------------
+ALPN
+
+[0mHTTP 1.1			 : true
+HTTP/2 over TLS			 : true
+[0;1m[34m
+------------------------------------------------------------
+Common Bugs [EXPERIMENTAL]
+
+[0mVersion Intolerant		 : [32mfalse[0m
+CipherSuite Intolerant		 : [32mfalse[0m
+Extension Intolerant		 : [32mfalse[0m
+CS Length Intolerant (>512 Byte) : [32mfalse[0m
+Compression Intolerant		 : [32mfalse[0m
+ALPN Intolerant			 : [32mfalse[0m
+CH Length Intolerant		 : [32mfalse[0m
+NamedGroup Intolerant		 : [32mfalse[0m
+Empty last Extension Intolerant	 : [32mfalse[0m
+SigHashAlgo Intolerant		 : [32mfalse[0m
+Big ClientHello Intolerant	 : [32mfalse[0m
+2nd CipherSuite Byte Bug	 : [32mfalse[0m
+Ignores offered Cipher suites	 : [32mfalse[0m
+Reflects offered Cipher suites	 : [32mfalse[0m
+Ignores offered NamedGroups	 : [32mfalse[0m
+Ignores offered SigHashAlgos	 : [32mfalse[0m
+Grease CipherSuite Intolerant	 : [32mfalse[0m
+Grease NamedGroup Intolerant	 : [32mfalse[0m
+Grease SigHashAlgo Intolerant	 : [32mfalse[0m
+[0;1m[34m
+------------------------------------------------------------
+TLS 1.3 Hello Retry Request
+
+[0mSends Hello Retry Request	 : true
+Issues Cookie			 : false
+[0;1m[34m
+------------------------------------------------------------
+Attack Vulnerabilities
+
+[0mPadding Oracle			 : [41merror[0m
+Bleichenbacher			 : [41merror[0m
+Raccoon				 : [32mnot vulnerable[0m
+Direct Raccoon			 : [41merror[0m
+CRIME				 : [32mnot vulnerable[0m
+Breach				 : [32mnot vulnerable[0m
+Invalid Curve			 : [34mcould not test (not vulnerable)[0m
+Invalid Curve (ephemeral)	 : [34mcould not test (not vulnerable)[0m
+Invalid Curve (twist)		 : [34mcould not test (not vulnerable)[0m
+SSL Poodle			 : [32mnot vulnerable[0m
+Logjam				 : [32mnot vulnerable[0m
+Sweet 32			 : [32mnot vulnerable[0m
+General DROWN			 : [34mcould not test (not vulnerable)[0m
+Extra Clear DROWN		 : [34mcould not test (not vulnerable)[0m
+Heartbleed			 : [34mcould not test (not vulnerable)[0m
+EarlyCcs			 : [32mnot vulnerable[0m
+CVE-2020-13777 (Zero key)	 : [34mcould not test (not vulnerable)[0m
+ALPACA				 : [31mnot mitigated[0m
+Renegotiation Attack (ext)
+-1.hs without ext, 2.hs with ext : [32mnot vulnerable[0m
+-1.hs with ext, 2.hs without ext : [32mnot vulnerable[0m
+Renegotiation Attack (cs)
+-1.hs without cs, 2.hs with cs	 : [32mnot vulnerable[0m
+-1.hs with cs, 2.hs without cs	 : [32mnot vulnerable[0m
+[0;1m[34m
+------------------------------------------------------------
+Alpaca Details
+
+[0mStrict ALPN			 : [31mfalse[0m
+Strict SNI			 : [31mfalse[0m
+ALPACA Mitigation		 : [31mnot mitigated[0m
+[0;1m[34m
+------------------------------------------------------------
+Bleichenbacher response map
+
+[0mNo test results
+No test results
+[0;1m[34m
+------------------------------------------------------------
+PaddingOracle response map
+
+[0mNo test results
+No test results
+[0;1m[34m
+------------------------------------------------------------
+Direct Raccoon Results
+
+[0mNo test results
+[0;1m[34m
+------------------------------------------------------------
+Invalid Curve Details
+
+[0m[0;1m[34m
+------------------------------------------------------------
+Certificate Chain (Certificate 1 of 2)
+
+[0mChain ordered			 : [32mtrue[0m
+Contains Trust Anchor		 : [32mfalse[0m
+Generally Trusted		 : [32mtrue[0m
+--|[0;1m[35m[4mCertificate #1
+
+[0m Subject			 : C=US,ST=California,L=San Francisco,O=Wikimedia Foundation\, Inc.,CN=*.wikipedia.org
+ Issuer				 : C=US,O=DigiCert Inc,CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1
+ Valid From			 : [32mThu Oct 27 02:00:00 CEST 2022[0m
+ Valid Till			 : [32mSat Nov 18 00:59:59 CET 2023[0m
+ Expires in			 : [32m320 days.[0m
+ PublicKey Type:		 : EC
+ Group				 : SECP256R1
+ Public Point			 : Point: (12507919457565322318772319154696329376339391912668318301946860368094221819409 mod 115792089210356248762697446949407573530086143415290314195533631308867097853951, 46074920677747270169803608532960475213529674547223847927482644208817122618377 mod 115792089210356248762697446949407573530086143415290314195533631308867097853951)
+ Signature Algorithm		 : ECDSA
+ Hash Algorithm			 : [32mSHA384[0m
+ OCSP Supported			 : [32mtrue[0m
+ OCSP must Staple		 : false
+ RevocationStatus		 : [32mfalse[0m
+ ROCA (simple)			 : [32mfalse[0m
+ Fingerprint (SHA256)		 : 95a6253cf5ba9e9c79c9e16674ae68da2899754393ff3faa5c4bd510b38d95a7
+--|[0;1m[35m[4mCertificate #2
+
+[0m Subject			 : C=US,O=DigiCert Inc,CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1
+ Issuer				 : C=US,O=DigiCert Inc,OU=www.digicert.com,CN=DigiCert Global Root CA
+ Valid From			 : [32mWed Apr 14 02:00:00 CEST 2021[0m
+ Valid Till			 : [32mMon Apr 14 01:59:59 CEST 2031[0m
+ Expires in			 : [32m8 years[0m
+ PublicKey Type:		 : EC
+ Group				 : SECP384R1
+ Public Point			 : Point: (29722118287841659676429192130405029172619694727404636682814469294935160368343372150755370927750896390947026983438760 mod 39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112319, 27783767732617047952280214471820522996239123706494474477997286866364877480990705578538474377391077176892030697025395 mod 39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112319)
+ Signature Algorithm		 : RSA
+ Hash Algorithm			 : [32mSHA384[0m
+ OCSP Supported			 : [32mtrue[0m
+ OCSP must Staple		 : false
+ RevocationStatus		 : [32mfalse[0m
+ ROCA (simple)			 : [32mfalse[0m
+ Fingerprint (SHA256)		 : f7a9a1b2fd964a3f2670bd668d561fb7c55d3aa9ab8391e7e169702db8a3dbcf
+[0;1m[34m
+------------------------------------------------------------
+Certificate Chain (Certificate 2 of 2)
+
+[0mChain ordered			 : [32mtrue[0m
+Contains Trust Anchor		 : [32mfalse[0m
+Generally Trusted		 : [32mtrue[0m
+--|[0;1m[35m[4mCertificate #1
+
+[0m Subject			 : C=US,ST=California,L=San Francisco,O=Wikimedia Foundation\, Inc.,CN=*.wikipedia.org
+ Issuer				 : C=US,O=DigiCert Inc,CN=DigiCert TLS RSA SHA256 2020 CA1
+ Valid From			 : [32mThu Oct 27 02:00:00 CEST 2022[0m
+ Valid Till			 : [32mSat Nov 11 00:59:59 CET 2023[0m
+ Expires in			 : [32m313 days.[0m
+ PublicKey Type:		 : RSA
+ Modulus			 : dd218ec60a1dea7d819142e7b3fcde759b98906a50e8b87dd85a46145e76022d6edca53ff32e133c2dae4b596e0d5e1c6e1060a1e9508ae4709b165efd21b3b3f1f3a15d5b3e3e30e92faecab5d6e3e6466d5107da998cbc7049cf0eae6459100c04ca761c98e003ce44d0a306fda101d694d04c39e29698d7376e7f310b1bfe549ccee81b109f3500f99dff9db428a8d52206657fd08b61e6a91855eb642cca79eda48081ebcc60993e99734e0f8d2d9b392370f02ed9f7dbfc725f999e3370bd67f8b316ccc350b42ebb9f22cd8ac9c23f6a363d960b29ce2b167e3cbc8f8bd2b61666e58c93fdd8d2949bfb61a2138664d2da04174daa5642a58079d04c63
+ Public exponent		 : 10001
+ Signature Algorithm		 : RSA
+ Hash Algorithm			 : [32mSHA256[0m
+ OCSP Supported			 : [32mtrue[0m
+ OCSP must Staple		 : false
+ RevocationStatus		 : [32mfalse[0m
+ ROCA (simple)			 : [32mfalse[0m
+ Fingerprint (SHA256)		 : 54cb20f1972b1dc22cad4c047cfd5171022db081372804afa3a375e3449c5126
+--|[0;1m[35m[4mCertificate #2
+
+[0m Subject			 : C=US,O=DigiCert Inc,CN=DigiCert TLS RSA SHA256 2020 CA1
+ Issuer				 : C=US,O=DigiCert Inc,OU=www.digicert.com,CN=DigiCert Global Root CA
+ Valid From			 : [32mWed Apr 14 02:00:00 CEST 2021[0m
+ Valid Till			 : [32mMon Apr 14 01:59:59 CEST 2031[0m
+ Expires in			 : [32m8 years[0m
+ PublicKey Type:		 : RSA
+ Modulus			 : c14bb3654770bcdd4f58dbec9cedc366e51f311354ad4a66461f2c0aec6407e52edcdcb90a20eddfe3c4d09e9aa97a1d8288e51156db1e9f58c251e72c340d2ed292e156cbf1795fb3bb87ca25037b9a52416610604f571349f0e8376783dfe7d34b674c2251a6df0e9910ed57517426e27dc7ca622e131b7f238825536fc13458008b84fff8bea75849227b96ada2889b15bca07cdfe951a8d5b0ed37e236b4824b62b5499aecc767d6e33ef5e3d6125e44f1bf71427d58840380b18101faf9ca32bbb48e278727c52b74d4a8d697dec364f9cace53a256bc78178e490329aefb494fa415b9cef25c19576d6b79a72ba2272013b5d03d40d321300793ea99f5
+ Public exponent		 : 10001
+ Signature Algorithm		 : RSA
+ Hash Algorithm			 : [32mSHA256[0m
+ OCSP Supported			 : [32mtrue[0m
+ OCSP must Staple		 : false
+ RevocationStatus		 : [32mfalse[0m
+ ROCA (simple)			 : [32mfalse[0m
+ Fingerprint (SHA256)		 : 52274c57ce4dee3b49db7a7ff708c040f771898b3be88725a86fb4430182fe14
+[0;1m[34m
+------------------------------------------------------------
+OCSP
+
+[0mSupports OCSP 			 : [32mtrue[0m
+OCSP Stapling			 : false
+Must Staple			 : false
+OCSP Stapling (TLS 1.3)		 : false
+Multi Stapling (TLS 1.3)	 : false
+Supports Nonce			 : false
+--|[0;1m[35m[4mDetailed OCSP results for certificate 1 of 2
+
+[0m Supports Nonce			 : false
+ Nonce Mismatch / Cached Nonce	 : false
+--|[0;1m[35m[4mRequested OCSP Response (HTTP POST)
+
+[0m--|[0;1m[35m[4mRequested OCSP Response (HTTP GET)
+
+[0mOCSP Response:
+ Version: 1 (0x0)
+ Produced at: 2023-01-01 11:49:18
+ Response Type: OCSP Basic Response
+ Responder ID: 0abc0829178ca5396d7a0ece33c72eb3edfbc37a
+ Certificate Status No. 1
+   Hash Algorithm: SHA1
+   Issuer Name Hash: 2b1d1e98ccf37604d6c1c8bd15a224c804130038
+   Issuer Key Hash: 0abc0829178ca5396d7a0ece33c72eb3edfbc37a
+   Serial Number: 0x40f88677ff0b0c3d94286026216ece9
+   Certificate Status: good
+   Last Update: 2023-01-01 11:33:02
+   Next Update: 2023-01-08 10:48:02
+ Signature Algorithm: ecdsa-with-SHA384
+--|[0;1m[35m[4mDetailed OCSP results for certificate 2 of 2
+
+[0m Supports Nonce			 : false
+ Nonce Mismatch / Cached Nonce	 : false
+--|[0;1m[35m[4mRequested OCSP Response (HTTP POST)
+
+[0m--|[0;1m[35m[4mRequested OCSP Response (HTTP GET)
+
+[0mOCSP Response:
+ Version: 1 (0x0)
+ Produced at: 2023-01-01 07:42:32
+ Response Type: OCSP Basic Response
+ Responder ID: b76ba2eaa8aa848c79eab4da0f98b2c59576b9f4
+ Certificate Status No. 1
+   Hash Algorithm: SHA1
+   Issuer Name Hash: e4e395a229d3d4c1c31ff0980c0b4ec0098aabd8
+   Issuer Key Hash: b76ba2eaa8aa848c79eab4da0f98b2c59576b9f4
+   Serial Number: 0x171eaec07099ca75a361d0ff2385145
+   Certificate Status: good
+   Last Update: 2023-01-01 07:27:02
+   Next Update: 2023-01-08 06:42:02
+ Signature Algorithm: sha256WithRSAEncryption
+[0;1m[34m
+------------------------------------------------------------
+Certificate Transparency
+
+[0mSupports Precertificate SCTs	 : true
+Supports TLS Handshake SCTs	 : false
+Supports OCSP Response SCTs	 : false
+Meets Chrome's CT Policy	 : true
+--|[0;1m[35m[4mPrecertificate SCTs
+
+[0mSigned Certificate Timestamp:
+ Version: v1 (0x0)
+ Log: Google 'Argon2023' log
+ Log ID: 
+    E8 3E D0 DA 3E F5 06 35  32 E7 57 28 BC 89 6B C9
+    03 D3 CB D1 11 6B EC EB  69 E1 77 7D 6D 06 BD 6E
+ Timestamp: 2022-10-27 21:50:24
+ Extensions: none
+ Signature: ECDSA with SHA256 (valid)
+    30 46 02 21 00 E4 BE 49  A6 CA BA E2 50 96 95 06
+    EA EE 62 89 FF 86 AC 95  D4 CC CE B3 8D D8 7B F9
+    AE 59 AA 69 9D 02 21 00  E4 A5 53 3B B8 2E 00 1A
+    7B 21 9B C4 B4 1C 22 2B  DF 79 83 25 1C 94 66 AB
+    DF 4D 72 47 73 C1 22 EA
+
+Signed Certificate Timestamp:
+ Version: v1 (0x0)
+ Log: DigiCert Nessie2023 Log
+ Log ID: 
+    B3 73 77 07 E1 84 50 F8  63 86 D6 05 A9 DC 11 09
+    4A 79 2D B1 67 0C 0B 87  DC F0 03 0E 79 36 A5 9A
+ Timestamp: 2022-10-27 21:50:24
+ Extensions: none
+ Signature: ECDSA with SHA256 (valid)
+    30 45 02 21 00 EF AA 31  28 6D F4 F7 1C DB A0 C5
+    84 4D D7 89 4E 8D F4 F8  8C E4 D1 B7 23 77 9F 1B
+    3C 35 F8 AC C2 02 20 54  A7 3B B5 E5 E0 7D AE 5F
+    C5 BA 5B 4C EE F5 9A 52  DA 7A C2 85 B1 EB 4A 94
+    27 E7 BD F2 3A EB C9
+
+Signed Certificate Timestamp:
+ Version: v1 (0x0)
+ Log: Let's Encrypt 'Oak2023' log
+ Log ID: 
+    B7 3E FB 24 DF 9C 4D BA  75 F2 39 C5 BA 58 F4 6C
+    5D FC 42 CF 7A 9F 35 C4  9E 1D 09 81 25 ED B4 99
+ Timestamp: 2022-10-27 21:50:24
+ Extensions: none
+ Signature: ECDSA with SHA256 (valid)
+    30 45 02 21 00 E3 90 21  E1 F7 EF FF 81 C8 77 12
+    CF 25 C1 E7 FE 26 01 8B  FD F7 24 0D 7E 4B 57 E8
+    22 5C 4A B8 3E 02 20 34  C0 0A 37 10 F2 F6 6E 49
+    42 EC ED 7F 37 8E EE D0  C8 EB C2 93 E8 06 8C 1F
+    90 B3 EB 4E 4C F8 86
+
+[0;1m[34m
+------------------------------------------------------------
+Session
+
+[0mSupports Session ID Resumption	 : [32mtrue[0m
+Issues Session Tickets		 : false
+Supports Session Ticket Resumption : [32mtrue[0m
+Issues TLS 1.3 Session Tickets	 : true
+Supports TLS 1.3 PSK		 : false
+Supports TLS 1.3 PSK-DHE	 : true
+Supports 0-RTT			 : false
+[0;1m[34m
+------------------------------------------------------------
+Renegotioation
+
+[0mSecure (Extension)		 : false
+Secure (CipherSuite)		 : false
+Insecure			 : [32mfalse[0m
+[0;1m[34m
+------------------------------------------------------------
+HSTS
+
+[0mHSTS				 : [32mtrue[0m
+HSTS Preloading			 : [32mtrue[0m
+max-age (seconds)		 : 106384710
+[0;1m[34m
+------------------------------------------------------------
+HPKP
+
+[0mNot supported
+[0;1m[34m
+------------------------------------------------------------
+HTTPS Response Header
+
+[0mdate:Sat, 31 Dec 2022 21:10:52 GMT
+server:mw1397.eqiad.wmnet
+location:https://www.wikipedia.org/robots.txt
+content-length:244
+content-type:text/html; charset=iso-8859-1
+vary:X-Forwarded-Proto
+age:72727
+x-cache:cp6014 miss, cp6015 hit/10
+x-cache-status:hit-front
+server-timing:cache;desc="hit-front", host;desc="cp6015"
+strict-transport-security:max-age=106384710; includeSubDomains; preload
+report-to:{ "group": "wm_nel", "max_age": 86400, "endpoints": [{ "url": "https://intake-logging.wikimedia.org/v1/events?stream=w3c.reportingapi.network_error&schema_uri=/w3c/reportingapi/network_error/1.0.0" }] }
+nel:{ "report_to": "wm_nel", "max_age": 86400, "failure_fraction": 0.05, "success_fraction": 0.0}
+set-cookie:WMF-Last-Access=01-Jan-2023;Path=/;HttpOnly;secure;Expires=Thu, 02 Feb 2023 12:00:00 GMT
+set-cookie:WMF-Last-Access-Global=01-Jan-2023;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Thu, 02 Feb 2023 12:00:00 GMT
+accept-ch:Sec-CH-UA-Arch,Sec-CH-UA-Bitness,Sec-CH-UA-Full-Version-List,Sec-CH-UA-Model,Sec-CH-UA-Platform-Version
+permissions-policy:interest-cohort=(),ch-ua-arch=(self "intake-analytics.wikimedia.org"),ch-ua-bitness=(self "intake-analytics.wikimedia.org"),ch-ua-full-version-list=(self "intake-analytics.wikimedia.org"),ch-ua-model=(self "intake-analytics.wikimedia.org"),ch-ua-platform-version=(self "intake-analytics.wikimedia.org")
+x-client-ip:146.241.50.161
+set-cookie:GeoIP=IT:25:Albino:45.76:9.80:v4; Path=/; secure; Domain=.wikipedia.org
+[0;1m[34m
+------------------------------------------------------------
+HTTP False Start
+
+[0mHTTP False Start		 : [43muncertain[0m
+[0;1m[34m
+------------------------------------------------------------
+Entropy
+
+[0mUses Unixtime			 : false
+--|[0;1m[35m[4mNonce (Random)
+
+[0m Datapoints			 : 113
+ Bytes total			 : [31m2960 (not enough data collected)[0m
+ Duplicates			 : false
+ Failed Entropy Test		 : false
+ Failed Fourier Test		 : false
+ Failed Frequency Test		 : false
+ Failed Runs Test		 : false
+ Failed Longest Run Test	 : false
+ Failed Monobit Test		 : false
+ Failed TemplateTests		 : 0.01 %
+--|[0;1m[35m[4mSession ID
+
+[0m Datapoints			 : 71
+ Bytes total			 : [31m2272 (not enough data collected)[0m
+ Duplicates			 : false
+ Failed Entropy Test		 : false
+ Failed Fourier Test		 : false
+ Failed Frequency Test		 : false
+ Failed Runs Test		 : false
+ Failed Longest Run Test	 : false
+ Failed Monobit Test		 : false
+ Failed TemplateTests		 : 0.01 %
+--|[0;1m[35m[4mCBC IV
+
+[0m Datapoints			 : 0
+ Bytes total			 : [31m0 (not enough data collected)[0m
+ Duplicates			 : false
+ Failed Entropy Test		 : true
+ Failed Fourier Test		 : true
+ Failed Frequency Test		 : true
+ Failed Runs Test		 : true
+ Failed Longest Run Test	 : true
+ Failed Monobit Test		 : true
+ Failed TemplateTests		 : 0.0 %
+[0;1m[34m
+------------------------------------------------------------
+PublicKey Parameter
+
+[0mEC PublicKey reuse		 : [32mfalse[0m
+DH PublicKey reuse		 : [34mcould not test (no)[0m
+Uses Common DH Primes		 : [34mcould not test (no)[0m
+Uses only prime moduli		 : [34mcould not test (no)[0m
+Uses only safe-prime moduli	 : [34mcould not test (no)[0m
+[0;1m[34m
+------------------------------------------------------------
+Client authentication
+
+[0mSupported			 : false
+Required			 : false
+[0;1m[34m
+------------------------------------------------------------
+Scoring results
+
+[0mScore: 3500
+[0;1m[34m
+------------------------------------------------------------
+Recommendations
+
+[0m[31mThe server does not reject invalid SNI names. If possible configure your server to use strict SNI and strict ALPN verification[0m
+[33mThe server does not reject unsupported ALPN Strings. If possible configure your server to use strict ALPN verification[0m
+Extended master secret extension is not supported. Enable support for the extended master secret[0m
+Encrypt-then-MAC extension is not supported. Enable support for the Encrypt-then-MAC[0m
+Secure renegotiation extension is disabled. Consider to enable secure renegotiation extension.[0m
+Server does not enforce client's group order. Enforce client's group order[0m
+No detailed information available. No recommendation available[0m
+The server does not reject invalid SNI names. If possible configure your server to use strict SNI verification[0m
+[0;1m[34m
+------------------------------------------------------------
+Guidelines
+
+[0m--|[0;1m[35m[4mGuideline BSI TR-02102-2
+
+[0m[32mPassed: 16[0m
+Skipped: 0
+[31mFailed: 8[0m
+[33mUncertain: 0[0m
+--|[0;1m[35m[4mGuideline NIST SP 800-52r2
+
+[0m[32mPassed: 23[0m
+Skipped: 6
+[31mFailed: 9[0m
+[33mUncertain: 1[0m
+

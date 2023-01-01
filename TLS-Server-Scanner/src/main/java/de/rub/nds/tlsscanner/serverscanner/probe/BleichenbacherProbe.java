@@ -47,7 +47,7 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList;
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public BleichenbacherProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.BLEICHENBACHER, configSelector);

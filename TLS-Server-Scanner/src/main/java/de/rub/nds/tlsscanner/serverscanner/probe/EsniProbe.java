@@ -29,7 +29,7 @@ import java.util.Arrays;
 
 public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult receivedCorrectNonce;
+    private TestResult receivedCorrectNonce = TestResults.COULD_NOT_TEST;
 
     public EsniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ESNI, configSelector);

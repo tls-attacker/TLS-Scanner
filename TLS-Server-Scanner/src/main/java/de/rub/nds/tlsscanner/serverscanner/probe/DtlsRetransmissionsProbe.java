@@ -31,8 +31,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult sendsRetransmissions;
-    private TestResult processesRetransmissions;
+    private TestResult sendsRetransmissions = TestResults.COULD_NOT_TEST;
+    private TestResult processesRetransmissions = TestResults.COULD_NOT_TEST;
 
     public DtlsRetransmissionsProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {

@@ -51,7 +51,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList;
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);

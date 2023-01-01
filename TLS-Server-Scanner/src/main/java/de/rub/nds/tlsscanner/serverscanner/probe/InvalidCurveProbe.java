@@ -59,12 +59,12 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     private boolean supportsRenegotiation;
 
-    private TestResult supportsSecureRenegotiation;
-    private TestResult issuesTls13SessionTickets;
-    private TestResult supportsTls13PskDhe;
-    private TestResult vulnerableClassic = TestResults.FALSE;
-    private TestResult vulnerableEphemeral = TestResults.FALSE;
-    private TestResult vulnerableTwist = TestResults.FALSE;
+    private TestResult supportsSecureRenegotiation = TestResults.COULD_NOT_TEST;
+    private TestResult issuesTls13SessionTickets = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableClassic = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableEphemeral = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableTwist = TestResults.COULD_NOT_TEST;
 
     private List<ProtocolVersion> supportedProtocolVersions;
 
@@ -454,7 +454,9 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     private void evaluateResponses(List<InvalidCurveResponse> responses) {
         evaluateKeyBehavior(responses);
-
+        vulnerableTwist = TestResults.FALSE;
+        vulnerableClassic = TestResults.FALSE;
+        vulnerableEphemeral = TestResults.FALSE;
         for (InvalidCurveResponse response : responses) {
             if (response.getShowsPointsAreNotValidated() == TestResults.TRUE
                     && response.getChosenGroupReusesKey() == TestResults.TRUE) {

@@ -89,8 +89,8 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
     /** Offset of the encrypted state according to the ticket struct in rfc5077 */
     public static final int SESSION_STATE_OFFSET = 34;
 
-    private TestResult hasDecryptableMasterSecret;
-    private TestResult hasGnuTlsMagicBytes;
+    private TestResult hasDecryptableMasterSecret = TestResults.COULD_NOT_TEST;
+    private TestResult hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
 
     public SessionTicketZeroKeyProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -126,7 +126,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
         }
 
         byte[] ticket = null;
-        for (ProtocolMessage msg :
+        for (ProtocolMessage<?> msg :
                 WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
             if (msg instanceof NewSessionTicketMessage) {
                 NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;

@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult enforced;
+    private TestResult enforced = TestResults.COULD_NOT_TEST;
 
     public SignatureHashAlgorithmOrderProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {

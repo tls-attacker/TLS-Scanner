@@ -36,7 +36,7 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
 
     private Collection<NamedGroup> supportedGroups;
 
-    private TestResult enforced;
+    private TestResult enforced = TestResults.COULD_NOT_TEST;
 
     public NamedCurvesOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS_ORDER, configSelector);

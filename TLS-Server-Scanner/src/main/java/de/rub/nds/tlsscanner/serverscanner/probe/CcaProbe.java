@@ -52,7 +52,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private static final int REEXECUTIONS = 3;
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
     private List<CcaTestResult> resultList;
 
     public CcaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {

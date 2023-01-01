@@ -27,8 +27,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private boolean alpnSupported;
-    private TestResult strictSni;
-    private TestResult strictAlpn;
+    private TestResult strictSni = TestResults.COULD_NOT_TEST;
+    private TestResult strictAlpn = TestResults.COULD_NOT_TEST;
 
     public AlpacaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, configSelector);

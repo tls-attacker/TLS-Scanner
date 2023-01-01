@@ -41,14 +41,14 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult hasHvrRetransmissions;
-    private TestResult checksCookie;
-    private TestResult usesPortInCookie;
-    private TestResult usesVersionInCookie;
-    private TestResult usesRandomInCookie;
-    private TestResult usesSessionIdInCookie;
-    private TestResult usesCiphersuitesInCookie;
-    private TestResult usesCompressionsInCookie;
+    private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;
+    private TestResult checksCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesPortInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesVersionInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesRandomInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesSessionIdInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesCiphersuitesInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
 
     private Integer cookieLength;
 

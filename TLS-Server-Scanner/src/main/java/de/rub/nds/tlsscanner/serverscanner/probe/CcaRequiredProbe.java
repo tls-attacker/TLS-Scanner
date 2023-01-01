@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult requiresCca;
+    private TestResult requiresCca = TestResults.COULD_NOT_TEST;
 
     public CcaRequiredProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);

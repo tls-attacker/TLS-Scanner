@@ -34,7 +34,7 @@ import java.util.List;
 public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private ProtocolVersion secondHighestVersion;
-    private TestResult result;
+    private TestResult result = TestResults.COULD_NOT_TEST;
 
     public TlsFallbackScsvProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TLS_FALLBACK_SCSV, configSelector);

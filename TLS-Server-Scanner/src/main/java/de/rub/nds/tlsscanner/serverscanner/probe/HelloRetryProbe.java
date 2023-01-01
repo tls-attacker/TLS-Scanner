@@ -31,8 +31,8 @@ import java.util.LinkedList;
 /** Test the servers Hello Retry Request */
 public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult sendsHelloRetryRequest = TestResults.FALSE;
-    private TestResult issuesCookie = TestResults.FALSE;
+    private TestResult sendsHelloRetryRequest = TestResults.COULD_NOT_TEST;
+    private TestResult issuesCookie = TestResults.COULD_NOT_TEST;
     private NamedGroup serversChosenGroup = null;
 
     public HelloRetryProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -63,6 +63,8 @@ public class HelloRetryProbe extends TlsServerProbe<ConfigSelector, ServerReport
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         State state = new State(tlsConfig);
         executeState(state);
+        sendsHelloRetryRequest = TestResults.FALSE;
+        issuesCookie = TestResults.FALSE;
         if (WorkflowTraceUtil.didReceiveMessage(
                         HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
                 && ((ServerHelloMessage)

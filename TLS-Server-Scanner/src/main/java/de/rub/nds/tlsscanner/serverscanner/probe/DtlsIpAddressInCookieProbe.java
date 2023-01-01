@@ -42,7 +42,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
     private static final String PROXY_DATA_HOSTNAME = "195.37.190.89";
     private static final int PROXY_DATA_PORT = 4444;
 
-    private TestResult usesIpAdressInCookie;
+    private TestResult usesIpAdressInCookie = TestResults.COULD_NOT_TEST;
 
     public DtlsIpAddressInCookieProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {

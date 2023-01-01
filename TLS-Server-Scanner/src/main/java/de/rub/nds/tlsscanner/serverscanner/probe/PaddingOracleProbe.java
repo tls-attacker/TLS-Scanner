@@ -36,7 +36,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;

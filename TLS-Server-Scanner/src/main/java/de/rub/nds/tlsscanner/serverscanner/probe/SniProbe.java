@@ -24,7 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class SniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult requiresSni;
+    private TestResult requiresSni = TestResults.COULD_NOT_TEST;
 
     public SniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SNI, configSelector);

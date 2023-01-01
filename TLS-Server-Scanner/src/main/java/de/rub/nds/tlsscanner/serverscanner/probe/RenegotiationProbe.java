@@ -42,14 +42,14 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     private Set<CipherSuite> supportedSuites;
 
-    private TestResult supportsDtlsCookieExchangeInRenegotiation;
-    private TestResult secureRenegotiationExtension;
-    private TestResult secureRenegotiationCipherSuite;
-    private TestResult insecureRenegotiation;
-    private TestResult vulnerableRenegotiationAttackExtensionV1;
-    private TestResult vulnerableRenegotiationAttackExtensionV2;
-    private TestResult vulnerableRenegotiationAttackCipherSuiteV1;
-    private TestResult vulnerableRenegotiationAttackCipherSuiteV2;
+    private TestResult supportsDtlsCookieExchangeInRenegotiation = TestResults.COULD_NOT_TEST;
+    private TestResult secureRenegotiationExtension = TestResults.COULD_NOT_TEST;
+    private TestResult secureRenegotiationCipherSuite = TestResults.COULD_NOT_TEST;
+    private TestResult insecureRenegotiation = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableRenegotiationAttackExtensionV1 = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableRenegotiationAttackExtensionV2 = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableRenegotiationAttackCipherSuiteV1 = TestResults.COULD_NOT_TEST;
+    private TestResult vulnerableRenegotiationAttackCipherSuiteV2 = TestResults.COULD_NOT_TEST;
 
     public RenegotiationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RENEGOTIATION, configSelector);

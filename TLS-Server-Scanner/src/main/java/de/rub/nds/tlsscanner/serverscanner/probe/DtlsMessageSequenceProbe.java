@@ -35,10 +35,10 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private TestResult acceptsStartedWithInvalidMessageNumber;
-    private TestResult acceptsSkippedMessageNumbersOnce;
-    private TestResult acceptsSkippedMessageNumbersMultiple;
-    private TestResult acceptsRandomMessageNumbers;
+    private TestResult acceptsStartedWithInvalidMessageNumber = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersOnce = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersMultiple = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsRandomMessageNumbers = TestResults.COULD_NOT_TEST;
 
     public DtlsMessageSequenceProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
