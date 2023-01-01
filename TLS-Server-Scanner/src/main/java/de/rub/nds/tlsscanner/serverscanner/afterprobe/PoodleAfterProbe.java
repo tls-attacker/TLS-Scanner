@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -16,13 +17,8 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PoodleAfterProbe extends AfterProbe<ServerReport> {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public void analyze(ServerReport report) {
@@ -30,32 +26,15 @@ public class PoodleAfterProbe extends AfterProbe<ServerReport> {
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);
             if (ssl3Result == TestResults.TRUE) {
-<<<<<<< HEAD
-                List<VersionSuiteListPair> versionsuiteList = report.getVersionSuitePairs();
-                if (versionsuiteList != null) {
-                    for (VersionSuiteListPair versionSuitList : versionsuiteList) {
-                        if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
-                            for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
-                                if (suite.isCBC()) {
-                                    report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
-                                    return;
-                                }
-=======
                 for (VersionSuiteListPair versionSuitList : report.getVersionSuitePairs()) {
                     if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
                         for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
                             if (suite.isCBC()) {
-                                report.putResult(
-                                        TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
+                                report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
                                 return;
->>>>>>> master
                             }
                         }
                     }
-                } else {
-                    vulnerable = TestResults.ERROR_DURING_TEST;
-                    LOGGER.debug("property " + TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()
-                        + " requires a TestResult for the PoodleAfterProbe but has result null!");
                 }
             }
             vulnerable = TestResults.FALSE;
