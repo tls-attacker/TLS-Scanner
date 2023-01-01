@@ -16,6 +16,8 @@ import de.rub.nds.scanner.core.report.ScanReport;
  * @author shiji
  *
  *         Represents a {@link Requirement} for required negated Requirements.
+ *         If the contained Requirement evaluates to true, this Requirement
+ *         evaluates to false and vice versa.
  */
 public class NotRequirement extends Requirement {
 	private final Requirement notRequirement;
