@@ -19,7 +19,7 @@ import java.util.List;
  * 
  * @author shiji
  *
- *         Implements a {@link Requirement} of required supported
+ *         Represents a {@link Requirement} of required supported
  *         ProtocolVersions.
  */
 public class ProtocolRequirement extends Requirement {

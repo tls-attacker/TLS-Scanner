@@ -17,7 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  * 
  * @author shiji
  *
- *         Implements a {@link Requirement} for the requirement of a working config.
+ *         Represents a {@link Requirement} for the requirement of a working config.
  */
 public class WorkingConfigRequirement extends Requirement {
 

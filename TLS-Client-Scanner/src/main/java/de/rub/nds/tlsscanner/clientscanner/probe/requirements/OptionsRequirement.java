@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
  * 
  * @author shiji
  *
- *         Implements a {@link Requirement} for additional, optional flags in
+ *         Represents a {@link Requirement} for additional, optional flags in
  *         commands.
  */
 public class OptionsRequirement extends Requirement {
