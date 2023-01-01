@@ -9,12 +9,15 @@
 
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.signatureengine.keyparsers.PemUtil;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.File;
@@ -39,17 +42,17 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
         probe = new CertificateSignatureAndHashAlgorithmAfterProbe();
     }
 
-    // TODO change to empty
     @Test
     public void testMissingCertificateChain() {
-        report.getCertificateChainList().add(null);
         probe.analyze(report);
-        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
+        assertNull(report.getSupportedSignatureAndHashAlgorithmsCert());
     }
 
     @Test
     public void testEmptyCertificateChain() {
-        report.getCertificateChainList().addAll(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
+        report.putResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+            new ListResult<>(List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")),
+                TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
         probe.analyze(report);
         assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
     }
@@ -60,7 +63,8 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
             File certificateFile = new File(CertificateSignatureAndHashAlgorithmAfterProbeTest.class.getClassLoader()
                 .getResource(PATH_TO_CERTIFICATE).toURI());
             Certificate certificate = PemUtil.readCertificate(certificateFile);
-            report.getCertificateChainList().addAll(List.of(new CertificateChain(certificate, "a.com")));
+            report.putResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new ListResult<>(
+                List.of(new CertificateChain(certificate, "a.com")), TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
             probe.analyze(report);
         } catch (IOException | URISyntaxException | CertificateException e) {
             fail("Could not load certificate from resources");
