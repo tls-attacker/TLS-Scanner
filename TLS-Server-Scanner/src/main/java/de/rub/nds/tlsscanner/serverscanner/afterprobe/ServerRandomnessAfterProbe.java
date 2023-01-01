@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
@@ -22,35 +21,39 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing statistical tests
- * defined by NIST SP 800-22. The test results are then passed onto the SiteReport, displaying them at the end of the
- * scan procedure.
+ * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing
+ * statistical tests defined by NIST SP 800-22. The test results are then passed onto the
+ * SiteReport, displaying them at the end of the scan procedure.
  */
 public class ServerRandomnessAfterProbe extends RandomnessAfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
+                report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
         ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
+                report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
         ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-            report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
-        List<ComparableByteArray> extractedCookieList = cookieExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedCookieList =
+                cookieExtractedValueContainer.getExtractedValueList();
         List<ComparableByteArray> extractedRandomList =
-            filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
-        List<ComparableByteArray> extractedIvList = cbcIvExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedSessionIdList = sessionIdExtractedValueContainer.getExtractedValueList();
+                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
+        List<ComparableByteArray> extractedIvList =
+                cbcIvExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedSessionIdList =
+                sessionIdExtractedValueContainer.getExtractedValueList();
 
         List<EntropyReport> entropyReport = report.getEntropyReports();
         if (entropyReport == null) {
             entropyReport = new LinkedList<>();
-            report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS,
-                new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+            report.putResult(
+                    TlsAnalyzedProperty.ENTROPY_REPORTS,
+                    new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
         }
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
         entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));

@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +35,8 @@ public class FreakAfterProbeTest {
     }
 
     public static Stream<CipherSuite> provideSafeCipherSuites() {
-        return CipherSuite.getImplemented().stream().filter(cs -> !cs.name().contains("RSA_EXPORT"));
+        return CipherSuite.getImplemented().stream()
+                .filter(cs -> !cs.name().contains("RSA_EXPORT"));
     }
 
     @BeforeEach
@@ -49,8 +49,11 @@ public class FreakAfterProbeTest {
     @MethodSource("provideVulnerableCipherSuites")
     public void testVulnerableCipherSuites(CipherSuite providedCipherSuite) {
         // test reports that only use vulnerable ciphers
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new SetResult<>(
-            Collections.singleton(providedCipherSuite), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        Collections.singleton(providedCipherSuite),
+                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
 
@@ -59,8 +62,9 @@ public class FreakAfterProbeTest {
 
         ciphers.add(providedCipherSuite);
         ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-            new SetResult<>(ciphers, TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(ciphers, TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
@@ -68,16 +72,21 @@ public class FreakAfterProbeTest {
     @ParameterizedTest
     @MethodSource("provideSafeCipherSuites")
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new SetResult<>(
-            Collections.singleton(providedCipherSuite), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        Collections.singleton(providedCipherSuite),
+                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 
     @Test
     public void testNoCipherSuites() {
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-            new SetResult<>(new HashSet<>(), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        new HashSet<>(), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
@@ -86,6 +95,8 @@ public class FreakAfterProbeTest {
     public void testEmptyServerReport() {
         ServerReport emptyReport = new ServerReport();
         probe.analyze(emptyReport);
-        assertEquals(TestResults.UNCERTAIN, emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
+        assertEquals(
+                TestResults.UNCERTAIN,
+                emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK));
     }
 }
