@@ -16,17 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} for required ExtensionTypes.
+ * Represents a {@link Requirement} for required ExtensionTypes.
  */
 public class ExtensionRequirement extends Requirement {
 	private final ExtensionType[] extensions;
 	private List<ExtensionType> missing;
 
 	/**
-	 * 
 	 * @param extensions the required ExtensionTypes. Any amount possible.
 	 */
 	public ExtensionRequirement(ExtensionType... extensions) {
@@ -60,7 +56,6 @@ public class ExtensionRequirement extends Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the ExtensionTypes.
 	 */
 	public ExtensionType[] getRequirement() {

@@ -12,18 +12,14 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} for required negated Requirements.
- *         If the contained Requirement evaluates to true, this Requirement
- *         evaluates to false and vice versa.
+ * Represents a {@link Requirement} for required negated Requirements. If the
+ * contained Requirement evaluates to true, this Requirement evaluates to false
+ * and vice versa.
  */
 public class NotRequirement extends Requirement {
 	private final Requirement notRequirement;
 
 	/**
-	 * 
 	 * @param notRequirement the Requirement to negate.
 	 */
 	public NotRequirement(Requirement notRequirement) {
@@ -40,7 +36,6 @@ public class NotRequirement extends Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the Requirement to negate.
 	 */
 	public Requirement getRequirement() {

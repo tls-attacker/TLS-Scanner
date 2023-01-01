@@ -16,18 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} of required supported
- *         ProtocolVersions.
+ * Represents a {@link Requirement} of required supported ProtocolVersions.
  */
 public class ProtocolRequirement extends Requirement {
 	private final ProtocolVersion[] protocols;
 	private List<ProtocolVersion> missing;
 
 	/**
-	 * 
 	 * @param protocols the required ProtocolVersions. Any amount possible.
 	 */
 	public ProtocolRequirement(ProtocolVersion... protocols) {
@@ -61,7 +56,6 @@ public class ProtocolRequirement extends Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the ProtocolVersions.
 	 */
 	public ProtocolVersion[] getRequirement() {

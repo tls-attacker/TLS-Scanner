@@ -13,20 +13,17 @@ import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} for additional, optional flags in
- *         commands.
+ * Represents a {@link Requirement} for additional, optional flags in commands.
  */
 public class OptionsRequirement extends Requirement {
 
 	private ClientScannerConfig scannerConfig;
-	private String type;
+
 	/** String name of the respective option. */
-	private String domain;
+	private String type;
 
 	/** domain for sni option (optional). */
+	private String domain;
 
 	/**
 	 * @param scannerConfig the ClientScannerConfig.

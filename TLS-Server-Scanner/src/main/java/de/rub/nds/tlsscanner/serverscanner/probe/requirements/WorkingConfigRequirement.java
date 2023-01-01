@@ -14,17 +14,13 @@ import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} for the requirement of a working config.
+ * Represents a {@link Requirement} for the requirement of a working config.
  */
 public class WorkingConfigRequirement extends Requirement {
 
     private ConfigSelector configSelector;
 
     /**
-     * 
      * @param configSelector
      *                       the ConfigSelector.
      */
@@ -42,7 +38,6 @@ public class WorkingConfigRequirement extends Requirement {
     }
 
     /**
-     * 
      * @return Boolean value depending on if there is a working config or not.
      */
     public boolean getRequirement() {

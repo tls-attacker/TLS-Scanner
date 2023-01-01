@@ -11,13 +11,10 @@ package de.rub.nds.scanner.core.probe.requirements;
 import de.rub.nds.scanner.core.report.ScanReport;
 
 /**
- * 
- * @author shiji
- * 
- *         Abstract class to represent requirements of probes which can be
- *         chained to a "chain of Requirements", which can be evaluated for
- *         fulfillness, which return their respective "requirement", and which
- *         allow to retrieve the not yet fulfilled Requirements.
+ * Abstract class to represent requirements of probes which can be chained to a
+ * "chain of Requirements", which can be evaluated for fulfillness, which return
+ * their respective "requirement", and which allow to retrieve the not yet
+ * fulfilled Requirements.
  */
 public abstract class Requirement {
 
@@ -31,7 +28,6 @@ public abstract class Requirement {
 	public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
 
 	/**
-	 * 
 	 * Evaluation of "this" Requirement itself.
 	 * 
 	 * @param report the ScanReport.
@@ -40,7 +36,6 @@ public abstract class Requirement {
 	protected abstract boolean evaluateIntern(ScanReport report);
 
 	/**
-	 * 
 	 * Evaluation of "all" Requirement. This and the next ones.
 	 * 
 	 * @param report the ScanReport
@@ -51,7 +46,6 @@ public abstract class Requirement {
 	}
 
 	/**
-	 * 
 	 * Adds a Requirement to the Requirement chain. Important: only use this
 	 * function once per Requirement. If using both options one Requirement will be
 	 * ignored.
@@ -69,7 +63,6 @@ public abstract class Requirement {
 	}
 
 	/**
-	 * 
 	 * Add this Requirement to a chain of not positively evaluated requirements.
 	 * 
 	 * @param report the ScanReport.
@@ -81,7 +74,6 @@ public abstract class Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the next Requirement.
 	 */
 	public Requirement getNext() {
@@ -89,7 +81,6 @@ public abstract class Requirement {
 	}
 
 	/**
-	 * 
 	 * Evaluates if this Requirement and the next are fulfilled or not and adds them
 	 * to a Requirement chain of missing Requirements of not fulfilled.
 	 * 
@@ -103,12 +94,9 @@ public abstract class Requirement {
 	public abstract Requirement getMissingRequirementIntern(Requirement missing, ScanReport report);
 
 	/**
-	 * @author shiji
-	 *
-	 *         Rudimentary Requirement which serves as anchor for Requirement chains
-	 *         and the missing Requirement chains. Evaluates to true and is used as
-	 *         static NO_REQUIREMENT if a probe can be executed without any
-	 *         requirement.
+	 * Rudimentary Requirement which serves as anchor for Requirement chains and the
+	 * missing Requirement chains. Evaluates to true and is used as static
+	 * NO_REQUIREMENT if a probe can be executed without any requirement.
 	 */
 	public static class BaseRequirement extends Requirement {
 		@Override

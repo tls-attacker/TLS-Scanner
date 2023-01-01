@@ -15,17 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} for required executed TlsProbeTypes.
+ * Represents a {@link Requirement} for required executed TlsProbeTypes.
  */
 public class ProbeRequirement extends Requirement {
 	private final TlsProbeType[] probes;
 	private List<TlsProbeType> missing;
 
 	/**
-	 * 
 	 * @param probes the required TlsProbeType. Any amount possible.
 	 */
 	public ProbeRequirement(TlsProbeType... probes) {
@@ -51,7 +47,6 @@ public class ProbeRequirement extends Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the required TlsProbeTypes.
 	 */
 	public TlsProbeType[] getRequirement() {

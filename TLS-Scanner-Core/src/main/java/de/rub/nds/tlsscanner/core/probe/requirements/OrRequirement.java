@@ -14,19 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author shiji
- *
- *         Represents a {@link Requirement} that implements a logical or for
- *         multiple multiple Requirements. If one of the contained Requirements
- *         evaluates to true, this Requirement will evaluate to true.
+ * Represents a {@link Requirement} that implements a logical or for multiple
+ * multiple Requirements. If one of the contained Requirements evaluates to
+ * true, this Requirement will evaluate to true.
  */
 public class OrRequirement extends Requirement {
 	private final Requirement[] requirements;
 	private List<Requirement> missing;
 
 	/**
-	 * 
 	 * @param requirements the Requirements which are connected logically with an
 	 *                     OR.
 	 */
@@ -54,7 +50,6 @@ public class OrRequirement extends Requirement {
 	}
 
 	/**
-	 * 
 	 * @return the Requirements which are connected logically with an OR.
 	 */
 	public Requirement[] getRequirement() {
