@@ -13,6 +13,7 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.SetResult;
+import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -264,7 +265,11 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
+        if (this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES) == TestResults.NOT_TESTED_YET) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         ListResult<RaccoonAttackProbabilities> listResult =
             (ListResult<RaccoonAttackProbabilities>) this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
