@@ -14,30 +14,28 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import java.util.Set;
 
 public class FreakAfterProbe extends AfterProbe<TlsScanReport> {
 
-    @Override
-    public void analyze(TlsScanReport report) {
-        TestResult vulnerable = TestResults.NOT_TESTED_YET;
-        try {
-            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
-            if (ciphersuites != null) {
-                for (CipherSuite suite : ciphersuites) {
-                    if (suite.name().contains("RSA_EXPORT")) {
-                        vulnerable = TestResults.TRUE;
-                    }
-                }
-                if (vulnerable != TestResults.TRUE) {
-                    vulnerable = TestResults.FALSE;
-                }
-            } else {
-                vulnerable = TestResults.UNCERTAIN;
-            }
-        } catch (Exception e) {
-            vulnerable = TestResults.ERROR_DURING_TEST;
-        }
-        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
-    }
+	@Override
+	public void analyze(TlsScanReport report) {
+		TestResult vulnerable = TestResults.NOT_TESTED_YET;
+		try {
+			if (report.getSupportedCipherSuites() != null) {
+				for (CipherSuite suite : report.getSupportedCipherSuites()) {
+					if (suite.name().contains("RSA_EXPORT")) {
+						vulnerable = TestResults.TRUE;
+					}
+				}
+				if (vulnerable != TestResults.TRUE) {
+					vulnerable = TestResults.FALSE;
+				}
+			} else {
+				vulnerable = TestResults.UNCERTAIN;
+			}
+		} catch (Exception e) {
+			vulnerable = TestResults.ERROR_DURING_TEST;
+		}
+		report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
+	}
 }
