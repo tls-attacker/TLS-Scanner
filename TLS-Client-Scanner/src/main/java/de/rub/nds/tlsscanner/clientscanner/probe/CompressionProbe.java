@@ -34,7 +34,7 @@ public class CompressionProbe extends TlsClientProbe<ClientScannerConfig, Client
     private List<CompressionMethod> clientAdvertisedCompressions;
 
     private List<CompressionMethod> supportedCompressions;
-    private TestResult forcedCompression;
+    private TestResult forcedCompression = TestResults.COULD_NOT_TEST;
 
     public CompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.COMPRESSIONS, scannerConfig);

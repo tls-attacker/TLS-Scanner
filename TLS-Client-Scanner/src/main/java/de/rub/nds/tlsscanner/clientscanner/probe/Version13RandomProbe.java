@@ -44,7 +44,7 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
         0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00
     };
 
-    private TestResult hasDowngradeProtection;
+    private TestResult hasDowngradeProtection = TestResults.COULD_NOT_TEST;
 
     private final Random random = new Random();
 

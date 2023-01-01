@@ -29,8 +29,8 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult sendsRetransmissions;
-    private TestResult processesRetransmissions;
+    private TestResult sendsRetransmissions = TestResults.COULD_NOT_TEST;
+    private TestResult processesRetransmissions = TestResults.COULD_NOT_TEST;
 
     public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);

@@ -32,7 +32,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult supportsReordering;
+    private TestResult supportsReordering = TestResults.COULD_NOT_TEST;
 
     public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);

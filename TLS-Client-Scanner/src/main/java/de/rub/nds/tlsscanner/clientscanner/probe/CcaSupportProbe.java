@@ -29,7 +29,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class CcaSupportProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult supportsCca;
+    private TestResult supportsCca = TestResults.COULD_NOT_TEST;
 
     public CcaSupportProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, scannerConfig);

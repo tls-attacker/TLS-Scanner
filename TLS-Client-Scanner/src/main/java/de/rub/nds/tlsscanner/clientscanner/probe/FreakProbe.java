@@ -54,7 +54,7 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
             "90628953731413115808641377987799987298343446077191735907575571"
                     + "61637582546998623882628794294395441240308041795327669106449640328485739194560936631604548017";
 
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
     private List<CipherSuite> supportedRsaCipherSuites;
 
     public FreakProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {

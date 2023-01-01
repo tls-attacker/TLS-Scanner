@@ -37,12 +37,12 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
 
     private static final int INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN = 200;
 
-    private TestResult supportsDirectly;
-    private TestResult supportsDirectlyIndPackets;
-    private TestResult supportsAfterCookieExchange;
-    private TestResult supportsAfterCookieExchangeIndPackets;
-    private TestResult supportsWithExtension;
-    private TestResult supportsWithExtensionIndPackets;
+    private TestResult supportsDirectly = TestResults.COULD_NOT_TEST;
+    private TestResult supportsDirectlyIndPackets = TestResults.COULD_NOT_TEST;
+    private TestResult supportsAfterCookieExchange = TestResults.COULD_NOT_TEST;
+    private TestResult supportsAfterCookieExchangeIndPackets = TestResults.COULD_NOT_TEST;
+    private TestResult supportsWithExtension = TestResults.COULD_NOT_TEST;
+    private TestResult supportsWithExtensionIndPackets = TestResults.COULD_NOT_TEST;
 
     public DtlsFragmentationProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_FRAGMENTATION, scannerConfig);

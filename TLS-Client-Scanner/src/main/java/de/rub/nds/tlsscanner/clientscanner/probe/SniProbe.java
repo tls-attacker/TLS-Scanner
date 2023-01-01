@@ -37,8 +37,8 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> 
     private static final String SNI_CLIENT_EXPECTED = "tls-attackerhost.com";
     private static final String SNI_FAKE_NAME = "notarealtls-attackerhost.com";
 
-    private TestResult strictSni;
-    private TestResult requiresSni;
+    private TestResult strictSni = TestResults.COULD_NOT_TEST;
+    private TestResult requiresSni = TestResults.COULD_NOT_TEST;
 
     public SniProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.SNI, scannerConfig);

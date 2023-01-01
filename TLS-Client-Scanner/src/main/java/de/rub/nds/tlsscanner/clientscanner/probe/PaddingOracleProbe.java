@@ -49,7 +49,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
 
     private static final Logger LOGGER = LogManager.getLogger();
     private List<InformationLeakTest<PaddingOracleTestInfo>> resultList;
-    private TestResult vulnerable;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public PaddingOracleProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {

@@ -34,10 +34,10 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsMessageSequenceProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult acceptsStartedWithInvalidMessageNumber;
-    private TestResult acceptsSkippedMessageNumbersOnce;
-    private TestResult acceptsSkippedMessageNumbersMultiple;
-    private TestResult acceptsRandomMessageNumbers;
+    private TestResult acceptsStartedWithInvalidMessageNumber = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersOnce = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersMultiple = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsRandomMessageNumbers = TestResults.COULD_NOT_TEST;
 
     public DtlsMessageSequenceProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);

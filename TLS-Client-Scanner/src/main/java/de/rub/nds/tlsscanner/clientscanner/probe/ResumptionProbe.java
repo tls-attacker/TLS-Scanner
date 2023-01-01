@@ -35,10 +35,11 @@ import java.util.function.Function;
 
 public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult supportsResumption;
-    private TestResult supportsSessionTicketResumption;
-    private TestResult supportsDtlsCookieExchangeInResumption;
-    private TestResult supportsDtlsCookieExchangeInSessionTicketResumption;
+    private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsDtlsCookieExchangeInResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsDtlsCookieExchangeInSessionTicketResumption =
+            TestResults.COULD_NOT_TEST;
 
     public ResumptionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.RESUMPTION, scannerConfig);

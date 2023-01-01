@@ -32,8 +32,8 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult isEarlyFinished;
-    private TestResult isAcceptingUnencryptedFinished;
+    private TestResult isEarlyFinished = TestResults.COULD_NOT_TEST;
+    private TestResult isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
 
     public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);

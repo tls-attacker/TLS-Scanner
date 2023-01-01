@@ -41,11 +41,11 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult acceptsLegacyServerVersionMismatch;
-    private TestResult acceptsHvrSequenceNumberMismatch;
-    private TestResult acceptsServerHelloSequenceNumberMismatch;
-    private TestResult hasClientHelloMismatch;
-    private TestResult acceptsEmptyCookie;
+    private TestResult acceptsLegacyServerVersionMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsHvrSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsServerHelloSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult hasClientHelloMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsEmptyCookie = TestResults.COULD_NOT_TEST;
 
     public DtlsHelloVerifyRequestProbe(
             ParallelExecutor executor, ClientScannerConfig scannerConfig) {
