@@ -34,136 +34,119 @@ import org.junit.jupiter.api.Test;
 
 public class ClientRandomnessAfterProbeTest {
 
-    private ClientReport report;
-    private ClientRandomnessAfterProbe probe;
+	private ClientReport report;
+	private ClientRandomnessAfterProbe probe;
 
-    private ExtractedValueContainer<ComparableByteArray> clientRandomContainer;
-    private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
+	private ExtractedValueContainer<ComparableByteArray> clientRandomContainer;
+	private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
 
-    private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
+	private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
 
-    // generates "cryptographically strong random numbers" with constant seed for deterministic
-    // tests
-    private final SecureRandom secureRandom =
-            new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
-    // generates a single fixed, but "secure" 32 byte sequence over and over again
-    private final FixedSecureRandom fixedSecureRandom =
-            new FixedSecureRandom(
-                    ArrayConverter.hexStringToByteArray(
-                            "88fd513f45ae0f96756b0984aa674c607ef076385da9f2b9a8e171087fb1bfca"));
+	// generates "cryptographically strong random numbers" with constant seed for
+	// deterministic
+	// tests
+	private final SecureRandom secureRandom = new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
+	// generates a single fixed, but "secure" 32 byte sequence over and over again
+	private final FixedSecureRandom fixedSecureRandom = new FixedSecureRandom(
+			ArrayConverter.hexStringToByteArray("88fd513f45ae0f96756b0984aa674c607ef076385da9f2b9a8e171087fb1bfca"));
 
-    @BeforeEach
-    public void setup() {
-        report = new ClientReport();
-        probe = new ClientRandomnessAfterProbe();
+	@BeforeEach
+	public void setup() {
+		report = new ClientReport();
+		probe = new ClientRandomnessAfterProbe();
 
-        clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
-        cbcIVContainer = new ExtractedValueContainer<>(TrackableValueType.CBC_IV);
+		clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
+		cbcIVContainer = new ExtractedValueContainer<>(TrackableValueType.CBC_IV);
 
-        extractedValueContainerMap = new HashMap<>();
-        extractedValueContainerMap.put(TrackableValueType.RANDOM, clientRandomContainer);
-        extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
-        report.setExtractedValueContainerList(extractedValueContainerMap);
-    }
+		extractedValueContainerMap = new HashMap<>();
+		extractedValueContainerMap.put(TrackableValueType.RANDOM, clientRandomContainer);
+		extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
+		report.setExtractedValueContainerList(extractedValueContainerMap);
+	}
 
-    @Test
-    public void testDoesNotUseUnixTime() {
-        ComparableByteArray beginningOfTime =
-                new ComparableByteArray(ByteBuffer.allocate(32).putInt(1).array());
-        clientRandomContainer.put(beginningOfTime);
-        probe.analyze(report);
-        assertEquals(
-                TestResults.FALSE,
-                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+	@Test
+	public void testDoesNotUseUnixTime() {
+		ComparableByteArray beginningOfTime = new ComparableByteArray(ByteBuffer.allocate(32).putInt(1).array());
+		clientRandomContainer.put(beginningOfTime);
+		probe.analyze(report);
+		assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
 
-        ComparableByteArray endOfTime =
-                new ComparableByteArray(ByteBuffer.allocate(32).putInt(0xFFFFFFFF).array());
-        clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
-        clientRandomContainer.put(endOfTime);
-        probe.analyze(report);
-        assertEquals(
-                TestResults.FALSE,
-                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
-    }
+		ComparableByteArray endOfTime = new ComparableByteArray(ByteBuffer.allocate(32).putInt(0xFFFFFFFF).array());
+		clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
+		clientRandomContainer.put(endOfTime);
+		probe.analyze(report);
+		assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+	}
 
-    @Test
-    public void testUsesUnixTime() {
-        int currentTimeStamp = (int) (System.currentTimeMillis() / 1000);
-        ComparableByteArray currentTime =
-                new ComparableByteArray(ByteBuffer.allocate(32).putInt(currentTimeStamp).array());
-        clientRandomContainer.put(currentTime);
-        probe.analyze(report);
-        assertEquals(
-                TestResults.TRUE,
-                report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
-    }
+	@Test
+	public void testUsesUnixTime() {
+		int currentTimeStamp = (int) (System.currentTimeMillis() / 1000);
+		ComparableByteArray currentTime = new ComparableByteArray(
+				ByteBuffer.allocate(32).putInt(currentTimeStamp).array());
+		clientRandomContainer.put(currentTime);
+		probe.analyze(report);
+		assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM));
+	}
 
-    @Disabled
-    @Test
-    public void testSecureRandomness() {
-        // while this is not strictly validated, the probe recommends at least ~32000 bytes of
-        // recorded randomness
-        for (int i = 0; i < 1024; i++) {
-            clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
-            cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
-        }
-        report.setExtractedValueContainerList(extractedValueContainerMap);
-        probe.analyze(report);
+	@Disabled
+	@Test
+	public void testSecureRandomness() {
+		// while this is not strictly validated, the probe recommends at least ~32000
+		// bytes of
+		// recorded randomness
+		for (int i = 0; i < 1024; i++) {
+			clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
+			cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
+		}
+		report.setExtractedValueContainerList(extractedValueContainerMap);
+		probe.analyze(report);
 
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
-            assertFalse(entropyReport.isFailedFourierTest());
-            assertFalse(entropyReport.isFailedRunsTest());
-            assertFalse(entropyReport.isFailedFrequencyTest());
-            assertFalse(entropyReport.isFailedLongestRunTest());
-            assertFalse(entropyReport.isFailedMonoBitTest());
-            assertFalse(entropyReport.isFailedEntropyTest());
-        }
-    }
+		for (EntropyReport entropyReport : report.getEntropyReports()) {
+			assertFalse(entropyReport.isFailedFourierTest());
+			assertFalse(entropyReport.isFailedRunsTest());
+			assertFalse(entropyReport.isFailedFrequencyTest());
+			assertFalse(entropyReport.isFailedLongestRunTest());
+			assertFalse(entropyReport.isFailedMonoBitTest());
+			assertFalse(entropyReport.isFailedEntropyTest());
+		}
+	}
 
-    @Test
-    public void testRepeatedGoodRandomValues() {
-        List<ComparableByteArray> randoms = new ArrayList<>();
-        for (int i = 0; i < 256; i++) {
-            randoms.add(new ComparableByteArray(secureRandom.generateSeed(32)));
-        }
-        for (int i = 0; i < 5; i++) {
-            for (ComparableByteArray random : randoms) {
-                clientRandomContainer.put(random);
-                cbcIVContainer.put(random);
-            }
-        }
-        probe.analyze(report);
+	@Test
+	public void testRepeatedGoodRandomValues() {
+		List<ComparableByteArray> randoms = new ArrayList<>();
+		for (int i = 0; i < 256; i++) {
+			randoms.add(new ComparableByteArray(secureRandom.generateSeed(32)));
+		}
+		for (int i = 0; i < 5; i++) {
+			for (ComparableByteArray random : randoms) {
+				clientRandomContainer.put(random);
+				cbcIVContainer.put(random);
+			}
+		}
+		probe.analyze(report);
 
-        // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
-            assertTrue(
-                    entropyReport.isFailedEntropyTest()
-                            || entropyReport.isFailedFourierTest()
-                            || entropyReport.isFailedFrequencyTest()
-                            || entropyReport.isFailedRunsTest()
-                            || entropyReport.isFailedLongestRunTest()
-                            || entropyReport.isFailedMonoBitTest());
-        }
-    }
+		// it should be noticed by at least one of the tests
+		for (EntropyReport entropyReport : report.getEntropyReports()) {
+			assertTrue(entropyReport.isFailedEntropyTest() || entropyReport.isFailedFourierTest()
+					|| entropyReport.isFailedFrequencyTest() || entropyReport.isFailedRunsTest()
+					|| entropyReport.isFailedLongestRunTest() || entropyReport.isFailedMonoBitTest());
+		}
+	}
 
-    @Test
-    public void testFixedRandomValues() {
-        ComparableByteArray random = new ComparableByteArray(fixedSecureRandom.generateSeed(32));
-        for (int i = 0; i < 1024; i++) {
-            clientRandomContainer.put(random);
-            cbcIVContainer.put(random);
-        }
-        probe.analyze(report);
+	@Test
+	public void testFixedRandomValues() {
+		ComparableByteArray random = new ComparableByteArray(fixedSecureRandom.generateSeed(32));
+		for (int i = 0; i < 1024; i++) {
+			clientRandomContainer.put(random);
+			cbcIVContainer.put(random);
+		}
+		probe.analyze(report);
 
-        // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
-            assertTrue(
-                    entropyReport.isFailedEntropyTest()
-                            || entropyReport.isFailedFourierTest()
-                            || entropyReport.isFailedFrequencyTest()
-                            || entropyReport.isFailedRunsTest()
-                            || entropyReport.isFailedLongestRunTest()
-                            || entropyReport.isFailedMonoBitTest());
-        }
-    }
+		// it should be noticed by at least one of the tests
+		for (EntropyReport entropyReport : report.getEntropyReports()) {
+			assertTrue(entropyReport.isFailedEntropyTest() || entropyReport.isFailedFourierTest()
+					|| entropyReport.isFailedFrequencyTest() || entropyReport.isFailedRunsTest()
+					|| entropyReport.isFailedLongestRunTest() || entropyReport.isFailedMonoBitTest());
+		}
+	}
 }
