@@ -6,10 +6,12 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
@@ -32,12 +34,12 @@ public class LogjamAfterProbeTest {
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
         return CipherSuite.getImplemented().stream()
-                .filter(cs -> cs.name().contains("EXPORT") && cs.name().contains("DH"));
+            .filter(cs -> cs.name().contains("EXPORT") && cs.name().contains("DH"));
     }
 
     public static Stream<CipherSuite> provideSafeCipherSuites() {
         return CipherSuite.getImplemented().stream()
-                .filter(cs -> !cs.name().contains("EXPORT") && !cs.name().contains("DH"));
+            .filter(cs -> !cs.name().contains("EXPORT") && !cs.name().contains("DH"));
     }
 
     @BeforeEach
@@ -50,7 +52,8 @@ public class LogjamAfterProbeTest {
     @MethodSource("provideVulnerableCipherSuites")
     public void testVulnerableCipherSuites(CipherSuite providedCipherSuite) {
         // test reports that only use vulnerable ciphers
-        report.getSupportedCipherSuites().addAll(Collections.singleton(providedCipherSuite));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new SetResult<>(
+            Collections.singleton(providedCipherSuite), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
 
@@ -58,7 +61,8 @@ public class LogjamAfterProbeTest {
         Set<CipherSuite> ciphers = new HashSet<>();
         ciphers.add(providedCipherSuite);
         ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
-        report.getSupportedCipherSuites().addAll(ciphers);
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+            new SetResult<>(ciphers, TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
     }
@@ -66,14 +70,16 @@ public class LogjamAfterProbeTest {
     @ParameterizedTest
     @MethodSource("provideSafeCipherSuites")
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
-        report.getSupportedCipherSuites().addAll(Collections.singleton(providedCipherSuite));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new SetResult<>(
+            Collections.singleton(providedCipherSuite), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
     }
 
     @Test
     public void testNoCipherSuites() {
-        report.getSupportedCipherSuites().addAll(new HashSet<>());
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+            new SetResult<>(new HashSet<>(), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
     }
@@ -82,8 +88,6 @@ public class LogjamAfterProbeTest {
     public void testEmptyServerReport() {
         ServerReport emptyReport = new ServerReport();
         probe.analyze(emptyReport);
-        assertEquals(
-                TestResults.UNCERTAIN,
-                emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
+        assertEquals(TestResults.UNCERTAIN, emptyReport.getResult(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM));
     }
 }
