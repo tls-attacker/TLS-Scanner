@@ -27,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -125,11 +126,6 @@ public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientR
 	}
 
 	@Override
-	public boolean canBeExecuted(ClientReport report) {
-		return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
-	}
-
-	@Override
 	public void adjustConfig(ClientReport report) {
 	}
 
@@ -145,7 +141,6 @@ public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientR
 
 	@Override
 	protected Requirement getRequirements() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OptionsRequirement(scannerConfig, "RESUMPTION");
 	}
 }
