@@ -14,10 +14,7 @@ import de.rub.nds.tlscrawler.denylist.DenylistFileProvider;
 import de.rub.nds.tlscrawler.denylist.IDenylistProvider;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.targetlist.ITargetListProvider;
-import de.rub.nds.tlscrawler.targetlist.TargetFileProvider;
-import de.rub.nds.tlscrawler.targetlist.TrancoEmailListProvider;
-import de.rub.nds.tlscrawler.targetlist.TrancoListProvider;
+import de.rub.nds.tlscrawler.targetlist.*;
 import java.util.TimeZone;
 import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
@@ -56,9 +53,10 @@ public class Controller {
         } else if (config.getTrancoEmail() != 0) {
             targetListProvider =
                     new TrancoEmailListProvider(new TrancoListProvider(config.getTrancoEmail()));
+        } else if (config.getCrux() != null) {
+            targetListProvider = new CruxListProvider(config.getCrux());
         } else {
-            targetListProvider =
-                    new TrancoListProvider(config.getTranco() != 0 ? config.getTranco() : 100);
+            targetListProvider = new TrancoListProvider(config.getTranco());
         }
 
         ProgressMonitor progressMonitor = null;
