@@ -73,13 +73,16 @@ public class CruxListProvider implements ITargetListProvider {
         }
         LOGGER.info("Reading first {} host from current Crux list...", number);
         // currently hosts are in order. e.g. top 1000 hosts come first but that does not have to be
-        // the case
-        // therefore, we parse every line until we hit the specified number of hosts
+        // the case. Therefore, we parse every line until we hit the specified number of hosts
         try (Stream<String> lines = Files.lines(Paths.get(FILENAME))) {
-            // filter to all correctly ranked hosts, ignore RAW http hosts and map to final domain
+            // Line format is <protocol>://<domain>, <crux rank>
+            // filter...
             targetList =
+                    // ... ignore all none http
                     lines.filter(line -> line.contains("https://"))
+                            // ... limit to names with correct crux rank
                             .filter(line -> Integer.parseInt(line.split("\\,")[1]) <= number)
+                            // ... ignore crux rank and protocol
                             .map(line -> line.split("\\,")[0].split(":\\/\\/")[1])
                             .collect(Collectors.toList());
         } catch (IOException ex) {
