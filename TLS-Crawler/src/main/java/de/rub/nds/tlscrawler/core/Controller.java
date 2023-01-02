@@ -56,11 +56,7 @@ public class Controller {
         } else if (config.getCrux() != null) {
             targetListProvider = new CruxListProvider(config.getCrux());
         } else {
-            // default to top 100 tranco
-            LOGGER.warn(
-                    "No list of servers to scan was specified. Defaulting to top 100 Tranco servers.");
-            targetListProvider =
-                    new TrancoListProvider(config.getTranco() != 0 ? config.getTranco() : 100);
+            targetListProvider = new TrancoListProvider(config.getTranco());
         }
 
         ProgressMonitor progressMonitor = null;

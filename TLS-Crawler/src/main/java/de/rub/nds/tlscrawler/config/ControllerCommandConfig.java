@@ -106,7 +106,7 @@ public class ControllerCommandConfig {
     public void validate() {
         if (hostFile == null && tranco == 0 && trancoEmail == 0 && crux == null) {
             throw new ParameterException(
-                    "You have to either pass a hostFile or specify a number of tranco hosts");
+                    "You have to either pass a hostFile, specify a number of tranco hosts or specify a number of crux hosts");
         }
         if (notifyUrl != null && !notifyUrl.isEmpty() && !notifyUrl.isBlank() && !monitored) {
             throw new ParameterException(

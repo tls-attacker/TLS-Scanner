@@ -11,10 +11,13 @@ package de.rub.nds.tlscrawler;
 import com.beust.jcommander.JCommander;
 import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
+import de.rub.nds.tlscrawler.constant.CruxListNumber;
 import de.rub.nds.tlscrawler.core.Controller;
 import de.rub.nds.tlscrawler.core.Worker;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
+import de.rub.nds.tlscrawler.targetlist.CruxListProvider;
+import de.rub.nds.tlscrawler.targetlist.TrancoListProvider;
 
 /** TLS-Crawler's main class. */
 public class Main {
