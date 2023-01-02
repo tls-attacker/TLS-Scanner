@@ -18,9 +18,9 @@ import java.util.stream.Stream;
  */
 public class TrancoListProvider extends ZipFileProvider {
 
-    protected static final String SOURCE = "https://tranco-list.eu/top-1m.csv.zip";
-    protected static final String ZIP_FILENAME = "tranco-1m.csv.zip";
-    protected static final String FILENAME = "tranco-1m.csv";
+    private static final String SOURCE = "https://tranco-list.eu/top-1m.csv.zip";
+    private static final String ZIP_FILENAME = "tranco-1m.csv.zip";
+    private static final String FILENAME = "tranco-1m.csv";
 
     public TrancoListProvider(int number) {
         super(number, SOURCE, ZIP_FILENAME, FILENAME, "Tranco");

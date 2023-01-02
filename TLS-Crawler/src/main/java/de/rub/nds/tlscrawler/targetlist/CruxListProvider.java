@@ -19,10 +19,10 @@ import java.util.stream.Stream;
  */
 public class CruxListProvider extends ZipFileProvider {
 
-    protected static String SOURCE =
+    private static final String SOURCE =
             "https://raw.githubusercontent.com/zakird/crux-top-lists/main/data/global/current.csv.gz";
-    protected static String ZIP_FILENAME = "current.csv.gz";
-    protected static String FILENAME = "current.csv";
+    private static final String ZIP_FILENAME = "current.csv.gz";
+    private static final String FILENAME = "current.csv";
 
     public CruxListProvider(CruxListNumber cruxListNumber) {
         super(cruxListNumber.getNumber(), SOURCE, ZIP_FILENAME, FILENAME, "Crux");
