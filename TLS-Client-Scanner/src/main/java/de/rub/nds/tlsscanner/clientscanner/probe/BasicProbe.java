@@ -36,73 +36,84 @@ import java.util.Set;
 
 public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private List<CipherSuite> clientAdvertisedCipherSuites = null;
-	private List<CompressionMethod> clientAdvertisedCompressions = null;
-	private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms = null;
-	private Set<ExtensionType> clientAdvertisedExtensions = null;
-	private List<NamedGroup> clientAdvertisedNamedGroupsList = null;
-	private List<NamedGroup> clientKeyShareNamedGroupsList = null;
-	private List<ECPointFormat> clientAdvertisedPointFormatsList = null;
+    private List<CipherSuite> clientAdvertisedCipherSuites = null;
+    private List<CompressionMethod> clientAdvertisedCompressions = null;
+    private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms = null;
+    private Set<ExtensionType> clientAdvertisedExtensions = null;
+    private List<NamedGroup> clientAdvertisedNamedGroupsList = null;
+    private List<NamedGroup> clientKeyShareNamedGroupsList = null;
+    private List<ECPointFormat> clientAdvertisedPointFormatsList = null;
 
-	public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-		super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
-		register(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
-				TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-				TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
-				TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
-				TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
-	}
+    public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+        super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
+        register(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
+    }
 
-	@Override
-	public void executeTest() {
-		Config config = scannerConfig.createConfig();
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			TlsContext traceContext = state.getTlsContext();
-			clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();
-			clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
-			clientSupportedSignatureAndHashAlgorithms = traceContext.getClientSupportedSignatureAndHashAlgorithms();
-			clientAdvertisedExtensions = traceContext.getProposedExtensions();
-			clientAdvertisedNamedGroupsList = traceContext.getClientNamedGroupsList();
-			clientAdvertisedPointFormatsList = traceContext.getClientPointFormatsList();
+    @Override
+    public void executeTest() {
+        Config config = scannerConfig.createConfig();
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            TlsContext traceContext = state.getTlsContext();
+            clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();
+            clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
+            clientSupportedSignatureAndHashAlgorithms =
+                    traceContext.getClientSupportedSignatureAndHashAlgorithms();
+            clientAdvertisedExtensions = traceContext.getProposedExtensions();
+            clientAdvertisedNamedGroupsList = traceContext.getClientNamedGroupsList();
+            clientAdvertisedPointFormatsList = traceContext.getClientPointFormatsList();
 
-			ClientHelloMessage receivedClientHello = (ClientHelloMessage) WorkflowTraceUtil
-					.getFirstReceivedMessage(HandshakeMessageType.CLIENT_HELLO, state.getWorkflowTrace());
-			clientKeyShareNamedGroupsList = getKeyShareGroups(receivedClientHello);
-		}
-	}
+            ClientHelloMessage receivedClientHello =
+                    (ClientHelloMessage)
+                            WorkflowTraceUtil.getFirstReceivedMessage(
+                                    HandshakeMessageType.CLIENT_HELLO, state.getWorkflowTrace());
+            clientKeyShareNamedGroupsList = getKeyShareGroups(receivedClientHello);
+        }
+    }
 
-	private List<NamedGroup> getKeyShareGroups(ClientHelloMessage clientHello) {
-		List<NamedGroup> keyShareGroups = new LinkedList<>();
-		if (clientHello.containsExtension(ExtensionType.KEY_SHARE)) {
-			KeyShareExtensionMessage keyShareExtension = clientHello.getExtension(KeyShareExtensionMessage.class);
-			keyShareExtension.getKeyShareList().stream().forEach(entry -> keyShareGroups.add(entry.getGroupConfig()));
-		}
-		return keyShareGroups;
-	}
+    private List<NamedGroup> getKeyShareGroups(ClientHelloMessage clientHello) {
+        List<NamedGroup> keyShareGroups = new LinkedList<>();
+        if (clientHello.containsExtension(ExtensionType.KEY_SHARE)) {
+            KeyShareExtensionMessage keyShareExtension =
+                    clientHello.getExtension(KeyShareExtensionMessage.class);
+            keyShareExtension.getKeyShareList().stream()
+                    .forEach(entry -> keyShareGroups.add(entry.getGroupConfig()));
+        }
+        return keyShareGroups;
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-				clientSupportedSignatureAndHashAlgorithms);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS, clientKeyShareNamedGroupsList);
-		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                clientSupportedSignatureAndHashAlgorithms);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                clientKeyShareNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
+    }
 }

@@ -28,38 +28,40 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 // TODO deleted??
 public class ForcedCompressionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
-	private TestResult result = TestResults.COULD_NOT_TEST;
+    private TestResult result = TestResults.COULD_NOT_TEST;
 
-	public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
-		register(TlsAnalyzedProperty.FORCED_COMPRESSION);
-	}
+    public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
+        register(TlsAnalyzedProperty.FORCED_COMPRESSION);
+    }
 
-	@Override
-	public void executeTest() {
-		Config config = scannerConfig.createConfig();
-		config.setEnforceSettings(true);
-		config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
-		config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
-		WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-		WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
-		workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-		State state = new State(config, workflowTrace);
-		executeState(state);
-		result = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-	}
+    @Override
+    public void executeTest() {
+        Config config = scannerConfig.createConfig();
+        config.setEnforceSettings(true);
+        config.setDefaultServerSupportedCompressionMethods(
+                CompressionMethod.DEFLATE, CompressionMethod.LZS);
+        config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace workflowTrace =
+                factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        State state = new State(config, workflowTrace);
+        executeState(state);
+        result =
+                state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.FORCED_COMPRESSION, result);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.FORCED_COMPRESSION, result);
+    }
 }

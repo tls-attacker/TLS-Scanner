@@ -27,7 +27,7 @@ public class PropertyNotRequirement extends Requirement {
     private List<TlsAnalyzedProperty> missing;
 
     /**
-     * @param properties the required negatively evaluated TlsAnalyzedProperties. Any amount
+     * @param propertiesNot the required negatively evaluated TlsAnalyzedProperties. Any amount
      *     possible.
      */
     public PropertyNotRequirement(TlsAnalyzedProperty... propertiesNot) {

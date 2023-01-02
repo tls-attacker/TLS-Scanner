@@ -28,42 +28,45 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class RecordFragmentationProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
-	private TestResult result = null; // TODO is null correct (as in master) or rather change to
-										// TestResults.COULD_NOT_TEST ?
+    private TestResult result = null; // TODO is null correct (as in master) or rather change to
+    // TestResults.COULD_NOT_TEST ?
 
-	public RecordFragmentationProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-		super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
-		register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
-	}
+    public RecordFragmentationProbe(
+            ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+        super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
+        register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+    }
 
-	@Override
-	public void executeTest() {
-		Config config = scannerConfig.createConfig();
-		config.setDefaultMaxRecordData(50);
+    @Override
+    public void executeTest() {
+        Config config = scannerConfig.createConfig();
+        config.setDefaultMaxRecordData(50);
 
-		WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-		WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
-		workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace workflowTrace =
+                factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, workflowTrace);
-		executeState(state);
+        State state = new State(config, workflowTrace);
+        executeState(state);
 
-		result = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())
-				? TestResults.TRUE
-				: TestResults.FALSE;
-	}
+        result =
+                WorkflowTraceUtil.didReceiveMessage(
+                                HandshakeMessageType.FINISHED, state.getWorkflowTrace())
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return Requirement.NO_REQUIREMENT;
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
+    }
 }
