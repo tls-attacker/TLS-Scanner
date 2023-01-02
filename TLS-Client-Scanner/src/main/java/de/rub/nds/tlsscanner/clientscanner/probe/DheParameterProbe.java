@@ -42,213 +42,194 @@ import javax.swing.SortOrder;
 
 public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private Random random;
+	private Random random;
 
-    private List<SmallSubgroupResult> smallSubgroupResults;
-    private List<CompositeModulusResult> compositeModulusResultList;
-    private HashMap<CompositeModulusType, TlsAnalyzedProperty>
-            compositeModulusTypeToPropertyMapping;
-    private HashMap<SmallSubgroupType, TlsAnalyzedProperty> smallSubgroupTypeToPropertyMapping;
-    private List<CipherSuite> supportedDheCipherSuites;
-    private final List<PrimeModulus> primeModuli;
-    private Integer lowestDheModulusLength;
-    private Integer highestDheModulusLength;
+	private List<SmallSubgroupResult> smallSubgroupResults = null;
+	private List<CompositeModulusResult> compositeModulusResultList = null;
+	private HashMap<CompositeModulusType, TlsAnalyzedProperty> compositeModulusTypeToPropertyMapping;
+	private HashMap<SmallSubgroupType, TlsAnalyzedProperty> smallSubgroupTypeToPropertyMapping;
+	private List<CipherSuite> supportedDheCipherSuites;
+	private final List<PrimeModulus> primeModuli;
+	private Integer lowestDheModulusLength = null;
+	private Integer highestDheModulusLength = null;
 
-    public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-        super(parallelExecutor, TlsProbeType.DHE_PARAMETERS, scannerConfig);
-        register(
-                TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
-                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
-                TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
-                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
+	public DheParameterProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+		super(parallelExecutor, TlsProbeType.DHE_PARAMETERS, scannerConfig);
+		register(TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
+				TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS, TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
 
-        random = new Random(0);
-        primeModuli = Arrays.asList(PrimeModulus.values());
-    }
+		random = new Random(0);
+		primeModuli = Arrays.asList(PrimeModulus.values());
+		compositeModulusTypeToPropertyMapping = getCompositeModulusTypeMap();
+		smallSubgroupTypeToPropertyMapping = getSmallSubgroupTypeMap();
+	}
 
-    @Override
-    public void executeTest() {
-        PrimeModulus.sort(primeModuli, SortOrder.ASCENDING);
-        lowestDheModulusLength = getFirstAcceptedModulus(primeModuli);
-        PrimeModulus.sort(primeModuli, SortOrder.DESCENDING);
-        highestDheModulusLength = getFirstAcceptedModulus(primeModuli);
-        smallSubgroupResults = createSmallSubgroupResultList();
-        compositeModulusResultList = createCompositeModulusResultList();
-        compositeModulusTypeToPropertyMapping = getCompositeModulusTypeMap();
-        smallSubgroupTypeToPropertyMapping = getSmallSubgroupTypeMap();
-    }
+	@Override
+	public void executeTest() {
+		PrimeModulus.sort(primeModuli, SortOrder.ASCENDING);
+		lowestDheModulusLength = getFirstAcceptedModulus(primeModuli);
+		PrimeModulus.sort(primeModuli, SortOrder.DESCENDING);
+		highestDheModulusLength = getFirstAcceptedModulus(primeModuli);
+		smallSubgroupResults = createSmallSubgroupResultList();
+		compositeModulusResultList = createCompositeModulusResultList();
+	}
 
-    private Integer getFirstAcceptedModulus(List<PrimeModulus> primeModuli) {
-        for (PrimeModulus modulus : primeModuli) {
-            Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            config.setDefaultServerDhModulus(modulus.getModulus());
-            if (testConfig(config)) {
-                return modulus.getBitLength();
-            }
-        }
-        return null;
-    }
+	private Integer getFirstAcceptedModulus(List<PrimeModulus> primeModuli) {
+		for (PrimeModulus modulus : primeModuli) {
+			Config config = scannerConfig.createConfig();
+			config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+			config.setDefaultServerDhModulus(modulus.getModulus());
+			if (testConfig(config)) {
+				return modulus.getBitLength();
+			}
+		}
+		return null;
+	}
 
-    private boolean testConfig(Config config) {
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        State state = new State(config, trace);
-        executeState(state);
-        return trace.executedAsPlanned();
-    }
+	private boolean testConfig(Config config) {
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+		State state = new State(config, trace);
+		executeState(state);
+		return trace.executedAsPlanned();
+	}
 
-    private List<CompositeModulusResult> createCompositeModulusResultList() {
-        List<CompositeModulusResult> compositeModulusResultList = new LinkedList<>();
-        for (CompositeModulusType compositeType : CompositeModulusType.values()) {
-            Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            switch (compositeType) {
-                case EVEN:
-                    config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
-                    break;
-                case MOD3:
-                    config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
-                    break;
-                default:
-                    break;
-            }
-            if (testConfig(config)) {
-                compositeModulusResultList.add(
-                        new CompositeModulusResult(TestResults.TRUE, compositeType));
-            } else {
-                compositeModulusResultList.add(
-                        new CompositeModulusResult(TestResults.FALSE, compositeType));
-            }
-        }
-        return compositeModulusResultList;
-    }
+	private List<CompositeModulusResult> createCompositeModulusResultList() {
+		List<CompositeModulusResult> compositeModulusResultList = new LinkedList<>();
+		for (CompositeModulusType compositeType : CompositeModulusType.values()) {
+			Config config = scannerConfig.createConfig();
+			config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+			switch (compositeType) {
+			case EVEN:
+				config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
+				break;
+			case MOD3:
+				config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
+				break;
+			default:
+				break;
+			}
+			if (testConfig(config)) {
+				compositeModulusResultList.add(new CompositeModulusResult(TestResults.TRUE, compositeType));
+			} else {
+				compositeModulusResultList.add(new CompositeModulusResult(TestResults.FALSE, compositeType));
+			}
+		}
+		return compositeModulusResultList;
+	}
 
-    private BigInteger createModThreeModulus(int bitLength) {
-        BigInteger modulus = BigInteger.probablePrime(bitLength, random);
-        while (!modulus.mod(BigInteger.valueOf(3)).equals(BigInteger.ZERO)) {
-            modulus = modulus.add(BigInteger.valueOf(2));
-        }
-        return modulus;
-    }
+	private BigInteger createModThreeModulus(int bitLength) {
+		BigInteger modulus = BigInteger.probablePrime(bitLength, random);
+		while (!modulus.mod(BigInteger.valueOf(3)).equals(BigInteger.ZERO)) {
+			modulus = modulus.add(BigInteger.valueOf(2));
+		}
+		return modulus;
+	}
 
-    private BigInteger createEvenModulus(int bitLength) {
-        BigInteger modulus = BigInteger.probablePrime(bitLength, random);
-        // we xor here to ensure the modulus will be even (was odd), but keeps the same
-        // bit length
-        modulus = modulus.xor(BigInteger.ONE);
-        return modulus;
-    }
+	private BigInteger createEvenModulus(int bitLength) {
+		BigInteger modulus = BigInteger.probablePrime(bitLength, random);
+		// we xor here to ensure the modulus will be even (was odd), but keeps the same
+		// bit length
+		modulus = modulus.xor(BigInteger.ONE);
+		return modulus;
+	}
 
-    private List<SmallSubgroupResult> createSmallSubgroupResultList() {
-        List<SmallSubgroupResult> smallSubgroupResultList = new LinkedList<>();
-        for (SmallSubgroupType smallSubgroupType : SmallSubgroupType.values()) {
-            Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            switch (smallSubgroupType) {
-                case GENERATOR_ONE:
-                    config.setDefaultServerDhGenerator(BigInteger.ONE);
-                    break;
-                case MODULUS_ONE:
-                    config.setDefaultServerDhModulus(BigInteger.ONE);
-                    break;
-                default:
-                    break;
-            }
-            if (testConfig(config)) {
-                smallSubgroupResultList.add(
-                        new SmallSubgroupResult(TestResults.TRUE, smallSubgroupType));
-            } else {
-                smallSubgroupResultList.add(
-                        new SmallSubgroupResult(TestResults.FALSE, smallSubgroupType));
-            }
-        }
-        return smallSubgroupResultList;
-    }
+	private List<SmallSubgroupResult> createSmallSubgroupResultList() {
+		List<SmallSubgroupResult> smallSubgroupResultList = new LinkedList<>();
+		for (SmallSubgroupType smallSubgroupType : SmallSubgroupType.values()) {
+			Config config = scannerConfig.createConfig();
+			config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
+			switch (smallSubgroupType) {
+			case GENERATOR_ONE:
+				config.setDefaultServerDhGenerator(BigInteger.ONE);
+				break;
+			case MODULUS_ONE:
+				config.setDefaultServerDhModulus(BigInteger.ONE);
+				break;
+			default:
+				break;
+			}
+			if (testConfig(config)) {
+				smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.TRUE, smallSubgroupType));
+			} else {
+				smallSubgroupResultList.add(new SmallSubgroupResult(TestResults.FALSE, smallSubgroupType));
+			}
+		}
+		return smallSubgroupResultList;
+	}
 
-    @Override
-    protected void mergeData(ClientReport report) {
-        report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
-        report.setHighestPossibleDheModulusSize(highestDheModulusLength);
-        mergeCompositeModulusResult(report);
-        mergeSmallSubgroupResult(report);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
+		report.setHighestPossibleDheModulusSize(highestDheModulusLength);
+		mergeCompositeModulusResult(report);
+		mergeSmallSubgroupResult(report);
+	}
 
-    @Override
-    protected Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE)
-                .requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE)
+				.requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {
-        supportedDheCipherSuites = new LinkedList<>();
-        for (CipherSuite suite : report.getSupportedCipherSuites()) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDhe()) {
-                supportedDheCipherSuites.add(suite);
-            }
-        }
-    }
+	@Override
+	public void adjustConfig(ClientReport report) {
+		supportedDheCipherSuites = new LinkedList<>();
+		for (CipherSuite suite : report.getSupportedCipherSuites()) {
+			if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDhe()) {
+				supportedDheCipherSuites.add(suite);
+			}
+		}
+	}
 
-    private HashMap<CompositeModulusType, TlsAnalyzedProperty> getCompositeModulusTypeMap() {
-        HashMap<CompositeModulusType, TlsAnalyzedProperty> compositeModulusTypeMap =
-                new HashMap<>();
-        compositeModulusTypeMap.put(
-                CompositeModulusType.EVEN, TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
-        compositeModulusTypeMap.put(
-                CompositeModulusType.MOD3, TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS);
-        return compositeModulusTypeMap;
-    }
+	private HashMap<CompositeModulusType, TlsAnalyzedProperty> getCompositeModulusTypeMap() {
+		HashMap<CompositeModulusType, TlsAnalyzedProperty> compositeModulusTypeMap = new HashMap<>();
+		compositeModulusTypeMap.put(CompositeModulusType.EVEN, TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
+		compositeModulusTypeMap.put(CompositeModulusType.MOD3, TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS);
+		return compositeModulusTypeMap;
+	}
 
-    private HashMap<SmallSubgroupType, TlsAnalyzedProperty> getSmallSubgroupTypeMap() {
-        HashMap<SmallSubgroupType, TlsAnalyzedProperty> smallSubgroupTypeMap = new HashMap<>();
-        smallSubgroupTypeMap.put(
-                SmallSubgroupType.MODULUS_ONE, TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE);
-        smallSubgroupTypeMap.put(
-                SmallSubgroupType.GENERATOR_ONE, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE);
-        return smallSubgroupTypeMap;
-    }
+	private HashMap<SmallSubgroupType, TlsAnalyzedProperty> getSmallSubgroupTypeMap() {
+		HashMap<SmallSubgroupType, TlsAnalyzedProperty> smallSubgroupTypeMap = new HashMap<>();
+		smallSubgroupTypeMap.put(SmallSubgroupType.MODULUS_ONE, TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE);
+		smallSubgroupTypeMap.put(SmallSubgroupType.GENERATOR_ONE, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE);
+		return smallSubgroupTypeMap;
+	}
 
-    private void mergeCompositeModulusResult(ClientReport report) {
-        if (compositeModulusResultList == null) {
-            for (TlsAnalyzedProperty property : compositeModulusTypeToPropertyMapping.values()) {
-                put(property, TestResults.COULD_NOT_TEST);
-            }
-            return;
-        }
-        for (CompositeModulusResult compositeResult : compositeModulusResultList) {
-            TlsAnalyzedProperty property =
-                    compositeModulusTypeToPropertyMapping.get(compositeResult.getType());
-            if (property == null) {
-                LOGGER.warn(
-                        "No report property configured for composite modulus type {}, ignoring.",
-                        compositeResult.getType().name());
-                continue;
-            }
-            put(property, compositeResult.getResult());
-        }
-    }
+	private void mergeCompositeModulusResult(ClientReport report) {
+		if (compositeModulusResultList == null) {
+			for (TlsAnalyzedProperty property : compositeModulusTypeToPropertyMapping.values()) {
+				put(property, TestResults.COULD_NOT_TEST);
+			}
+			return;
+		}
+		for (CompositeModulusResult compositeResult : compositeModulusResultList) {
+			TlsAnalyzedProperty property = compositeModulusTypeToPropertyMapping.get(compositeResult.getType());
+			if (property == null) {
+				LOGGER.warn("No report property configured for composite modulus type {}, ignoring.",
+						compositeResult.getType().name());
+				continue;
+			}
+			put(property, compositeResult.getResult());
+		}
+	}
 
-    private void mergeSmallSubgroupResult(ClientReport report) {
-        if (smallSubgroupResults == null) {
-            for (TlsAnalyzedProperty property : smallSubgroupTypeToPropertyMapping.values()) {
-                put(property, TestResults.COULD_NOT_TEST);
-            }
-            return;
-        }
-        for (SmallSubgroupResult smallSubgroupResult : smallSubgroupResults) {
-            TlsAnalyzedProperty property =
-                    smallSubgroupTypeToPropertyMapping.get(smallSubgroupResult.getType());
-            if (property == null) {
-                LOGGER.warn(
-                        "No report property configured for small subgroup type {}, ignoring.",
-                        smallSubgroupResult.getType().name());
-                continue;
-            }
-            put(property, smallSubgroupResult.getResult());
-        }
-    }
+	private void mergeSmallSubgroupResult(ClientReport report) {
+		if (smallSubgroupResults == null) {
+			for (TlsAnalyzedProperty property : smallSubgroupTypeToPropertyMapping.values()) {
+				put(property, TestResults.COULD_NOT_TEST);
+			}
+			return;
+		}
+		for (SmallSubgroupResult smallSubgroupResult : smallSubgroupResults) {
+			TlsAnalyzedProperty property = smallSubgroupTypeToPropertyMapping.get(smallSubgroupResult.getType());
+			if (property == null) {
+				LOGGER.warn("No report property configured for small subgroup type {}, ignoring.",
+						smallSubgroupResult.getType().name());
+				continue;
+			}
+			put(property, smallSubgroupResult.getResult());
+		}
+	}
 }

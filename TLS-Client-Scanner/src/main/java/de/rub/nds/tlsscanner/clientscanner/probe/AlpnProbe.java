@@ -32,82 +32,77 @@ import java.util.function.Function;
 
 public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private static final String ALPN_FAKE_PROTOCOL = "This is not an ALPN Protocol";
+	private static final String ALPN_FAKE_PROTOCOL = "This is not an ALPN Protocol";
 
-    private List<String> clientAdvertisedAlpnList;
-    private TestResult strictAlpn;
+	private List<String> clientAdvertisedAlpnList;
+	private TestResult strictAlpn = TestResults.COULD_NOT_TEST;
 
-    public AlpnProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-        super(executor, TlsProbeType.ALPN, scannerConfig);
-        register(TlsAnalyzedProperty.STRICT_ALPN, TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS);
-    }
+	public AlpnProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+		super(executor, TlsProbeType.ALPN, scannerConfig);
+		register(TlsAnalyzedProperty.STRICT_ALPN, TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS);
+	}
 
-    @Override
-    public void executeTest() {
-        Function<State, Integer> beforeTransportInitCallback =
-                getParallelExecutor().getDefaultBeforeTransportInitCallback();
-        String runCommand =
-                scannerConfig.getRunCommand().strip()
-                        + " "
-                        + scannerConfig.getClientParameterDelegate().getAlpnOptions().strip();
-        getParallelExecutor()
-                .setDefaultBeforeTransportInitCallback(
-                        scannerConfig.getRunCommandExecutionCallback(runCommand));
+	@Override
+	public void executeTest() {
+		Function<State, Integer> beforeTransportInitCallback = getParallelExecutor()
+				.getDefaultBeforeTransportInitCallback();
+		String runCommand = scannerConfig.getRunCommand().strip() + " "
+				+ scannerConfig.getClientParameterDelegate().getAlpnOptions().strip();
+		getParallelExecutor()
+				.setDefaultBeforeTransportInitCallback(scannerConfig.getRunCommandExecutionCallback(runCommand));
 
-        clientAdvertisedAlpnList = getAdvertisedAlpnProtocols();
-        strictAlpn = supportsStrictAlpn();
+		clientAdvertisedAlpnList = getAdvertisedAlpnProtocols();
+		strictAlpn = supportsStrictAlpn();
 
-        getParallelExecutor().setDefaultBeforeTransportInitCallback(beforeTransportInitCallback);
-    }
+		getParallelExecutor().setDefaultBeforeTransportInitCallback(beforeTransportInitCallback);
+	}
 
-    private List<String> getAdvertisedAlpnProtocols() {
-        Config config = scannerConfig.createConfig();
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
-        trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        State state = new State(config, trace);
-        executeState(state);
+	private List<String> getAdvertisedAlpnProtocols() {
+		Config config = scannerConfig.createConfig();
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
+		trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+		State state = new State(config, trace);
+		executeState(state);
 
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return state.getTlsContext().getProposedAlpnProtocols();
-        } else {
-            return null;
-        }
-    }
+		if (state.getWorkflowTrace().executedAsPlanned()) {
+			return state.getTlsContext().getProposedAlpnProtocols();
+		} else {
+			return null;
+		}
+	}
 
-    private TestResult supportsStrictAlpn() {
-        Config config = scannerConfig.createConfig();
-        config.setAddAlpnExtension(true);
-        config.setDefaultSelectedAlpnProtocol(ALPN_FAKE_PROTOCOL);
-        config.setEnforceSettings(true);
+	private TestResult supportsStrictAlpn() {
+		Config config = scannerConfig.createConfig();
+		config.setAddAlpnExtension(true);
+		config.setDefaultSelectedAlpnProtocol(ALPN_FAKE_PROTOCOL);
+		config.setEnforceSettings(true);
 
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-        State state = new State(config, trace);
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return TestResults.FALSE;
-        } else {
-            return TestResults.TRUE;
-        }
-    }
+		State state = new State(config, trace);
+		executeState(state);
+		if (state.getWorkflowTrace().executedAsPlanned()) {
+			return TestResults.FALSE;
+		} else {
+			return TestResults.TRUE;
+		}
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-    @Override
-    protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS, clientAdvertisedAlpnList);
-        put(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS, clientAdvertisedAlpnList);
+		put(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
+	}
 
-    @Override
-    protected Requirement getRequirements() {
-        return new OptionsRequirement(scannerConfig, "ALPN");
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return new OptionsRequirement(scannerConfig, "ALPN");
+	}
 }

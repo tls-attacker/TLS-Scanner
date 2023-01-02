@@ -27,38 +27,36 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class ApplicationMessageProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult sendsApplicationMessage;
+	private TestResult sendsApplicationMessage = TestResults.COULD_NOT_TEST;
 
-    public ApplicationMessageProbe(
-            ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
-        super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
-        register(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE);
-    }
+	public ApplicationMessageProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+		super(parallelExecutor, TlsProbeType.APPLICATION_MESSAGE, scannerConfig);
+		register(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE);
+	}
 
-    @Override
-    public void executeTest() {
-        Config config = scannerConfig.createConfig();
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-        trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
+	@Override
+	public void executeTest() {
+		Config config = scannerConfig.createConfig();
+		WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+				RunningModeType.SERVER);
+		trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
 
-        State state = new State(config, trace);
-        executeState(state);
-        sendsApplicationMessage =
-                state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
+		State state = new State(config, trace);
+		executeState(state);
+		sendsApplicationMessage = state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+	}
 
-    @Override
-    public void adjustConfig(ClientReport report) {}
+	@Override
+	public void adjustConfig(ClientReport report) {
+	}
 
-    @Override
-    protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE, sendsApplicationMessage);
-    }
+	@Override
+	protected void mergeData(ClientReport report) {
+		put(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE, sendsApplicationMessage);
+	}
 
-    @Override
-    protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
-    }
+	@Override
+	protected Requirement getRequirements() {
+		return Requirement.NO_REQUIREMENT;
+	}
 }
