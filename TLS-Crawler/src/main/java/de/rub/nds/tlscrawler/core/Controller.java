@@ -14,10 +14,8 @@ import de.rub.nds.tlscrawler.denylist.DenylistFileProvider;
 import de.rub.nds.tlscrawler.denylist.IDenylistProvider;
 import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.targetlist.ITargetListProvider;
-import de.rub.nds.tlscrawler.targetlist.TargetFileProvider;
-import de.rub.nds.tlscrawler.targetlist.TrancoEmailListProvider;
-import de.rub.nds.tlscrawler.targetlist.TrancoListProvider;
+import de.rub.nds.tlscrawler.targetlist.*;
+
 import java.util.TimeZone;
 import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +54,11 @@ public class Controller {
         } else if (config.getTrancoEmail() != 0) {
             targetListProvider =
                     new TrancoEmailListProvider(new TrancoListProvider(config.getTrancoEmail()));
+        } else if (config.getCrux() != null) {
+            targetListProvider = new CruxListProvider(config.getCrux());
         } else {
+            // default to top 100 tranco
+            LOGGER.warn("No list of servers to scan was specified. Defaulting to top 100 Tranco servers.");
             targetListProvider =
                     new TrancoListProvider(config.getTranco() != 0 ? config.getTranco() : 100);
         }

@@ -16,6 +16,7 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RabbitMqDelegate;
+import de.rub.nds.tlscrawler.constant.CruxListNumber;
 import de.rub.nds.tlscrawler.scans.ScanType;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.quartz.CronScheduleBuilder;
@@ -88,6 +89,11 @@ public class ControllerCommandConfig {
             description = "Number of top x hosts of the tranco list that should be scanned")
     private int tranco;
 
+    @Parameter(
+            names = "-crux",
+            description = "Number of top x hosts of the crux list that should be scanned")
+    private CruxListNumber crux;
+
     @Parameter(names = "-trancoEmail", description = "MX record for number of top x hosts")
     private int trancoEmail;
 
@@ -98,7 +104,7 @@ public class ControllerCommandConfig {
     }
 
     public void validate() {
-        if (hostFile == null && tranco == 0 && trancoEmail == 0) {
+        if (hostFile == null && tranco == 0 && trancoEmail == 0 && crux == null) {
             throw new ParameterException(
                     "You have to either pass a hostFile or specify a number of tranco hosts");
         }
@@ -192,6 +198,10 @@ public class ControllerCommandConfig {
 
     public int getTranco() {
         return tranco;
+    }
+
+    public CruxListNumber getCrux() {
+        return crux;
     }
 
     public int getTrancoEmail() {

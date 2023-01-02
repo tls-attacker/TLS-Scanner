@@ -36,10 +36,10 @@ public class TrancoListProvider implements ITargetListProvider {
     private static final String FILENAME = "tranco-1m.csv";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final int amount;
+    private final int number;
 
-    public TrancoListProvider(int amount) {
-        this.amount = amount;
+    public TrancoListProvider(int number) {
+        this.number = number;
     }
 
     @Override
@@ -70,9 +70,9 @@ public class TrancoListProvider implements ITargetListProvider {
         } catch (IOException e) {
             LOGGER.error("Could not unzip the current Tranco list with error ", e);
         }
-        LOGGER.info("Reading first {} host from current Tranco list...", amount);
+        LOGGER.info("Reading first {} host from current Tranco list...", number);
         try (Stream<String> lines = Files.lines(Paths.get(FILENAME))) {
-            targetList = lines.limit(this.amount).collect(Collectors.toList());
+            targetList = lines.limit(this.number).collect(Collectors.toList());
         } catch (IOException ex) {
             throw new RuntimeException("Could not load " + FILENAME, ex);
         }
