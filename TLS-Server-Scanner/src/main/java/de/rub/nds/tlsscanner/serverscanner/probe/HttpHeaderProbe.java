@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -44,19 +43,24 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private TestResult hstsIncludesSubdomains = TestResults.FALSE; /* TODO check later */
     private TestResult hpkpIncludesSubdomains = TestResults.FALSE; /* TODO check later */
     private TestResult supportsHstsPreloading = TestResults.FALSE;
-    private TestResult hstsNotParseable = null;/* TODO check later */
-    private TestResult hpkpNotParseable = null;/* TODO check later */
+    private TestResult hstsNotParseable = null; /* TODO check later */
+    private TestResult hpkpNotParseable = null; /* TODO check later */
     private TestResult supportsHpkp = TestResults.FALSE;
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
 
     public HttpHeaderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_HEADER, configSelector);
-        register(TlsAnalyzedProperty.SUPPORTS_HSTS, TlsAnalyzedProperty.SUPPORTS_HTTPS,
-            TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, TlsAnalyzedProperty.SUPPORTS_HPKP,
-            TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
-            TlsAnalyzedProperty.HTTPS_HEADER, TlsAnalyzedProperty.NORMAL_HPKP_PINS,
-            TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_HSTS,
+                TlsAnalyzedProperty.SUPPORTS_HTTPS,
+                TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING,
+                TlsAnalyzedProperty.SUPPORTS_HPKP,
+                TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING,
+                TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
+                TlsAnalyzedProperty.HTTPS_HEADER,
+                TlsAnalyzedProperty.NORMAL_HPKP_PINS,
+                TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
     }
 
     @Override
@@ -87,8 +91,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {
@@ -99,7 +102,10 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         supportsHsts = TestResults.FALSE;
         if (headerList != null) {
             for (HttpHeader header : headerList) {
-                if (header.getHeaderName().getValue().toLowerCase().equals("strict-transport-security")) {
+                if (header.getHeaderName()
+                        .getValue()
+                        .toLowerCase()
+                        .equals("strict-transport-security")) {
                     supportsHsts = TestResults.TRUE;
                     boolean preload = false;
                     String[] values = header.getHeaderValue().getValue().split(";");
@@ -149,7 +155,10 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
                         try {
                             String[] pinString = value.split("=");
                             HpkpPin pin =
-                                new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                                    new HpkpPin(
+                                            pinString[0],
+                                            Base64.getDecoder()
+                                                    .decode(pinString[1].replace("\"", "")));
                             pinList.add(pin);
                         } catch (Exception e) {
                             LOGGER.warn("HPKP was not parseable", e);
@@ -180,8 +189,11 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
                         if (value.trim().startsWith("pin-")) {
                             try {
                                 String[] pinString = value.split("=");
-                                HpkpPin pin = new HpkpPin(pinString[0],
-                                    Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                                HpkpPin pin =
+                                        new HpkpPin(
+                                                pinString[0],
+                                                Base64.getDecoder()
+                                                        .decode(pinString[1].replace("\"", "")));
                                 reportOnlyPinList.add(pin);
                             } catch (Exception e) {
                                 LOGGER.warn("HPKP was not parseable", e);
@@ -192,8 +204,9 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 }
                 if (header.getHeaderName().getValue().equals("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
-                    String[] compressionAlgorithms =
-                        { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz" };
+                    String[] compressionAlgorithms = {
+                        "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz"
+                    };
                     for (String compression : compressionAlgorithms) {
                         if (compressionHeaderValue.contains(compression)) {
                             vulnerableBreach = TestResults.TRUE;

@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -91,25 +90,50 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public CipherSuiteProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE, configSelector);
         protocolVersions = new LinkedList<>();
-        register(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, TlsAnalyzedProperty.SUPPORTS_ANON,
-            TlsAnalyzedProperty.SUPPORTS_EXPORT, TlsAnalyzedProperty.SUPPORTS_DES, TlsAnalyzedProperty.SUPPORTS_SEED,
-            TlsAnalyzedProperty.SUPPORTS_IDEA, TlsAnalyzedProperty.SUPPORTS_RC2, TlsAnalyzedProperty.SUPPORTS_RC4,
-            TlsAnalyzedProperty.SUPPORTS_3DES, TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
-            TlsAnalyzedProperty.SUPPORTS_AEAD, TlsAnalyzedProperty.SUPPORTS_PFS, TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
-            TlsAnalyzedProperty.SUPPORTS_AES, TlsAnalyzedProperty.SUPPORTS_CAMELLIA, TlsAnalyzedProperty.SUPPORTS_ARIA,
-            TlsAnalyzedProperty.SUPPORTS_CHACHA, TlsAnalyzedProperty.SUPPORTS_RSA,
-            TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH, TlsAnalyzedProperty.SUPPORTS_ECDSA,
-            TlsAnalyzedProperty.SUPPORTS_RSA_CERT, TlsAnalyzedProperty.SUPPORTS_DSS, TlsAnalyzedProperty.SUPPORTS_GOST,
-            TlsAnalyzedProperty.SUPPORTS_SRP, TlsAnalyzedProperty.SUPPORTS_KERBEROS,
-            TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, TlsAnalyzedProperty.SUPPORTS_PSK_RSA,
-            TlsAnalyzedProperty.SUPPORTS_PSK_DHE, TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE,
-            TlsAnalyzedProperty.SUPPORTS_FORTEZZA, TlsAnalyzedProperty.SUPPORTS_NEWHOPE,
-            TlsAnalyzedProperty.SUPPORTS_ECMQV, TlsAnalyzedProperty.PREFERS_PFS,
-            TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
-            TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
-            TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
-            TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, TlsAnalyzedProperty.SUPPORTS_ECDHE,
-            TlsAnalyzedProperty.SUPPORTS_DHE, TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS,
+                TlsAnalyzedProperty.SUPPORTS_ANON,
+                TlsAnalyzedProperty.SUPPORTS_EXPORT,
+                TlsAnalyzedProperty.SUPPORTS_DES,
+                TlsAnalyzedProperty.SUPPORTS_SEED,
+                TlsAnalyzedProperty.SUPPORTS_IDEA,
+                TlsAnalyzedProperty.SUPPORTS_RC2,
+                TlsAnalyzedProperty.SUPPORTS_RC4,
+                TlsAnalyzedProperty.SUPPORTS_3DES,
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+                TlsAnalyzedProperty.SUPPORTS_AEAD,
+                TlsAnalyzedProperty.SUPPORTS_PFS,
+                TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
+                TlsAnalyzedProperty.SUPPORTS_AES,
+                TlsAnalyzedProperty.SUPPORTS_CAMELLIA,
+                TlsAnalyzedProperty.SUPPORTS_ARIA,
+                TlsAnalyzedProperty.SUPPORTS_CHACHA,
+                TlsAnalyzedProperty.SUPPORTS_RSA,
+                TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
+                TlsAnalyzedProperty.SUPPORTS_ECDSA,
+                TlsAnalyzedProperty.SUPPORTS_RSA_CERT,
+                TlsAnalyzedProperty.SUPPORTS_DSS,
+                TlsAnalyzedProperty.SUPPORTS_GOST,
+                TlsAnalyzedProperty.SUPPORTS_SRP,
+                TlsAnalyzedProperty.SUPPORTS_KERBEROS,
+                TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN,
+                TlsAnalyzedProperty.SUPPORTS_PSK_RSA,
+                TlsAnalyzedProperty.SUPPORTS_PSK_DHE,
+                TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE,
+                TlsAnalyzedProperty.SUPPORTS_FORTEZZA,
+                TlsAnalyzedProperty.SUPPORTS_NEWHOPE,
+                TlsAnalyzedProperty.SUPPORTS_ECMQV,
+                TlsAnalyzedProperty.PREFERS_PFS,
+                TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS,
+                TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
+                TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF,
+                TlsAnalyzedProperty.SUPPORTS_SHA256_PRF,
+                TlsAnalyzedProperty.SUPPORTS_SHA384_PRF,
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                TlsAnalyzedProperty.SUPPORTS_ECDHE,
+                TlsAnalyzedProperty.SUPPORTS_DHE,
+                TlsAnalyzedProperty.SUPPORTS_STATIC_DH);
     }
 
     @Override
@@ -120,10 +144,13 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             if (version.isTLS13()) {
                 pairLists.add(new VersionSuiteListPair(version, getSupportedTls13CipherSuites()));
             } else {
-                List<CipherSuite> toTestList = new LinkedList<>(Arrays.asList(CipherSuite.values()));
-                List<CipherSuite> versionSupportedSuites = getSupportedCipherSuites(toTestList, version);
+                List<CipherSuite> toTestList =
+                        new LinkedList<>(Arrays.asList(CipherSuite.values()));
+                List<CipherSuite> versionSupportedSuites =
+                        getSupportedCipherSuites(toTestList, version);
                 if (versionSupportedSuites.isEmpty()) {
-                    versionSupportedSuites = getSupportedCipherSuites(CipherSuite.getImplemented(), version);
+                    versionSupportedSuites =
+                            getSupportedCipherSuites(CipherSuite.getImplemented(), version);
                 }
                 if (versionSupportedSuites.size() > 0) {
                     pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
@@ -132,9 +159,12 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
     }
 
-    private List<CipherSuite> getCipherSuitesForVersion(List<CipherSuite> baseList, ProtocolVersion version) {
-        List<CipherSuite> applicableCipherSuites = baseList.stream()
-            .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version)).collect(Collectors.toList());
+    private List<CipherSuite> getCipherSuitesForVersion(
+            List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> applicableCipherSuites =
+                baseList.stream()
+                        .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version))
+                        .collect(Collectors.toList());
         applicableCipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         applicableCipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         return applicableCipherSuites;
@@ -166,7 +196,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -175,7 +206,8 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
     }
 
-    public List<CipherSuite> getSupportedCipherSuites(List<CipherSuite> baseList, ProtocolVersion version) {
+    public List<CipherSuite> getSupportedCipherSuites(
+            List<CipherSuite> baseList, ProtocolVersion version) {
         List<CipherSuite> listWeSupport = getCipherSuitesForVersion(baseList, version);
         List<CipherSuite> supported = new LinkedList<>();
 
@@ -190,12 +222,14 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             configSelector.repairConfig(config);
             State state = new State(config);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
                 }
-                LOGGER.debug("Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
+                LOGGER.debug(
+                        "Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
                 if (listWeSupport.contains(state.getTlsContext().getSelectedCipherSuite())) {
                     supportsMore = true;
                     supported.add(state.getTlsContext().getSelectedCipherSuite());
@@ -210,8 +244,10 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil
-                        .getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                    AlertMessage alert =
+                            (AlertMessage)
+                                    WorkflowTraceUtil.getFirstReceivedMessage(
+                                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
                 }
             }
@@ -256,13 +292,15 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             supportsOnlyPfsCiphers = TestResults.TRUE;
             prefersPfsCiphers = TestResults.TRUE;
             for (VersionSuiteListPair pair : pairLists) {
-                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) {
+                if (pair.getCipherSuiteList().size() > 0
+                        && !pair.getCipherSuiteList().get(0).isEphemeral()) {
                     prefersPfsCiphers = TestResults.FALSE;
                 }
                 allSupported.addAll(pair.getCipherSuiteList());
 
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
-                    PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
+                    PRFAlgorithm prfAlgorithm =
+                            AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
                     }

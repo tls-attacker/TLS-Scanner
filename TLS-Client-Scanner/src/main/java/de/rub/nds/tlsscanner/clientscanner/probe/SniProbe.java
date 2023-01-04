@@ -34,80 +34,93 @@ import java.util.function.Function;
 
 public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-	private static final String SNI_CLIENT_EXPECTED = "tls-attackerhost.com";
-	private static final String SNI_FAKE_NAME = "notarealtls-attackerhost.com";
+    private static final String SNI_CLIENT_EXPECTED = "tls-attackerhost.com";
+    private static final String SNI_FAKE_NAME = "notarealtls-attackerhost.com";
 
-	private TestResult strictSni = TestResults.COULD_NOT_TEST;
-	private TestResult requiresSni = TestResults.COULD_NOT_TEST;
+    private TestResult strictSni = TestResults.COULD_NOT_TEST;
+    private TestResult requiresSni = TestResults.COULD_NOT_TEST;
 
-	public SniProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
-		super(executor, TlsProbeType.SNI, scannerConfig);
-		register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.REQUIRES_SNI);
-	}
+    public SniProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.SNI, scannerConfig);
+        register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.REQUIRES_SNI);
+    }
 
-	@Override
-	public void executeTest() {
-		Function<State, Integer> beforeTransportInitCallback = getParallelExecutor()
-				.getDefaultBeforeTransportInitCallback();
-		String runCommand = scannerConfig.getRunCommand().strip() + " "
-				+ scannerConfig.getClientParameterDelegate().getSniOptions(SNI_CLIENT_EXPECTED).strip();
-		getParallelExecutor()
-				.setDefaultBeforeTransportInitCallback(scannerConfig.getRunCommandExecutionCallback(runCommand));
+    @Override
+    public void executeTest() {
+        Function<State, Integer> beforeTransportInitCallback =
+                getParallelExecutor().getDefaultBeforeTransportInitCallback();
+        String runCommand =
+                scannerConfig.getRunCommand().strip()
+                        + " "
+                        + scannerConfig
+                                .getClientParameterDelegate()
+                                .getSniOptions(SNI_CLIENT_EXPECTED)
+                                .strip();
+        getParallelExecutor()
+                .setDefaultBeforeTransportInitCallback(
+                        scannerConfig.getRunCommandExecutionCallback(runCommand));
 
-		strictSni = supportsStrictSni();
-		requiresSni = requiresSni();
+        strictSni = supportsStrictSni();
+        requiresSni = requiresSni();
 
-		getParallelExecutor().setDefaultBeforeTransportInitCallback(beforeTransportInitCallback);
-	}
+        getParallelExecutor().setDefaultBeforeTransportInitCallback(beforeTransportInitCallback);
+    }
 
-	private TestResult supportsStrictSni() {
-		Config config = scannerConfig.createConfig();
-		config.setAddServerNameIndicationExtension(true);
-		config.setDefaultSniHostnames(new LinkedList<>(Arrays.asList(
-				new ServerNamePair(NameType.HOST_NAME.getValue(), SNI_FAKE_NAME.getBytes(Charset.forName("ASCII"))))));
+    private TestResult supportsStrictSni() {
+        Config config = scannerConfig.createConfig();
+        config.setAddServerNameIndicationExtension(true);
+        config.setDefaultSniHostnames(
+                new LinkedList<>(
+                        Arrays.asList(
+                                new ServerNamePair(
+                                        NameType.HOST_NAME.getValue(),
+                                        SNI_FAKE_NAME.getBytes(Charset.forName("ASCII"))))));
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.FALSE;
-		} else {
-			return TestResults.TRUE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.FALSE;
+        } else {
+            return TestResults.TRUE;
+        }
+    }
 
-	private TestResult requiresSni() {
-		Config config = scannerConfig.createConfig();
-		config.setAddServerNameIndicationExtension(false);
+    private TestResult requiresSni() {
+        Config config = scannerConfig.createConfig();
+        config.setAddServerNameIndicationExtension(false);
 
-		WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-				.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
-		trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-		State state = new State(config, trace);
-		executeState(state);
-		if (state.getWorkflowTrace().executedAsPlanned()) {
-			return TestResults.FALSE;
-		} else {
-			return TestResults.TRUE;
-		}
-	}
+        State state = new State(config, trace);
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResults.FALSE;
+        } else {
+            return TestResults.TRUE;
+        }
+    }
 
-	@Override
-	public void adjustConfig(ClientReport report) {
-	}
+    @Override
+    public void adjustConfig(ClientReport report) {}
 
-	@Override
-	protected void mergeData(ClientReport report) {
-		put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
-		put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
-	}
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
+        put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
+    }
 
-	@Override
-	protected Requirement getRequirements() {
-		return new OptionsRequirement(scannerConfig, (TlsProbeType) getType(), SNI_CLIENT_EXPECTED);
-	}
+    @Override
+    protected Requirement getRequirements() {
+        return new OptionsRequirement(scannerConfig, (TlsProbeType) getType(), SNI_CLIENT_EXPECTED);
+    }
 }
