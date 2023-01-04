@@ -108,6 +108,6 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> 
 
 	@Override
 	protected Requirement getRequirements() {
-		return new OptionsRequirement(scannerConfig, TlsProbeType.RESUMPTION, SNI_CLIENT_EXPECTED);
+		return new OptionsRequirement(scannerConfig, (TlsProbeType) getType(), SNI_CLIENT_EXPECTED);
 	}
 }

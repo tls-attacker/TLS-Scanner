@@ -103,6 +103,6 @@ public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport>
 
 	@Override
 	protected Requirement getRequirements() {
-		return new OptionsRequirement(scannerConfig, TlsProbeType.ALPN);
+		return new OptionsRequirement(scannerConfig, (TlsProbeType) getType());
 	}
 }

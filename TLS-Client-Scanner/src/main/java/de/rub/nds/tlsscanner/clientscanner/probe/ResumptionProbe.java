@@ -141,6 +141,6 @@ public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientR
 
 	@Override
 	protected Requirement getRequirements() {
-		return new OptionsRequirement(scannerConfig, TlsProbeType.RESUMPTION);
+		return new OptionsRequirement(scannerConfig, (TlsProbeType) getType());
 	}
 }
