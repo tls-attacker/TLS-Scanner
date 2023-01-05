@@ -48,7 +48,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
     private final int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
-    private List<InformationLeakTest<PaddingOracleTestInfo>> resultList;
+    private List<InformationLeakTest<PaddingOracleTestInfo>> resultList = new LinkedList<>();
 
     public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, configSelector);
@@ -187,15 +187,11 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (resultList != null) {
-            vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<?> informationLeakTest : resultList) {
-                if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResults.TRUE;
-                }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<?> informationLeakTest : resultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
             }
-        } else {
-            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         put(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT, resultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);

@@ -49,7 +49,9 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
-    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList =
+            new LinkedList<>();
+    ;
 
     private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
@@ -209,38 +211,12 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        Requirement missingReq = getRequirements().getMissingRequirements(report);
-        Requirement tempReq = missingReq.getNext();
-        LOGGER.debug("lalalalaa --------------------------------");
-        LOGGER.debug(missingReq);
-        LOGGER.debug(tempReq);
-
-        if (missingReq != Requirement.NO_REQUIREMENT) {
-
-            if (tempReq != Requirement.NO_REQUIREMENT) {
-
-                do {
-                    missingReq.getClass().cast(missingReq);
-                    LOGGER.debug(missingReq.getClass().cast(missingReq).getClass());
-                    missingReq = tempReq;
-                    tempReq = missingReq.getNext();
-
-                } while (tempReq != Requirement.NO_REQUIREMENT);
-            } else {
-                LOGGER.debug(missingReq.getClass().cast(missingReq).getClass());
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
+                testResultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
             }
-        }
-        if (testResultList != null) {
-            vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
-                    testResultList) {
-                if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResults.TRUE;
-                }
-            }
-        } else {
-            testResultList = new LinkedList<>();
-            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         put(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT, testResultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);

@@ -45,7 +45,8 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
-    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList;
+    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList =
+            new LinkedList<>();
 
     private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
@@ -184,15 +185,11 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (testResultList != null) {
-            vulnerable = TestResults.FALSE;
-            for (InformationLeakTest<?> informationLeakTest : testResultList) {
-                if (informationLeakTest.isSignificantDistinctAnswers()) {
-                    vulnerable = TestResults.TRUE;
-                }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<?> informationLeakTest : testResultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
             }
-        } else {
-            vulnerable = TestResults.ERROR_DURING_TEST;
         }
         put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
         put(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT, testResultList);
