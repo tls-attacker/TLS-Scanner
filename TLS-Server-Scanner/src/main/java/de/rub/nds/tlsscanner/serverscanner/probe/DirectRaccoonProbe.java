@@ -77,6 +77,13 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
                 }
             }
         }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
+                testResultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
+            }
+        }
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
@@ -211,13 +218,6 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        vulnerable = TestResults.FALSE;
-        for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
-                testResultList) {
-            if (informationLeakTest.isSignificantDistinctAnswers()) {
-                vulnerable = TestResults.TRUE;
-            }
-        }
         put(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT, testResultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }

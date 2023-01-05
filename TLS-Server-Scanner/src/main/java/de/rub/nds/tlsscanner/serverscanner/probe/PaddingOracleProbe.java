@@ -106,6 +106,12 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
             }
             LOGGER.debug("Finished extended evaluation");
         }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<?> informationLeakTest : resultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
+            }
+        }
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
@@ -187,12 +193,6 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        vulnerable = TestResults.FALSE;
-        for (InformationLeakTest<?> informationLeakTest : resultList) {
-            if (informationLeakTest.isSignificantDistinctAnswers()) {
-                vulnerable = TestResults.TRUE;
-            }
-        }
         put(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT, resultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }

@@ -106,6 +106,12 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
             }
             LOGGER.debug("Finished extended evaluation");
         }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<?> informationLeakTest : testResultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
+            }
+        }
     }
 
     private List<BleichenbacherWorkflowType> createWorkflowTypeList() {
@@ -185,12 +191,6 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     @Override
     protected void mergeData(ServerReport report) {
-        vulnerable = TestResults.FALSE;
-        for (InformationLeakTest<?> informationLeakTest : testResultList) {
-            if (informationLeakTest.isSignificantDistinctAnswers()) {
-                vulnerable = TestResults.TRUE;
-            }
-        }
         put(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, vulnerable);
         put(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT, testResultList);
     }
