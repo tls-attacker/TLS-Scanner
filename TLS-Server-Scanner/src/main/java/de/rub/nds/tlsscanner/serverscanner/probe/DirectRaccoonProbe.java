@@ -209,6 +209,27 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
+        Requirement missingReq = getRequirements().getMissingRequirements(report);
+        Requirement tempReq = missingReq.getNext();
+        LOGGER.debug("lalalalaa --------------------------------");
+        LOGGER.debug(missingReq);
+        LOGGER.debug(tempReq);
+
+        if (missingReq != Requirement.NO_REQUIREMENT) {
+
+            if (tempReq != Requirement.NO_REQUIREMENT) {
+
+                do {
+                    missingReq.getClass().cast(missingReq);
+                    LOGGER.debug(missingReq.getClass().cast(missingReq).getClass());
+                    missingReq = tempReq;
+                    tempReq = missingReq.getNext();
+
+                } while (tempReq != Requirement.NO_REQUIREMENT);
+            } else {
+                LOGGER.debug(missingReq.getClass().cast(missingReq).getClass());
+            }
+        }
         if (testResultList != null) {
             vulnerable = TestResults.FALSE;
             for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
