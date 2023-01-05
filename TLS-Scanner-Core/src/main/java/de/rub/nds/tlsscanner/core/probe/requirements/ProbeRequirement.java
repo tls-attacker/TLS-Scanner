@@ -16,57 +16,59 @@ import java.util.List;
 
 /** Represents a {@link Requirement} for required executed TlsProbeTypes. */
 public class ProbeRequirement extends Requirement {
-	private final TlsProbeType[] probes;
-	private List<TlsProbeType> missing;
+    private final TlsProbeType[] probes;
+    private List<TlsProbeType> missing;
 
-	/**
-	 * @param probes the required TlsProbeType. Any amount possible.
-	 */
-	public ProbeRequirement(TlsProbeType... probes) {
-		super();
-		this.probes = probes;
-		this.missing = new ArrayList<>();
-	}
+    /**
+     * @param probes the required TlsProbeType. Any amount possible.
+     */
+    public ProbeRequirement(TlsProbeType... probes) {
+        super();
+        this.probes = probes;
+        this.missing = new ArrayList<>();
+    }
 
-	@Override
-	protected boolean evaluateIntern(ScanReport report) {
-		if ((probes == null) || (probes.length == 0)) {
-			return true;
-		}
-		boolean returnValue = true;
-		missing = new ArrayList<>();
-		for (TlsProbeType probe : probes) {
-			if (report.isProbeAlreadyExecuted(probe) == false) {
-				returnValue = false;
-				missing.add(probe);
-			}
-		}
-		return returnValue;
-	}
+    @Override
+    protected boolean evaluateIntern(ScanReport report) {
+        if ((probes == null) || (probes.length == 0)) {
+            return true;
+        }
+        boolean returnValue = true;
+        missing = new ArrayList<>();
+        for (TlsProbeType probe : probes) {
+            if (report.isProbeAlreadyExecuted(probe) == false) {
+                returnValue = false;
+                missing.add(probe);
+            }
+        }
+        return returnValue;
+    }
 
-	@Override
-	public String toString() {
-		String returnString = "";
-		for (TlsProbeType pt : probes) {
-			returnString += pt.name() + ", ";
-		}
-		return returnString.substring(0, returnString.length() - 3);
-	}
+    @Override
+    public String toString() {
+        String returnString = "Probes: ";
+        for (TlsProbeType pt : probes) {
+            returnString += pt.name() + ", ";
+        }
+        return returnString.substring(0, returnString.length() - 3);
+    }
 
-	/**
-	 * @return the required TlsProbeTypes.
-	 */
-	public TlsProbeType[] getRequirement() {
-		return probes;
-	}
+    /**
+     * @return the required TlsProbeTypes.
+     */
+    public TlsProbeType[] getRequirement() {
+        return probes;
+    }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false) {
-			return next.getMissingRequirementIntern(
-					missing.requires(new ProbeRequirement(this.missing.toArray(new TlsProbeType[this.missing.size()]))),
-					report);
-		}
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false) {
+            return next.getMissingRequirementIntern(
+                    missing.requires(
+                            new ProbeRequirement(
+                                    this.missing.toArray(new TlsProbeType[this.missing.size()]))),
+                    report);
+        }
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

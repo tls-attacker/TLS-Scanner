@@ -17,66 +17,67 @@ import java.util.List;
 
 /** Represents a {@link Requirement} for required ExtensionTypes. */
 public class ExtensionRequirement extends Requirement {
-	private final ExtensionType[] extensions;
-	private List<ExtensionType> missing;
+    private final ExtensionType[] extensions;
+    private List<ExtensionType> missing;
 
-	/**
-	 * @param extensions the required ExtensionTypes. Any amount possible.
-	 */
-	public ExtensionRequirement(ExtensionType... extensions) {
-		super();
-		this.extensions = extensions;
-		this.missing = new ArrayList<>();
-	}
+    /**
+     * @param extensions the required ExtensionTypes. Any amount possible.
+     */
+    public ExtensionRequirement(ExtensionType... extensions) {
+        super();
+        this.extensions = extensions;
+        this.missing = new ArrayList<>();
+    }
 
-	@Override
-	protected boolean evaluateIntern(ScanReport report) {
-		if ((extensions == null) || (extensions.length == 0)) {
-			return true;
-		}
-		boolean returnValue = false;
-		missing = new ArrayList<>();
-		List<ExtensionType> extensionList = ((TlsScanReport) report).getSupportedExtensions();
-		if (extensionList != null && !extensionList.isEmpty()) {
-			for (ExtensionType extension : extensions) {
-				if (extensionList.contains(extension)) {
-					returnValue = true;
-				} else {
-					missing.add(extension);
-				}
-			}
-		} else {
-			for (ExtensionType extension : extensions) {
-				missing.add(extension);
-			}
-		}
-		return returnValue;
-	}
+    @Override
+    protected boolean evaluateIntern(ScanReport report) {
+        if ((extensions == null) || (extensions.length == 0)) {
+            return true;
+        }
+        boolean returnValue = false;
+        missing = new ArrayList<>();
+        List<ExtensionType> extensionList = ((TlsScanReport) report).getSupportedExtensions();
+        if (extensionList != null && !extensionList.isEmpty()) {
+            for (ExtensionType extension : extensions) {
+                if (extensionList.contains(extension)) {
+                    returnValue = true;
+                } else {
+                    missing.add(extension);
+                }
+            }
+        } else {
+            for (ExtensionType extension : extensions) {
+                missing.add(extension);
+            }
+        }
+        return returnValue;
+    }
 
-	@Override
-	public String toString() {
-		String returnString = "";
-		for (ExtensionType et : extensions) {
-			returnString += et.name() + ", ";
-		}
-		return returnString.substring(0, returnString.length() - 3);
-	}
+    @Override
+    public String toString() {
+        String returnString = "Extensions: ";
+        for (ExtensionType et : extensions) {
+            returnString += et.name() + ", ";
+        }
+        return returnString.substring(0, returnString.length() - 3);
+    }
 
-	/**
-	 * @return the ExtensionTypes.
-	 */
-	public ExtensionType[] getRequirement() {
-		return extensions;
-	}
+    /**
+     * @return the ExtensionTypes.
+     */
+    public ExtensionType[] getRequirement() {
+        return extensions;
+    }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false) {
-			return next.getMissingRequirementIntern(
-					missing.requires(
-							new ExtensionRequirement(this.missing.toArray(new ExtensionType[this.missing.size()]))),
-					report);
-		}
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false) {
+            return next.getMissingRequirementIntern(
+                    missing.requires(
+                            new ExtensionRequirement(
+                                    this.missing.toArray(new ExtensionType[this.missing.size()]))),
+                    report);
+        }
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

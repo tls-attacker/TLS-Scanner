@@ -33,6 +33,11 @@ public class WorkingConfigRequirement extends Requirement {
         return configSelector.foundWorkingConfig();
     }
 
+    @Override
+    public String toString() {
+        return "WorkingConfig";
+    }
+
     /**
      * @return Boolean value depending on if there is a working config or not.
      */

@@ -18,69 +18,72 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a {@link Requirement} for required TlsAnalyzedProperties which
- * were negatively evaluated (TestResults.FALSE).
+ * Represents a {@link Requirement} for required TlsAnalyzedProperties which were negatively
+ * evaluated (TestResults.FALSE).
  */
 public class PropertyNotRequirement extends Requirement {
 
-	private final TlsAnalyzedProperty[] propertiesNot;
-	private List<TlsAnalyzedProperty> missing;
+    private final TlsAnalyzedProperty[] propertiesNot;
+    private List<TlsAnalyzedProperty> missing;
 
-	/**
-	 * @param propertiesNot the required negatively evaluated TlsAnalyzedProperties.
-	 *                      Any amount possible.
-	 */
-	public PropertyNotRequirement(TlsAnalyzedProperty... propertiesNot) {
-		super();
-		this.propertiesNot = propertiesNot;
-		this.missing = new ArrayList<>();
-	}
+    /**
+     * @param propertiesNot the required negatively evaluated TlsAnalyzedProperties. Any amount
+     *     possible.
+     */
+    public PropertyNotRequirement(TlsAnalyzedProperty... propertiesNot) {
+        super();
+        this.propertiesNot = propertiesNot;
+        this.missing = new ArrayList<>();
+    }
 
-	@Override
-	protected boolean evaluateIntern(ScanReport report) {
-		if ((propertiesNot == null) || (propertiesNot.length == 0)) {
-			return true;
-		}
-		boolean returnValue = true;
-		missing = new ArrayList<>();
-		Map<String, TestResult> propertyMap = report.getResultMap();
-		for (TlsAnalyzedProperty property : propertiesNot) {
-			if (propertyMap.containsKey(property.toString())) {
-				if (propertyMap.get(property.toString()) != TestResults.FALSE) {
-					returnValue = false;
-					missing.add(property);
-				}
-			} else {
-				returnValue = false;
-				missing.add(property);
-			}
-		}
-		return returnValue;
-	}
+    @Override
+    protected boolean evaluateIntern(ScanReport report) {
+        if ((propertiesNot == null) || (propertiesNot.length == 0)) {
+            return true;
+        }
+        boolean returnValue = true;
+        missing = new ArrayList<>();
+        Map<String, TestResult> propertyMap = report.getResultMap();
+        for (TlsAnalyzedProperty property : propertiesNot) {
+            if (propertyMap.containsKey(property.toString())) {
+                if (propertyMap.get(property.toString()) != TestResults.FALSE) {
+                    returnValue = false;
+                    missing.add(property);
+                }
+            } else {
+                returnValue = false;
+                missing.add(property);
+            }
+        }
+        return returnValue;
+    }
 
-	@Override
-	public String toString() {
-		String returnString = "not ";
-		for (TlsAnalyzedProperty ap : propertiesNot) {
-			returnString += ap.name() + ", ";
-		}
-		return returnString.substring(0, returnString.length() - 3);
-	}
+    @Override
+    public String toString() {
+        String returnString = "Properties not: ";
+        for (TlsAnalyzedProperty ap : propertiesNot) {
+            returnString += ap.name() + ", ";
+        }
+        return returnString.substring(0, returnString.length() - 3);
+    }
 
-	/**
-	 * @return the required negatively evaluated TlsAnalyzedProperties
-	 */
-	public TlsAnalyzedProperty[] getRequirement() {
-		return propertiesNot;
-	}
+    /**
+     * @return the required negatively evaluated TlsAnalyzedProperties
+     */
+    public TlsAnalyzedProperty[] getRequirement() {
+        return propertiesNot;
+    }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false) {
-			return next.getMissingRequirementIntern(missing.requires(
-					new PropertyNotRequirement(this.missing.toArray(new TlsAnalyzedProperty[this.missing.size()]))),
-					report);
-		}
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false) {
+            return next.getMissingRequirementIntern(
+                    missing.requires(
+                            new PropertyNotRequirement(
+                                    this.missing.toArray(
+                                            new TlsAnalyzedProperty[this.missing.size()]))),
+                    report);
+        }
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }

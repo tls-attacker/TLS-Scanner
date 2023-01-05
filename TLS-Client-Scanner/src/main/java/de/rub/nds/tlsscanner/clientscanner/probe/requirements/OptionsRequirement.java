@@ -70,6 +70,14 @@ public class OptionsRequirement extends Requirement {
         return false;
     }
 
+    @Override
+    public String toString() {
+        if (domain == null) {
+            return "Option of " + type.toString() + "with domain " + domain;
+        }
+        return "Option of " + type.toString();
+    }
+
     /**
      * @return the probe type of the option.
      */

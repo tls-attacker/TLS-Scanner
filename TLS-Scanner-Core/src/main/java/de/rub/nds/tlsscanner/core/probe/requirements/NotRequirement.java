@@ -12,46 +12,46 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 
 /**
- * Represents a {@link Requirement} for required negated Requirements. If the
- * contained Requirement evaluates to true, this Requirement evaluates to false
- * and vice versa.
+ * Represents a {@link Requirement} for required negated Requirements. If the contained Requirement
+ * evaluates to true, this Requirement evaluates to false and vice versa.
  */
 public class NotRequirement extends Requirement {
-	private final Requirement notRequirement;
+    private final Requirement notRequirement;
 
-	/**
-	 * @param notRequirement the Requirement to negate.
-	 */
-	public NotRequirement(Requirement notRequirement) {
-		super();
-		this.notRequirement = notRequirement;
-	}
+    /**
+     * @param notRequirement the Requirement to negate.
+     */
+    public NotRequirement(Requirement notRequirement) {
+        super();
+        this.notRequirement = notRequirement;
+    }
 
-	@Override
-	protected boolean evaluateIntern(ScanReport report) {
-		if (notRequirement == null) {
-			return true;
-		}
-		return !notRequirement.evaluate(report);
-	}
+    @Override
+    protected boolean evaluateIntern(ScanReport report) {
+        if (notRequirement == null) {
+            return true;
+        }
+        return !notRequirement.evaluate(report);
+    }
 
-	@Override
-	public String toString() {
-		return "not " + notRequirement.toString();
-	}
+    @Override
+    public String toString() {
+        return "not " + notRequirement.toString();
+    }
 
-	/**
-	 * @return the Requirement to negate.
-	 */
-	public Requirement getRequirement() {
-		return notRequirement;
-	}
+    /**
+     * @return the Requirement to negate.
+     */
+    public Requirement getRequirement() {
+        return notRequirement;
+    }
 
-	@Override
-	public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-		if (evaluateIntern(report) == false) {
-			return next.getMissingRequirementIntern(missing.requires(new NotRequirement(notRequirement)), report);
-		}
-		return next.getMissingRequirementIntern(missing, report);
-	}
+    @Override
+    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
+        if (evaluateIntern(report) == false) {
+            return next.getMissingRequirementIntern(
+                    missing.requires(new NotRequirement(notRequirement)), report);
+        }
+        return next.getMissingRequirementIntern(missing, report);
+    }
 }
