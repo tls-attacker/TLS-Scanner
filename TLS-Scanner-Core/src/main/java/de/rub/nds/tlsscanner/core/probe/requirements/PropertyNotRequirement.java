@@ -64,7 +64,7 @@ public class PropertyNotRequirement extends Requirement {
         for (TlsAnalyzedProperty ap : propertiesNot) {
             returnString += ap.name() + ", ";
         }
-        return returnString.substring(0, returnString.length() - 3);
+        return returnString.substring(0, returnString.length() - 2);
     }
 
     /**

@@ -96,6 +96,11 @@ public abstract class Requirement {
      */
     public static class BaseRequirement extends Requirement {
         @Override
+        public String toString() {
+            return "no requirement";
+        }
+
+        @Override
         protected boolean evaluateIntern(ScanReport report) {
             return true;
         }

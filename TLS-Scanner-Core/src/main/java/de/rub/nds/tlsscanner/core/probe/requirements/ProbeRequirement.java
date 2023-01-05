@@ -50,7 +50,7 @@ public class ProbeRequirement extends Requirement {
         for (TlsProbeType pt : probes) {
             returnString += pt.name() + ", ";
         }
-        return returnString.substring(0, returnString.length() - 3);
+        return returnString.substring(0, returnString.length() - 2);
     }
 
     /**

@@ -53,7 +53,7 @@ public class OrRequirement extends Requirement {
         for (Requirement req : requirements) {
             returnString += req.toString() + " or ";
         }
-        return returnString.substring(0, returnString.length() - 5);
+        return returnString.substring(0, returnString.length() - 4);
     }
 
     /**

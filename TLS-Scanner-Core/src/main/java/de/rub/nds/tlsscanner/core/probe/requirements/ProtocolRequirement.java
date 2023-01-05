@@ -60,7 +60,7 @@ public class ProtocolRequirement extends Requirement {
         for (ProtocolVersion pv : protocols) {
             returnString += pv.name() + ", ";
         }
-        return returnString.substring(0, returnString.length() - 3);
+        return returnString.substring(0, returnString.length() - 2);
     }
 
     /**

@@ -59,11 +59,11 @@ public class PropertyRequirement extends Requirement {
 
     @Override
     public String toString() {
-        String returnString = "";
+        String returnString = "Properties: ";
         for (TlsAnalyzedProperty ap : properties) {
             returnString += ap.name() + ", ";
         }
-        return returnString.substring(0, returnString.length() - 3);
+        return returnString.substring(0, returnString.length() - 2);
     }
 
     /**

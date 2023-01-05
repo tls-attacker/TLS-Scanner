@@ -59,7 +59,7 @@ public class ExtensionRequirement extends Requirement {
         for (ExtensionType et : extensions) {
             returnString += et.name() + ", ";
         }
-        return returnString.substring(0, returnString.length() - 3);
+        return returnString.substring(0, returnString.length() - 2);
     }
 
     /**
