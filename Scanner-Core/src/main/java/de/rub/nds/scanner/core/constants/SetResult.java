@@ -13,6 +13,11 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Set;
 
+/**
+ * Represents {@link TestResult}s of type {@link Set} with objects of type T.
+ *
+ * @param <T> the type of which the SetResult consists.
+ */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SetResult<T> implements TestResult {
@@ -20,11 +25,20 @@ public class SetResult<T> implements TestResult {
     private final String name;
     private final Set<T> set;
 
+    /**
+     * The constructor for the SetResult. Use property.name() for the name parameter.
+     *
+     * @param set The result set.
+     * @param name The name of the SetResult object.
+     */
     public SetResult(Set<T> set, String name) {
         this.set = set;
         this.name = name;
     }
 
+    /**
+     * @return The set of the SetResult.
+     */
     public Set<T> getSet() {
         return this.set;
     }

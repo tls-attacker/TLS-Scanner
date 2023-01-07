@@ -12,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/** Enum which represents specific failure {@link TestResult}s. */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum FailureResult implements TestResult {

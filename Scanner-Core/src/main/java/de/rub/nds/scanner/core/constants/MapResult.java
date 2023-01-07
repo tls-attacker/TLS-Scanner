@@ -8,11 +8,19 @@
  */
 package de.rub.nds.scanner.core.constants;
 
+import java.util.Map;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.util.Map;
 
+/**
+ * 
+ * Represents {@link TestResult}s of type {@link Map} with <S,T> pairs.
+ *  
+ * @param <S> the key types of the map.
+ * @param <T> the value types of the map.
+ */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MapResult<S, T> implements TestResult {
@@ -20,11 +28,20 @@ public class MapResult<S, T> implements TestResult {
     private final String name;
     private final Map<S, T> map;
 
+    /**
+     * The constructor for the MapResult. Use property.name() for the name parameter.
+     * 
+     * @param map the map.
+     * @param name the name of the MapResult.
+     */
     public MapResult(Map<S, T> map, String name) {
         this.map = map;
         this.name = name;
     }
 
+    /**
+     * @return the map of the MapResult object.
+     */
     public Map<S, T> getMap() {
         return this.map;
     }

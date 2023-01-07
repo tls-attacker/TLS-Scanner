@@ -12,6 +12,10 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Enum for simple {@link TestResult}s which hold a value for the result of the evaluation of a
+ * property.
+ */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TestResults implements TestResult {
@@ -29,6 +33,10 @@ public enum TestResults implements TestResult {
 
     private TestResults() {}
 
+    /**
+     * @param value evaluation of a boolean to TestResults.
+     * @return TestResults.TRUE if true and TestResults.FALSE if false
+     */
     public static TestResults of(boolean value) {
         return value ? TRUE : FALSE;
     }
