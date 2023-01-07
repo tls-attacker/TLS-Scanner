@@ -117,7 +117,7 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
 
     @Override
     public void adjustConfig(ClientReport report) {
-        clientAdvertisedCipherSuites = report.getClientAdvertisedCiphersuites();
+        clientAdvertisedCipherSuites = report.getClientAdvertisedCipherSuites();
     }
 
     @Override

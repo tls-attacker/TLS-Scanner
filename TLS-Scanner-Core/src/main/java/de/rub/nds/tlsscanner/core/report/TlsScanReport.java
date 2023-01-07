@@ -154,14 +154,6 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<CipherSuite> getClientAdvertisedCiphersuites() {
-        @SuppressWarnings("unchecked")
-        ListResult<CipherSuite> listResult =
-                (ListResult<CipherSuite>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES);
-        return listResult == null ? null : listResult.getList();
-    }
-
     public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
         @SuppressWarnings("unchecked")
         ListResult<VersionSuiteListPair> listResult =
