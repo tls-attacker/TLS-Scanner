@@ -8,16 +8,14 @@
  */
 package de.rub.nds.scanner.core.constants;
 
-import java.util.Map;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
 
 /**
- * 
- * Represents {@link TestResult}s of type {@link Map} with <S,T> pairs.
- *  
+ * Represents {@link TestResult}s of type {@link Map} with pairs of type S and T.
+ *
  * @param <S> the key types of the map.
  * @param <T> the value types of the map.
  */
@@ -30,7 +28,7 @@ public class MapResult<S, T> implements TestResult {
 
     /**
      * The constructor for the MapResult. Use property.name() for the name parameter.
-     * 
+     *
      * @param map the map.
      * @param name the name of the MapResult.
      */
