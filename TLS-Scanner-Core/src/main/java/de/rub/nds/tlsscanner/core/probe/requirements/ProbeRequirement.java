@@ -14,13 +14,13 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Represents a {@link Requirement} for required executed TlsProbeTypes. */
+/** Represents a {@link Requirement} for required executed {@link TlsProbeType}s. */
 public class ProbeRequirement extends Requirement {
     private final TlsProbeType[] probes;
     private List<TlsProbeType> missing;
 
     /**
-     * @param probes the required TlsProbeType. Any amount possible.
+     * @param probes the required {@link TlsProbeType}. Any amount possible.
      */
     public ProbeRequirement(TlsProbeType... probes) {
         super();
@@ -54,7 +54,7 @@ public class ProbeRequirement extends Requirement {
     }
 
     /**
-     * @return the required TlsProbeTypes.
+     * @return the required {@link TlsProbeType}s.
      */
     public TlsProbeType[] getRequirement() {
         return probes;

@@ -19,7 +19,7 @@ public class NotRequirement extends Requirement {
     private final Requirement notRequirement;
 
     /**
-     * @param notRequirement the Requirement to negate.
+     * @param notRequirement the {@link Requirement} to negate.
      */
     public NotRequirement(Requirement notRequirement) {
         super();
@@ -40,7 +40,7 @@ public class NotRequirement extends Requirement {
     }
 
     /**
-     * @return the Requirement to negate.
+     * @return the {@link Requirement} to negate.
      */
     public Requirement getRequirement() {
         return notRequirement;

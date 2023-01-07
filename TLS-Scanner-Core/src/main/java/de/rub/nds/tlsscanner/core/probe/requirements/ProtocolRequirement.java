@@ -15,13 +15,13 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Represents a {@link Requirement} of required supported ProtocolVersions. */
+/** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
 public class ProtocolRequirement extends Requirement {
     private final ProtocolVersion[] protocols;
     private List<ProtocolVersion> missing;
 
     /**
-     * @param protocols the required ProtocolVersions. Any amount possible.
+     * @param protocols the required {@link ProtocolVersion}s. Any amount possible.
      */
     public ProtocolRequirement(ProtocolVersion... protocols) {
         super();
@@ -64,7 +64,7 @@ public class ProtocolRequirement extends Requirement {
     }
 
     /**
-     * @return the ProtocolVersions.
+     * @return the {@link ProtocolVersion}s.
      */
     public ProtocolVersion[] getRequirement() {
         return protocols;

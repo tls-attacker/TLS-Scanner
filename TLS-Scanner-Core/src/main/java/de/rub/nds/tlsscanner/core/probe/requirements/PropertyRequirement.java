@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a {@link Requirement} for required TlsAnalyzedProperties which were positively
- * evaluated (TestResults.TRUE).
+ * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
+ * positively evaluated (TestResults.TRUE).
  */
 public class PropertyRequirement extends Requirement {
 
@@ -27,7 +27,7 @@ public class PropertyRequirement extends Requirement {
     private List<TlsAnalyzedProperty> missing;
 
     /**
-     * @param properties the required TlsAnalyzedProperties. Any amount possible.
+     * @param properties the required {@link TlsAnalyzedProperty} properties. Any amount possible.
      */
     public PropertyRequirement(TlsAnalyzedProperty... properties) {
         super();
@@ -67,7 +67,7 @@ public class PropertyRequirement extends Requirement {
     }
 
     /**
-     * @return the required TlsAnalyzedProperties.
+     * @return the required {@link TlsAnalyzedProperty} properties.
      */
     public TlsAnalyzedProperty[] getRequirement() {
         return properties;

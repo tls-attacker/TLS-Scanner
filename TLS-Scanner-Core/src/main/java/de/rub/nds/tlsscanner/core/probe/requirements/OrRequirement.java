@@ -22,7 +22,7 @@ public class OrRequirement extends Requirement {
     private List<Requirement> missing;
 
     /**
-     * @param requirements the Requirements which are connected logically with an OR.
+     * @param requirements the {@link Requirement}s which are connected logically with an OR.
      */
     public OrRequirement(Requirement... requirements) {
         super();
@@ -57,7 +57,7 @@ public class OrRequirement extends Requirement {
     }
 
     /**
-     * @return the Requirements which are connected logically with an OR.
+     * @return the {@link Requirement}s which are connected logically with an OR.
      */
     public Requirement[] getRequirement() {
         return requirements;

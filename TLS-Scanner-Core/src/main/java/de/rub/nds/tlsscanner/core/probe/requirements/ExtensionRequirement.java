@@ -15,13 +15,13 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Represents a {@link Requirement} for required ExtensionTypes. */
+/** Represents a {@link Requirement} for required {@link ExtensionType}s. */
 public class ExtensionRequirement extends Requirement {
     private final ExtensionType[] extensions;
     private List<ExtensionType> missing;
 
     /**
-     * @param extensions the required ExtensionTypes. Any amount possible.
+     * @param extensions the required {@link ExtensionType}s. Any amount possible.
      */
     public ExtensionRequirement(ExtensionType... extensions) {
         super();
@@ -63,7 +63,7 @@ public class ExtensionRequirement extends Requirement {
     }
 
     /**
-     * @return the ExtensionTypes.
+     * @return the {@link ExtensionType}s.
      */
     public ExtensionType[] getRequirement() {
         return extensions;
