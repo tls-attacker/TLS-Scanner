@@ -28,8 +28,8 @@ public class OptionsRequirement extends Requirement {
     private String domain;
 
     /**
-     * @param scannerConfig the ClientScannerConfig.
-     * @param type the name of the option.
+     * @param scannerConfig the {@link ClientScannerConfig}.
+     * @param type the {@link TlsProbeType} of the option.
      */
     public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type) {
         super();
@@ -38,8 +38,8 @@ public class OptionsRequirement extends Requirement {
     }
 
     /**
-     * @param scannerConfig the ClientScannerConfig.
-     * @param type the name of the option.
+     * @param scannerConfig the {@link ClientScannerConfig}.
+     * @param type the {@link TlsProbeType} of the option.
      * @param domain the domain for the sni option.
      */
     public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type, String domain) {
@@ -79,7 +79,7 @@ public class OptionsRequirement extends Requirement {
     }
 
     /**
-     * @return the probe type of the option.
+     * @return the {@link TlsProbeType} of the option.
      */
     public TlsProbeType getRequirement() {
         return type;
