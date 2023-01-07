@@ -121,8 +121,6 @@ public abstract class TlsScanReport extends ScanReport {
         return mapResult == null ? null : mapResult.getMap();
     }
 
-    List<NamedGroup> list;
-
     public synchronized Set<CipherSuite> getSupportedCipherSuites() {
         @SuppressWarnings("unchecked")
         SetResult<CipherSuite> setResult =
