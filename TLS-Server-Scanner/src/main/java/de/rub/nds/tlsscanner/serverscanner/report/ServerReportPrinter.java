@@ -164,10 +164,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             appendGuidelines(builder);
         }
         appendPerformanceData(builder);
-        for (String resultKey : report.getResultMap().keySet()) {
-            String resultValue = report.getResult(resultKey).name();
-            LOGGER.info("property " + resultKey + " has value " + resultValue);
-        }
 
         return builder.toString();
     }
