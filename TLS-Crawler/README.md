@@ -1,6 +1,6 @@
 # TLS-Crawler
 
-The TLS-Crawler is designed to perform large scale scans with the [TLS-Scanner](https://github.com/tls-attacker/TLS-Scanner).
+The TLS-Crawler is designed to perform large scale scans with [TLS-Scanner](https://github.com/tls-attacker/TLS-Scanner).
 To improve performance it supports distributing the workload to multiple machines.
 
 ## Architecture
