@@ -186,11 +186,11 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected Requirement getRequirements() {
-        PropertyRequirement preq_ecdh = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        PropertyRequirement preq_tls13 =
+        PropertyRequirement preqEcdh = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        PropertyRequirement preqTls13 =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE)
-                .requires(new OrRequirement(preq_ecdh, preq_tls13));
+                .requires(new OrRequirement(preqEcdh, preqTls13));
     }
 
     @Override
