@@ -118,12 +118,12 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     @Override
     protected Requirement getRequirements() {
-        PropertyRequirement tapTls13 =
+        PropertyRequirement requireTls13 =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
-        PropertyRequirement tapStaticEcdh =
+        PropertyRequirement requireStaticEcdh =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        PropertyRequirement tapEcdhe = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        return new OrRequirement(tapTls13, tapStaticEcdh, tapEcdhe)
+        PropertyRequirement requireEcdhe = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        return new OrRequirement(requireTls13, requireStaticEcdh, requireEcdhe)
                 .requires(
                         new ProbeRequirement(
                                 TlsProbeType.PROTOCOL_VERSION,
