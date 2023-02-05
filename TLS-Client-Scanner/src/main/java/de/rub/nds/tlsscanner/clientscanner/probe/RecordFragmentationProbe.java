@@ -28,8 +28,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class RecordFragmentationProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
-    private TestResult result = null; // TODO is null correct (as in master) or rather change to
-    // TestResults.COULD_NOT_TEST ?
+    private TestResult result = TestResults.COULD_NOT_TEST;
 
     public RecordFragmentationProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
