@@ -31,6 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
@@ -88,7 +89,7 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     @Override
     protected Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS);
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS).requires(new WorkingConfigRequirement(configSelector));
     }
 
     // public boolean canBeExecuted(ServerReport report) {

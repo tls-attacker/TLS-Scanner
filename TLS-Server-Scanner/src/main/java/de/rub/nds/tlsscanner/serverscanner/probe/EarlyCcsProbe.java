@@ -30,6 +30,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -116,7 +117,7 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
 
     @Override
     protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+        return new WorkingConfigRequirement(configSelector);
     }
 
     private enum TargetVersion {
