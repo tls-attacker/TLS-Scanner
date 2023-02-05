@@ -60,7 +60,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private TestResult supportsTls13SessionTicket = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
-    private TestResult supportsTls13_0rtt = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13ZeroRtt = TestResults.COULD_NOT_TEST;
     private TestResult supportsDtlsCookieExchangeInSessionTicketResumption =
             TestResults.COULD_NOT_TEST;
 
@@ -88,14 +88,14 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                     getSupportsDtlsCookieExchangeInSessionTicketResumption();
             supportsTls13SessionTicket =
                     supportsTls13PskDhe =
-                            supportsTls13Psk = supportsTls13_0rtt = TestResults.NOT_TESTED_YET;
+                            supportsTls13Psk = supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
             supportsTls13SessionTicket = getIssuesTls13SessionTicket();
             supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
             supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
-            supportsTls13_0rtt = getSupports0rtt();
+            supportsTls13ZeroRtt = getSupports0rtt();
         }
         supportsResumption = getSupportsSessionResumption();
         supportsSessionTicketResumption = getSupportsSessionTicketResumption();
@@ -404,7 +404,7 @@ public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 supportsSessionTicketResumption);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
-        put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
         put(
                 TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
