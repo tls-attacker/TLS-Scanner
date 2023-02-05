@@ -117,10 +117,6 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    // TODO SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-    // SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION nicht not
-    // tested yet in canbeexecuted ??
-
     protected Requirement getRequirements() {
         PropertyRequirement tapTls13 =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
