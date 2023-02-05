@@ -38,7 +38,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     private List<CipherSuite> clientAdvertisedCipherSuites = null;
     private List<CompressionMethod> clientAdvertisedCompressions = null;
-    private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms = null;
+    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms = null;
     private Set<ExtensionType> clientAdvertisedExtensions = null;
     private List<NamedGroup> clientAdvertisedNamedGroupsList = null;
     private List<NamedGroup> clientKeyShareNamedGroupsList = null;
@@ -69,7 +69,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
             TlsContext traceContext = state.getTlsContext();
             clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();
             clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
-            clientSupportedSignatureAndHashAlgorithms =
+            clientAdvertisedSignatureAndHashAlgorithms =
                     traceContext.getClientSupportedSignatureAndHashAlgorithms();
             clientAdvertisedExtensions = traceContext.getProposedExtensions();
             clientAdvertisedNamedGroupsList = traceContext.getClientNamedGroupsList();
@@ -108,7 +108,7 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
         put(
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-                clientSupportedSignatureAndHashAlgorithms);
+                clientAdvertisedSignatureAndHashAlgorithms);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
         put(
