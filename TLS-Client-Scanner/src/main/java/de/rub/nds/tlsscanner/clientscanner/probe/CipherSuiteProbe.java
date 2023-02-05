@@ -344,7 +344,7 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
             supportsSha384Prf = TestResults.COULD_NOT_TEST;
             put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
         }
-        writeToReport(report);
+        writeToReport();
     }
 
     private void adjustCipherType(CipherSuite suite) {
@@ -488,7 +488,7 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
         }
     }
 
-    private void writeToReport(ClientReport report) {
+    private void writeToReport() {
         put(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
         put(TlsAnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
         put(TlsAnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);
