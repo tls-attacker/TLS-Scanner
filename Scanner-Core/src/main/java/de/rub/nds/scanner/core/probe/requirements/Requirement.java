@@ -76,6 +76,13 @@ public abstract class Requirement {
     public Requirement getNext() {
         return next;
     }
+    
+    /**
+     * @return returns String representation of the requirement.
+     */
+    public String name() {
+    	return toString();
+    }
 
     /**
      * Evaluates if this Requirement and the next are fulfilled or not and adds them to a
