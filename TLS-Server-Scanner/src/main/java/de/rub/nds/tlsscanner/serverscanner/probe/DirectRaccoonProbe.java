@@ -51,7 +51,6 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList =
             new LinkedList<>();
-    ;
 
     private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
