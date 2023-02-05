@@ -57,11 +57,13 @@ public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, Cli
 
         State state = new State(config, trace);
         executeState(state);
-        supportsReordering =
-                state.getWorkflowTrace().executedAsPlanned()
-                                && receiveAction.getReceivedMessages().isEmpty()
-                        ? TestResults.TRUE
-                        : TestResults.FALSE;
+
+        if (state.getWorkflowTrace().executedAsPlanned()
+                && receiveAction.getReceivedMessages().isEmpty()) {
+            supportsReordering = TestResults.TRUE;
+        } else {
+            supportsReordering = TestResults.FALSE;
+        }
     }
 
     @Override
