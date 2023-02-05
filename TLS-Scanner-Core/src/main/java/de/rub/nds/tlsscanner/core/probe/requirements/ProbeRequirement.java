@@ -8,11 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Represents a {@link Requirement} for required executed {@link TlsProbeType}s. */
 public class ProbeRequirement extends Requirement {
@@ -46,11 +49,14 @@ public class ProbeRequirement extends Requirement {
 
     @Override
     public String toString() {
-        String returnString = "Probes: ";
-        for (TlsProbeType pt : probes) {
-            returnString += pt.name() + ", ";
+        String returnString = "";   
+        if (probes.length==1) {
+        	returnString+="Probe: ";
+
+        }else {
+        	returnString+="Probes: ";
         }
-        return returnString.substring(0, returnString.length() - 2);
+        return returnString+=Arrays.stream(probes).map(TlsProbeType::name).collect(Collectors.joining(", "));
     }
 
     /**
