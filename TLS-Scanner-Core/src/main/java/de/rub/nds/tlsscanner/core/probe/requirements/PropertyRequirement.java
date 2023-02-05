@@ -8,17 +8,16 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
@@ -62,14 +61,17 @@ public class PropertyRequirement extends Requirement {
 
     @Override
     public String toString() {
-        String returnString = "";   
-        if (properties.length==1) {
-        	returnString+="Property: ";
+        String returnString = "";
+        if (properties.length == 1) {
+            returnString += "Property: ";
 
-        }else {
-        	returnString+="Properties: ";
+        } else {
+            returnString += "Properties: ";
         }
-        return returnString+=Arrays.stream(properties).map(TlsAnalyzedProperty::name).collect(Collectors.joining(", "));
+        return returnString +=
+                Arrays.stream(properties)
+                        .map(TlsAnalyzedProperty::name)
+                        .collect(Collectors.joining(", "));
     }
 
     /**

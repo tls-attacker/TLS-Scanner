@@ -8,13 +8,12 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.report.ScanReport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.scanner.core.report.ScanReport;
 
 /**
  * Represents a {@link Requirement} that implements a logical or for multiple multiple Requirements.
@@ -52,7 +51,9 @@ public class OrRequirement extends Requirement {
 
     @Override
     public String toString() {
-        return Arrays.stream(requirements).map(Requirement::toString).collect(Collectors.joining(" or "));
+        return Arrays.stream(requirements)
+                .map(Requirement::toString)
+                .collect(Collectors.joining(" or "));
     }
 
     /**

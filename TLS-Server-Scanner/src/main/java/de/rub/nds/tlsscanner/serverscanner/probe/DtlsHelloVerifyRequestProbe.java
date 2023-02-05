@@ -41,6 +41,8 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
+    public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
+
     private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;
     private TestResult checksCookie = TestResults.COULD_NOT_TEST;
     private TestResult usesPortInCookie = TestResults.COULD_NOT_TEST;
@@ -89,7 +91,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
                                                                     usesCompressionsInCookie =
                                                                             TestResults
                                                                                     .COULD_NOT_TEST;
-            cookieLength = -1;
+            cookieLength = COOKIE_LENGTH_ERROR_VALUE;
         }
     }
 
@@ -105,7 +107,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        HandshakeMessage message =
+        HandshakeMessage<?> message =
                 WorkflowTraceUtil.getLastReceivedMessage(
                         HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace());
         if (message != null) {

@@ -8,15 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
 public class ProtocolRequirement extends Requirement {
@@ -59,14 +58,17 @@ public class ProtocolRequirement extends Requirement {
 
     @Override
     public String toString() {
-        String returnString = "";   
-        if (protocols.length==1) {
-        	returnString+="Protocol not: ";
+        String returnString = "";
+        if (protocols.length == 1) {
+            returnString += "Protocol not: ";
 
-        }else {
-        	returnString+="Protocols not: ";
+        } else {
+            returnString += "Protocols not: ";
         }
-        return returnString+=Arrays.stream(protocols).map(ProtocolVersion::name).collect(Collectors.joining(", "));
+        return returnString +=
+                Arrays.stream(protocols)
+                        .map(ProtocolVersion::name)
+                        .collect(Collectors.joining(", "));
     }
 
     /**

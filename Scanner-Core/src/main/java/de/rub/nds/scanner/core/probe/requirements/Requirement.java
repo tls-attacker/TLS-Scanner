@@ -76,12 +76,12 @@ public abstract class Requirement {
     public Requirement getNext() {
         return next;
     }
-    
+
     /**
      * @return returns String representation of the requirement.
      */
     public String name() {
-    	return toString();
+        return toString();
     }
 
     /**
