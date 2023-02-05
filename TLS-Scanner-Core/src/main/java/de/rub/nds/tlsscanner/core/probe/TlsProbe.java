@@ -8,16 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.probe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.SetResult;
@@ -30,6 +20,14 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProbe<Report> {
 
@@ -57,11 +55,11 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
             }
         }
     }
-    
+
     @Override
     public TlsProbeType getType() {
         return (TlsProbeType) super.getType();
-    }   
+    }
 
     public ParallelExecutor getParallelExecutor() {
         return parallelExecutor;
