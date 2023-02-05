@@ -37,7 +37,7 @@ public class ListResult<T> implements TestResult {
     }
 
     /**
-     * @return
+     * @return the list of the listResult object.
      */
     public List<T> getList() {
         return this.list;
