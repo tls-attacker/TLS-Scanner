@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.ScanReport;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RequirementTest {
 

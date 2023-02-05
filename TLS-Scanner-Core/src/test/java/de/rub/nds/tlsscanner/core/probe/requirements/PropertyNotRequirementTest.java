@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyNotRequirementTest {
 

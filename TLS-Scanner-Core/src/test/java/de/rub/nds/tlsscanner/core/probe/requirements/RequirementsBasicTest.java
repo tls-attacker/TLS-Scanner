@@ -22,14 +22,14 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RequirementsBasicTest {
 
     private TestReport report;
 
-    @Before
+    @BeforeEach
     public void setup() {
         report = new TestReport();
     }

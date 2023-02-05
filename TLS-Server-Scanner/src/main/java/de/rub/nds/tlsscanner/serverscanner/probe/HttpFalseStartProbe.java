@@ -89,7 +89,8 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     @Override
     protected Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS).requires(new WorkingConfigRequirement(configSelector));
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS)
+                .requires(new WorkingConfigRequirement(configSelector));
     }
 
     // public boolean canBeExecuted(ServerReport report) {
