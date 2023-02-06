@@ -148,14 +148,17 @@
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
             <artifactId>tls-core</artifactId>
+            <version>6.0.0-QUIC</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
             <artifactId>transport</artifactId>
+            <version>6.0.0-QUIC</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
             <artifactId>utils</artifactId>
+            <version>6.0.0-QUIC</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>

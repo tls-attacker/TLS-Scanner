@@ -12,6 +12,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.QuicDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.DtlsDelegate;
@@ -40,6 +41,8 @@ public class TlsScannerConfig extends ScannerConfig {
 
     @ParametersDelegate private DtlsDelegate dtlsDelegate;
 
+    @ParametersDelegate private QuicDelegate quicDelegate;
+
     @ParametersDelegate private StarttlsDelegate startTlsDelegate;
 
     @ParametersDelegate private CallbackDelegate callbackDelegate;
@@ -48,16 +51,22 @@ public class TlsScannerConfig extends ScannerConfig {
         super(delegate);
 
         this.dtlsDelegate = new DtlsDelegate();
+        this.quicDelegate = new QuicDelegate();
         this.startTlsDelegate = new StarttlsDelegate();
         this.callbackDelegate = new CallbackDelegate();
 
         addDelegate(dtlsDelegate);
+        addDelegate(quicDelegate);
         addDelegate(startTlsDelegate);
         addDelegate(callbackDelegate);
     }
 
     public DtlsDelegate getDtlsDelegate() {
         return dtlsDelegate;
+    }
+
+    public QuicDelegate getQuicDelegate() {
+        return quicDelegate;
     }
 
     public StarttlsDelegate getStartTlsDelegate() {

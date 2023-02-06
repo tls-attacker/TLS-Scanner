@@ -67,7 +67,9 @@ public class ConfigSelector {
     }
 
     public boolean findWorkingConfigs() {
-        findWorkingConfig();
+        if (!scannerConfig.getQuicDelegate().isQuic()) {
+            findWorkingConfig();
+        }
         if (!scannerConfig.getDtlsDelegate().isDTLS()) {
             findWorkingTls13Config();
         }
