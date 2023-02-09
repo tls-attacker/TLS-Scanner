@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
@@ -114,6 +115,9 @@ public class ServerReport extends TlsScanReport {
 
     // DTLS
     private Integer cookieLength = null;
+
+    // QUIC
+    private List<QuicVersionResult.Entry> supportedQuicVersions = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -675,5 +679,13 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
         this.closedAfterAppDataDelta = closedAfterAppDataDelta;
+    }
+
+    public List<QuicVersionResult.Entry> getSupportedQuicVersions() {
+        return supportedQuicVersions;
+    }
+
+    public void setSupportedQuicVersions(List<QuicVersionResult.Entry> supportedQuicVersions) {
+        this.supportedQuicVersions = supportedQuicVersions;
     }
 }

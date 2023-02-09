@@ -10,12 +10,14 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class QuicVersionResult<Report extends TlsScanReport> extends ProbeResult<Report> {
+public class QuicVersionResult extends ProbeResult<ServerReport> {
 
-    private List<byte[]> supportedVersions;
+    private final List<byte[]> supportedVersions;
 
     public QuicVersionResult(ProbeType type, List<byte[]> supportedVersions) {
         super(type);
@@ -23,9 +25,37 @@ public class QuicVersionResult<Report extends TlsScanReport> extends ProbeResult
     }
 
     @Override
-    protected void mergeData(Report report) {}
+    protected void mergeData(ServerReport report) {
+        report.setSupportedQuicVersions(supportedVersions.stream().map(versionBytes -> new Entry(QuicVersion.getVersionNameFromBytes(versionBytes), versionBytes)).collect(Collectors.toList()));
+    }
 
     public List<byte[]> getSupportedVersions() {
         return supportedVersions;
+    }
+
+    public class Entry {
+        private String versionName;
+        private byte[] versionBytes;
+
+        public Entry(String versionName, byte[] versionBytes) {
+            this.versionName = versionName;
+            this.versionBytes = versionBytes;
+        }
+
+        public String getVersionName() {
+            return versionName;
+        }
+
+        public void setVersionName(String versionName) {
+            this.versionName = versionName;
+        }
+
+        public byte[] getVersionBytes() {
+            return versionBytes;
+        }
+
+        public void setVersionBytes(byte[] versionBytes) {
+            this.versionBytes = versionBytes;
+        }
     }
 }

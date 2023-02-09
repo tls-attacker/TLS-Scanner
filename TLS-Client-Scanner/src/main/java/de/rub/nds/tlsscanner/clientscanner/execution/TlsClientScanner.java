@@ -148,8 +148,14 @@ public final class TlsClientScanner extends TlsScanner {
         long scanEndTime = System.currentTimeMillis();
         clientReport.setScanStartTime(scanStartTime);
         clientReport.setScanEndTime(scanEndTime);
-        ProtocolType protocolType =
-                config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
+        ProtocolType protocolType;
+        if (config.getDtlsDelegate().isDTLS()) {
+            protocolType = ProtocolType.DTLS;
+        } else if (config.getQuicDelegate().isQuic()) {
+            protocolType = ProtocolType.QUIC;
+        } else {
+            protocolType = ProtocolType.TLS;
+        }
         clientReport.setProtocolType(protocolType);
 
         executor.shutdown();

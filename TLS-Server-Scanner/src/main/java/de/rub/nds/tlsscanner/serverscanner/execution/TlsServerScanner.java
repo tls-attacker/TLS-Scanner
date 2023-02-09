@@ -377,6 +377,8 @@ public final class TlsServerScanner extends TlsScanner {
     private ProtocolType getProtocolType() {
         if (config.getDtlsDelegate().isDTLS()) {
             return ProtocolType.DTLS;
+        } else if (config.getQuicDelegate().isQuic()) {
+            return ProtocolType.QUIC;
         } else if (config.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
             return ProtocolType.STARTTLS;
         } else {

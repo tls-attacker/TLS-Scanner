@@ -17,19 +17,21 @@ import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.tlsscanner.serverscanner.selector.DefaultConfigProfile;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class QuicVersionProbe
-        extends QuicServerProbe<ConfigSelector, ServerReport, QuicVersionResult<ServerReport>> {
+        extends QuicServerProbe<ConfigSelector, ServerReport, QuicVersionResult> {
 
     public QuicVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.SUPPORTED_VERSION, configSelector);
     }
 
     @Override
-    public QuicVersionResult<ServerReport> executeTest() {
-        Config config = configSelector.getTls13BaseConfig();
+    public QuicVersionResult executeTest() {
+        // use basic config to avoid sending client hello in multiple packets which would lead to the server sending multiple version negotiation packets
+        Config config = configSelector.getConfigForProfile(ConfigSelector.TLS13_CONFIG, DefaultConfigProfile.CLEAN_TLS_13);
         config.setExpectHandshakeDoneQuicFrame(false);
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_VERSION_NEGOTIATION);
         config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION.getByteValue());
@@ -41,11 +43,11 @@ public class QuicVersionProbe
                             + state.getContext().getQuicContext().getSupportedVersions().stream()
                                     .map(QuicVersion::getVersionNameFromBytes)
                                     .collect(Collectors.joining(", ")));
-            return new QuicVersionResult<>(
+            return new QuicVersionResult(
                     QuicProbeType.SUPPORTED_VERSION,
                     state.getContext().getQuicContext().getSupportedVersions());
         } else {
-            return new QuicVersionResult<>(QuicProbeType.SUPPORTED_VERSION, List.of());
+            return new QuicVersionResult(QuicProbeType.SUPPORTED_VERSION, List.of());
         }
     }
 
@@ -55,7 +57,7 @@ public class QuicVersionProbe
     }
 
     @Override
-    public QuicVersionResult<ServerReport> getCouldNotExecuteResult() {
+    public QuicVersionResult getCouldNotExecuteResult() {
         return null;
     }
 

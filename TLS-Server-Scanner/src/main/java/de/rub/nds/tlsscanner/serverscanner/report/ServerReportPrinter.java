@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -68,6 +69,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
@@ -77,6 +79,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -85,6 +88,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -155,6 +159,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
+        if (report.getProtocolType() == ProtocolType.QUIC) {
+            appendQuicSpecificResults(builder);
+        }
         if (report.getProtocolType() == ProtocolType.DTLS) {
             appendDtlsSpecificResults(builder);
         }
@@ -283,6 +290,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             for (ApplicationProtocol application : report.getSupportedApplications()) {
                 builder.append(application).append("\n");
             }
+        }
+    }
+
+    private void appendQuicSpecificResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Supported QUIC Versions");
+        for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
+            prettyAppend(builder, version.getVersionName() + "(0x" + ArrayConverter.bytesToHexString(version.getVersionBytes(), false, false).replace(" ", "").toLowerCase() + ")");
         }
     }
 
