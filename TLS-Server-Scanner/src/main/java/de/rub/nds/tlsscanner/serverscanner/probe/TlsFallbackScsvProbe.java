@@ -43,18 +43,20 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void executeTest() {
-        Config tlsConfig = configSelector.getBaseConfig();
-        tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
+        if (secondHighestVersion != null) {
+            Config tlsConfig = configSelector.getBaseConfig();
+            tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
+            tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
 
-        State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            result = TestResults.TRUE;
-        } else {
-            LOGGER.debug("Received ServerHelloMessage");
-            LOGGER.debug("{}", state.getWorkflowTrace());
-            result = TestResults.FALSE;
+            State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
+            executeState(state);
+            if (state.getWorkflowTrace().executedAsPlanned()) {
+                result = TestResults.TRUE;
+            } else {
+                LOGGER.debug("Received ServerHelloMessage");
+                LOGGER.debug("{}", state.getWorkflowTrace());
+                result = TestResults.FALSE;
+            }
         }
     }
 
@@ -80,7 +82,11 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     public void adjustConfig(ServerReport report) {
         List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
         Collections.sort(versions);
-        secondHighestVersion = versions.get(versions.size() - 2);
+        if (versions.size() > 1) {
+            secondHighestVersion = versions.get(versions.size() - 2);
+        } else {
+            secondHighestVersion = null;
+        }
     }
 
     @Override
