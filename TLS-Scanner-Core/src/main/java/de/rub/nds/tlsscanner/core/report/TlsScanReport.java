@@ -140,7 +140,7 @@ public abstract class TlsScanReport extends ScanReport {
         @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<PaddingOracleTestInfo>>)
-                        getListResult(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
+                        getListResult(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 

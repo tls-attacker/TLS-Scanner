@@ -266,7 +266,7 @@ public class ServerReport extends TlsScanReport {
         @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> listResult =
                 (ListResult<InvalidCurveResponse>)
-                        getListResult(TlsAnalyzedProperty.INVALIDCURVE_TEST_RESULT);
+                        getListResult(TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -296,7 +296,7 @@ public class ServerReport extends TlsScanReport {
         @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>)
-                        getListResult(TlsAnalyzedProperty.DIRECTRACCOON_TEST_RESULT);
+                        getListResult(TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 

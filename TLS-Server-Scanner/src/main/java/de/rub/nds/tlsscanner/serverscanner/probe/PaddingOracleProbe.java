@@ -63,7 +63,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
                         : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
         register(
                 TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
-                TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT);
+                TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT, resultList);
+        put(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT, resultList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 }

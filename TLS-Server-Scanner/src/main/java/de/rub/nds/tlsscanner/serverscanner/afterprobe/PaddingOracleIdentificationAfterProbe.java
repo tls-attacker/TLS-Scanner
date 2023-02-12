@@ -39,7 +39,7 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerRepo
             } catch (Exception e) {
                 LOGGER.debug(
                         "property "
-                                + TlsAnalyzedProperty.PADDINGORACLE_TEST_RESULT.name()
+                                + TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT.name()
                                 + " requires a TestResult for the PaddingOracleIdentificationAfterProbe but probably has result null!"
                                 + e.getMessage());
             }
