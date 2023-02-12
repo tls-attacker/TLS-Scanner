@@ -222,12 +222,6 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
         for (CompositeModulusResult compositeResult : compositeModulusResultList) {
             TlsAnalyzedProperty property =
                     compositeModulusTypeToPropertyMapping.get(compositeResult.getType());
-            if (property == null) {
-                LOGGER.warn(
-                        "No report property configured for composite modulus type {}, ignoring.",
-                        compositeResult.getType().name());
-                continue;
-            }
             put(property, compositeResult.getResult());
         }
     }
