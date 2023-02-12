@@ -93,10 +93,6 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
                 .requires(new WorkingConfigRequirement(configSelector));
     }
 
-    // public boolean canBeExecuted(ServerReport report) {
-    // return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
-    // && configSelector.foundWorkingConfig();
-
     @Override
     public void adjustConfig(ServerReport report) {}
 
