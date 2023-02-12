@@ -17,11 +17,11 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
-    SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    PADDINGORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    DIRECTRACCOON_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
-    INVALIDCURVE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    DIRECT_RACCOON_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    INVALID_CURVE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     RACCOON_ATTACK_PROBABILITIES(TlsAnalyzedPropertyCategory.ATTACKS),
     SUPPORTED_PROTOCOL_VERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
