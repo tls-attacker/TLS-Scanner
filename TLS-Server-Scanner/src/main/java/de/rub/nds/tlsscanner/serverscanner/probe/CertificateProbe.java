@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -27,11 +33,6 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -58,7 +59,11 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         register(
                 TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS,
                 TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS,
-                TlsAnalyzedProperty.CERTIFICATE_CHAINS);
+                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS,
+                TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
     }
 
     @Override
@@ -468,5 +473,9 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
         put(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, ecdsaPkGroupsStatic);
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
+        put(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, ecdsaPkGroupsTls13);
+        put(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsStatic);
+        put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsEphemeral);
+        put(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsTls13);
     }
 }
