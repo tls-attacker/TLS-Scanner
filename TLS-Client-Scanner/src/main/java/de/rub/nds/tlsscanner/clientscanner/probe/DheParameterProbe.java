@@ -236,12 +236,6 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
         for (SmallSubgroupResult smallSubgroupResult : smallSubgroupResults) {
             TlsAnalyzedProperty property =
                     smallSubgroupTypeToPropertyMapping.get(smallSubgroupResult.getType());
-            if (property == null) {
-                LOGGER.warn(
-                        "No report property configured for small subgroup type {}, ignoring.",
-                        smallSubgroupResult.getType().name());
-                continue;
-            }
             put(property, smallSubgroupResult.getResult());
         }
     }
