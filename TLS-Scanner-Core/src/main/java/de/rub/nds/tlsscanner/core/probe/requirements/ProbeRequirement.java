@@ -31,7 +31,7 @@ public class ProbeRequirement extends Requirement {
     }
 
     @Override
-    protected boolean evaluateIntern(ScanReport report) {
+    protected boolean evaluateInternal(ScanReport report) {
         if ((probes == null) || (probes.length == 0)) {
             return true;
         }
@@ -68,7 +68,7 @@ public class ProbeRequirement extends Requirement {
 
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false) {
+        if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ProbeRequirement(

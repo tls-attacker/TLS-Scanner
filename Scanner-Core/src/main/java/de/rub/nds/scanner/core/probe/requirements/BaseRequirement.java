@@ -22,7 +22,7 @@ public class BaseRequirement extends Requirement {
     }
 
     @Override
-    protected boolean evaluateIntern(ScanReport report) {
+    protected boolean evaluateInternal(ScanReport report) {
         return true;
     }
 

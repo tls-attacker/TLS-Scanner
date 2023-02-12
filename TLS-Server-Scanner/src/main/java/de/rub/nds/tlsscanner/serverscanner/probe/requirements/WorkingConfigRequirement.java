@@ -26,7 +26,7 @@ public class WorkingConfigRequirement extends Requirement {
     }
 
     @Override
-    protected boolean evaluateIntern(ScanReport report) {
+    protected boolean evaluateInternal(ScanReport report) {
         if (configSelector == null) {
             return false;
         }
@@ -50,7 +50,7 @@ public class WorkingConfigRequirement extends Requirement {
 
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false) {
+        if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
                     missing.requires(new WorkingConfigRequirement(configSelector)), report);
         }

@@ -32,7 +32,7 @@ public class ProtocolRequirement extends Requirement {
     }
 
     @Override
-    protected boolean evaluateIntern(ScanReport report) {
+    protected boolean evaluateInternal(ScanReport report) {
         if ((protocols == null) || (protocols.length == 0)) {
             return true;
         }
@@ -80,7 +80,7 @@ public class ProtocolRequirement extends Requirement {
 
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false) {
+        if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ProtocolRequirement(

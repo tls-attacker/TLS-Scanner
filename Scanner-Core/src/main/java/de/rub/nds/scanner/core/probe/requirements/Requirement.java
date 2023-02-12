@@ -32,7 +32,7 @@ public abstract class Requirement {
      * @param report the {@link ScanReport}.
      * @return result of the evaluation of this Requirement as Boolean.
      */
-    protected abstract boolean evaluateIntern(ScanReport report);
+    protected abstract boolean evaluateInternal(ScanReport report);
 
     /**
      * Evaluation of "all" Requirement. This and the next ones.
@@ -41,7 +41,7 @@ public abstract class Requirement {
      * @return result of the evaluation of this and the next Requirement as Boolean
      */
     public boolean evaluate(ScanReport report) {
-        return next.evaluate(report) && evaluateIntern(report);
+        return next.evaluate(report) && evaluateInternal(report);
     }
 
     /**

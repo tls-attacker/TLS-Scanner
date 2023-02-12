@@ -50,7 +50,7 @@ public class OptionsRequirement extends Requirement {
     }
 
     @Override
-    protected boolean evaluateIntern(ScanReport report) {
+    protected boolean evaluateInternal(ScanReport report) {
         if (scannerConfig == null || type == null) {
             return false;
         }
@@ -87,7 +87,7 @@ public class OptionsRequirement extends Requirement {
 
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateIntern(report) == false) {
+        if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
                     missing.requires(new OptionsRequirement(scannerConfig, type)), report);
         }
