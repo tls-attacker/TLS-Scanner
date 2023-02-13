@@ -58,9 +58,9 @@ feel free to issue a pull request*
 
 # Requirement System
 
-(TLS) probes sometimes have prerequisites which are required to execute this specific probe. The requirement system allows to define sets of such requirements which must be fulfilled to execute a probe.
+(TLS) probes sometimes have prerequisites that are required to execute this specific probe. The requirement system allows you to define sets of such requirements that must be met in order for the probe to be executed.
 
-Requirements can be concatenated by several ways. You can use a logical *not* by including a requirement in the `NotRequirement`, a logical *or* by putting the respective requirement objects in an `OrRequirement`, and a logical *and* by applying the require function on a requirement object by using the builder pattern of the requirement class. 
+Requirements can be concatenated in several ways. You can use a logical *not* by including a requirement in the `NotRequirement`, a logical *or* by putting the respective requirement objects in an `OrRequirement`, and a logical *and* by applying the require function to a requirement object by using the builder pattern of the requirement class.
 The different types of `Requirement`s can be the execution of one or multiple probes (`ProbeRequirement`), fulfilled (`PropertyRequirement`) or not fulfilled properties (`PropertyNotRequirement`), supported extension types (`ExtensionRequirement`), supported protocol versions (`ProtocolRequirement`), a working configuration (`WorkingConfigRequirement`), or optional flags (`OptionsRequirement`).
 
 If nothing is required, you can use the static Requirement.NO_REQUIREMENT which always evaluates to true.
