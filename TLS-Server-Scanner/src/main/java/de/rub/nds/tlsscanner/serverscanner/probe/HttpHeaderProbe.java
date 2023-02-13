@@ -40,7 +40,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private TestResult supportsHsts = TestResults.COULD_NOT_TEST;
     private Long hstsMaxAge;
     private Integer hpkpMaxAge;
-    private TestResult hstsIncludesSubdomains = TestResults.FALSE; 
+    private TestResult hstsIncludesSubdomains = TestResults.FALSE;
     private TestResult hpkpIncludesSubdomains = TestResults.FALSE;
     private TestResult supportsHstsPreloading = TestResults.FALSE;
     private TestResult hstsNotParseable = TestResults.FALSE;
@@ -242,9 +242,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         put(TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS, hpkpIncludesSubdomains);
         put(TlsAnalyzedProperty.HSTS_NOT_PARSEABLE, hstsNotParseable);
         put(TlsAnalyzedProperty.HPKP_NOT_PARSEABLE, hpkpNotParseable);
-        
     }
-    
 
     @Override
     protected Requirement getRequirements() {

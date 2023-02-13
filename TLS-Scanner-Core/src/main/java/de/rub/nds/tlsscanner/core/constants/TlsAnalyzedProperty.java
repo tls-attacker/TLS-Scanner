@@ -64,13 +64,12 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_POINTFORMATS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_ALPNS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
-    
+
     HSTS_INCLUDES_SUBDOMAINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     HPKP_INCLUDES_SUBDOMAINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     HSTS_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     HPKP_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
-    
-    
+
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS),

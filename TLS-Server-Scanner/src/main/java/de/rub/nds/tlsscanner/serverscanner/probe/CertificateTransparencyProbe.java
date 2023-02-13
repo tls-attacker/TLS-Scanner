@@ -12,6 +12,7 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1Field;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
@@ -42,10 +43,10 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
 
     private Certificate serverCertChain;
 
-    private boolean supportsPrecertificateSCTs;
-    private boolean supportsHandshakeSCTs;
-    private boolean supportsOcspSCTs;
-    private boolean meetsChromeCTPolicy = false;
+    private TestResult supportsPrecertificateSCTs = TestResults.COULD_NOT_TEST;
+    private TestResult supportsHandshakeSCTs = TestResults.COULD_NOT_TEST;
+    private TestResult supportsOcspSCTs = TestResults.COULD_NOT_TEST;
+    private TestResult meetsChromeCTPolicy = TestResults.COULD_NOT_TEST;
 
     private final SignedCertificateTimestampList precertificateSctList =
             new SignedCertificateTimestampList();
@@ -67,13 +68,13 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
 
     @Override
     public void executeTest() {
-        getPrecertificateSCTs();
-        getTlsHandshakeSCTs();
-        evaluateChromeCtPolicy();
+        supportsPrecertificateSCTs = getPrecertificateSCTs();
+        supportsHandshakeSCTs = getTlsHandshakeSCTs();
+        meetsChromeCTPolicy = evaluateChromeCtPolicy();
     }
 
-    private void getPrecertificateSCTs() {
-        supportsPrecertificateSCTs = false;
+    private TestResult getPrecertificateSCTs() {
+        boolean supportsPrecertificateSCTs = false;
         org.bouncycastle.asn1.x509.Certificate singleCert = serverCertChain.getCertificateAt(0);
         CertificateInformationExtractor certInformationExtractor =
                 new CertificateInformationExtractor(singleCert);
@@ -106,11 +107,13 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
                             new ByteArrayInputStream(encodedSctList), serverCertChain, true);
             sctListParser.parse(precertificateSctList);
         }
+        if (supportsPrecertificateSCTs) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
     }
 
-    private void getTlsHandshakeSCTs() {
-        supportsHandshakeSCTs = false;
-
+    private TestResult getTlsHandshakeSCTs() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddSignedCertificateTimestampExtension(true);
@@ -127,9 +130,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
                     new SignedCertificateTimestampListParser(
                             new ByteArrayInputStream(encodedSctList), serverCertChain, false);
             sctListParser.parse(handshakeSctList);
-
-            supportsHandshakeSCTs = true;
+            return TestResults.TRUE;
         }
+        return TestResults.FALSE;
     }
 
     /**
@@ -137,13 +140,15 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
      * https://github.com/chromium/ct-policy/blob/master/ct_policy.md for detailed information about
      * Chrome's CT Policy.
      */
-    private void evaluateChromeCtPolicy() {
-        if (!supportsPrecertificateSCTs) {
+    private TestResult evaluateChromeCtPolicy() {
+        boolean meetsChromeCTPolicy = false;
+        if (supportsPrecertificateSCTs == TestResults.FALSE) {
             List<SignedCertificateTimestamp> combinedSctList = new ArrayList<>();
-            if (supportsHandshakeSCTs) {
+            if (supportsHandshakeSCTs == TestResults.TRUE) {
                 combinedSctList.addAll(handshakeSctList.getCertificateTimestampList());
             }
-            if (supportsOcspSCTs) {
+            if (supportsOcspSCTs == TestResults.UNSUPPORTED) {
+                /* TODO lol */
                 combinedSctList.addAll(ocspSctList.getCertificateTimestampList());
             }
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);
@@ -180,6 +185,11 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
                     hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts && hasEnoughPrecertificateSCTs;
         }
+
+        if (meetsChromeCTPolicy) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
     }
 
     private boolean hasGoogleAndNonGoogleScts(List<SignedCertificateTimestamp> sctList) {
@@ -217,18 +227,9 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
         report.setHandshakeSctList(handshakeSctList);
         report.setOcspSctList(ocspSctList);
 
-        // TODO wann ERROR DURING TEST setzen???
-        put(
-                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
-                supportsPrecertificateSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(
-                TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE,
-                supportsHandshakeSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(
-                TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP,
-                supportsOcspSCTs ? TestResults.TRUE : TestResults.FALSE);
-        put(
-                TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY,
-                meetsChromeCTPolicy ? TestResults.TRUE : TestResults.FALSE);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTs);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTs);
+        put(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTs);
+        put(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicy);
     }
 }

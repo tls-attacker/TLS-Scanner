@@ -55,7 +55,6 @@ $ docker run -t tlsscanner
 **Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile
 feel free to issue a pull request*
 
-
 # Requirement System
 
 (TLS) probes sometimes have prerequisites that are required to execute this specific probe. The requirement system allows you to define sets of such requirements that must be met in order for the probe to be executed.
@@ -68,9 +67,10 @@ If nothing is required, you can use the static Requirement.NO_REQUIREMENT which 
 Examples like the following can be found in the `probe` packages of the `tls-client-` and `tls-server-scanner`.
 
 ```code
-    @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.EXTENSIONS)
-                .requires(new ExtensionRequirement(ExtensionType.ALPN));
-    }
+@Override
+protected Requirement getRequirements() {
+    return new ProbeRequirement(TlsProbeType.EXTENSIONS)
+            .requires(new ExtensionRequirement(ExtensionType.ALPN));
+}
 ```
+
