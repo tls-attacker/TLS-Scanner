@@ -69,6 +69,14 @@ public abstract class ReportPrinter<Report extends ScanReport> {
         return builder;
     }
 
+    protected StringBuilder prettyAppendHexString(
+            StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name))
+                .append(": ")
+                .append(value == null ? "Unknown" : "0x" + value)
+                .append("\n");
+    }
+
     protected StringBuilder prettyAppend(StringBuilder builder, String name, String value) {
         return builder.append(addIndentations(name))
                 .append(": ")

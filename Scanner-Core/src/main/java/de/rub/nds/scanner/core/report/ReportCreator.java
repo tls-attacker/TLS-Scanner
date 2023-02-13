@@ -37,6 +37,11 @@ public class ReportCreator {
         return new KeyValueContainer(key, AnsiColor.DEFAULT_COLOR, value, AnsiColor.DEFAULT_COLOR);
     }
 
+    protected ReportContainer createDefaultKeyHexValueContainer(String key, String value) {
+        return new KeyValueContainer(
+                key, AnsiColor.DEFAULT_COLOR, "0x" + value, AnsiColor.DEFAULT_COLOR);
+    }
+
     protected TextContainer createDefaultTextContainer(String text) {
         return new TextContainer(text, AnsiColor.DEFAULT_COLOR);
     }

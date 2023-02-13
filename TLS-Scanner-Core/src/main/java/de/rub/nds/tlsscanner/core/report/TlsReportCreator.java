@@ -576,33 +576,34 @@ public class TlsReportCreator extends ReportCreator {
                     createDefaultKeyValueContainer("PublicKey Type:", "Static Diffie Hellman"));
 
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Modulus", dhPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Generator", dhPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Y", dhPublicKey.getY().toString(16)));
+                    createDefaultKeyHexValueContainer("Y", dhPublicKey.getY().toString(16)));
         } else if (publicKey instanceof CustomDsaPublicKey) {
             CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "DSA"));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Modulus", dsaPublicKey.getDsaP().toString(16)));
+                    createDefaultKeyHexValueContainer(
+                            "Modulus", dsaPublicKey.getDsaP().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Generator", dsaPublicKey.getDsaG().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Q", dsaPublicKey.getDsaQ().toString(16)));
+                    createDefaultKeyHexValueContainer("Q", dsaPublicKey.getDsaQ().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("X", dsaPublicKey.getY().toString(16)));
+                    createDefaultKeyHexValueContainer("X", dsaPublicKey.getY().toString(16)));
         } else if (publicKey instanceof CustomRsaPublicKey) {
             CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "RSA"));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Modulus", rsaPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Public exponent", rsaPublicKey.getPublicExponent().toString(16)));
         } else if (publicKey instanceof CustomEcPublicKey) {
             CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
