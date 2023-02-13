@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -168,7 +167,8 @@ public class SimulatedClientResult {
         return highestPossibleProtocolVersionSelected;
     }
 
-    public void setHighestPossibleProtocolVersionSelected(Boolean highestPossibleProtocolVersionSelected) {
+    public void setHighestPossibleProtocolVersionSelected(
+            Boolean highestPossibleProtocolVersionSelected) {
         this.highestPossibleProtocolVersionSelected = highestPossibleProtocolVersionSelected;
     }
 
@@ -248,7 +248,8 @@ public class SimulatedClientResult {
         return versionAcceptForbiddenCipherSuiteList;
     }
 
-    public void setVersionAcceptForbiddenCipherSuiteList(List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
+    public void setVersionAcceptForbiddenCipherSuiteList(
+            List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
         this.versionAcceptForbiddenCipherSuiteList = versionAcceptForbiddenCipherSuiteList;
     }
 

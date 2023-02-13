@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -25,9 +24,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SignatureHashAlgorithmOrderProbe
-    extends TlsServerProbe<ConfigSelector, ServerReport, SignatureHashAlgorithmOrderResult> {
+        extends TlsServerProbe<ConfigSelector, ServerReport, SignatureHashAlgorithmOrderResult> {
 
-    public SignatureHashAlgorithmOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public SignatureHashAlgorithmOrderProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
     }
 
@@ -36,14 +36,15 @@ public class SignatureHashAlgorithmOrderProbe
         List<SignatureAndHashAlgorithm> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         SignatureAndHashAlgorithm firstSelectedSignatureAndHashAlgorithm =
-            getSelectedSignatureAndHashAlgorithm(toTestList);
+                getSelectedSignatureAndHashAlgorithm(toTestList);
         Collections.reverse(toTestList);
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
-            getSelectedSignatureAndHashAlgorithm(toTestList);
+                getSelectedSignatureAndHashAlgorithm(toTestList);
 
         return new SignatureHashAlgorithmOrderResult(
-            firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResults.TRUE
-                : TestResults.FALSE);
+                firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm
+                        ? TestResults.TRUE
+                        : TestResults.FALSE);
     }
 
     @Override
@@ -57,10 +58,10 @@ public class SignatureHashAlgorithmOrderProbe
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
-    private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
+    private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(
+            List<SignatureAndHashAlgorithm> list) {
         Config config = configSelector.getAnyWorkingBaseConfig();
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
@@ -69,5 +70,4 @@ public class SignatureHashAlgorithmOrderProbe
         executeState(state);
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
     }
-
 }

@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -27,9 +26,16 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
     private TestResult usesCiphersuitesInCookie;
     private TestResult usesCompressionsInCookie;
 
-    public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, Integer cookieLength,
-        TestResult usesPortInCookie, TestResult usesVersionInCookie, TestResult usesRandomInCookie,
-        TestResult usesSessionIdInCookie, TestResult usesCiphersuitesInCookie, TestResult usesCompressionsInCookie) {
+    public DtlsHelloVerifyRequestResult(
+            TestResult hasHvrRetransmissions,
+            TestResult checksCookie,
+            Integer cookieLength,
+            TestResult usesPortInCookie,
+            TestResult usesVersionInCookie,
+            TestResult usesRandomInCookie,
+            TestResult usesSessionIdInCookie,
+            TestResult usesCiphersuitesInCookie,
+            TestResult usesCompressionsInCookie) {
         super(TlsProbeType.DTLS_HELLO_VERIFY_REQUEST);
         this.hasHvrRetransmissions = hasHvrRetransmissions;
         this.checksCookie = checksCookie;
@@ -51,8 +57,9 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult<ServerReport> {
         report.putResult(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
         report.putResult(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
         report.putResult(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
-        report.putResult(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
-        report.putResult(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
+        report.putResult(
+                TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        report.putResult(
+                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
     }
-
 }

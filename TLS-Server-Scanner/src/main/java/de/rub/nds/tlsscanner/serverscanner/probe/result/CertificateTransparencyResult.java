@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -26,10 +25,14 @@ public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyResult(TestResult supportsPrecertificateSCTs, TestResult supportsHandshakeSCTs,
-        TestResult supportsOcspSCTs, TestResult meetsChromeCTPolicy,
-        SignedCertificateTimestampList precertificateSctList, SignedCertificateTimestampList handshakeSctList,
-        SignedCertificateTimestampList ocspSctList) {
+    public CertificateTransparencyResult(
+            TestResult supportsPrecertificateSCTs,
+            TestResult supportsHandshakeSCTs,
+            TestResult supportsOcspSCTs,
+            TestResult meetsChromeCTPolicy,
+            SignedCertificateTimestampList precertificateSctList,
+            SignedCertificateTimestampList handshakeSctList,
+            SignedCertificateTimestampList ocspSctList) {
         super(TlsProbeType.CERTIFICATE_TRANSPARENCY);
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;
         this.supportsHandshakeSCTs = supportsHandshakeSCTs;
@@ -38,7 +41,6 @@ public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
         this.precertificateSctList = precertificateSctList;
         this.handshakeSctList = handshakeSctList;
         this.ocspSctList = ocspSctList;
-
     }
 
     @Override
@@ -47,7 +49,8 @@ public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
         report.setHandshakeSctList(handshakeSctList);
         report.setOcspSctList(ocspSctList);
 
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTs);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTs);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTs);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTs);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicy);

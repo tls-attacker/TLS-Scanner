@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.cca;
 
 import static de.rub.nds.tlsattacker.core.certificate.PemUtil.readPrivateKey;
@@ -79,7 +78,8 @@ public class CcaCertificateManager {
         this.init(ccaDelegate);
     }
 
-    private static String extractXMLCertificateSubject(String certificateInputDirectory, String rootCertificate) {
+    private static String extractXMLCertificateSubject(
+            String certificateInputDirectory, String rootCertificate) {
         // Register XmlClasses and Types
         Registry.getInstance();
 
@@ -89,9 +89,9 @@ public class CcaCertificateManager {
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             ByteArrayInputStream byteArrayInputStream =
-                new ByteArrayInputStream(ccaFileManager.getFileContent(rootCertificate));
+                    new ByteArrayInputStream(ccaFileManager.getFileContent(rootCertificate));
             X509Certificate x509Certificate =
-                (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
+                    (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
             X500Principal x500PrincipalSubject = x509Certificate.getSubjectX500Principal();
             byte[] encodedSubject = x500PrincipalSubject.getEncoded();
             StringBuilder stringBuilder = new StringBuilder();
@@ -101,8 +101,10 @@ public class CcaCertificateManager {
             return stringBuilder.toString();
 
         } catch (CertificateException ce) {
-            LOGGER.error("Error while either instantiating X.509 CertificateFactory or generating certificate from "
-                + "fileInputStream. " + ce);
+            LOGGER.error(
+                    "Error while either instantiating X.509 CertificateFactory or generating certificate from "
+                            + "fileInputStream. "
+                            + ce);
             return null;
         }
     }
@@ -110,12 +112,16 @@ public class CcaCertificateManager {
     public void init(CcaDelegate ccaDelegate) {
         this.ccaDelegate = ccaDelegate;
         if (!ccaDelegate.directoriesSupplied() || !ccaDelegate.clientCertificateSupplied()) {
-            LOGGER.debug("CcaDelegate does not contain enough information to evaluate all CcaCertificateTypes");
+            LOGGER.debug(
+                    "CcaDelegate does not contain enough information to evaluate all CcaCertificateTypes");
         }
         for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-            if (ccaCertificateType.getRequiresCaCertAndKeys() && ccaDelegate.directoriesSupplied()) {
-                this.certificateKeyMap.put(ccaCertificateType, generateCertificateListFromXML(ccaCertificateType));
-            } else if (ccaCertificateType.getRequiresCertificate() && ccaDelegate.clientCertificateSupplied()) {
+            if (ccaCertificateType.getRequiresCaCertAndKeys()
+                    && ccaDelegate.directoriesSupplied()) {
+                this.certificateKeyMap.put(
+                        ccaCertificateType, generateCertificateListFromXML(ccaCertificateType));
+            } else if (ccaCertificateType.getRequiresCertificate()
+                    && ccaDelegate.clientCertificateSupplied()) {
                 CcaCertificateChain ccaCertificateChain = new CcaCertificateChain();
                 ccaCertificateChain.appendEncodedCertificate(ccaDelegate.getClientCertificate());
                 this.certificateKeyMap.put(ccaCertificateType, ccaCertificateChain);
@@ -131,12 +137,16 @@ public class CcaCertificateManager {
         if (this.certificateKeyMap.containsKey(ccaCertificateType)) {
             return this.certificateKeyMap.get(ccaCertificateType);
         } else {
-            LOGGER.error("Entry for " + ccaCertificateType + " is not available in CcaCertificateManager!");
+            LOGGER.error(
+                    "Entry for "
+                            + ccaCertificateType
+                            + " is not available in CcaCertificateManager!");
         }
         return null;
     }
 
-    private CcaCertificateChain generateCertificateListFromXML(CcaCertificateType ccaCertificateType) {
+    private CcaCertificateChain generateCertificateListFromXML(
+            CcaCertificateType ccaCertificateType) {
 
         // Declare variables for later use
         String keyName = null;
@@ -156,10 +166,12 @@ public class CcaCertificateManager {
             LOGGER.error("Failed to initialize KeyFileManager. " + kfme);
         }
 
-        String xmlSubject = extractXMLCertificateSubject(certificateInputDirectory, rootCertificate);
+        String xmlSubject =
+                extractXMLCertificateSubject(certificateInputDirectory, rootCertificate);
 
         InputStream inputStream =
-            CcaCertificateManager.class.getResourceAsStream("/xmlcerts/" + ccaCertificateType.toString() + ".xml");
+                CcaCertificateManager.class.getResourceAsStream(
+                        "/xmlcerts/" + ccaCertificateType.toString() + ".xml");
         String xmlString = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();
 
         if (xmlString == null) {
@@ -181,16 +193,23 @@ public class CcaCertificateManager {
         CcaCertificateChain ccaCertificateChain = new CcaCertificateChain();
         for (int i = 0; i < certificates.size(); i++) {
             Asn1Encodable certificate = certificates.get(i);
-            ccaCertificateChain.appendEncodedCertificate(Asn1EncoderForX509.encodeForCertificate(linker, certificate));
+            ccaCertificateChain.appendEncodedCertificate(
+                    Asn1EncoderForX509.encodeForCertificate(linker, certificate));
             if (certificate instanceof Asn1Sequence && readKey == false) {
-                keyName = ((KeyInfo) ((Asn1Sequence) certificate).getChildren().get(0)).getKeyFileName();
-                pubKeyName = ((KeyInfo) ((Asn1Sequence) certificate).getChildren().get(0)).getPubKeyFile();
+                keyName =
+                        ((KeyInfo) ((Asn1Sequence) certificate).getChildren().get(0))
+                                .getKeyFileName();
+                pubKeyName =
+                        ((KeyInfo) ((Asn1Sequence) certificate).getChildren().get(0))
+                                .getPubKeyFile();
                 keyType = ((Asn1Sequence) certificate).getChildren().get(0).getAttribute("keyType");
                 readKey = true;
             }
         }
 
-        if (setLeafCertificateKeys(ccaCertificateChain, keyName, pubKeyName, keyType, keyFileManager) == false) {
+        if (setLeafCertificateKeys(
+                        ccaCertificateChain, keyName, pubKeyName, keyType, keyFileManager)
+                == false) {
             return null;
         }
 
@@ -200,20 +219,18 @@ public class CcaCertificateManager {
     }
 
     /**
-     *
-     * @param  xmlString
-     *                                Content of the XML file describing the certificate chain.
-     * @param  rootCertificateKeyName
-     *                                Name of the root certificates key.
-     * @param  rootCaSubject
-     *                                ASN.1 Subject of the root certificate encoded as a hex string.
-     * @return                        The xmlString in which the placeholder for the issuer (which is the root CA) has
-     *                                been replaced with the hex string encoding the root CAs subject. Additionally, the
-     *                                key placeholder has been replaced with the filename of the keyfile of the root CA
-     *                                certificate.
+     * @param xmlString Content of the XML file describing the certificate chain.
+     * @param rootCertificateKeyName Name of the root certificates key.
+     * @param rootCaSubject ASN.1 Subject of the root certificate encoded as a hex string.
+     * @return The xmlString in which the placeholder for the issuer (which is the root CA) has been
+     *     replaced with the hex string encoding the root CAs subject. Additionally, the key
+     *     placeholder has been replaced with the filename of the keyfile of the root CA
+     *     certificate.
      */
-    private String replacePlaceholders(String xmlString, String rootCertificateKeyName, String rootCaSubject) {
-        String needle = "<asn1RawBytes identifier=\"issuer\" type=\"RawBytes\" placeholder=\"replace_me\"><value>";
+    private String replacePlaceholders(
+            String xmlString, String rootCertificateKeyName, String rootCaSubject) {
+        String needle =
+                "<asn1RawBytes identifier=\"issuer\" type=\"RawBytes\" placeholder=\"replace_me\"><value>";
         String replacement = "<asn1RawBytes identifier=\"issuer\" type=\"RawBytes\"><value>";
         xmlString = xmlString.replace(needle, replacement + rootCaSubject);
         xmlString = xmlString.replace("replace_me_im_a_dummy_key", rootCertificateKeyName);
@@ -221,15 +238,18 @@ public class CcaCertificateManager {
     }
 
     /**
-     * This is a wrapper function to write a generated certificate chain to disk. This is needed since X.509-Attacker
-     * still uses a two dimensional byte array for encoded certificates rather than a LinkedList.
+     * This is a wrapper function to write a generated certificate chain to disk. This is needed
+     * since X.509-Attacker still uses a two dimensional byte array for encoded certificates rather
+     * than a LinkedList.
      *
      * @param outputDirectory
      * @param certificates
      * @param ccaCertificateChain
      */
-    private void saveCertificateChainToFile(String outputDirectory, List<Asn1Encodable> certificates,
-        CcaCertificateChain ccaCertificateChain) {
+    private void saveCertificateChainToFile(
+            String outputDirectory,
+            List<Asn1Encodable> certificates,
+            CcaCertificateChain ccaCertificateChain) {
         byte[][] encodedCertificates = new byte[certificates.size()][];
         for (int i = 0; i < ccaCertificateChain.getEncodedCertificates().size(); i++) {
             encodedCertificates[i] = ccaCertificateChain.getEncodedCertificates().get(i);
@@ -242,18 +262,21 @@ public class CcaCertificateManager {
         }
     }
 
-    public static void writeCertificates(final String certificateOutputDirectory,
-        final List<Asn1Encodable> certificates, final byte[][] encodedCertificates) throws IOException {
+    public static void writeCertificates(
+            final String certificateOutputDirectory,
+            final List<Asn1Encodable> certificates,
+            final byte[][] encodedCertificates)
+            throws IOException {
         CertificateFileWriter certificateChainFileWriter =
-            new CertificateFileWriter(certificateOutputDirectory, "certificate_chain.pem");
+                new CertificateFileWriter(certificateOutputDirectory, "certificate_chain.pem");
         for (int i = 0; i < certificates.size(); i++) {
             Asn1Encodable certificate = certificates.get(i);
             if (certificate.getType().equalsIgnoreCase("Certificate") == false) {
                 continue;
             }
             // Append certificate to certificate chain file
-            if (AttributeParser.parseBooleanAttributeOrDefault(certificate, X509Attributes.ATTACH_TO_CERTIFICATE_LIST,
-                false)) {
+            if (AttributeParser.parseBooleanAttributeOrDefault(
+                    certificate, X509Attributes.ATTACH_TO_CERTIFICATE_LIST, false)) {
                 certificateChainFileWriter.writeCertificate(encodedCertificates[i]);
             }
             // Write certificate in its own file
@@ -262,34 +285,42 @@ public class CcaCertificateManager {
         certificateChainFileWriter.close();
     }
 
-    private static void writeSingleCertificate(final String certificateOutputDirectory, final Asn1Encodable certificate,
-        final byte[] encodedCertificate) throws IOException {
+    private static void writeSingleCertificate(
+            final String certificateOutputDirectory,
+            final Asn1Encodable certificate,
+            final byte[] encodedCertificate)
+            throws IOException {
         String certificateFileName = certificate.getIdentifier() + ".pem";
         CertificateFileWriter certificateFileWriter =
-            new CertificateFileWriter(certificateOutputDirectory, certificateFileName);
+                new CertificateFileWriter(certificateOutputDirectory, certificateFileName);
         certificateFileWriter.writeCertificate(encodedCertificate);
         certificateFileWriter.close();
     }
 
     /**
-     * Based on the provided parameters this function adds the correct Custom Private/Public Keys to the certificate
-     * chain.
+     * Based on the provided parameters this function adds the correct Custom Private/Public Keys to
+     * the certificate chain.
      *
-     * @param  ccaCertificateChain
-     * @param  keyName
-     * @param  pubKeyName
-     * @param  keyType
-     * @param  keyFileManager
-     * @return                     Boolean indicating if an error occurred.
+     * @param ccaCertificateChain
+     * @param keyName
+     * @param pubKeyName
+     * @param keyType
+     * @param keyFileManager
+     * @return Boolean indicating if an error occurred.
      */
-    private boolean setLeafCertificateKeys(CcaCertificateChain ccaCertificateChain, String keyName, String pubKeyName,
-        String keyType, KeyFileManager keyFileManager) {
+    private boolean setLeafCertificateKeys(
+            CcaCertificateChain ccaCertificateChain,
+            String keyName,
+            String pubKeyName,
+            String keyType,
+            KeyFileManager keyFileManager) {
         CustomPrivateKey customPrivateKey;
         CustomPublicKey customPublicKey;
         byte[] keyBytes;
         byte[] pubKeyBytes;
         PrivateKey privateKey;
-        CcaCertificateKeyType ccaCertificateKeyType = CcaCertificateKeyType.fromJavaName(keyType.toLowerCase());
+        CcaCertificateKeyType ccaCertificateKeyType =
+                CcaCertificateKeyType.fromJavaName(keyType.toLowerCase());
         try {
             switch (ccaCertificateKeyType) {
                 case RSA:
@@ -302,8 +333,11 @@ public class CcaCertificateManager {
 
                     pubKeyBytes = keyFileManager.getKeyFileContent(pubKeyName);
 
-                    PublicKey publicKey = PemUtil.readPublicKey(new ByteArrayInputStream(pubKeyBytes));
-                    customPublicKey = new CustomRsaPublicKey(((RSAPublicKey) publicKey).getPublicExponent(), modulus);
+                    PublicKey publicKey =
+                            PemUtil.readPublicKey(new ByteArrayInputStream(pubKeyBytes));
+                    customPublicKey =
+                            new CustomRsaPublicKey(
+                                    ((RSAPublicKey) publicKey).getPublicExponent(), modulus);
                     break;
                 case DH:
                     keyBytes = keyFileManager.getKeyFileContent(keyName);
@@ -342,10 +376,13 @@ public class CcaCertificateManager {
                     BigInteger ecPrivateKey = ((ECPrivateKey) privateKey).getS();
                     NamedGroup ngroup = NamedGroup.getNamedGroup((ECPrivateKey) privateKey);
                     customPrivateKey = new CustomECPrivateKey(ecPrivateKey, ngroup);
-                    customPublicKey = new CustomEcPublicKey(publicPoint.getAffineX(), publicPoint.getAffineY(), ngroup);
+                    customPublicKey =
+                            new CustomEcPublicKey(
+                                    publicPoint.getAffineX(), publicPoint.getAffineY(), ngroup);
                     break;
                 default:
-                    LOGGER.error("Unknown or unsupported value for keyType attribute of keyInfo in XMLCertificate.");
+                    LOGGER.error(
+                            "Unknown or unsupported value for keyType attribute of keyInfo in XMLCertificate.");
                     return false;
             }
         } catch (IOException ioe) {
@@ -359,5 +396,4 @@ public class CcaCertificateManager {
         ccaCertificateChain.setLeafCertificatePublicKey(customPublicKey);
         return true;
     }
-
 }

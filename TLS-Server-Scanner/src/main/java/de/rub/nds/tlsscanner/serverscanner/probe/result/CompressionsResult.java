@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -30,7 +29,8 @@ public class CompressionsResult extends ProbeResult<ServerReport> {
     public void mergeData(ServerReport report) {
         if (compressions != null) {
             report.setSupportedCompressionMethods(compressions);
-            if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
+            if (compressions.contains(CompressionMethod.LZS)
+                    || compressions.contains(CompressionMethod.DEFLATE)) {
                 report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.TRUE);
                 report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.TRUE);
             } else {
@@ -39,8 +39,8 @@ public class CompressionsResult extends ProbeResult<ServerReport> {
             }
         } else {
             report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            report.putResult(
+                    TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
         }
     }
-
 }

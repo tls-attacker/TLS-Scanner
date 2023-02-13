@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +19,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +40,8 @@ public class InfluencersSerializationIT {
         original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 500));
+        i.addPropertyRatingInfluencer(
+                new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 500));
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResults.FALSE, 50));
         influencers.add(i);
 
@@ -61,8 +60,10 @@ public class InfluencersSerializationIT {
         RatingInfluencersIO.write(stream, original);
         result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
-        assertEquals(original.getRatingInfluencers().size(), result.getRatingInfluencers().size(),
-            "Influencer length check.");
+        assertEquals(
+                original.getRatingInfluencers().size(),
+                result.getRatingInfluencers().size(),
+                "Influencer length check.");
 
         RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
         RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);

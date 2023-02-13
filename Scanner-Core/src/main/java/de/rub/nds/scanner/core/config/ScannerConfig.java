@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.config;
 
 import com.beust.jcommander.Parameter;
@@ -19,21 +18,34 @@ import java.util.List;
 
 public abstract class ScannerConfig extends TLSDelegateConfig {
 
-    @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
+    @Parameter(
+            names = "-noColor",
+            required = false,
+            description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
 
-    @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
+    @Parameter(
+            names = "-scanDetail",
+            required = false,
+            description = "How detailed do you want to scan?")
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 
-    @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
+    @Parameter(
+            names = "-reportDetail",
+            required = false,
+            description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
-    @Parameter(names = "-outputFile", required = false,
-        description = "Specify a file to write the site report in JSON to")
+    @Parameter(
+            names = "-outputFile",
+            required = false,
+            description = "Specify a file to write the site report in JSON to")
     private String outputFile = null;
 
-    @Parameter(names = "-probeTimeout", required = false,
-        description = "The timeout for each probe in ms (default 1800000)")
+    @Parameter(
+            names = "-probeTimeout",
+            required = false,
+            description = "The timeout for each probe in ms (default 1800000)")
     private int probeTimeout = 1800000;
 
     protected List<ProbeType> probes = null;

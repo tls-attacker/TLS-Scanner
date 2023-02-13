@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -28,8 +27,10 @@ public class ECPointFormatResult extends ProbeResult<ServerReport> {
     private final List<ECPointFormat> supportedFormats;
     private final TestResult tls13SecpCompression;
 
-    public ECPointFormatResult(List<ECPointFormat> formats, TestResult tls13SecpCompression,
-        TestResult completesHandshakeWithUndefined) {
+    public ECPointFormatResult(
+            List<ECPointFormat> formats,
+            TestResult tls13SecpCompression,
+            TestResult completesHandshakeWithUndefined) {
         super(TlsProbeType.EC_POINT_FORMAT);
         this.supportedFormats = formats;
         this.tls13SecpCompression = tls13SecpCompression;
@@ -59,15 +60,24 @@ public class ECPointFormatResult extends ProbeResult<ServerReport> {
             supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
             supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
         }
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
-        report.putResult(TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT, completesHandshakeWithUndefined);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+                supportsANSIX962CompressedPrime);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+                supportsANSIX962CompressedChar2);
+        report.putResult(
+                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
+                completesHandshakeWithUndefined);
         if (tls13SecpCompression != null) {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
+            report.putResult(
+                    TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         } else {
-            report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
+            report.putResult(
+                    TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
+                    TestResults.COULD_NOT_TEST);
         }
     }
-
 }

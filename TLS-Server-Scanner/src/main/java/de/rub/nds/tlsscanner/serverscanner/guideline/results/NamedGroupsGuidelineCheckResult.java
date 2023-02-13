@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
@@ -28,7 +27,8 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         super(result);
     }
 
-    public NamedGroupsGuidelineCheckResult(TestResult result, Set<NamedGroup> notRecommendedGroups) {
+    public NamedGroupsGuidelineCheckResult(
+            TestResult result, Set<NamedGroup> notRecommendedGroups) {
         super(result);
         this.notRecommendedGroups = notRecommendedGroups;
     }
@@ -53,10 +53,11 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         }
         if (notRecommendedGroups != null && !notRecommendedGroups.isEmpty()) {
             return "The following groups were supported but not recommended:\n"
-                + Joiner.on('\n').join(notRecommendedGroups);
+                    + Joiner.on('\n').join(notRecommendedGroups);
         }
         if (missingRequired != null && !missingRequired.isEmpty()) {
-            return "Server is missing one of required groups::\n" + Joiner.on('\n').join(missingRequired);
+            return "Server is missing one of required groups::\n"
+                    + Joiner.on('\n').join(missingRequired);
         }
         if (groupCount != null) {
             return "Server only supports " + groupCount + " groups.";

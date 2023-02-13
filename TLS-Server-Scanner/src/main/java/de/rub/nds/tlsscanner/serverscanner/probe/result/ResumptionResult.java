@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -27,10 +26,16 @@ public class ResumptionResult extends ProbeResult<ServerReport> {
     private final TestResult supportsDtlsCookieExchangeInSessionTicketResumption;
     private final TestResult respectsPskModes;
 
-    public ResumptionResult(TestResult supportsResumption, TestResult supportsTicketResumption,
-        TestResult supportsTls13SessionTicket, TestResult supportsTls13PskDhe, TestResult supportsTls13Psk,
-        TestResult supportsTls13_0rtt, TestResult supportsDtlsCookieExchangeInResumption,
-        TestResult supportsDtlsCookieExchangeInTicketResumption, TestResult respectsPskModes) {
+    public ResumptionResult(
+            TestResult supportsResumption,
+            TestResult supportsTicketResumption,
+            TestResult supportsTls13SessionTicket,
+            TestResult supportsTls13PskDhe,
+            TestResult supportsTls13Psk,
+            TestResult supportsTls13_0rtt,
+            TestResult supportsDtlsCookieExchangeInResumption,
+            TestResult supportsDtlsCookieExchangeInTicketResumption,
+            TestResult respectsPskModes) {
         super(TlsProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsSessionTicketResumption = supportsTicketResumption;
@@ -39,23 +44,28 @@ public class ResumptionResult extends ProbeResult<ServerReport> {
         this.supportsTls13_0rtt = supportsTls13_0rtt;
         this.supportsTls13Psk = supportsTls13Psk;
         this.supportsDtlsCookieExchangeInResumption = supportsDtlsCookieExchangeInResumption;
-        this.supportsDtlsCookieExchangeInSessionTicketResumption = supportsDtlsCookieExchangeInTicketResumption;
+        this.supportsDtlsCookieExchangeInSessionTicketResumption =
+                supportsDtlsCookieExchangeInTicketResumption;
         this.respectsPskModes = respectsPskModes;
     }
 
     @Override
     public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, supportsSessionTicketResumption);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+                supportsSessionTicketResumption);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
-            supportsDtlsCookieExchangeInResumption);
-        report.putResult(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
-            supportsDtlsCookieExchangeInSessionTicketResumption);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                supportsDtlsCookieExchangeInResumption);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                supportsDtlsCookieExchangeInSessionTicketResumption);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
-
 }

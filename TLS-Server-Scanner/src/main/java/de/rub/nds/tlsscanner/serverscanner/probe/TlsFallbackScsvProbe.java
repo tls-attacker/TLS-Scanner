@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -30,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport, TlsFallbackScsvResult> {
+public class TlsFallbackScsvProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, TlsFallbackScsvResult> {
 
     private ProtocolVersion secondHighestVersion;
 
@@ -56,8 +56,10 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     private WorkflowTrace getWorkflowTrace(Config config) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, config.getDefaultRunningMode());
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HELLO, config.getDefaultRunningMode());
         trace.removeTlsAction(trace.getTlsActions().size() - 1);
         AlertMessage alertMessage = new AlertMessage();
         alertMessage.setDescription(AlertDescription.INAPPROPRIATE_FALLBACK.getValue());
@@ -68,7 +70,8 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION) && report.getVersions().size() > 1;
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+                && report.getVersions().size() > 1;
     }
 
     @Override

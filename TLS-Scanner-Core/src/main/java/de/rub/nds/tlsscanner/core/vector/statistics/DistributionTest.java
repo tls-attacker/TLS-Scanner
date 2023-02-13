@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
@@ -30,12 +29,16 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
 
     @Override
     protected double computePValueFisherExact() {
-        int expectedB = (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
+        int expectedB =
+                (int)
+                        (probability
+                                * vectorContainerList.get(0).getResponseFingerprintList().size());
         int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
         if (!isFisherExactUsable()) {
             throw new RuntimeException("Trying to use fisher exact test when it is not possible");
         }
-        List<ResponseCounter> responseCounters = vectorContainerList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> responseCounters =
+                vectorContainerList.get(0).getDistinctResponsesCounterList();
         int responseA;
         int responseB;
 
@@ -51,7 +54,10 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
 
     @Override
     protected double computePValueChiSquared() {
-        int expectedB = (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
+        int expectedB =
+                (int)
+                        (probability
+                                * vectorContainerList.get(0).getResponseFingerprintList().size());
         int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
         ChiSquareTest test = new ChiSquareTest();
 
@@ -61,7 +67,9 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         List<ResponseCounter> sortedMeasured = getSortedDistinctResponseCounters();
         long[] expected = new long[sortedMeasured.size()];
         long[] measured = new long[sortedMeasured.size()];
-        for (int i = 0; i < vectorContainerList.get(0).getDistinctResponsesCounterList().size(); i++) {
+        for (int i = 0;
+                i < vectorContainerList.get(0).getDistinctResponsesCounterList().size();
+                i++) {
             if (i == 0) {
                 expected[i] = expectedA;
             } else if (i == 1) {
@@ -81,13 +89,15 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
     }
 
     private List<ResponseCounter> getSortedDistinctResponseCounters() {
-        List<ResponseCounter> unsorted = vectorContainerList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> unsorted =
+                vectorContainerList.get(0).getDistinctResponsesCounterList();
         List<ResponseCounter> sorted = new LinkedList<>();
         ResponseCounter highestCounter = null;
         for (int i = 0; i < unsorted.size(); i++) {
             for (ResponseCounter toCompare : unsorted) {
                 if (!sorted.contains(toCompare)
-                    && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
+                        && (highestCounter == null
+                                || highestCounter.getCounter() < toCompare.getCounter())) {
                     highestCounter = toCompare;
                 }
             }
@@ -97,5 +107,4 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
 
         return sorted;
     }
-
 }

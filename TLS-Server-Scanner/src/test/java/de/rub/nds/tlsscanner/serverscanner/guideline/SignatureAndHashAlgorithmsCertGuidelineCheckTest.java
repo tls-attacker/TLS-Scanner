@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,21 +15,20 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
 
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-        report
-            .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+        report.setSupportedSignatureAndHashAlgorithmsCert(
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
 
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
-            new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
-                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                        null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(TestResults.TRUE, result.getResult());
     }
@@ -38,12 +36,12 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report
-            .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
+        report.setSupportedSignatureAndHashAlgorithmsCert(
+                Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
 
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
-            new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
-                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                        null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(TestResults.FALSE, result.getResult());
     }

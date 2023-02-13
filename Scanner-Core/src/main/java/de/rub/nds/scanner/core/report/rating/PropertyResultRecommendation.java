@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -18,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement
-@XmlSeeAlso({ TestResults.class })
+@XmlSeeAlso({TestResults.class})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 
@@ -31,18 +30,20 @@ public class PropertyResultRecommendation {
 
     private String detailedDescription;
 
-    private PropertyResultRecommendation() {
+    private PropertyResultRecommendation() {}
 
-    }
-
-    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation) {
+    public PropertyResultRecommendation(
+            TestResult result, String resultStatus, String handlingRecommendation) {
         this.result = result;
         this.shortDescription = resultStatus;
         this.handlingRecommendation = handlingRecommendation;
     }
 
-    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation,
-        String detailedDescription) {
+    public PropertyResultRecommendation(
+            TestResult result,
+            String resultStatus,
+            String handlingRecommendation,
+            String detailedDescription) {
         this(result, resultStatus, handlingRecommendation);
         this.detailedDescription = detailedDescription;
     }
