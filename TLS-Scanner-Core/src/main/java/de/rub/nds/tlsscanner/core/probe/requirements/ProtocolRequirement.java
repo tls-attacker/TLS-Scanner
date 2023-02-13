@@ -60,10 +60,10 @@ public class ProtocolRequirement extends Requirement {
     public String toString() {
         String returnString = "";
         if (protocols.length == 1) {
-            returnString += "Protocol not: ";
+            returnString += "Protocol: ";
 
         } else {
-            returnString += "Protocols not: ";
+            returnString += "Protocols: ";
         }
         return returnString +=
                 Arrays.stream(protocols)

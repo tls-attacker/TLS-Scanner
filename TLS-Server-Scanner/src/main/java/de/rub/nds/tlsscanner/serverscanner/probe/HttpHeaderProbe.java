@@ -40,11 +40,11 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     private TestResult supportsHsts = TestResults.COULD_NOT_TEST;
     private Long hstsMaxAge;
     private Integer hpkpMaxAge;
-    private TestResult hstsIncludesSubdomains = TestResults.FALSE; /* TODO check later */
-    private TestResult hpkpIncludesSubdomains = TestResults.FALSE; /* TODO check later */
+    private TestResult hstsIncludesSubdomains = TestResults.FALSE; 
+    private TestResult hpkpIncludesSubdomains = TestResults.FALSE;
     private TestResult supportsHstsPreloading = TestResults.FALSE;
-    private TestResult hstsNotParseable = null; /* TODO check later */
-    private TestResult hpkpNotParseable = null; /* TODO check later */
+    private TestResult hstsNotParseable = TestResults.FALSE;
+    private TestResult hpkpNotParseable = TestResults.FALSE;
     private TestResult supportsHpkp = TestResults.FALSE;
     private TestResult supportsHpkpReportOnly = TestResults.FALSE;
     private TestResult vulnerableBreach = TestResults.FALSE;
@@ -60,6 +60,10 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
                 TlsAnalyzedProperty.VULNERABLE_TO_BREACH,
                 TlsAnalyzedProperty.HTTPS_HEADER,
                 TlsAnalyzedProperty.NORMAL_HPKP_PINS,
+                TlsAnalyzedProperty.HSTS_INCLUDES_SUBDOMAINS,
+                TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS,
+                TlsAnalyzedProperty.HSTS_NOT_PARSEABLE,
+                TlsAnalyzedProperty.HPKP_NOT_PARSEABLE,
                 TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
     }
 
@@ -220,6 +224,10 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
             supportsHpkp = TestResults.COULD_NOT_TEST;
             supportsHpkpReportOnly = TestResults.COULD_NOT_TEST;
             vulnerableBreach = TestResults.COULD_NOT_TEST;
+            hstsIncludesSubdomains = TestResults.COULD_NOT_TEST;
+            hpkpIncludesSubdomains = TestResults.COULD_NOT_TEST;
+            hstsNotParseable = TestResults.COULD_NOT_TEST;
+            hpkpNotParseable = TestResults.COULD_NOT_TEST;
         }
         report.setHstsMaxAge(hstsMaxAge);
         put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
@@ -230,7 +238,13 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
         put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
         put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
+        put(TlsAnalyzedProperty.HSTS_INCLUDES_SUBDOMAINS, hstsIncludesSubdomains);
+        put(TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS, hpkpIncludesSubdomains);
+        put(TlsAnalyzedProperty.HSTS_NOT_PARSEABLE, hstsNotParseable);
+        put(TlsAnalyzedProperty.HPKP_NOT_PARSEABLE, hpkpNotParseable);
+        
     }
+    
 
     @Override
     protected Requirement getRequirements() {
