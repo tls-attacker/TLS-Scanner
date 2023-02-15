@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -118,6 +119,7 @@ public class ServerReport extends TlsScanReport {
 
     // QUIC
     private List<QuicVersionResult.Entry> supportedQuicVersions = null;
+    private QuicTransportParameters quicTransportParameters = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -687,5 +689,13 @@ public class ServerReport extends TlsScanReport {
 
     public void setSupportedQuicVersions(List<QuicVersionResult.Entry> supportedQuicVersions) {
         this.supportedQuicVersions = supportedQuicVersions;
+    }
+
+    public QuicTransportParameters getQuicTransportParameters() {
+        return quicTransportParameters;
+    }
+
+    public void setQuicTransportParameters(QuicTransportParameters quicTransportParameters) {
+        this.quicTransportParameters = quicTransportParameters;
     }
 }

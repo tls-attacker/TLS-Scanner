@@ -40,6 +40,7 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameterEntry;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -297,6 +298,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Supported QUIC Versions");
         for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
             prettyAppend(builder, version.getVersionName() + "(0x" + ArrayConverter.bytesToHexString(version.getVersionBytes(), false, false).replace(" ", "").toLowerCase() + ")");
+        }
+        prettyAppendHeading(builder, "QUIC Transport Parameters");
+        if (report.getQuicTransportParameters() != null) {
+            for (QuicTransportParameterEntry quicTransportParameter : report.getQuicTransportParameters().toListOfEntries()) {
+                prettyAppend(builder, quicTransportParameter.getEntryType().name(), quicTransportParameter.entryValueToString());
+            }
         }
     }
 

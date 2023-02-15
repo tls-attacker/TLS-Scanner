@@ -11,7 +11,8 @@ package de.rub.nds.tlsscanner.core.constants;
 import de.rub.nds.scanner.core.constants.ProbeType;
 
 public enum QuicProbeType implements ProbeType {
-    SUPPORTED_VERSION("Supported Versions");
+    SUPPORTED_VERSION("Supported Versions"),
+    TRANSPORT_PARAMETERS("Transport Parameters");
 
     @Override
     public String getName() {

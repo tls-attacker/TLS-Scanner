@@ -85,6 +85,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.QuicTransportParameterProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
@@ -256,6 +257,7 @@ public final class TlsServerScanner extends TlsScanner {
         }
         if (config.getQuicDelegate().isQuic()) {
             addProbeToProbeList(new QuicVersionProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new QuicTransportParameterProbe(configSelector, parallelExecutor));
         }
         // Init StatsWriter
         setDefaultProbeWriter();
