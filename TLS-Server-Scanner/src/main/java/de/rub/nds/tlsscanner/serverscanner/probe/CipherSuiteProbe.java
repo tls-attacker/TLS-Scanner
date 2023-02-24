@@ -319,50 +319,12 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                 adjustCertificate(suite);
             }
             put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, allSupported);
+            writeToReport();
         } else {
-            supportsAeadCiphers = TestResults.COULD_NOT_TEST;
-            prefersPfsCiphers = TestResults.COULD_NOT_TEST;
-            supportsAes = TestResults.COULD_NOT_TEST;
-            supportsAnonCiphers = TestResults.COULD_NOT_TEST;
-            supportsAria = TestResults.COULD_NOT_TEST;
-            supportsBlockCiphers = TestResults.COULD_NOT_TEST;
-            supportsCamellia = TestResults.COULD_NOT_TEST;
-            supportsChacha = TestResults.COULD_NOT_TEST;
-            supportsDesCiphers = TestResults.COULD_NOT_TEST;
-            supportsDh = TestResults.COULD_NOT_TEST;
-            supportsEcdhe = TestResults.COULD_NOT_TEST;
-            supportsEcmqv = TestResults.COULD_NOT_TEST;
-            supportsExportCiphers = TestResults.COULD_NOT_TEST;
-            supportsFortezza = TestResults.COULD_NOT_TEST;
-            supportsGost = TestResults.COULD_NOT_TEST;
-            supportsIdeaCiphers = TestResults.COULD_NOT_TEST;
-            supportsKerberos = TestResults.COULD_NOT_TEST;
-            supportsNewHope = TestResults.COULD_NOT_TEST;
-            supportsNullCiphers = TestResults.COULD_NOT_TEST;
-            supportsOnlyPfsCiphers = TestResults.COULD_NOT_TEST;
-            supportsPfsCiphers = TestResults.COULD_NOT_TEST;
-            supportsPostQuantumCiphers = TestResults.COULD_NOT_TEST;
-            supportsPskDhe = TestResults.COULD_NOT_TEST;
-            supportsPskEcdhe = TestResults.COULD_NOT_TEST;
-            supportsPskPlain = TestResults.COULD_NOT_TEST;
-            supportsPskRsa = TestResults.COULD_NOT_TEST;
-            supportsRc2Ciphers = TestResults.COULD_NOT_TEST;
-            supportsRc4Ciphers = TestResults.COULD_NOT_TEST;
-            supportsRsa = TestResults.COULD_NOT_TEST;
-            supportsSeedCiphers = TestResults.COULD_NOT_TEST;
-            supportsSrp = TestResults.COULD_NOT_TEST;
-            supportsStaticEcdh = TestResults.COULD_NOT_TEST;
-            supportsEcdsa = TestResults.COULD_NOT_TEST;
-            supportsRsaCert = TestResults.COULD_NOT_TEST;
-            supportsDss = TestResults.COULD_NOT_TEST;
-            supportsStreamCiphers = TestResults.COULD_NOT_TEST;
-            supportsTripleDesCiphers = TestResults.COULD_NOT_TEST;
-            supportsLegacyPrf = TestResults.COULD_NOT_TEST;
-            supportsSha256Prf = TestResults.COULD_NOT_TEST;
-            supportsSha384Prf = TestResults.COULD_NOT_TEST;
+            setPropertiesToCouldNotTest();
             put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
         }
-        writeToReport();
+        
     }
 
     private void adjustCipherType(CipherSuite suite) {
