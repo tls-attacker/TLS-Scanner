@@ -184,19 +184,14 @@ public class ExtensionProbe extends TlsServerProbe<ConfigSelector, ServerReport>
                     certStatusRequestV2 = TestResults.TRUE;
                 }
             }
+            put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
+            put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
+            put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+            put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
+            put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
+            put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
         } else {
-            encryptThenMac = TestResults.COULD_NOT_TEST;
-            extendedMasterSecret = TestResults.COULD_NOT_TEST;
-            secureRenegotiation = TestResults.COULD_NOT_TEST;
-            sessionTickets = TestResults.COULD_NOT_TEST;
-            certStatusRequest = TestResults.COULD_NOT_TEST;
-            certStatusRequestV2 = TestResults.COULD_NOT_TEST;
+            setPropertiesToCouldNotTest();
         }
-        put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
-        put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
-        put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
-        put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
-        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
-        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
     }
 }
