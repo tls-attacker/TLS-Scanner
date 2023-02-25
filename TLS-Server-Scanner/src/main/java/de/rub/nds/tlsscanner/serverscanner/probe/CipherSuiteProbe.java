@@ -324,7 +324,6 @@ public class CipherSuiteProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             setPropertiesToCouldNotTest();
             put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
         }
-        
     }
 
     private void adjustCipherType(CipherSuite suite) {

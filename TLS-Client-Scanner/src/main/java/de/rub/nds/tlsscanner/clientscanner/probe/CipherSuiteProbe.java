@@ -306,7 +306,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
             put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
             setPropertiesToCouldNotTest();
         }
-        
     }
 
     private void adjustCipherType(CipherSuite suite) {

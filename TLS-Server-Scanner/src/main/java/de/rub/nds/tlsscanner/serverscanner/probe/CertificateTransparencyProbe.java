@@ -8,14 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import java.io.ByteArrayInputStream;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bouncycastle.crypto.tls.Certificate;
-
 import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1Field;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
@@ -40,6 +32,12 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.io.ByteArrayInputStream;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -149,7 +147,8 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
             if (supportsHandshakeSCTs == TestResults.TRUE) {
                 combinedSctList.addAll(handshakeSctList.getCertificateTimestampList());
             }
-            if (supportsOcspSCTs == TestResults.UNSUPPORTED) { /* TODO supportsOcspSCTs is never set or initialized! */
+            if (supportsOcspSCTs == TestResults.UNSUPPORTED) {
+                /* TODO supportsOcspSCTs is never set or initialized! */
                 combinedSctList.addAll(ocspSctList.getCertificateTimestampList());
             }
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);

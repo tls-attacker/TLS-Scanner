@@ -70,7 +70,7 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
             propertiesMap.put(properties[i], TestResults.UNASSIGNED_ERROR);
         }
     }
-    
+
     protected final void setPropertiesToCouldNotTest() {
         for (TlsAnalyzedProperty property : propertiesMap.keySet()) {
             if (propertiesMap.get(property) == TestResults.UNASSIGNED_ERROR) {
