@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import de.rub.nds.scanner.core.probe.requirements.LogicRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 
@@ -15,7 +16,7 @@ import de.rub.nds.scanner.core.report.ScanReport;
  * Represents a {@link Requirement} for required negated Requirements. If the contained Requirement
  * evaluates to true, this Requirement evaluates to false and vice versa.
  */
-public class NotRequirement extends Requirement {
+public class NotRequirement extends LogicRequirement {
     private final Requirement notRequirement;
 
     /**
@@ -32,18 +33,6 @@ public class NotRequirement extends Requirement {
             return true;
         }
         return !notRequirement.evaluate(report);
-    }
-
-    @Override
-    public String toString() {
-        return "not " + notRequirement.toString();
-    }
-
-    /**
-     * @return the {@link Requirement} to negate.
-     */
-    public Requirement getRequirement() {
-        return notRequirement;
     }
 
     @Override
