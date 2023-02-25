@@ -8,16 +8,16 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Represents a {@link Requirement} for required executed {@link TlsProbeType}s. */
-public class ProbeRequirement extends Requirement {
+public class ProbeRequirement extends BooleanRequirement {
     private final TlsProbeType[] probes;
     private List<TlsProbeType> missing;
 
@@ -44,26 +44,6 @@ public class ProbeRequirement extends Requirement {
             }
         }
         return returnValue;
-    }
-
-    @Override
-    public String toString() {
-        String returnString = "";
-        if (probes.length == 1) {
-            returnString += "Probe: ";
-
-        } else {
-            returnString += "Probes: ";
-        }
-        return returnString +=
-                Arrays.stream(probes).map(TlsProbeType::name).collect(Collectors.joining(", "));
-    }
-
-    /**
-     * @return the required {@link TlsProbeType}s.
-     */
-    public TlsProbeType[] getRequirement() {
-        return probes;
     }
 
     @Override
