@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -35,6 +35,11 @@ public class ReportCreator {
 
     protected ReportContainer createDefaultKeyValueContainer(String key, String value) {
         return new KeyValueContainer(key, AnsiColor.DEFAULT_COLOR, value, AnsiColor.DEFAULT_COLOR);
+    }
+
+    protected ReportContainer createDefaultKeyHexValueContainer(String key, String value) {
+        return new KeyValueContainer(
+                key, AnsiColor.DEFAULT_COLOR, "0x" + value, AnsiColor.DEFAULT_COLOR);
     }
 
     protected TextContainer createDefaultTextContainer(String text) {

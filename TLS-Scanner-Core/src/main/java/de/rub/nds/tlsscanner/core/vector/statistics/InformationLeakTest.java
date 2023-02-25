@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
@@ -25,7 +24,6 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -73,8 +71,8 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
                 input2ResponseB = counter.getCounter();
             }
         }
-        return FisherExactTest.getPValue(input1ResponseA, input2ResponseA, input1ResponseB, input2ResponseB);
-
+        return FisherExactTest.getPValue(
+                input1ResponseA, input2ResponseA, input1ResponseB, input2ResponseB);
     }
 
     @Override
@@ -88,15 +86,18 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
         double[] expected = new double[vectorContainerList.size()];
         long[] measured = new long[vectorContainerList.size()];
         for (int i = 0; i < vectorContainerList.size(); i++) {
-            expected[i] = probability * vectorContainerList.get(i).getResponseFingerprintList().size();
-            measured[i] = vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
-                .getCounter();
+            expected[i] =
+                    probability * vectorContainerList.get(i).getResponseFingerprintList().size();
+            measured[i] =
+                    vectorContainerList
+                            .get(i)
+                            .getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
+                            .getCounter();
         }
         double chiSquare = test.chiSquare(expected, measured);
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
         double valueP = 1 - distribution.cumulativeProbability(chiSquare);
         return valueP;
-
     }
 
     @Override
@@ -104,8 +105,10 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
         if (vectorContainerList.size() != 2) {
             return false;
         }
-        List<ResponseCounter> counterList1 = vectorContainerList.get(0).getDistinctResponsesCounterList();
-        List<ResponseCounter> counterList2 = vectorContainerList.get(1).getDistinctResponsesCounterList();
+        List<ResponseCounter> counterList1 =
+                vectorContainerList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> counterList2 =
+                vectorContainerList.get(1).getDistinctResponsesCounterList();
         Set<ResponseFingerprint> responseFingerprintSet = new HashSet<>();
         for (ResponseCounter counter : counterList1) {
             responseFingerprintSet.add(counter.getFingerprint());

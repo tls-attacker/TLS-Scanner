@@ -31,18 +31,30 @@ public class RandomExtractorTest {
 
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
+<<<<<<< HEAD
+=======
+    private final Logger LOGGER = LogManager.getLogger();
+>>>>>>> master
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM1 =
             ArrayConverter.hexStringToByteArray(
                     "4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
 
+<<<<<<< HEAD
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM2 =
             ArrayConverter.hexStringToByteArray(
                     "CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
 
     @SuppressWarnings("SpellCheckingInspection")
+=======
+    private static final byte[] STATIC_RANDOM2 =
+            ArrayConverter.hexStringToByteArray(
+                    "CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+
+    @SuppressWarnings("SpellCheckingInspection")
+>>>>>>> master
     private static final byte[] LONG_STATIC_RANDOM3 =
             ArrayConverter.hexStringToByteArray(
                     "19C26C4DD15B39"

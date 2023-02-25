@@ -87,8 +87,11 @@ public class GuidelineChecker {
         }
         guidelineReports.add(
                 new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
+<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.GUIDELINE_REPORTS,
                 new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
+=======
+>>>>>>> master
     }
 }

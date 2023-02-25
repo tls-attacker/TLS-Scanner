@@ -66,7 +66,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                 }
             }
             report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
+<<<<<<< HEAD
             report.setHandshakeFailedCounter(simulatedclients.size() - isSuccessfulCounter);
+=======
+            report.setHandshakeFailedCounter(
+                    report.getSimulatedClientList().size() - isSuccessfulCounter);
+>>>>>>> master
             report.setConnectionInsecureCounter(isInsecureCounter);
         } else {
             LOGGER.debug(
@@ -84,9 +89,14 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 
     private boolean isCipherSuiteMismatch(
             ServerReport report, SimulatedClientResult simulatedClient) {
+<<<<<<< HEAD
         Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
         if (ciphersuites != null) {
             for (CipherSuite serverCipherSuite : ciphersuites) {
+=======
+        if (report.getCipherSuites() != null) {
+            for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
+>>>>>>> master
                 for (CipherSuite clientCipherSuite :
                         simulatedClient.getClientSupportedCipherSuites()) {
                     if (serverCipherSuite.equals(clientCipherSuite)) {
@@ -105,8 +115,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 
     private void checkSelectedProtocolVersion(
             ServerReport report, SimulatedClientResult simulatedClient) {
+<<<<<<< HEAD
         List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
         if (versions != null && simulatedClient.getSupportedVersionList() != null) {
+=======
+        if (report.getVersions() != null && simulatedClient.getSupportedVersionList() != null) {
+>>>>>>> master
             List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
             Collections.sort(versions);
             Collections.sort(simulatedClient.getSupportedVersionList());

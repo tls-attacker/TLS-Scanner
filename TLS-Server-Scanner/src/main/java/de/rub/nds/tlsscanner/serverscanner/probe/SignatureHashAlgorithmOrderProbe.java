@@ -27,10 +27,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+<<<<<<< HEAD
 public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private TestResult enforced = TestResults.COULD_NOT_TEST;
 
+=======
+public class SignatureHashAlgorithmOrderProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, SignatureHashAlgorithmOrderResult> {
+
+>>>>>>> master
     public SignatureHashAlgorithmOrderProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER, configSelector);
@@ -46,10 +52,18 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
         Collections.reverse(toTestList);
         SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
                 getSelectedSignatureAndHashAlgorithm(toTestList);
+<<<<<<< HEAD
         enforced =
                 firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm
                         ? TestResults.TRUE
                         : TestResults.FALSE;
+=======
+
+        return new SignatureHashAlgorithmOrderResult(
+                firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm
+                        ? TestResults.TRUE
+                        : TestResults.FALSE);
+>>>>>>> master
     }
 
     @Override
@@ -61,6 +75,12 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
     @Override
     public void adjustConfig(ServerReport report) {}
 
+<<<<<<< HEAD
+=======
+    @Override
+    public void adjustConfig(ServerReport report) {}
+
+>>>>>>> master
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(
             List<SignatureAndHashAlgorithm> list) {
         Config config = configSelector.getAnyWorkingBaseConfig();
@@ -71,9 +91,12 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
         executeState(state);
         return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
     }
+<<<<<<< HEAD
 
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
     }
+=======
+>>>>>>> master
 }

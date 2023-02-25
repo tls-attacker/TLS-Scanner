@@ -32,7 +32,12 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Collections;
 import java.util.List;
 
+<<<<<<< HEAD
 public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+=======
+public class TlsFallbackScsvProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, TlsFallbackScsvResult> {
+>>>>>>> master
 
     private ProtocolVersion secondHighestVersion;
     private TestResult result = TestResults.COULD_NOT_TEST;
@@ -73,6 +78,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     @Override
+<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
                 .requires(
@@ -80,6 +86,16 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
                                 PropertyComparatorRequirement.GREATER,
                                 TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
                                 2));
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+                && report.getVersions().size() > 1;
+    }
+
+    @Override
+    public TlsFallbackScsvResult getCouldNotExecuteResult() {
+        return new TlsFallbackScsvResult(TestResults.COULD_NOT_TEST);
+>>>>>>> master
     }
 
     @Override

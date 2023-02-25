@@ -1,23 +1,22 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -32,14 +31,16 @@ public class RatingInfluencer {
         this.propertyRatingInfluencers = new LinkedList<>();
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant,
-        List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
+    public RatingInfluencer(
+            AnalyzedProperty influencerConstant,
+            List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant,
-        PropertyResultRatingInfluencer... propertyRatingInfluencers) {
+    public RatingInfluencer(
+            AnalyzedProperty influencerConstant,
+            PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }
@@ -56,7 +57,8 @@ public class RatingInfluencer {
         return propertyRatingInfluencers;
     }
 
-    public void setPropertyRatingInfluencers(List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
+    public void setPropertyRatingInfluencers(
+            List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 

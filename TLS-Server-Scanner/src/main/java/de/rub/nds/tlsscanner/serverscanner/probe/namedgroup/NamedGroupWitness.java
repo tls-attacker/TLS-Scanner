@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.namedgroup;
 
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -33,8 +32,11 @@ public class NamedGroupWitness implements Serializable {
         cipherSuites = new HashSet<>();
     }
 
-    public NamedGroupWitness(NamedGroup ecdsaPkGroupEphemeral, NamedGroup ecdsaSigGroupStatic,
-        NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
+    public NamedGroupWitness(
+            NamedGroup ecdsaPkGroupEphemeral,
+            NamedGroup ecdsaSigGroupStatic,
+            NamedGroup ecdsaSigGroupEphemeral,
+            CipherSuite cipherSuite) {
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
@@ -62,7 +64,8 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingRsaCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                && AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
+                    && AlgorithmResolver.getCertificateKeyType(cipherSuite)
+                            == CertificateKeyType.RSA) {
                 return true;
             }
         }
@@ -72,7 +75,8 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingEcdsaStaticCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
+                            == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 return true;
             }
         }
@@ -82,7 +86,8 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingEcdsaEphemeralCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
+                            == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 return true;
             }
         }
@@ -108,5 +113,4 @@ public class NamedGroupWitness implements Serializable {
     public void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
     }
-
 }

@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -29,13 +28,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsG
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.io.TlsAnalyzedPropertyFactory;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -43,6 +35,13 @@ import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.util.JAXBSource;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -58,29 +57,40 @@ public class GuidelineIO {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    /**
-     * context initialization is expensive, we need to do that only once
-     */
+    /** context initialization is expensive, we need to do that only once */
     private static JAXBContext context;
 
     static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
         if (context == null) {
-            context = JAXBContext.newInstance(TlsAnalyzedProperty.class, Guideline.class,
-                AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
-                CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
-                CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class,
-                ExtendedKeyUsageCertificateCheck.class, ExtensionGuidelineCheck.class,
-                HashAlgorithmsGuidelineCheck.class, HashAlgorithmStrengthCheck.class, KeySizeCertGuidelineCheck.class,
-                KeyUsageCertificateCheck.class, NamedGroupsGuidelineCheck.class,
-                SignatureAlgorithmsCertificateGuidelineCheck.class, SignatureAlgorithmsGuidelineCheck.class,
-                SignatureAndHashAlgorithmsGuidelineCheck.class,
-                SignatureAndHashAlgorithmsCertificateGuidelineCheck.class, CertificateSignatureCheck.class,
-                TlsAnalyzedPropertyFactory.class);
+            context =
+                    JAXBContext.newInstance(
+                            TlsAnalyzedProperty.class,
+                            Guideline.class,
+                            AnalyzedPropertyGuidelineCheck.class,
+                            CertificateAgilityGuidelineCheck.class,
+                            CertificateCurveGuidelineCheck.class,
+                            CertificateValidityGuidelineCheck.class,
+                            CertificateVersionGuidelineCheck.class,
+                            CipherSuiteGuidelineCheck.class,
+                            ExtendedKeyUsageCertificateCheck.class,
+                            ExtensionGuidelineCheck.class,
+                            HashAlgorithmsGuidelineCheck.class,
+                            HashAlgorithmStrengthCheck.class,
+                            KeySizeCertGuidelineCheck.class,
+                            KeyUsageCertificateCheck.class,
+                            NamedGroupsGuidelineCheck.class,
+                            SignatureAlgorithmsCertificateGuidelineCheck.class,
+                            SignatureAlgorithmsGuidelineCheck.class,
+                            SignatureAndHashAlgorithmsGuidelineCheck.class,
+                            SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
+                            CertificateSignatureCheck.class,
+                            TlsAnalyzedPropertyFactory.class);
         }
         return context;
     }
 
-    public static void write(OutputStream outputStream, Guideline guideline) throws JAXBException, IOException {
+    public static void write(OutputStream outputStream, Guideline guideline)
+            throws JAXBException, IOException {
         context = getJAXBContext();
         Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -105,16 +115,18 @@ public class GuidelineIO {
         write(new FileOutputStream(f), guidline);
     }
 
-    public static Guideline read(InputStream inputStream) throws JAXBException, IOException, XMLStreamException {
+    public static Guideline read(InputStream inputStream)
+            throws JAXBException, IOException, XMLStreamException {
         context = getJAXBContext();
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        unmarshaller.setEventHandler(new ValidationEventHandler() {
-            @Override
-            public boolean handleEvent(ValidationEvent event) {
-                // raise an Exception also on Warnings
-                return false;
-            }
-        });
+        unmarshaller.setEventHandler(
+                new ValidationEventHandler() {
+                    @Override
+                    public boolean handleEvent(ValidationEvent event) {
+                        // raise an Exception also on Warnings
+                        return false;
+                    }
+                });
         XMLInputFactory xif = XMLInputFactory.newFactory();
         xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);

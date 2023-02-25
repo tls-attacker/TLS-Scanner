@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
@@ -21,7 +20,14 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
+@XmlType(
+        propOrder = {
+            "result",
+            "influence",
+            "scoreCap",
+            "referencedProperty",
+            "referencedPropertyResult"
+        })
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
     @XmlElement(type = TestResults.class, name = "result")
@@ -37,17 +43,17 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
     @XmlElement(type = TestResults.class, name = "referencedPropertyResult")
     private TestResult referencedPropertyResult;
 
-    public PropertyResultRatingInfluencer() {
-
-    }
+    public PropertyResultRatingInfluencer() {}
 
     public PropertyResultRatingInfluencer(TestResult result, Integer influence) {
         this.result = result;
         this.influence = influence;
     }
 
-    public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty,
-        TestResult referencedPropertyResult) {
+    public PropertyResultRatingInfluencer(
+            TestResult result,
+            AnalyzedProperty referencedProperty,
+            TestResult referencedPropertyResult) {
         this.result = result;
         this.referencedProperty = referencedProperty;
         this.referencedPropertyResult = referencedPropertyResult;
@@ -123,8 +129,17 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
 
     @Override
     public String toString() {
-        return "PropertyResultRatingInfluencer{" + "result=" + result + ", influence=" + influence + ", scoreCap="
-            + scoreCap + ", referencedProperty=" + referencedProperty + ", referencedPropertyResult="
-            + referencedPropertyResult + '}';
+        return "PropertyResultRatingInfluencer{"
+                + "result="
+                + result
+                + ", influence="
+                + influence
+                + ", scoreCap="
+                + scoreCap
+                + ", referencedProperty="
+                + referencedProperty
+                + ", referencedPropertyResult="
+                + referencedPropertyResult
+                + '}';
     }
 }

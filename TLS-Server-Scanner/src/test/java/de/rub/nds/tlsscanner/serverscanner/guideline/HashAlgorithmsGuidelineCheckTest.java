@@ -25,11 +25,16 @@ public class HashAlgorithmsGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
+<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
                         "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
+=======
+        report.setSupportedSignatureAndHashAlgorithmsSke(
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+>>>>>>> master
         HashAlgorithmsGuidelineCheck check =
                 new HashAlgorithmsGuidelineCheck(
                         null,
@@ -43,11 +48,16 @@ public class HashAlgorithmsGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
+<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA224),
                         "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
+=======
+        report.setSupportedSignatureAndHashAlgorithmsSke(
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA224));
+>>>>>>> master
         HashAlgorithmsGuidelineCheck check =
                 new HashAlgorithmsGuidelineCheck(
                         null,

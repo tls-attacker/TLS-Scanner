@@ -32,7 +32,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Probe that checks if server enforces the order of named groups sent by the client */
+<<<<<<< HEAD
 public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+=======
+public class NamedCurvesOrderProbe
+        extends TlsServerProbe<ConfigSelector, ServerReport, NamedGroupOrderResult> {
+>>>>>>> master
 
     private Collection<NamedGroup> supportedGroups;
 
@@ -49,10 +54,18 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
         NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
+<<<<<<< HEAD
         enforced =
                 firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1
                         ? TestResults.TRUE
                         : TestResults.FALSE;
+=======
+
+        return new NamedGroupOrderResult(
+                firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1
+                        ? TestResults.TRUE
+                        : TestResults.FALSE);
+>>>>>>> master
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
@@ -74,9 +87,23 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
+<<<<<<< HEAD
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
                 .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE));
+=======
+    public boolean canBeExecuted(ServerReport report) {
+        return report.isProbeAlreadyExecuted(TlsProbeType.NAMED_GROUPS)
+                && !report.getSupportedNamedGroups().isEmpty()
+                && report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+                && report.getCipherSuites().stream()
+                        .anyMatch(cipherSuite -> cipherSuite.name().contains("ECDH"));
+    }
+
+    @Override
+    public NamedGroupOrderResult getCouldNotExecuteResult() {
+        return new NamedGroupOrderResult(TestResults.COULD_NOT_TEST);
+>>>>>>> master
     }
 
     @Override

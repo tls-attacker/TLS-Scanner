@@ -1,28 +1,27 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.response;
 
 public class EqualityErrorTranslator {
 
-    private EqualityErrorTranslator() {
-    }
+    private EqualityErrorTranslator() {}
 
     /**
-     *
-     * @param  error
-     * @param  fingerprint1
-     * @param  fingerprint2
+     * @param error
+     * @param fingerprint1
+     * @param fingerprint2
      * @return
      */
-    public static String translation(EqualityError error, ResponseFingerprint fingerprint1,
-        ResponseFingerprint fingerprint2) {
+    public static String translation(
+            EqualityError error,
+            ResponseFingerprint fingerprint1,
+            ResponseFingerprint fingerprint2) {
         StringBuilder builder = new StringBuilder();
         switch (error) {
             case MESSAGE_CLASS:
@@ -33,14 +32,15 @@ public class EqualityErrorTranslator {
                 break;
             case NONE:
                 builder.append(
-                    "The server shows no behaviour difference on the protocol / socket layer. The Server seems to be fine.");
+                        "The server shows no behaviour difference on the protocol / socket layer. The Server seems to be fine.");
                 break;
             case RECORD_CLASS:
                 builder.append(
-                    "The server sometimes responds with something which cannot be interpreted as TLS but sometimes he does.");
+                        "The server sometimes responds with something which cannot be interpreted as TLS but sometimes he does.");
                 break;
             case RECORD_CONTENT_TYPE:
-                builder.append("The server responds with records which differentiate on the record content type.");
+                builder.append(
+                        "The server responds with records which differentiate on the record content type.");
                 break;
             case RECORD_COUNT:
                 builder.append("The server responds with different amounts of records.");
@@ -49,10 +49,12 @@ public class EqualityErrorTranslator {
                 builder.append("The server seems to respond with records of different lengths.");
                 break;
             case RECORD_VERSION:
-                builder.append("The server seems to respond with records which have different protocol versions.");
+                builder.append(
+                        "The server seems to respond with records which have different protocol versions.");
                 break;
             case SOCKET_STATE:
-                builder.append("The server seems to occasionally move the TCP socket in different states.");
+                builder.append(
+                        "The server seems to occasionally move the TCP socket in different states.");
                 break;
             case MESSAGE_CONTENT:
                 builder.append("The server responded with different message contents");
@@ -65,5 +67,4 @@ public class EqualityErrorTranslator {
         }
         return builder.toString();
     }
-
 }

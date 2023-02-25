@@ -56,7 +56,11 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm algorithm :
                 report.getSupportedSignatureAndHashAlgorithmsCert()) {
+<<<<<<< HEAD
             if (!recommendedAlgorithms.contains(algorithm)) {
+=======
+            if (!this.recommendedAlgorithms.contains(algorithm)) {
+>>>>>>> master
                 nonRecommended.add(algorithm);
             }
         }

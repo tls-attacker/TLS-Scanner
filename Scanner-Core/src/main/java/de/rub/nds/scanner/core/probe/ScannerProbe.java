@@ -16,7 +16,12 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+<<<<<<< HEAD
 public abstract class ScannerProbe<Report extends ScanReport> implements Callable {
+=======
+public abstract class ScannerProbe<Report extends ScanReport, Result extends ProbeResult<Report>>
+        implements Callable<ProbeResult> {
+>>>>>>> master
 
     private static final Logger LOGGER = LogManager.getLogger();
 

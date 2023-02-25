@@ -22,7 +22,10 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.HashSet;
+<<<<<<< HEAD
 import java.util.LinkedList;
+=======
+>>>>>>> master
 import java.util.List;
 import java.util.Set;
 
@@ -61,6 +64,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
     @SuppressWarnings("unchecked")
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
+<<<<<<< HEAD
         List<SignatureAndHashAlgorithm> algorithms = null;
         if (tls13) {
             algorithms =
@@ -89,6 +93,13 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
             }
         }
         if (algorithms == null || algorithms.isEmpty()) {
+=======
+        List<SignatureAndHashAlgorithm> algorithms =
+                tls13
+                        ? report.getSupportedSignatureAndHashAlgorithmsTls13()
+                        : report.getSupportedSignatureAndHashAlgorithms();
+        if (algorithms == null) {
+>>>>>>> master
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
                     TestResults.UNCERTAIN, null);
         }

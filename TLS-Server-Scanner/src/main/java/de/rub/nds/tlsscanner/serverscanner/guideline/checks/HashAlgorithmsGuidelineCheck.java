@@ -54,6 +54,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
+<<<<<<< HEAD
         List<SignatureAndHashAlgorithm> algorithms =
                 report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms != null) {
@@ -62,6 +63,16 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
                     nonRecommended.add(alg.getHashAlgorithm());
                 }
+=======
+        if (report.getSupportedSignatureAndHashAlgorithms() == null) {
+            return new HashAlgorithmsGuidelineCheckResult(
+                    TestResults.UNCERTAIN, Collections.emptySet());
+        }
+        Set<HashAlgorithm> nonRecommended = new HashSet<>();
+        for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
+            if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
+                nonRecommended.add(alg.getHashAlgorithm());
+>>>>>>> master
             }
             return new HashAlgorithmsGuidelineCheckResult(
                     TestResults.of(nonRecommended.isEmpty()), nonRecommended);
@@ -69,6 +80,11 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
             return new HashAlgorithmsGuidelineCheckResult(
                     TestResults.UNCERTAIN, Collections.emptySet());
         }
+<<<<<<< HEAD
+=======
+        return new HashAlgorithmsGuidelineCheckResult(
+                TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+>>>>>>> master
     }
 
     @Override
