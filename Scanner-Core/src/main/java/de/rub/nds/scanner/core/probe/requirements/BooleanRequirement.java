@@ -17,7 +17,7 @@ public abstract class BooleanRequirement extends Requirement {
     protected final Enum<?>[] parameters;
     protected List<Enum<?>> missingParameters;
 
-    public BooleanRequirement(Enum<?>[] parameters) {
+    protected BooleanRequirement(Enum<?>[] parameters) {
     	this.parameters=parameters;
     	this.missingParameters = new ArrayList<>();
     }

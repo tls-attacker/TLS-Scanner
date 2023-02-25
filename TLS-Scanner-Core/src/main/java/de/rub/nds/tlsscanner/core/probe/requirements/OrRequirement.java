@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.rub.nds.scanner.core.probe.requirements.LogicRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -20,30 +19,25 @@ import de.rub.nds.scanner.core.report.ScanReport;
  * If one of the contained Requirements evaluates to true, this Requirement will evaluate to true.
  */
 public class OrRequirement extends LogicRequirement {
-    private final Requirement[] requirements;
-    private List<Requirement> missing;
-
     /**
      * @param requirements the {@link Requirement}s which are connected logically with an OR.
      */
     public OrRequirement(Requirement... requirements) {
-        super();
-        this.requirements = requirements;
-        this.missing = new ArrayList<>();
+        super(requirements);
     }
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if ((requirements == null) || (requirements.length == 0)) {
+        if ((parameters == null) || (parameters.length == 0)) {
             return true;
         }
         boolean returnValue = false;
-        missing = new ArrayList<>();
-        for (Requirement requirement : requirements) {
+        missingParameters = new ArrayList<>();
+        for (Requirement requirement : parameters) {
             if (requirement.evaluate(report)) {
                 returnValue = true;
             } else {
-                missing.add(requirement);
+            	missingParameters.add(requirement);
             }
         }
         return returnValue;
@@ -55,7 +49,7 @@ public class OrRequirement extends LogicRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new OrRequirement(
-                                    this.missing.toArray(new Requirement[this.missing.size()]))),
+                                    this.missingParameters.toArray(new Requirement[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

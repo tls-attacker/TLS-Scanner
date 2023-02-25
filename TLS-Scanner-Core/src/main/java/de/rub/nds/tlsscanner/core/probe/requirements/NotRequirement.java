@@ -17,29 +17,26 @@ import de.rub.nds.scanner.core.report.ScanReport;
  * evaluates to true, this Requirement evaluates to false and vice versa.
  */
 public class NotRequirement extends LogicRequirement {
-    private final Requirement notRequirement;
-
     /**
      * @param notRequirement the {@link Requirement} to negate.
      */
     public NotRequirement(Requirement notRequirement) {
-        super();
-        this.notRequirement = notRequirement;
+        super(new Requirement[] {notRequirement});
     }
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if (notRequirement == null) {
+        if (parameters[0] == null) {
             return true;
         }
-        return !notRequirement.evaluate(report);
+        return !parameters[0].evaluate(report);
     }
 
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
         if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
-                    missing.requires(new NotRequirement(notRequirement)), report);
+                    missing.requires(new NotRequirement(parameters[0])), report);
         }
         return next.getMissingRequirementIntern(missing, report);
     }

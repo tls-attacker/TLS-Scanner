@@ -8,14 +8,19 @@
  */
 package de.rub.nds.scanner.core.probe.requirements;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class LogicRequirement extends Requirement {
-    /*
-     * Contains the requirement(s) on which this requirement operates.
-     */
-    protected Requirement[] parameters;
+    protected final Requirement[] parameters;
+    protected List<Requirement> missingParameters;
+
+    protected LogicRequirement(Requirement[] parameters) {
+    	this.parameters=parameters;
+    	this.missingParameters = new ArrayList<>();
+    }
     
     /*what to do with that? OR and NOT enum to include and make the array a boolean expression? */
     @Override
