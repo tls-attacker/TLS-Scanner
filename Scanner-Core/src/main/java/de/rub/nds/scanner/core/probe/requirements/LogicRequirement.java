@@ -8,6 +8,9 @@
  */
 package de.rub.nds.scanner.core.probe.requirements;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public abstract class LogicRequirement extends Requirement {
     /*
      * Contains the requirement(s) on which this requirement operates.
@@ -19,4 +22,11 @@ public abstract class LogicRequirement extends Requirement {
     public Enum<?>[] getRequirement(){
     	return parameters[0].getRequirement();
     }
+    
+        @Override
+        public String toString() {
+            return Arrays.stream(parameters)
+                    .map(Requirement::name)
+                    .collect(Collectors.joining(","));
+        }
 }

@@ -19,37 +19,32 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /** Represents a {@link Requirement} for required {@link ExtensionType}s. */
 public class ExtensionRequirement extends BooleanRequirement {
-    private final ExtensionType[] extensions;
-    private List<ExtensionType> missing;
-
     /**
      * @param extensions the required {@link ExtensionType}s. Any amount possible.
      */
     public ExtensionRequirement(ExtensionType... extensions) {
-        super();
-        this.extensions = extensions;
-        this.missing = new ArrayList<>();
+        super(extensions);
     }
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if ((extensions == null) || (extensions.length == 0)) {
+        if ((parameters == null) || (parameters.length == 0)) {
             return true;
         }
         boolean returnValue = false;
-        missing = new ArrayList<>();
+        missingParameters = new ArrayList<>();
         List<ExtensionType> extensionList = ((TlsScanReport) report).getSupportedExtensions();
         if (extensionList != null && !extensionList.isEmpty()) {
-            for (ExtensionType extension : extensions) {
+            for (Enum<?> extension : parameters) {
                 if (extensionList.contains(extension)) {
                     returnValue = true;
                 } else {
-                    missing.add(extension);
+                	missingParameters.add(extension);
                 }
             }
         } else {
-            for (ExtensionType extension : extensions) {
-                missing.add(extension);
+            for (Enum<?> extension : parameters) {
+            	missingParameters.add(extension);
             }
         }
         return returnValue;
@@ -61,7 +56,7 @@ public class ExtensionRequirement extends BooleanRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ExtensionRequirement(
-                                    this.missing.toArray(new ExtensionType[this.missing.size()]))),
+                                    this.missingParameters.toArray(new ExtensionType[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

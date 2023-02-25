@@ -19,38 +19,33 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
 public class ProtocolRequirement extends BooleanRequirement {
-    private final ProtocolVersion[] protocols;
-    private List<ProtocolVersion> missing;
-
     /**
      * @param protocols the required {@link ProtocolVersion}s. Any amount possible.
      */
     public ProtocolRequirement(ProtocolVersion... protocols) {
-        super();
-        this.protocols = protocols;
-        this.missing = new ArrayList<>();
+        super(protocols);
     }
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if ((protocols == null) || (protocols.length == 0)) {
+        if ((parameters == null) || (parameters.length == 0)) {
             return true;
         }
         boolean returnValue = false;
-        missing = new ArrayList<>();
+        missingParameters = new ArrayList<>();
         List<ProtocolVersion> protocolVersions =
                 ((TlsScanReport) report).getSupportedProtocolVersions();
         if (protocolVersions != null && !protocolVersions.isEmpty()) {
-            for (ProtocolVersion protocol : protocols) {
+            for (Enum<?> protocol : parameters) {
                 if (protocolVersions.contains(protocol)) {
                     returnValue = true;
                 } else {
-                    missing.add(protocol);
+                	missingParameters.add(protocol);
                 }
             }
         } else {
-            for (ProtocolVersion protocol : protocols) {
-                missing.add(protocol);
+            for (Enum<?> protocol : parameters) {
+            	missingParameters.add(protocol);
             }
         }
         return returnValue;
@@ -62,8 +57,8 @@ public class ProtocolRequirement extends BooleanRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ProtocolRequirement(
-                                    this.missing.toArray(
-                                            new ProtocolVersion[this.missing.size()]))),
+                                    this.missingParameters.toArray(
+                                            new ProtocolVersion[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

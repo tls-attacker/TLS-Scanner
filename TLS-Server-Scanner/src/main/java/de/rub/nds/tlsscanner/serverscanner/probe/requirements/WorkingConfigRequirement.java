@@ -38,16 +38,6 @@ public class WorkingConfigRequirement extends Requirement {
         return "WorkingConfig";
     }
 
-    /**
-     * @return Boolean value depending on if there is a working config or not.
-     */
-    public boolean getRequirement() {
-        if (configSelector == null) {
-            return false;
-        }
-        return configSelector.foundWorkingConfig();
-    }
-
     @Override
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
         if (evaluateInternal(report) == false) {
@@ -56,4 +46,9 @@ public class WorkingConfigRequirement extends Requirement {
         }
         return next.getMissingRequirementIntern(missing, report);
     }
+
+	@Override
+	public Enum<?>[] getRequirement() {
+		return new Enum<?>[0];
+	}
 }

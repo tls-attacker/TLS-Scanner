@@ -8,15 +8,20 @@
  */
 package de.rub.nds.scanner.core.probe.requirements;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class BooleanRequirement extends Requirement {
-    /*
-     * Contains the parameters on which this requirement depends on.
-     */
-    protected Enum<?>[] parameters;
+    protected final Enum<?>[] parameters;
+    protected List<Enum<?>> missingParameters;
 
+    public BooleanRequirement(Enum<?>[] parameters) {
+    	this.parameters=parameters;
+    	this.missingParameters = new ArrayList<>();
+    }
+    
     @Override
     public String toString() {
         return Arrays.stream(parameters).map(Enum::name).collect(Collectors.joining(", "));

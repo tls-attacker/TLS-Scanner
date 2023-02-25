@@ -78,11 +78,9 @@ public class OptionsRequirement extends Requirement {
         return "Option of " + type.toString();
     }
 
-    /**
-     * @return the {@link TlsProbeType} of the option.
-     */
-    public TlsProbeType getRequirement() {
-        return type;
+    @Override
+    public Enum<?>[] getRequirement() {
+		return new Enum<?>[] {type};
     }
 
     @Override
