@@ -8,11 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-
 import de.rub.nds.scanner.core.probe.requirements.LogicRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
+import java.util.ArrayList;
 
 /**
  * Represents a {@link Requirement} that implements a logical or for multiple multiple Requirements.
@@ -37,7 +36,7 @@ public class OrRequirement extends LogicRequirement {
             if (requirement.evaluate(report)) {
                 returnValue = true;
             } else {
-            	missingParameters.add(requirement);
+                missingParameters.add(requirement);
             }
         }
         return returnValue;
@@ -49,7 +48,8 @@ public class OrRequirement extends LogicRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new OrRequirement(
-                                    this.missingParameters.toArray(new Requirement[this.missingParameters.size()]))),
+                                    this.missingParameters.toArray(
+                                            new Requirement[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

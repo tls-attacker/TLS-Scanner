@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Abstract subclass of {@link Requirement} to represent a requirement which implements logical functions for a complete requirement system.
+ * Abstract subclass of {@link Requirement} to represent a requirement which implements logical
+ * functions for a complete requirement system.
  */
 public abstract class LogicRequirement extends Requirement {
     protected final Requirement[] parameters;
@@ -24,20 +25,18 @@ public abstract class LogicRequirement extends Requirement {
      * @param parameters the parameters of the {@link Requirement}.
      */
     protected LogicRequirement(Requirement[] parameters) {
-    	this.parameters=parameters;
-    	this.missingParameters = new ArrayList<>();
+        this.parameters = parameters;
+        this.missingParameters = new ArrayList<>();
     }
-    
+
     /*what to do with that? OR and NOT enum to include and make the array a boolean expression? */
     @Override
-    public Enum<?>[] getRequirement(){
-    	return parameters[0].getRequirement();
+    public Enum<?>[] getRequirement() {
+        return parameters[0].getRequirement();
     }
-    
-        @Override
-        public String toString() {
-            return Arrays.stream(parameters)
-                    .map(Requirement::name)
-                    .collect(Collectors.joining(","));
-        }
+
+    @Override
+    public String toString() {
+        return Arrays.stream(parameters).map(Requirement::name).collect(Collectors.joining(","));
+    }
 }

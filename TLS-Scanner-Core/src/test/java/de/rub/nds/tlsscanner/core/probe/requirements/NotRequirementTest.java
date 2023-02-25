@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -27,13 +28,13 @@ public class NotRequirementTest {
         assertTrue(requirement.evaluate(report));
 
         requirement = new NotRequirement(requirementNot);
-        assertEquals(requirement.getRequirement(), requirementNot);
+        assertEquals(requirement.getRequirement()[0].name(), requirementNot.name());
         assertTrue(requirement.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.BASIC);
         assertFalse(requirement.evaluate(report));
 
         Requirement reqMis = requirement.getMissingRequirements(report);
         assertFalse(requirement.evaluate(report));
-        assertEquals(((NotRequirement) reqMis).getRequirement(), requirement.getRequirement());
+        assertArrayEquals(((NotRequirement) reqMis).getRequirement(), requirement.getRequirement());
     }
 }

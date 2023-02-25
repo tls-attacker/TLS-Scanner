@@ -8,12 +8,11 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-
 import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import java.util.ArrayList;
 
 /** Represents a {@link Requirement} for required executed {@link TlsProbeType}s. */
 public class ProbeRequirement extends BooleanRequirement {
@@ -32,7 +31,7 @@ public class ProbeRequirement extends BooleanRequirement {
         boolean returnValue = true;
         missingParameters = new ArrayList<>();
         for (Enum<?> probe : parameters) {
-            if (report.isProbeAlreadyExecuted((TlsProbeType)probe) == false) {
+            if (report.isProbeAlreadyExecuted((TlsProbeType) probe) == false) {
                 returnValue = false;
                 missingParameters.add(probe);
             }
@@ -46,7 +45,8 @@ public class ProbeRequirement extends BooleanRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ProbeRequirement(
-                                    this.missingParameters.toArray(new TlsProbeType[this.missingParameters.size()]))),
+                                    this.missingParameters.toArray(
+                                            new TlsProbeType[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

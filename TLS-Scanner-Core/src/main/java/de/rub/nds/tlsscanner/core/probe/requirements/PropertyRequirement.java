@@ -8,15 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
@@ -59,7 +58,8 @@ public class PropertyRequirement extends BooleanRequirement {
                     missing.requires(
                             new PropertyRequirement(
                                     this.missingParameters.toArray(
-                                            new TlsAnalyzedProperty[this.missingParameters.size()]))),
+                                            new TlsAnalyzedProperty
+                                                    [this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

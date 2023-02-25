@@ -36,8 +36,8 @@ public class BaseRequirement extends Requirement {
         return missing;
     }
 
-	@Override
-	public Enum<?>[] getRequirement() {
-		return new Enum<?>[0];
-	}
+    @Override
+    public Enum<?>[] getRequirement() {
+        return new Enum<?>[0];
+    }
 }

@@ -83,7 +83,7 @@ public abstract class Requirement {
     public String name() {
         return toString();
     }
-    
+
     /**
      * @return returns the required parameters.
      */

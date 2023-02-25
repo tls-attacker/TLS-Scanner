@@ -101,7 +101,7 @@ public class RequirementsBasicTest {
         ProbeRequirement requirement1 = new ProbeRequirement(TlsProbeType.BASIC);
         Requirement requirement =
                 new ProbeRequirement(TlsProbeType.BLEICHENBACHER).requires(requirement1);
-        Set<TlsProbeType> set1 = new HashSet<>(), set2 = new HashSet<>();
+        Set<Enum<?>> set1 = new HashSet<>(), set2 = new HashSet<>();
         set1.add(((ProbeRequirement) requirement).getRequirement()[0]);
         set1.add(((ProbeRequirement) requirement.getNext()).getRequirement()[0]);
 

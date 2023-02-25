@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Abstract subclass of {@link Requirement} to represent a requirement which can be evaluated directly to a boolean value. Requirements
- * of this type contain one or more parameters of an Enum type which are compared to results in the {@link Report}.   
+ * Abstract subclass of {@link Requirement} to represent a requirement which can be evaluated
+ * directly to a boolean value. Requirements of this type contain one or more parameters of an Enum
+ * type which are compared to results in the report.
  */
 public abstract class BooleanRequirement extends Requirement {
     protected final Enum<?>[] parameters;
@@ -25,17 +26,17 @@ public abstract class BooleanRequirement extends Requirement {
      * @param parameters the parameters of the {@link Requirement}.
      */
     protected BooleanRequirement(Enum<?>[] parameters) {
-    	this.parameters=parameters;
-    	this.missingParameters = new ArrayList<>();
+        this.parameters = parameters;
+        this.missingParameters = new ArrayList<>();
     }
-    
+
     @Override
     public String toString() {
         return Arrays.stream(parameters).map(Enum::name).collect(Collectors.joining(", "));
     }
-    
+
     @Override
-    public Enum<?>[] getRequirement(){
-    	return parameters;
+    public Enum<?>[] getRequirement() {
+        return parameters;
     }
 }

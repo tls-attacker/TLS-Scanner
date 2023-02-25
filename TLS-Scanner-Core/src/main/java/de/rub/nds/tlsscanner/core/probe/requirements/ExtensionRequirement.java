@@ -8,14 +8,13 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Represents a {@link Requirement} for required {@link ExtensionType}s. */
 public class ExtensionRequirement extends BooleanRequirement {
@@ -39,12 +38,12 @@ public class ExtensionRequirement extends BooleanRequirement {
                 if (extensionList.contains(extension)) {
                     returnValue = true;
                 } else {
-                	missingParameters.add(extension);
+                    missingParameters.add(extension);
                 }
             }
         } else {
             for (Enum<?> extension : parameters) {
-            	missingParameters.add(extension);
+                missingParameters.add(extension);
             }
         }
         return returnValue;
@@ -56,7 +55,8 @@ public class ExtensionRequirement extends BooleanRequirement {
             return next.getMissingRequirementIntern(
                     missing.requires(
                             new ExtensionRequirement(
-                                    this.missingParameters.toArray(new ExtensionType[this.missingParameters.size()]))),
+                                    this.missingParameters.toArray(
+                                            new ExtensionType[this.missingParameters.size()]))),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);

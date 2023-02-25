@@ -8,14 +8,13 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
 public class ProtocolRequirement extends BooleanRequirement {
@@ -40,12 +39,12 @@ public class ProtocolRequirement extends BooleanRequirement {
                 if (protocolVersions.contains(protocol)) {
                     returnValue = true;
                 } else {
-                	missingParameters.add(protocol);
+                    missingParameters.add(protocol);
                 }
             }
         } else {
             for (Enum<?> protocol : parameters) {
-            	missingParameters.add(protocol);
+                missingParameters.add(protocol);
             }
         }
         return returnValue;
