@@ -8,17 +8,17 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
-public class ProtocolRequirement extends Requirement {
+public class ProtocolRequirement extends BooleanRequirement {
     private final ProtocolVersion[] protocols;
     private List<ProtocolVersion> missing;
 
@@ -54,28 +54,6 @@ public class ProtocolRequirement extends Requirement {
             }
         }
         return returnValue;
-    }
-
-    @Override
-    public String toString() {
-        String returnString = "";
-        if (protocols.length == 1) {
-            returnString += "Protocol: ";
-
-        } else {
-            returnString += "Protocols: ";
-        }
-        return returnString +=
-                Arrays.stream(protocols)
-                        .map(ProtocolVersion::name)
-                        .collect(Collectors.joining(", "));
-    }
-
-    /**
-     * @return the {@link ProtocolVersion}s.
-     */
-    public ProtocolVersion[] getRequirement() {
-        return protocols;
     }
 
     @Override
