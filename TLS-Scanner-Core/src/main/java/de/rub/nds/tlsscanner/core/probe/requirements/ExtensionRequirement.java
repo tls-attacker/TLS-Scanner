@@ -8,17 +8,17 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Represents a {@link Requirement} for required {@link ExtensionType}s. */
-public class ExtensionRequirement extends Requirement {
+public class ExtensionRequirement extends BooleanRequirement {
     private final ExtensionType[] extensions;
     private List<ExtensionType> missing;
 
@@ -53,28 +53,6 @@ public class ExtensionRequirement extends Requirement {
             }
         }
         return returnValue;
-    }
-
-    @Override
-    public String toString() {
-        String returnString = "";
-        if (extensions.length == 1) {
-            returnString += "Extension: ";
-
-        } else {
-            returnString += "Extensions: ";
-        }
-        return returnString +=
-                Arrays.stream(extensions)
-                        .map(ExtensionType::name)
-                        .collect(Collectors.joining(", "));
-    }
-
-    /**
-     * @return the {@link ExtensionType}s.
-     */
-    public ExtensionType[] getRequirement() {
-        return extensions;
     }
 
     @Override
