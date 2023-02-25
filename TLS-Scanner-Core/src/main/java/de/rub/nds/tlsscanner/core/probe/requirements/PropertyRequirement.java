@@ -8,22 +8,22 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
  * positively evaluated (TestResults.TRUE).
  */
-public class PropertyRequirement extends Requirement {
+public class PropertyRequirement extends BooleanRequirement {
 
     private final TlsAnalyzedProperty[] properties;
     private List<TlsAnalyzedProperty> missing;
@@ -57,28 +57,6 @@ public class PropertyRequirement extends Requirement {
             }
         }
         return returnValue;
-    }
-
-    @Override
-    public String toString() {
-        String returnString = "";
-        if (properties.length == 1) {
-            returnString += "Property: ";
-
-        } else {
-            returnString += "Properties: ";
-        }
-        return returnString +=
-                Arrays.stream(properties)
-                        .map(TlsAnalyzedProperty::name)
-                        .collect(Collectors.joining(", "));
-    }
-
-    /**
-     * @return the required {@link TlsAnalyzedProperty} properties.
-     */
-    public TlsAnalyzedProperty[] getRequirement() {
-        return properties;
     }
 
     @Override
