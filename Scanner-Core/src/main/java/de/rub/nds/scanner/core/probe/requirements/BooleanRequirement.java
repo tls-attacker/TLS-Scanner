@@ -13,10 +13,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract subclass of {@link Requirement} to represent a requirement which can be evaluated directly to a boolean value. Requirements
+ * of this type contain one or more parameters of an Enum type which are compared to results in the {@link Report}.   
+ */
 public abstract class BooleanRequirement extends Requirement {
     protected final Enum<?>[] parameters;
     protected List<Enum<?>> missingParameters;
 
+    /**
+     * @param parameters the parameters of the {@link Requirement}.
+     */
     protected BooleanRequirement(Enum<?>[] parameters) {
     	this.parameters=parameters;
     	this.missingParameters = new ArrayList<>();

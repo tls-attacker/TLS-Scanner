@@ -13,10 +13,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract subclass of {@link Requirement} to represent a requirement which implements logical functions for a complete requirement system.
+ */
 public abstract class LogicRequirement extends Requirement {
     protected final Requirement[] parameters;
     protected List<Requirement> missingParameters;
 
+    /**
+     * @param parameters the parameters of the {@link Requirement}.
+     */
     protected LogicRequirement(Requirement[] parameters) {
     	this.parameters=parameters;
     	this.missingParameters = new ArrayList<>();
