@@ -26,6 +26,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Collections;
@@ -43,20 +44,18 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     public void executeTest() {
-        if (secondHighestVersion != null) {
-            Config tlsConfig = configSelector.getBaseConfig();
-            tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
-            tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
+        Config tlsConfig = configSelector.getBaseConfig();
+        tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
+        tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
 
-            State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
-            executeState(state);
-            if (state.getWorkflowTrace().executedAsPlanned()) {
-                result = TestResults.TRUE;
-            } else {
-                LOGGER.debug("Received ServerHelloMessage");
-                LOGGER.debug("{}", state.getWorkflowTrace());
-                result = TestResults.FALSE;
-            }
+        State state = new State(tlsConfig, getWorkflowTrace(tlsConfig));
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            result = TestResults.TRUE;
+        } else {
+            LOGGER.debug("Received ServerHelloMessage");
+            LOGGER.debug("{}", state.getWorkflowTrace());
+            result = TestResults.FALSE;
         }
     }
 
@@ -75,18 +74,14 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
 
     @Override
     protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION);
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION).requires(new PropertyComparatorRequirement(PropertyComparatorRequirement.Operator.GREATER, TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, 2));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
         List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
         Collections.sort(versions);
-        if (versions.size() > 1) {
-            secondHighestVersion = versions.get(versions.size() - 2);
-        } else {
-            secondHighestVersion = null;
-        }
+        secondHighestVersion = versions.get(versions.size() - 2);
     }
 
     @Override
