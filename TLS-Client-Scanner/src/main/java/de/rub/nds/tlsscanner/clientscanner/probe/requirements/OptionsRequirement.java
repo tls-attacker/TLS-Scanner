@@ -80,7 +80,7 @@ public class OptionsRequirement extends Requirement {
 
     @Override
     public Enum<?>[] getRequirement() {
-		return new Enum<?>[] {type};
+        return new Enum<?>[] {type};
     }
 
     @Override

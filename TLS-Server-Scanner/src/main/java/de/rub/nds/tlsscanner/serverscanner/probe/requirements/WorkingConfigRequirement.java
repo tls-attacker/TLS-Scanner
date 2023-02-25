@@ -47,8 +47,8 @@ public class WorkingConfigRequirement extends Requirement {
         return next.getMissingRequirementIntern(missing, report);
     }
 
-	@Override
-	public Enum<?>[] getRequirement() {
-		return new Enum<?>[0];
-	}
+    @Override
+    public Enum<?>[] getRequirement() {
+        return new Enum<?>[0];
+    }
 }

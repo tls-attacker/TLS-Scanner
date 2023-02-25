@@ -33,7 +33,9 @@ public class OrRequirementTest {
         assertTrue(requirement.evaluate(report));
 
         requirement = new OrRequirement(requirement0, requirement1);
-        //assertArrayEquals(requirement.getRequirement(), new Requirement[] {requirement0, requirement1});
+        // TODO!
+        // assertArrayEquals(requirement.getRequirement(), new Requirement[] {requirement0,
+        // requirement1});
         assertFalse(requirement.evaluate(report));
 
         Requirement requirementMissing = requirement.getMissingRequirements(report);

@@ -218,30 +218,22 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
                     }
                 }
             }
+            put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
+            put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
+            put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
+            put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
+            put(TlsAnalyzedProperty.HSTS_INCLUDES_SUBDOMAINS, hstsIncludesSubdomains);
+            put(TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS, hpkpIncludesSubdomains);
+            put(TlsAnalyzedProperty.HSTS_NOT_PARSEABLE, hstsNotParseable);
+            put(TlsAnalyzedProperty.HPKP_NOT_PARSEABLE, hpkpNotParseable);
         } else {
-            supportsHsts = TestResults.COULD_NOT_TEST;
-            supportsHstsPreloading = TestResults.COULD_NOT_TEST;
-            supportsHpkp = TestResults.COULD_NOT_TEST;
-            supportsHpkpReportOnly = TestResults.COULD_NOT_TEST;
-            vulnerableBreach = TestResults.COULD_NOT_TEST;
-            hstsIncludesSubdomains = TestResults.COULD_NOT_TEST;
-            hpkpIncludesSubdomains = TestResults.COULD_NOT_TEST;
-            hstsNotParseable = TestResults.COULD_NOT_TEST;
-            hpkpNotParseable = TestResults.COULD_NOT_TEST;
+            setPropertiesToCouldNotTest();
         }
         report.setHstsMaxAge(hstsMaxAge);
-        put(TlsAnalyzedProperty.SUPPORTS_HSTS, supportsHsts);
-        put(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING, supportsHstsPreloading);
-        put(TlsAnalyzedProperty.SUPPORTS_HPKP, supportsHpkp);
-        put(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, supportsHpkpReportOnly);
         report.setHpkpMaxAge(hpkpMaxAge);
         put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
         put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
-        put(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, vulnerableBreach);
-        put(TlsAnalyzedProperty.HSTS_INCLUDES_SUBDOMAINS, hstsIncludesSubdomains);
-        put(TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS, hpkpIncludesSubdomains);
-        put(TlsAnalyzedProperty.HSTS_NOT_PARSEABLE, hstsNotParseable);
-        put(TlsAnalyzedProperty.HPKP_NOT_PARSEABLE, hpkpNotParseable);
     }
 
     @Override
