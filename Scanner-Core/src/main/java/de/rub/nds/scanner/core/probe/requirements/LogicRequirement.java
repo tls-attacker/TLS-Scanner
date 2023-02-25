@@ -13,4 +13,10 @@ public abstract class LogicRequirement extends Requirement {
      * Contains the requirement(s) on which this requirement operates.
      */
     protected Requirement[] parameters;
+    
+    /*what to do with that? OR and NOT enum to include and make the array a boolean expression? */
+    @Override
+    public Enum<?>[] getRequirement(){
+    	return parameters[0].getRequirement();
+    }
 }

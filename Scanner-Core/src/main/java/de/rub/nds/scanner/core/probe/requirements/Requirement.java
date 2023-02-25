@@ -83,6 +83,11 @@ public abstract class Requirement {
     public String name() {
         return toString();
     }
+    
+    /**
+     * @return returns the required parameters.
+     */
+    public abstract Enum<?>[] getRequirement();
 
     /**
      * Evaluates if this Requirement and the next are fulfilled or not and adds them to a

@@ -35,4 +35,9 @@ public class BaseRequirement extends Requirement {
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
         return missing;
     }
+
+	@Override
+	public Enum<?>[] getRequirement() {
+		return new Enum<?>[0];
+	}
 }

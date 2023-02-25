@@ -21,4 +21,9 @@ public abstract class BooleanRequirement extends Requirement {
     public String toString() {
         return Arrays.stream(parameters).map(Enum::name).collect(Collectors.joining(", "));
     }
+    
+    @Override
+    public Enum<?>[] getRequirement(){
+    	return parameters;
+    }
 }
