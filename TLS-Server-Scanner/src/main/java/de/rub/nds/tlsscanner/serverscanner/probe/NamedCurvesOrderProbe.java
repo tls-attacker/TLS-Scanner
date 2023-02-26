@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -77,14 +78,12 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     @Override
     protected Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE));
-        /* public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.NAMED_GROUPS)
-                && !report.getSupportedNamedGroups().isEmpty()
-                && report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.getCipherSuites().stream()
-                        .anyMatch(cipherSuite -> cipherSuite.name().contains("ECDH"));*/
-        // TODO is the !report.getSupportedNamedGroups().isEmpty() part important?
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE))
+                .requires(
+                        new PropertyComparatorRequirement(
+                                PropertyComparatorRequirement.GREATER,
+                                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                                0));
     }
 
     @Override
