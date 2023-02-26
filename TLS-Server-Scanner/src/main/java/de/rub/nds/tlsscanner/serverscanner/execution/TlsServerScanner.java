@@ -258,7 +258,7 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     private void setDefaultProbeWriter() {
-        for (ScannerProbe probe : probeList) {
+        for (ScannerProbe<?> probe : probeList) {
             StatsWriter statsWriter = new StatsWriter();
             statsWriter.addExtractor(new CookieExtractor());
             statsWriter.addExtractor(new RandomExtractor());
