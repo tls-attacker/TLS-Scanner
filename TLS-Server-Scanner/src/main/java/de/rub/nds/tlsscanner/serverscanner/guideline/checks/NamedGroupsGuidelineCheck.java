@@ -71,11 +71,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<NamedGroup> supportedGroups =
-<<<<<<< HEAD
                 tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
-=======
-                this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
->>>>>>> master
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
