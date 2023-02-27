@@ -38,11 +38,9 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
     /**
      * Call super and assign the semaphore
      *
-     * <p><<<<<<< HEAD
-     *
      * @param corePoolSize The corePoolSize
      * @param threadFactory The threadFactory
-     * @param semaphore The semaphore ======= >>>>>>> master
+     * @param semaphore The semaphore
      * @param timeout The timeout after which tasks are cancelled in milliseconds.
      */
     public ScannerThreadPoolExecutor(
