@@ -67,17 +67,6 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
         } else {
             return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
-<<<<<<< HEAD
-=======
-        Set<SignatureAlgorithm> notRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
-            if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
-                notRecommended.add(alg.getSignatureAlgorithm());
-            }
-        }
-        return new SignatureAlgorithmsGuidelineCheckResult(
-                TestResults.of(notRecommended.isEmpty()), notRecommended);
->>>>>>> master
     }
 
     @Override

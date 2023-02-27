@@ -32,7 +32,6 @@ public class GuidelineChecker {
     }
 
     public void fillReport(ServerReport report) {
-        @SuppressWarnings("unchecked")
         List<GuidelineReport> guidelineReports = report.getGuidelineReports();
         if (guidelineReports == null) {
             guidelineReports = new ArrayList<>();
@@ -87,11 +86,8 @@ public class GuidelineChecker {
         }
         guidelineReports.add(
                 new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
-<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.GUIDELINE_REPORTS,
                 new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
-=======
->>>>>>> master
     }
 }
