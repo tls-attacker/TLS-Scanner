@@ -28,7 +28,6 @@ public class CipherSuiteGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
                 new ListResult<>(
@@ -42,18 +41,6 @@ public class CipherSuiteGuidelineCheckTest {
                                         Collections.singletonList(
                                                 CipherSuite.TLS_AES_128_GCM_SHA256))),
                         "VERSION_SUITE_PAIRS"));
-=======
-        report.setVersionSuitePairs(
-                Arrays.asList(
-                        new VersionSuiteListPair(
-                                ProtocolVersion.TLS12,
-                                Collections.singletonList(
-                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
-                        new VersionSuiteListPair(
-                                ProtocolVersion.TLS13,
-                                Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256))));
->>>>>>> master
-
         CipherSuiteGuidelineCheck check =
                 new CipherSuiteGuidelineCheck(
                         null,
@@ -77,7 +64,6 @@ public class CipherSuiteGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
                 new ListResult<>(
@@ -88,15 +74,6 @@ public class CipherSuiteGuidelineCheckTest {
                                                 CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
                                                 CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))),
                         "VERSION_SUITE_PAIRS"));
-=======
-        report.setVersionSuitePairs(
-                Collections.singletonList(
-                        new VersionSuiteListPair(
-                                ProtocolVersion.TLS12,
-                                Arrays.asList(
-                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                        CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))));
->>>>>>> master
 
         CipherSuiteGuidelineCheck check =
                 new CipherSuiteGuidelineCheck(

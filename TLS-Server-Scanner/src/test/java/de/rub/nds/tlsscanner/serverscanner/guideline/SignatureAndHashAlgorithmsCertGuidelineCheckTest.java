@@ -25,17 +25,11 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
-<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
                         "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
-=======
-        report.setSupportedSignatureAndHashAlgorithmsCert(
-                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
->>>>>>> master
-
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
                         null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
@@ -46,17 +40,11 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-<<<<<<< HEAD
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1),
                         "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
-=======
-        report.setSupportedSignatureAndHashAlgorithmsCert(
-                Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
->>>>>>> master
-
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
                         null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
