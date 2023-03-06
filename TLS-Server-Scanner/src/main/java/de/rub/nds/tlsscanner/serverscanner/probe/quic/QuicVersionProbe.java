@@ -6,7 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.probe;
+package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.selector.DefaultConfigProfile;
@@ -43,11 +43,9 @@ public class QuicVersionProbe
                             + state.getContext().getQuicContext().getSupportedVersions().stream()
                                     .map(QuicVersion::getVersionNameFromBytes)
                                     .collect(Collectors.joining(", ")));
-            return new QuicVersionResult(
-                    QuicProbeType.SUPPORTED_VERSION,
-                    state.getContext().getQuicContext().getSupportedVersions());
+            return new QuicVersionResult(state.getContext().getQuicContext().getSupportedVersions());
         } else {
-            return new QuicVersionResult(QuicProbeType.SUPPORTED_VERSION, List.of());
+            return new QuicVersionResult(List.of());
         }
     }
 

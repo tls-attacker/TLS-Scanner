@@ -70,7 +70,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
@@ -80,7 +80,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -89,7 +88,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -296,8 +294,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private void appendQuicSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Supported QUIC Versions");
-        for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
-            prettyAppend(builder, version.getVersionName() + "(0x" + ArrayConverter.bytesToHexString(version.getVersionBytes(), false, false).replace(" ", "").toLowerCase() + ")");
+        if (report.getSupportedQuicVersions() != null) {
+            for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
+                prettyAppend(builder, version.getVersionName() + "(0x" + ArrayConverter.bytesToHexString(version.getVersionBytes(), false, false).replace(" ", "").toLowerCase() + ")");
+            }
         }
         prettyAppendHeading(builder, "QUIC Transport Parameters");
         if (report.getQuicTransportParameters() != null) {
@@ -305,6 +305,22 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppend(builder, quicTransportParameter.getEntryType().name(), quicTransportParameter.entryValueToString());
             }
         }
+        prettyAppendHeading(builder, "QUIC TLS 1.2 Handshake Probe");
+        if (report.getQuicTls12HandshakeResult() != null) {
+            prettyAppend(builder, "Handshake Successful", report.getQuicTls12HandshakeResult().isHandshakeCompleted());
+            if (!report.getQuicTls12HandshakeResult().isHandshakeCompleted() && report.getQuicTls12HandshakeResult().getConnectionCloseFrame() != null) {
+                prettyAppend(builder, "Server closed connection with:");
+                prettyAppend(builder, report.getQuicTls12HandshakeResult().getConnectionCloseFrame().toString());
+            }
+        }
+        prettyAppendHeading(builder, "QUIC Connection Migration Probe");
+        if (report.getQuicConnectionMigrationResult() != null) {
+            prettyAppend(builder, "Port Connection Migration Successful", report.getQuicConnectionMigrationResult().isPortConnectionMigrationSuccessful());
+            prettyAppend(builder, "IPV6 Handshake Successful", report.getQuicConnectionMigrationResult().isIpv6HandshakeSuccessful());
+            prettyAppend(builder, "IPV4 To IPV6 Connection Migration Successful", report.getQuicConnectionMigrationResult().isIpv6ConnectionMigrationSuccessful());
+
+        }
+
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

@@ -85,8 +85,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.QuicTransportParameterProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.QuicVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicConnectionMigrationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTls12HandshakeProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTransportParameterProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
@@ -258,6 +260,8 @@ public final class TlsServerScanner extends TlsScanner {
         if (config.getQuicDelegate().isQuic()) {
             addProbeToProbeList(new QuicVersionProbe(configSelector, parallelExecutor));
             addProbeToProbeList(new QuicTransportParameterProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new QuicTls12HandshakeProbe(configSelector, parallelExecutor));
+            addProbeToProbeList(new QuicConnectionMigrationProbe(configSelector, parallelExecutor));
         }
         // Init StatsWriter
         setDefaultProbeWriter();

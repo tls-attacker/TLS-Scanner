@@ -1,4 +1,4 @@
-package de.rub.nds.tlsscanner.serverscanner.probe;
+package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
@@ -7,7 +7,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicTransportParameterResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTransportParameterResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -27,10 +27,10 @@ public class QuicTransportParameterProbe extends QuicServerProbe<ConfigSelector,
         State state = new State(config);
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            QuicTransportParameters transportParameters = state.getContext().getQuicContext().getTransportParameters();
-            return new QuicTransportParameterResult(QuicProbeType.TRANSPORT_PARAMETERS, transportParameters);
+            QuicTransportParameters transportParameters = state.getContext().getQuicContext().getReceivedTransportParameters();
+            return new QuicTransportParameterResult(transportParameters);
         } else {
-            return new QuicTransportParameterResult(QuicProbeType.TRANSPORT_PARAMETERS, null);
+            return new QuicTransportParameterResult(null);
         }
     }
 

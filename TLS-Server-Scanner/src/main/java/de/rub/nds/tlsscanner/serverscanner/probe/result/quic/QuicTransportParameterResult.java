@@ -6,19 +6,20 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.probe.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result.quic;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
+import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class QuicTransportParameterResult extends ProbeResult<ServerReport> {
 
     private final QuicTransportParameters transportParameters;
 
-    public QuicTransportParameterResult(ProbeType type, QuicTransportParameters transportParameters) {
-        super(type);
+    public QuicTransportParameterResult(QuicTransportParameters transportParameters) {
+        super(QuicProbeType.TRANSPORT_PARAMETERS);
         this.transportParameters = transportParameters;
     }
 

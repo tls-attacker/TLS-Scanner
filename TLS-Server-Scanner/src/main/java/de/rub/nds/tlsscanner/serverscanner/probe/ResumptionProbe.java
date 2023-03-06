@@ -77,6 +77,19 @@ public class ResumptionProbe
                     supportsDtlsCookieExchangeInResumption,
                     supportsDtlsCookieExchangeInTicketResumption,
                     respectsPskModes);
+        } else if (configSelector.getScannerConfig().getQuicDelegate().isQuic()) {
+            supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
+            supportsDtlsCookieExchangeInTicketResumption = TestResults.NOT_TESTED_YET;
+            return new ResumptionResult(
+                    TestResults.NOT_TESTED_YET,
+                    TestResults.NOT_TESTED_YET,
+                    getIssuesTls13SessionTicket(),
+                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
+                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
+                    getSupports0rtt(),
+                    supportsDtlsCookieExchangeInResumption,
+                    supportsDtlsCookieExchangeInTicketResumption,
+                    respectsPskModes);
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInTicketResumption = TestResults.NOT_TESTED_YET;

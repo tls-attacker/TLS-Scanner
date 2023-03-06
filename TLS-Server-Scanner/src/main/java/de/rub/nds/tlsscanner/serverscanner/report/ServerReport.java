@@ -34,7 +34,9 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.QuicVersionResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigrationResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTls12HandshakeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
@@ -120,6 +122,8 @@ public class ServerReport extends TlsScanReport {
     // QUIC
     private List<QuicVersionResult.Entry> supportedQuicVersions = null;
     private QuicTransportParameters quicTransportParameters = null;
+    private QuicTls12HandshakeResult quicTls12HandshakeResult = null;
+    private QuicConnectionMigrationResult quicConnectionMigrationResult = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -683,19 +687,35 @@ public class ServerReport extends TlsScanReport {
         this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 
-    public List<QuicVersionResult.Entry> getSupportedQuicVersions() {
+    public synchronized List<QuicVersionResult.Entry> getSupportedQuicVersions() {
         return supportedQuicVersions;
     }
 
-    public void setSupportedQuicVersions(List<QuicVersionResult.Entry> supportedQuicVersions) {
+    public synchronized void setSupportedQuicVersions(List<QuicVersionResult.Entry> supportedQuicVersions) {
         this.supportedQuicVersions = supportedQuicVersions;
     }
 
-    public QuicTransportParameters getQuicTransportParameters() {
+    public synchronized QuicTransportParameters getQuicTransportParameters() {
         return quicTransportParameters;
     }
 
-    public void setQuicTransportParameters(QuicTransportParameters quicTransportParameters) {
+    public synchronized void setQuicTransportParameters(QuicTransportParameters quicTransportParameters) {
         this.quicTransportParameters = quicTransportParameters;
+    }
+
+    public synchronized QuicTls12HandshakeResult getQuicTls12HandshakeResult() {
+        return quicTls12HandshakeResult;
+    }
+
+    public synchronized void setQuicTls12HandshakeResult(QuicTls12HandshakeResult quicTls12HandshakeResult) {
+        this.quicTls12HandshakeResult = quicTls12HandshakeResult;
+    }
+
+    public QuicConnectionMigrationResult getQuicConnectionMigrationResult() {
+        return quicConnectionMigrationResult;
+    }
+
+    public void setQuicConnectionMigrationResult(QuicConnectionMigrationResult quicConnectionMigrationResult) {
+        this.quicConnectionMigrationResult = quicConnectionMigrationResult;
     }
 }

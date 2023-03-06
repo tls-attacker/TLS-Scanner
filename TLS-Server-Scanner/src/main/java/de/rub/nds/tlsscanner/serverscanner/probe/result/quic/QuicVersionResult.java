@@ -6,11 +6,11 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.probe.result;
+package de.rub.nds.tlsscanner.serverscanner.probe.result.quic;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
+import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +19,8 @@ public class QuicVersionResult extends ProbeResult<ServerReport> {
 
     private final List<byte[]> supportedVersions;
 
-    public QuicVersionResult(ProbeType type, List<byte[]> supportedVersions) {
-        super(type);
+    public QuicVersionResult(List<byte[]> supportedVersions) {
+        super(QuicProbeType.SUPPORTED_VERSION);
         this.supportedVersions = supportedVersions;
     }
 

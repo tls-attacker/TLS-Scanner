@@ -12,7 +12,9 @@ import de.rub.nds.scanner.core.constants.ProbeType;
 
 public enum QuicProbeType implements ProbeType {
     SUPPORTED_VERSION("Supported Versions"),
-    TRANSPORT_PARAMETERS("Transport Parameters");
+    TRANSPORT_PARAMETERS("Transport Parameters"),
+    TLS12_HANDSHAKE("TLS 1.2 Handshake"),
+    CONNECTION_MIGRATION("Connection Migration");
 
     @Override
     public String getName() {
