@@ -29,7 +29,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
-                        "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
+                        "SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT"));
         SignatureAndHashAlgorithmsGuidelineCheck check =
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         null,
@@ -47,7 +47,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1),
-                        "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_CERT"));
+                        "SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT"));
         SignatureAndHashAlgorithmsGuidelineCheck check =
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         null,

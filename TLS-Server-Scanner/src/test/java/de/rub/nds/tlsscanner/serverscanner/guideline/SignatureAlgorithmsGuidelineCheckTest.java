@@ -29,7 +29,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1),
-                        "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
+                        "SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE"));
         SignatureAlgorithmsGuidelineCheck check =
                 new SignatureAlgorithmsGuidelineCheck(
                         null,
@@ -47,7 +47,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
                 new ListResult<>(
                         Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1),
-                        "SUPPORTED_SIGNATUREANDHASH_ALGORITHMS_SKE"));
+                        "SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE"));
         SignatureAlgorithmsGuidelineCheck check =
                 new SignatureAlgorithmsGuidelineCheck(
                         null,
