@@ -21,7 +21,7 @@ import java.util.Collection;
  * false for illegal inputs.
  */
 public class PropertyComparatorRequirement extends BooleanRequirement {
-    private static enum Operator {
+    private enum Operator {
         GREATER,
         SMALLER,
         EQUAL
