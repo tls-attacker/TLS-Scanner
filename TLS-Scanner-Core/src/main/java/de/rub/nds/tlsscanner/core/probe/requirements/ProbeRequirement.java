@@ -25,7 +25,7 @@ public class ProbeRequirement extends BooleanRequirement {
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if ((parameters == null) || (parameters.length == 0)) {
+        if (parameters == null || parameters.length == 0) {
             return true;
         }
         boolean returnValue = true;
