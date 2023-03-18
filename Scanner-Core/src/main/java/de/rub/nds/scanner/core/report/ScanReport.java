@@ -9,6 +9,7 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.CollectionResult;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.ProbeType;
@@ -76,6 +77,17 @@ public abstract class ScanReport extends Observable implements Serializable {
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResults.NOT_TESTED_YET : result;
+    }
+
+    public synchronized CollectionResult<?> getCollectionResult(AnalyzedProperty property) {
+        return getCollectionResult(property.getName());
+    }
+
+    public synchronized CollectionResult<?> getCollectionResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null || !(result instanceof CollectionResult))
+                ? null
+                : (CollectionResult<?>) result;
     }
 
     public synchronized ListResult<?> getListResult(AnalyzedProperty property) {

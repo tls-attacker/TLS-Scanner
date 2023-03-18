@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import de.rub.nds.scanner.core.constants.CollectionResult;
 import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
@@ -50,20 +51,14 @@ public class PropertyComparatorRequirement extends BooleanRequirement {
         if (parameter == null || value == null) {
             return false;
         }
-        Collection<?> collection;
-        try {
-            collection = report.getListResult((TlsAnalyzedProperty) parameter).getList();
-        } catch (Exception e) {
-            try {
-                collection = report.getSetResult((TlsAnalyzedProperty) parameter).getSet();
-            } catch (Exception ex) {
-                try {
-                    collection =
-                            report.getMapResult((TlsAnalyzedProperty) parameter).getMap().keySet();
-                } catch (Exception exc) {
-                    return false;
-                }
-            }
+        CollectionResult<?> collectionResult =
+                report.getCollectionResult((TlsAnalyzedProperty) parameter);
+        if (collectionResult == null) {
+            return false;
+        }
+        Collection<?> collection = collectionResult.getCollection();
+        if (collection == null) {
+            return false;
         }
         switch ((Operator) parameters[0]) {
             case EQUAL:

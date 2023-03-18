@@ -32,10 +32,7 @@ public class CollectionResult<T> implements TestResult {
     }
 
     /**
-     * The constructor for the CollectionResult. Use property.name() for the name parameter.
-     *
-     * @param set The result collection.
-     * @param name The name of the CollectionResult object.
+     * @return the collection of the CollectionResult object of type T.
      */
     public Collection<T> getCollection() {
         return collection;
