@@ -29,10 +29,31 @@ public abstract class LogicRequirement extends Requirement {
         this.missingParameters = new ArrayList<>();
     }
 
-    /*what to do with that? OR and NOT enum to include and make the array a boolean expression? */
+    /**
+     * Concatenates all appearing requirements in an Array of Enums, regardless of logical context.
+     */
     @Override
     public Enum<?>[] getRequirement() {
-        return null;
+        List<Enum<?>> requirements = new ArrayList<>();
+        for (Requirement parameter : parameters) {
+            if (parameter.getClass().equals(BooleanRequirement.class)) {
+                requirements.addAll(Arrays.asList(parameter.getRequirement()));
+            }
+            if (parameter.getClass().equals(LogicRequirement.class)) {
+                for (Requirement parametersParameter :
+                        ((LogicRequirement) parameter).getParameters()) {
+                    requirements.addAll(Arrays.asList(parametersParameter.getRequirement()));
+                }
+            }
+        }
+        return (Enum<?>[]) requirements.toArray();
+    }
+
+    /**
+     * @return the array of parameters of type Requirement
+     */
+    public Requirement[] getParameters() {
+        return parameters;
     }
 
     @Override

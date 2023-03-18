@@ -12,6 +12,8 @@ import de.rub.nds.scanner.core.probe.requirements.LogicRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Represents a {@link Requirement} that implements a logical or for multiple multiple Requirements.
@@ -40,6 +42,28 @@ public class OrRequirement extends LogicRequirement {
             }
         }
         return returnValue;
+    }
+
+    @Override
+    public String toString() {
+        if (parameters.length < 1) {
+            return "";
+        }
+        String returnString =
+                "("
+                        + Arrays.stream(Arrays.copyOfRange(parameters, 0, 0))
+                                .map(Requirement::name)
+                                .collect(Collectors.joining(","));
+        for (int i = 1; i < parameters.length - 1; i++) {
+            returnString +=
+                    " or "
+                            + Arrays.stream(
+                                            Arrays.copyOfRange(
+                                                    parameters, 1, parameters.length - 1))
+                                    .map(Requirement::name)
+                                    .collect(Collectors.joining(","));
+        }
+        return returnString + ")";
     }
 
     @Override

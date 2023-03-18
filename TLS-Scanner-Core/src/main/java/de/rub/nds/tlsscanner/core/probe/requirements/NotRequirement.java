@@ -11,6 +11,8 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 import de.rub.nds.scanner.core.probe.requirements.LogicRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Represents a {@link Requirement} for required negated Requirements. If the contained Requirement
@@ -30,6 +32,13 @@ public class NotRequirement extends LogicRequirement {
             return true;
         }
         return !parameters[0].evaluate(report);
+    }
+
+    @Override
+    public String toString() {
+        return "(not "
+                + Arrays.stream(parameters).map(Requirement::name).collect(Collectors.joining(","))
+                + ")";
     }
 
     @Override

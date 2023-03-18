@@ -15,7 +15,9 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
@@ -50,6 +52,13 @@ public class PropertyNotRequirement extends BooleanRequirement {
             }
         }
         return returnValue;
+    }
+
+    @Override
+    public String toString() {
+        return "(not "
+                + Arrays.stream(parameters).map(Enum::name).collect(Collectors.joining(", "))
+                + ")";
     }
 
     @Override

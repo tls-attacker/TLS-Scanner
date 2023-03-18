@@ -80,7 +80,13 @@ public class OptionsRequirement extends Requirement {
 
     @Override
     public Enum<?>[] getRequirement() {
-        return new Enum<?>[] {type};
+        return type.name() == "ALPN"
+                ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_ALPN}
+                : type.name() == "SNI"
+                        ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_SNI}
+                        : type.name() == "RESUMPTION"
+                                ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_RESUMPTION}
+                                : new Enum<?>[] {null};
     }
 
     @Override

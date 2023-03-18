@@ -16,6 +16,12 @@ import de.rub.nds.scanner.core.report.ScanReport;
  * "requirement", and which allow to retrieve the not yet fulfilled Requirements.
  */
 public abstract class Requirement {
+    protected enum SpecialRequirementTypes {
+        OPTIONS_ALPN,
+        OPTIONS_RESUMPTION,
+        OPTIONS_SNI,
+        WORKING_CONFIG
+    }
 
     /*
      * Holds the "next" Requirement. Holds the NO_REQUIREMENT by default if no

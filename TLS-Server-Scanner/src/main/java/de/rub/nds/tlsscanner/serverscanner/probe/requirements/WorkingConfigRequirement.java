@@ -49,6 +49,6 @@ public class WorkingConfigRequirement extends Requirement {
 
     @Override
     public Enum<?>[] getRequirement() {
-        return new Enum<?>[0];
+        return new Enum<?>[] {SpecialRequirementTypes.WORKING_CONFIG};
     }
 }

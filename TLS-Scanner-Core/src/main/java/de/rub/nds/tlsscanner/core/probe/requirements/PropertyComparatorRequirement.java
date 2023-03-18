@@ -40,7 +40,7 @@ public class PropertyComparatorRequirement extends BooleanRequirement {
      * @param value the value to compare with.
      */
     public PropertyComparatorRequirement(Operator op, Enum<?> parameter, Integer value) {
-        super(new Enum<?>[] {parameter});
+        super(new Enum<?>[] {parameter, op});
         this.op = op;
         this.value = value;
     }
