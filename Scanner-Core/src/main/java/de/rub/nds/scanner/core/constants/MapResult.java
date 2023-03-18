@@ -21,9 +21,8 @@ import java.util.Map;
  */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MapResult<S, T> implements TestResult {
+public class MapResult<S, T> extends CollectionResult<S> {
 
-    private final String name;
     private final Map<S, T> map;
 
     /**
@@ -33,19 +32,14 @@ public class MapResult<S, T> implements TestResult {
      * @param name the name of the MapResult.
      */
     public MapResult(Map<S, T> map, String name) {
+        super(map.keySet(), name);
         this.map = map;
-        this.name = name;
     }
 
     /**
      * @return the map of the MapResult object.
      */
     public Map<S, T> getMap() {
-        return this.map;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
+        return map;
     }
 }

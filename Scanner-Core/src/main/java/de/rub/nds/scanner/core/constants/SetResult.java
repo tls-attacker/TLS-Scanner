@@ -20,10 +20,7 @@ import java.util.Set;
  */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SetResult<T> implements TestResult {
-
-    private final String name;
-    private final Set<T> set;
+public class SetResult<T> extends CollectionResult<T> {
 
     /**
      * The constructor for the SetResult. Use property.name() for the name parameter.
@@ -32,19 +29,13 @@ public class SetResult<T> implements TestResult {
      * @param name The name of the SetResult object.
      */
     public SetResult(Set<T> set, String name) {
-        this.set = set;
-        this.name = name;
+        super(set, name);
     }
 
     /**
      * @return The set of the SetResult.
      */
     public Set<T> getSet() {
-        return this.set;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
+        return (Set<T>) collection;
     }
 }

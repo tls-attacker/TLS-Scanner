@@ -20,10 +20,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ListResult<T> implements TestResult {
-
-    private final String name;
-    private final List<T> list;
+public class ListResult<T> extends CollectionResult<T> {
 
     /**
      * The constructor for the ListResult. Use property.name() for the name parameter.
@@ -32,19 +29,13 @@ public class ListResult<T> implements TestResult {
      * @param name the name of the ListResult.
      */
     public ListResult(List<T> list, String name) {
-        this.list = list;
-        this.name = name;
+        super(list, name);
     }
 
     /**
      * @return the list of the listResult object.
      */
     public List<T> getList() {
-        return this.list;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
+        return (List<T>) collection;
     }
 }
