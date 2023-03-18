@@ -36,17 +36,17 @@ public abstract class LogicRequirement extends Requirement {
     public Enum<?>[] getRequirement() {
         List<Enum<?>> requirements = new ArrayList<>();
         for (Requirement parameter : parameters) {
-            if (parameter.getClass().equals(BooleanRequirement.class)) {
+            if (parameter instanceof BooleanRequirement) {
                 requirements.addAll(Arrays.asList(parameter.getRequirement()));
             }
-            if (parameter.getClass().equals(LogicRequirement.class)) {
+            if (parameter instanceof LogicRequirement) {
                 for (Requirement parametersParameter :
                         ((LogicRequirement) parameter).getParameters()) {
                     requirements.addAll(Arrays.asList(parametersParameter.getRequirement()));
                 }
             }
         }
-        return (Enum<?>[]) requirements.toArray();
+        return requirements.toArray(new Enum<?>[0]);
     }
 
     /**

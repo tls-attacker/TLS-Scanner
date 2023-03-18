@@ -51,15 +51,13 @@ public class OrRequirement extends LogicRequirement {
         }
         String returnString =
                 "("
-                        + Arrays.stream(Arrays.copyOfRange(parameters, 0, 0))
+                        + Arrays.stream(Arrays.copyOfRange(parameters, 0, 1))
                                 .map(Requirement::name)
                                 .collect(Collectors.joining(","));
-        for (int i = 1; i < parameters.length - 1; i++) {
+        for (int i = 1; i < parameters.length; i++) {
             returnString +=
                     " or "
-                            + Arrays.stream(
-                                            Arrays.copyOfRange(
-                                                    parameters, 1, parameters.length - 1))
+                            + Arrays.stream(Arrays.copyOfRange(parameters, 1, parameters.length))
                                     .map(Requirement::name)
                                     .collect(Collectors.joining(","));
         }

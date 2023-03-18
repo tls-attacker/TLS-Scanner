@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -27,7 +28,8 @@ public class NotRequirementTest {
         assertTrue(requirement.evaluate(report));
 
         requirement = new NotRequirement(requirementNot);
-        // assertEquals(requirement.getRequirement()[0].name(), requirementNot.name()); // TODO
+        assertArrayEquals(requirement.getRequirement(), new Enum<?>[] {TlsProbeType.BASIC});
+        assertEquals(requirement.toString(), "(not BASIC)");
         assertTrue(requirement.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.BASIC);
         assertFalse(requirement.evaluate(report));
