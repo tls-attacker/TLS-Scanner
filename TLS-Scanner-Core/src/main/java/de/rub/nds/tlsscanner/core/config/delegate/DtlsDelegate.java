@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.config.delegate;
 
-import com.beust.jcommander.Parameter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
@@ -21,7 +20,7 @@ import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 
 public class DtlsDelegate extends Delegate {
 
-    @Parameter(names = "-dtls", required = false, description = "Scan DTLS")
+    // @Parameter(names = "-dtls", required = false, description = "Scan DTLS")
     private boolean dtls = false;
 
     public DtlsDelegate() {}
