@@ -9,6 +9,9 @@
 package de.rub.nds.scanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.report.ScanReport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Abstract class to represent requirements of probes which can be chained to a "chain of
@@ -87,13 +90,31 @@ public abstract class Requirement {
      * @return returns String representation of the requirement.
      */
     public String name() {
-        return toString();
+        if (!next.equals(NO_REQUIREMENT)) {
+            return toString() + " and " + next.name();
+        } else {
+            return toString();
+        }
     }
 
     /**
-     * @return returns the required parameters.
+     * @return returns the required parameters of the respective requirement.
      */
     public abstract Enum<?>[] getRequirement();
+
+    /**
+     * @return returns the complete requirements as boolean expression.
+     */
+    public Enum<?>[] getRequirements() {
+        if (next.equals(NO_REQUIREMENT)) {
+            return getRequirement();
+        } else {
+            List<Enum<?>> parameters = new ArrayList<>();
+            parameters.addAll(Arrays.asList(getRequirement()));
+            parameters.addAll(Arrays.asList(next.getRequirements()));
+            return parameters.toArray(new Enum<?>[0]);
+        }
+    }
 
     /**
      * Evaluates if this Requirement and the next are fulfilled or not and adds them to a

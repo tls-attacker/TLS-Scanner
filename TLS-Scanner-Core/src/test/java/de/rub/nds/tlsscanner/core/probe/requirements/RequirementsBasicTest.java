@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -94,6 +95,23 @@ public class RequirementsBasicTest {
         assertTrue(requirements.evaluate(report));
         report.markProbeAsExecuted(TlsProbeType.CCA);
         assertFalse(requirements.evaluate(report));
+
+        assertEquals(
+                requirements.name(),
+                "(not CCA) and (BLEICHENBACHER or BASIC) and TLS10 and ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE and (not ACCEPTS_RANDOM_MESSAGE_SEQUENCES) and ALPN and ALPN");
+
+        assertArrayEquals(
+                requirements.getRequirements(),
+                new Enum<?>[] {
+                    TlsProbeType.CCA,
+                    TlsProbeType.BLEICHENBACHER,
+                    TlsProbeType.BASIC,
+                    ProtocolVersion.TLS10,
+                    TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                    TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+                    TlsProbeType.ALPN,
+                    ExtensionType.ALPN
+                });
     }
 
     @Test

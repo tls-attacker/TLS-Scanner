@@ -37,6 +37,7 @@ public class OrRequirementTest {
                 requirement.getRequirement(),
                 new Enum<?>[] {TlsProbeType.ALPN, TlsProbeType.BASIC});
         assertEquals(requirement.toString(), "(ALPN or BASIC)");
+        assertEquals(requirement.name(), "(ALPN or BASIC)");
         assertFalse(requirement.evaluate(report));
 
         Requirement requirementMissing = requirement.getMissingRequirements(report);
