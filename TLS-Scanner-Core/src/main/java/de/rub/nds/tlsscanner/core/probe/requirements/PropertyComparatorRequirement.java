@@ -31,7 +31,7 @@ public class PropertyComparatorRequirement extends BooleanRequirement {
     public static Operator SMALLER = Operator.SMALLER;
     public static Operator EQUAL = Operator.EQUAL;
 
-    private Operator op;
+    private Enum<?> parameter;
     private Integer value;
 
     /**
@@ -40,34 +40,32 @@ public class PropertyComparatorRequirement extends BooleanRequirement {
      * @param value the value to compare with.
      */
     public PropertyComparatorRequirement(Operator op, Enum<?> parameter, Integer value) {
-        super(new Enum<?>[] {parameter, op});
-        this.op = op;
+        super(new Operator[] {op});
+        this.parameter = parameter;
         this.value = value;
     }
 
     @Override
     protected boolean evaluateInternal(ScanReport report) {
-        if (parameters[0] == null || value == null) {
+        if (parameter == null || value == null) {
             return false;
         }
         Collection<?> collection;
         try {
-            collection = report.getListResult((TlsAnalyzedProperty) parameters[0]).getList();
+            collection = report.getListResult((TlsAnalyzedProperty) parameter).getList();
         } catch (Exception e) {
             try {
-                collection = report.getSetResult((TlsAnalyzedProperty) parameters[0]).getSet();
+                collection = report.getSetResult((TlsAnalyzedProperty) parameter).getSet();
             } catch (Exception ex) {
                 try {
                     collection =
-                            report.getMapResult((TlsAnalyzedProperty) parameters[0])
-                                    .getMap()
-                                    .keySet();
+                            report.getMapResult((TlsAnalyzedProperty) parameter).getMap().keySet();
                 } catch (Exception exc) {
                     return false;
                 }
             }
         }
-        switch (op) {
+        switch ((Operator) parameters[0]) {
             case EQUAL:
                 if (collection.size() != value) {
                     return false;
@@ -91,7 +89,9 @@ public class PropertyComparatorRequirement extends BooleanRequirement {
     public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
         if (evaluateInternal(report) == false) {
             return next.getMissingRequirementIntern(
-                    missing.requires(new PropertyComparatorRequirement(op, parameters[0], value)),
+                    missing.requires(
+                            new PropertyComparatorRequirement(
+                                    (Operator) parameters[0], parameter, value)),
                     report);
         }
         return next.getMissingRequirementIntern(missing, report);
