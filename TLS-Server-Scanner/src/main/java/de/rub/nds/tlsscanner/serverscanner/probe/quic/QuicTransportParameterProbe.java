@@ -1,3 +1,11 @@
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -11,10 +19,11 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTransportParame
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class QuicTransportParameterProbe extends QuicServerProbe<ConfigSelector, ServerReport, QuicTransportParameterResult> {
+public class QuicTransportParameterProbe
+        extends QuicServerProbe<ConfigSelector, ServerReport, QuicTransportParameterResult> {
 
-
-    public QuicTransportParameterProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    public QuicTransportParameterProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.TRANSPORT_PARAMETERS, configSelector);
     }
 
@@ -27,7 +36,8 @@ public class QuicTransportParameterProbe extends QuicServerProbe<ConfigSelector,
         State state = new State(config);
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            QuicTransportParameters transportParameters = state.getContext().getQuicContext().getReceivedTransportParameters();
+            QuicTransportParameters transportParameters =
+                    state.getContext().getQuicContext().getReceivedTransportParameters();
             return new QuicTransportParameterResult(transportParameters);
         } else {
             return new QuicTransportParameterResult(null);
@@ -45,7 +55,5 @@ public class QuicTransportParameterProbe extends QuicServerProbe<ConfigSelector,
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-
-    }
+    public void adjustConfig(ServerReport report) {}
 }

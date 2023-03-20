@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,8 +30,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
@@ -121,6 +124,15 @@ public class ConfigSelector {
                 workingTl13Config = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
+            } else if (scannerConfig.getQuicDelegate().isQuic()) {
+                baseConfig.setQuicRetryFlowRequired(true);
+                if (configWorks(baseConfig)) {
+                    configProfileIdentifierTls13 = configProfile.getIdentifier();
+                    reportLimitation(configProfile, "TLS 1.3");
+                    workingTl13Config = baseConfig.createCopy();
+                    isHandshaking = true;
+                    return true;
+                }
             }
         }
         return false;
@@ -180,6 +192,20 @@ public class ConfigSelector {
     private void applyDelegates(Config config) throws ConfigurationException {
         for (Delegate delegate : scannerConfig.getDelegateList()) {
             delegate.applyDelegate(config);
+            if (delegate instanceof GeneralDelegate) {
+                GeneralDelegate generalDelegate = (GeneralDelegate) delegate;
+                // set log levels for scanner
+                if (generalDelegate.isTrace()) {
+                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.TRACE);
+                    Configurator.setAllLevels("de.rub.nds.scanner", Level.TRACE);
+                } else if (generalDelegate.isDebug()) {
+                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.DEBUG);
+                    Configurator.setAllLevels("de.rub.nds.scanner", Level.DEBUG);
+                } else if (generalDelegate.isQuiet()) {
+                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.OFF);
+                    Configurator.setAllLevels("de.rub.nds.scanner", Level.OFF);
+                }
+            }
         }
     }
 

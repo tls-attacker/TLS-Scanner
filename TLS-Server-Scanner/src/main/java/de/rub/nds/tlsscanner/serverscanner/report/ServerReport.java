@@ -34,12 +34,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigrationResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTls12HandshakeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigrationResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTls12HandshakeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -691,7 +691,8 @@ public class ServerReport extends TlsScanReport {
         return supportedQuicVersions;
     }
 
-    public synchronized void setSupportedQuicVersions(List<QuicVersionResult.Entry> supportedQuicVersions) {
+    public synchronized void setSupportedQuicVersions(
+            List<QuicVersionResult.Entry> supportedQuicVersions) {
         this.supportedQuicVersions = supportedQuicVersions;
     }
 
@@ -699,7 +700,8 @@ public class ServerReport extends TlsScanReport {
         return quicTransportParameters;
     }
 
-    public synchronized void setQuicTransportParameters(QuicTransportParameters quicTransportParameters) {
+    public synchronized void setQuicTransportParameters(
+            QuicTransportParameters quicTransportParameters) {
         this.quicTransportParameters = quicTransportParameters;
     }
 
@@ -707,7 +709,8 @@ public class ServerReport extends TlsScanReport {
         return quicTls12HandshakeResult;
     }
 
-    public synchronized void setQuicTls12HandshakeResult(QuicTls12HandshakeResult quicTls12HandshakeResult) {
+    public synchronized void setQuicTls12HandshakeResult(
+            QuicTls12HandshakeResult quicTls12HandshakeResult) {
         this.quicTls12HandshakeResult = quicTls12HandshakeResult;
     }
 
@@ -715,7 +718,8 @@ public class ServerReport extends TlsScanReport {
         return quicConnectionMigrationResult;
     }
 
-    public void setQuicConnectionMigrationResult(QuicConnectionMigrationResult quicConnectionMigrationResult) {
+    public void setQuicConnectionMigrationResult(
+            QuicConnectionMigrationResult quicConnectionMigrationResult) {
         this.quicConnectionMigrationResult = quicConnectionMigrationResult;
     }
 }

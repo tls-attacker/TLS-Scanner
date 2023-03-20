@@ -1,3 +1,11 @@
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -10,10 +18,16 @@ import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigrationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class QuicConnectionMigrationProbe extends QuicServerProbe<ConfigSelector, ServerReport, QuicConnectionMigrationResult> {
+public class QuicConnectionMigrationProbe
+        extends QuicServerProbe<ConfigSelector, ServerReport, QuicConnectionMigrationResult> {
 
-    public QuicConnectionMigrationProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public QuicConnectionMigrationProbe(
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.CONNECTION_MIGRATION, configSelector);
     }
 
@@ -31,7 +45,9 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe<ConfigSelector
         result.setPortConnectionMigrationSuccessful(state.getWorkflowTrace().executedAsPlanned());
 
         config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-        OutboundConnection ipv6Connection = new OutboundConnection(config.getDefaultClientConnection());
+        OutboundConnection ipv6Connection =
+                new OutboundConnection(config.getDefaultClientConnection());
+        ipv6Connection.setUseIpv6(true);
         config.setDefaultClientConnection(ipv6Connection);
         state = new State(config);
         executeState(state);
@@ -42,7 +58,8 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe<ConfigSelector
             config.setWorkflowTraceType(WorkflowTraceType.QUIC_IPV6_CONNECTION_MIGRATION);
             state = new State(config);
             executeState(state);
-            result.setIpv6ConnectionMigrationSuccessful(state.getWorkflowTrace().executedAsPlanned());
+            result.setIpv6ConnectionMigrationSuccessful(
+                    state.getWorkflowTrace().executedAsPlanned());
         } else {
             result.setIpv6ConnectionMigrationSuccessful(false);
         }
@@ -55,15 +72,11 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe<ConfigSelector
         return true;
     }
 
-
     @Override
     public QuicConnectionMigrationResult getCouldNotExecuteResult() {
         return null;
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-
-    }
-
+    public void adjustConfig(ServerReport report) {}
 }

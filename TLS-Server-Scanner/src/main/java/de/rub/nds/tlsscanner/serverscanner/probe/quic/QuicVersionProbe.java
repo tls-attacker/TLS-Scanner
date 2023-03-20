@@ -30,11 +30,15 @@ public class QuicVersionProbe
 
     @Override
     public QuicVersionResult executeTest() {
-        // use basic config to avoid sending client hello in multiple packets which would lead to the server sending multiple version negotiation packets
-        Config config = configSelector.getConfigForProfile(ConfigSelector.TLS13_CONFIG, DefaultConfigProfile.CLEAN_TLS_13);
+        // use basic config to avoid sending client hello in multiple packets which would lead to
+        // the server sending multiple version negotiation packets
+        Config config =
+                configSelector.getConfigForProfile(
+                        ConfigSelector.TLS13_CONFIG, DefaultConfigProfile.CLEAN_TLS_13);
         config.setExpectHandshakeDoneQuicFrame(false);
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_VERSION_NEGOTIATION);
         config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION.getByteValue());
+        config.setFinishWithCloseNotify(false);
         State state = new State(config);
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
@@ -43,7 +47,8 @@ public class QuicVersionProbe
                             + state.getContext().getQuicContext().getSupportedVersions().stream()
                                     .map(QuicVersion::getVersionNameFromBytes)
                                     .collect(Collectors.joining(", ")));
-            return new QuicVersionResult(state.getContext().getQuicContext().getSupportedVersions());
+            return new QuicVersionResult(
+                    state.getContext().getQuicContext().getSupportedVersions());
         } else {
             return new QuicVersionResult(List.of());
         }

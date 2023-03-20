@@ -70,10 +70,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
@@ -296,31 +296,58 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Supported QUIC Versions");
         if (report.getSupportedQuicVersions() != null) {
             for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
-                prettyAppend(builder, version.getVersionName() + "(0x" + ArrayConverter.bytesToHexString(version.getVersionBytes(), false, false).replace(" ", "").toLowerCase() + ")");
+                prettyAppend(
+                        builder,
+                        version.getVersionName()
+                                + "(0x"
+                                + ArrayConverter.bytesToHexString(
+                                                version.getVersionBytes(), false, false)
+                                        .replace(" ", "")
+                                        .toLowerCase()
+                                + ")");
             }
         }
         prettyAppendHeading(builder, "QUIC Transport Parameters");
         if (report.getQuicTransportParameters() != null) {
-            for (QuicTransportParameterEntry quicTransportParameter : report.getQuicTransportParameters().toListOfEntries()) {
-                prettyAppend(builder, quicTransportParameter.getEntryType().name(), quicTransportParameter.entryValueToString());
+            for (QuicTransportParameterEntry quicTransportParameter :
+                    report.getQuicTransportParameters().toListOfEntries()) {
+                prettyAppend(
+                        builder,
+                        quicTransportParameter.getEntryType().name(),
+                        quicTransportParameter.entryValueToString());
             }
         }
         prettyAppendHeading(builder, "QUIC TLS 1.2 Handshake Probe");
         if (report.getQuicTls12HandshakeResult() != null) {
-            prettyAppend(builder, "Handshake Successful", report.getQuicTls12HandshakeResult().isHandshakeCompleted());
-            if (!report.getQuicTls12HandshakeResult().isHandshakeCompleted() && report.getQuicTls12HandshakeResult().getConnectionCloseFrame() != null) {
+            prettyAppend(
+                    builder,
+                    "Handshake Successful",
+                    report.getQuicTls12HandshakeResult().isHandshakeCompleted());
+            if (!report.getQuicTls12HandshakeResult().isHandshakeCompleted()
+                    && report.getQuicTls12HandshakeResult().getConnectionCloseFrame() != null) {
                 prettyAppend(builder, "Server closed connection with:");
-                prettyAppend(builder, report.getQuicTls12HandshakeResult().getConnectionCloseFrame().toString());
+                prettyAppend(
+                        builder,
+                        report.getQuicTls12HandshakeResult().getConnectionCloseFrame().toString());
             }
         }
         prettyAppendHeading(builder, "QUIC Connection Migration Probe");
         if (report.getQuicConnectionMigrationResult() != null) {
-            prettyAppend(builder, "Port Connection Migration Successful", report.getQuicConnectionMigrationResult().isPortConnectionMigrationSuccessful());
-            prettyAppend(builder, "IPV6 Handshake Successful", report.getQuicConnectionMigrationResult().isIpv6HandshakeSuccessful());
-            prettyAppend(builder, "IPV4 To IPV6 Connection Migration Successful", report.getQuicConnectionMigrationResult().isIpv6ConnectionMigrationSuccessful());
-
+            prettyAppend(
+                    builder,
+                    "Port Connection Migration Successful",
+                    report.getQuicConnectionMigrationResult()
+                            .isPortConnectionMigrationSuccessful());
+            prettyAppend(
+                    builder,
+                    "IPV6 Handshake Successful",
+                    report.getQuicConnectionMigrationResult().isIpv6HandshakeSuccessful());
+            prettyAppend(
+                    builder,
+                    "IPV4 To IPV6 Connection Migration Successful",
+                    report.getQuicConnectionMigrationResult()
+                            .isIpv6ConnectionMigrationSuccessful());
         }
-
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

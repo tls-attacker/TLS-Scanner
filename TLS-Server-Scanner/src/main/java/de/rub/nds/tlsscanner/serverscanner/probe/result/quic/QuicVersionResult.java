@@ -26,7 +26,14 @@ public class QuicVersionResult extends ProbeResult<ServerReport> {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setSupportedQuicVersions(supportedVersions.stream().map(versionBytes -> new Entry(QuicVersion.getVersionNameFromBytes(versionBytes), versionBytes)).collect(Collectors.toList()));
+        report.setSupportedQuicVersions(
+                supportedVersions.stream()
+                        .map(
+                                versionBytes ->
+                                        new Entry(
+                                                QuicVersion.getVersionNameFromBytes(versionBytes),
+                                                versionBytes))
+                        .collect(Collectors.toList()));
     }
 
     public List<byte[]> getSupportedVersions() {

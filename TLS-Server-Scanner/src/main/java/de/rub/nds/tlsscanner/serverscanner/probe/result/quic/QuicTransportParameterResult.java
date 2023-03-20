@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.quic;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
@@ -31,7 +30,4 @@ public class QuicTransportParameterResult extends ProbeResult<ServerReport> {
     public QuicTransportParameters getTransportParameters() {
         return transportParameters;
     }
-
-
-
 }

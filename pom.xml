@@ -9,7 +9,7 @@
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>5.2.4-SNAPSHOT</version>
+    <version>6.0.0-QUIC</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
