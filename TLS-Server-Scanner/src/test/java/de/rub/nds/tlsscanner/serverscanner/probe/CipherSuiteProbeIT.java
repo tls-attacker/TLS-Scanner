@@ -8,14 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +25,19 @@ public class CipherSuiteProbeIT extends AbstractProbeIT {
 
     public CipherSuiteProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
+    }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new CipherSuiteProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
     }
 
     @Override
@@ -110,15 +121,5 @@ public class CipherSuiteProbeIT extends AbstractProbeIT {
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, TestResults.TRUE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.CIPHER_SUITE;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION);
     }
 }

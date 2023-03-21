@@ -8,11 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +22,20 @@ public class SignatureAndHashAlgorithmProbeIT extends AbstractProbeIT {
 
     public SignatureAndHashAlgorithmProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
+    }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        List<ProtocolVersion> supportedVersions =
+                Arrays.asList(
+                        ProtocolVersion.TLS10, ProtocolVersion.TLS11,
+                        ProtocolVersion.TLS12, ProtocolVersion.TLS13);
+        report.setVersions(supportedVersions);
     }
 
     @Override
@@ -52,15 +65,5 @@ public class SignatureAndHashAlgorithmProbeIT extends AbstractProbeIT {
                 && expectedAlgorithmsTls13.size() == supportedAlgortihmsTls13.size()
                 && expectedAlgorithmsTls13.containsAll(
                         supportedAlgortihmsTls13.stream().collect(Collectors.toList()));
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.SIGNATURE_AND_HASH;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION);
     }
 }

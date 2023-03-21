@@ -8,14 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -23,6 +19,19 @@ public class ECPointFormatProbeIT extends AbstractProbeIT {
 
     public ECPointFormatProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
+    }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new ECPointFormatProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
     }
 
     @Override
@@ -37,15 +46,5 @@ public class ECPointFormatProbeIT extends AbstractProbeIT {
                         TestResults.TRUE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.TRUE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.EC_POINT_FORMAT;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE);
     }
 }

@@ -8,13 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +23,19 @@ public class ExtensionProbeIT extends AbstractProbeIT {
 
     public ExtensionProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
+    }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new ExtensionProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
     }
 
     @Override
@@ -55,15 +66,5 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
                         TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.EXTENSIONS;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION);
     }
 }

@@ -8,15 +8,17 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 
@@ -25,6 +27,47 @@ public class NamedGroupsProbeIT extends AbstractProbeIT {
 
     public NamedGroupsProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
+    }
+    
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new NamedGroupsProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        Set<CipherSuite> supportedCiphers = new HashSet<>();
+        supportedCiphers.addAll(
+                Arrays.asList(
+                        CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+                        CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
+                        CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+                        CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+                        CipherSuite.TLS_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_CHACHA20_POLY1305_SHA256));
+        report.setCipherSuites(supportedCiphers);
+        report.setEcdsaPkGroupsEphemeral(new LinkedList<>());
+        report.setEcdsaPkGroupsTls13(new LinkedList<>());
+        report.setEcdsaSigGroupsStatic(new LinkedList<>());
+        report.setEcdsaSigGroupsStatic(new LinkedList<>());
+        report.setEcdsaSigGroupsTls13(new LinkedList<>());
     }
 
     @Override
@@ -57,16 +100,5 @@ public class NamedGroupsProbeIT extends AbstractProbeIT {
                 && verifyProperty(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, TestResults.FALSE)
                 && verifyProperty(
                         TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.NAMED_GROUPS;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(
-                TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.CERTIFICATE);
     }
 }

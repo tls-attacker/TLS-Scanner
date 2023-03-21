@@ -8,13 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +26,14 @@ public class CompressionsProbeIT extends AbstractProbeIT {
     }
 
     @Override
+    protected TlsServerProbe getProbe() {
+        return new CompressionsProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {}
+
+    @Override
     protected boolean executedAsPlanned() {
         List<CompressionMethod> expectedCompressions = Arrays.asList(CompressionMethod.NULL);
         List<CompressionMethod> supportedCompressions = report.getSupportedCompressionMethods();
@@ -36,10 +42,5 @@ public class CompressionsProbeIT extends AbstractProbeIT {
                         supportedCompressions.stream().collect(Collectors.toList()))
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.COMPRESSIONS;
     }
 }

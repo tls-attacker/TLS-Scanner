@@ -8,12 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
@@ -26,17 +25,21 @@ public class TlsFallbackScsvProbeIT extends AbstractProbeIT {
     }
 
     @Override
+    protected TlsServerProbe getProbe() {
+        return new TlsFallbackScsvProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {
+        List<ProtocolVersion> supportedVersions =
+                Arrays.asList(
+                        ProtocolVersion.TLS10, ProtocolVersion.TLS11,
+                        ProtocolVersion.TLS12, ProtocolVersion.TLS13);
+        report.setVersions(supportedVersions);
+    }
+
+    @Override
     protected boolean executedAsPlanned() {
         return verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, TestResults.TRUE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.TLS_FALLBACK_SCSV;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION);
     }
 }

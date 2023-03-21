@@ -8,12 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -24,13 +22,16 @@ public class SignatureHashAlgorithmOrderProbeIT extends AbstractProbeIT {
     }
 
     @Override
-    protected boolean executedAsPlanned() {
-        return verifyProperty(
-                TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, TestResults.TRUE);
+    protected TlsServerProbe getProbe() {
+        return new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor);
     }
 
     @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER;
+    protected void prepareReport() {}
+
+    @Override
+    protected boolean executedAsPlanned() {
+        return verifyProperty(
+                TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, TestResults.TRUE);
     }
 }

@@ -8,11 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +24,14 @@ public class ProtocolVersionProbeIT extends AbstractProbeIT {
     }
 
     @Override
+    protected TlsServerProbe getProbe() {
+        return new ProtocolVersionProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {}
+
+    @Override
     protected boolean executedAsPlanned() {
         List<ProtocolVersion> expectedVersions =
                 Arrays.asList(
@@ -35,10 +41,5 @@ public class ProtocolVersionProbeIT extends AbstractProbeIT {
         return expectedVersions.size() == supportedVersions.size()
                 && expectedVersions.containsAll(
                         supportedVersions.stream().collect(Collectors.toList()));
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.PROTOCOL_VERSION;
     }
 }

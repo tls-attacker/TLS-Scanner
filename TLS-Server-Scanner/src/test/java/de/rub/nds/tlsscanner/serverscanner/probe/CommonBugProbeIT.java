@@ -8,12 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -22,6 +20,14 @@ public class CommonBugProbeIT extends AbstractProbeIT {
     public CommonBugProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
     }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new CommonBugProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {}
 
     @Override
     protected boolean executedAsPlanned() {
@@ -61,10 +67,5 @@ public class CommonBugProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
                         TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.COMMON_BUGS;
     }
 }

@@ -8,12 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -24,12 +22,15 @@ public class EarlyCcsProbeIT extends AbstractProbeIT {
     }
 
     @Override
-    protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
+    protected TlsServerProbe getProbe() {
+        return new EarlyCcsProbe(configSelector, parallelExecutor);
     }
 
     @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.EARLY_CCS;
+    protected void prepareReport() {}
+
+    @Override
+    protected boolean executedAsPlanned() {
+        return verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
     }
 }

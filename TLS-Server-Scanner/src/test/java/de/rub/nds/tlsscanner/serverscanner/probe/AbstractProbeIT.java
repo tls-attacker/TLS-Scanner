@@ -12,8 +12,8 @@ import static org.junit.Assume.assumeNotNull;
 
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Image;
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TransportType;
@@ -22,12 +22,12 @@ import de.rub.nds.tls.subject.docker.DockerTlsInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.docker.DockerTlsServerInstance;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.security.Security;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
@@ -54,7 +54,11 @@ public abstract class AbstractProbeIT {
 
     private DockerTlsInstance dockerInstance;
     protected ServerReport report;
-
+    protected ProbeResult probeResult;
+    protected ParallelExecutor parallelExecutor;
+    protected ConfigSelector configSelector;
+    protected ServerScannerConfig config;
+    
     public AbstractProbeIT(
             TlsImplementationType implementation, String version, String additionalParameters) {
         this.implementation = implementation;
@@ -136,10 +140,10 @@ public abstract class AbstractProbeIT {
 
     @Test
     public void testProbe() throws InterruptedException {
-        LOGGER.info("Testing: " + getTestProbe());
+        LOGGER.info("Testing: " + getProbe().getProbeName());
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             try {
-                executeScan();
+                executeProbe();
             } catch (Exception ignored) {
                 LOGGER.info(
                         "Encountered exception during scanner execution ("
@@ -154,26 +158,29 @@ public abstract class AbstractProbeIT {
                 return;
             }
         }
-        LOGGER.info("Failed");
+        LOGGER.error("Failed");
     }
 
-    private void executeScan() {
-        ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
-        config.getClientDelegate()
-                .setHost("localhost:" + ((DockerTlsServerInstance) dockerInstance).getPort());
-        config.addProbes(getRequiredProbes());
-        config.addProbes(getTestProbe());
-        TlsServerScanner scanner = new TlsServerScanner(config);
-        report = scanner.scan();
+    private void executeProbe() {
+        // Preparing config, executor, config selector, and report
+        config = new ServerScannerConfig(new GeneralDelegate());
+        config.getClientDelegate().setHost("localhost:" + ((DockerTlsServerInstance) dockerInstance).getPort());
+        parallelExecutor = new ParallelExecutor(1, 3);
+        configSelector = new ConfigSelector(config, parallelExecutor);
+        configSelector.findWorkingConfigs();
+        report = new ServerReport();
+        prepareReport();
+        // Executing probe
+        TlsServerProbe probe = getProbe();
+        probe.adjustConfig(report);
+        probe.executeTest().merge(report);
     }
+
+    protected abstract TlsServerProbe getProbe();
+    
+    protected abstract void prepareReport();
 
     protected abstract boolean executedAsPlanned();
-
-    protected abstract ProbeType getTestProbe();
-
-    protected List<ProbeType> getRequiredProbes() {
-        return new LinkedList<>();
-    }
 
     protected boolean verifyProperty(TlsAnalyzedProperty property, TestResult result) {
         return report.getResult(property) == result;

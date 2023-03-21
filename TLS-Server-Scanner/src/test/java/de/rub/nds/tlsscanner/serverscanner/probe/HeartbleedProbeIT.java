@@ -8,14 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -26,17 +22,15 @@ public class HeartbleedProbeIT extends AbstractProbeIT {
     }
 
     @Override
+    protected TlsServerProbe getProbe() {
+        return new HeartbleedProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {}
+
+    @Override
     protected boolean executedAsPlanned() {
         return verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.HEARTBLEED;
-    }
-
-    @Override
-    protected List<ProbeType> getRequiredProbes() {
-        return Arrays.asList(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.EXTENSIONS);
     }
 }

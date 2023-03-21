@@ -8,12 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -22,6 +20,14 @@ public class HttpHeaderProbeIT extends AbstractProbeIT {
     public HttpHeaderProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "-www");
     }
+
+    @Override
+    protected TlsServerProbe getProbe() {
+        return new HttpHeaderProbe(configSelector, parallelExecutor);
+    }
+
+    @Override
+    protected void prepareReport() {}
 
     @Override
     protected boolean executedAsPlanned() {
@@ -38,10 +44,5 @@ public class HttpHeaderProbeIT extends AbstractProbeIT {
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_HPKP, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_BREACH, TestResults.FALSE);
-    }
-
-    @Override
-    protected ProbeType getTestProbe() {
-        return TlsProbeType.HTTP_HEADER;
     }
 }
