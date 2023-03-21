@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -31,11 +30,8 @@ public class TlsFallbackScsvProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        List<ProtocolVersion> supportedVersions =
-                Arrays.asList(
-                        ProtocolVersion.TLS10, ProtocolVersion.TLS11,
-                        ProtocolVersion.TLS12, ProtocolVersion.TLS13);
-        report.setVersions(supportedVersions);
+        report.setVersions(
+                Arrays.asList(ProtocolVersion.TLS10, ProtocolVersion.TLS11, ProtocolVersion.TLS12));
     }
 
     @Override

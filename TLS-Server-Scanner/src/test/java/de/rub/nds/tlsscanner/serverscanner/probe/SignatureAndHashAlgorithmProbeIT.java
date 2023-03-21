@@ -31,11 +31,10 @@ public class SignatureAndHashAlgorithmProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        List<ProtocolVersion> supportedVersions =
+        report.setVersions(
                 Arrays.asList(
                         ProtocolVersion.TLS10, ProtocolVersion.TLS11,
-                        ProtocolVersion.TLS12, ProtocolVersion.TLS13);
-        report.setVersions(supportedVersions);
+                        ProtocolVersion.TLS12, ProtocolVersion.TLS13));
     }
 
     @Override

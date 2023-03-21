@@ -28,7 +28,7 @@ public class NamedGroupsProbeIT extends AbstractProbeIT {
     public NamedGroupsProbeIT() {
         super(TlsImplementationType.OPENSSL, "1.1.1f", "");
     }
-    
+
     @Override
     protected TlsServerProbe getProbe() {
         return new NamedGroupsProbe(configSelector, parallelExecutor);
@@ -41,27 +41,8 @@ public class NamedGroupsProbeIT extends AbstractProbeIT {
                 Arrays.asList(
                         CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
                         CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                        CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
-                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
                         CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
-                        CipherSuite.TLS_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_AES_256_GCM_SHA384,
-                        CipherSuite.TLS_CHACHA20_POLY1305_SHA256));
+                        CipherSuite.TLS_AES_128_GCM_SHA256));
         report.setCipherSuites(supportedCiphers);
         report.setEcdsaPkGroupsEphemeral(new LinkedList<>());
         report.setEcdsaPkGroupsTls13(new LinkedList<>());

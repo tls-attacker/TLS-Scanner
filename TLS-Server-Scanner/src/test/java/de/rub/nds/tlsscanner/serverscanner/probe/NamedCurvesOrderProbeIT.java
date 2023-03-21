@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -31,14 +30,13 @@ public class NamedCurvesOrderProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        List<NamedGroup> supportedNamedGroups =
+        report.setSupportedNamedGroups(
                 Arrays.asList(
                         NamedGroup.SECP384R1,
                         NamedGroup.ECDH_X25519,
                         NamedGroup.SECP256R1,
                         NamedGroup.ECDH_X448,
-                        NamedGroup.SECP521R1);
-        report.setSupportedNamedGroups(supportedNamedGroups);
+                        NamedGroup.SECP521R1));
     }
 
     @Override

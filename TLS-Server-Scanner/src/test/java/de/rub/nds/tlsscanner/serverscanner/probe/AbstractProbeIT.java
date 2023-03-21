@@ -58,7 +58,7 @@ public abstract class AbstractProbeIT {
     protected ParallelExecutor parallelExecutor;
     protected ConfigSelector configSelector;
     protected ServerScannerConfig config;
-    
+
     public AbstractProbeIT(
             TlsImplementationType implementation, String version, String additionalParameters) {
         this.implementation = implementation;
@@ -164,7 +164,8 @@ public abstract class AbstractProbeIT {
     private void executeProbe() {
         // Preparing config, executor, config selector, and report
         config = new ServerScannerConfig(new GeneralDelegate());
-        config.getClientDelegate().setHost("localhost:" + ((DockerTlsServerInstance) dockerInstance).getPort());
+        config.getClientDelegate()
+                .setHost("localhost:" + ((DockerTlsServerInstance) dockerInstance).getPort());
         parallelExecutor = new ParallelExecutor(1, 3);
         configSelector = new ConfigSelector(config, parallelExecutor);
         configSelector.findWorkingConfigs();
@@ -177,7 +178,7 @@ public abstract class AbstractProbeIT {
     }
 
     protected abstract TlsServerProbe getProbe();
-    
+
     protected abstract void prepareReport();
 
     protected abstract boolean executedAsPlanned();
