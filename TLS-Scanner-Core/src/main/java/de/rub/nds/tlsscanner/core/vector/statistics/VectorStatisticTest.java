@@ -1,19 +1,18 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
-import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -137,7 +136,8 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
             } else {
                 List<ResponseFingerprint> fingerprintList = new LinkedList<>();
                 fingerprintList.add(vectorResponse.getFingerprint());
-                vectorContainerList.add(new VectorContainer(vectorResponse.getVector(), fingerprintList));
+                vectorContainerList.add(
+                        new VectorContainer(vectorResponse.getVector(), fingerprintList));
             }
         }
         updateInternals();
@@ -152,7 +152,8 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
                 }
             }
             if (correctContainer != null) {
-                correctContainer.addResponseFingerprint(otherContainer.getResponseFingerprintList());
+                correctContainer.addResponseFingerprint(
+                        otherContainer.getResponseFingerprintList());
             } else {
                 this.vectorContainerList.add(otherContainer);
             }
@@ -164,7 +165,8 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         Set<ResponseFingerprint> fingerPrintSet = getAllResponseFingerprints();
         for (ResponseFingerprint fingerprint1 : fingerPrintSet) {
             for (ResponseFingerprint fingerprint2 : fingerPrintSet) {
-                EqualityError equalityError = FingerprintChecker.checkEquality(fingerprint1, fingerprint2);
+                EqualityError equalityError =
+                        FingerprintChecker.checkEquality(fingerprint1, fingerprint2);
                 if (equalityError != EqualityError.NONE) {
                     return equalityError;
                 }
@@ -177,7 +179,6 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         valueP = computePValue();
         distinctAnswers = getAllResponseFingerprints().size() > 1;
         this.significantDistinctAnswers = valueP < P_VALUE_SIGNIFICANCE_BORDER;
-
     }
 
     private double computePValue() {

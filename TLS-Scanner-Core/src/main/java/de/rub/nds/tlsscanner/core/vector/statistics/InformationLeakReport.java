@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.Vector;
@@ -54,11 +53,15 @@ public class InformationLeakReport {
                     for (Vector vector : commonVectors) {
                         for (ResponseFingerprint responseFingerprint : commonFingerPrints) {
                             VectorContainer vectorContainer1 = leakTest1.getVectorContainer(vector);
-                            measuredList.add(vectorContainer1.getResponseCounterForFingerprint(responseFingerprint)
-                                .getProbability());
+                            measuredList.add(
+                                    vectorContainer1
+                                            .getResponseCounterForFingerprint(responseFingerprint)
+                                            .getProbability());
                             VectorContainer vectorContainer2 = leakTest2.getVectorContainer(vector);
-                            expectedList.add(vectorContainer2.getResponseCounterForFingerprint(responseFingerprint)
-                                .getProbability());
+                            expectedList.add(
+                                    vectorContainer2
+                                            .getResponseCounterForFingerprint(responseFingerprint)
+                                            .getProbability());
                         }
                     }
                     break;

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -576,33 +576,34 @@ public class TlsReportCreator extends ReportCreator {
                     createDefaultKeyValueContainer("PublicKey Type:", "Static Diffie Hellman"));
 
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Modulus", dhPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Generator", dhPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Y", dhPublicKey.getY().toString(16)));
+                    createDefaultKeyHexValueContainer("Y", dhPublicKey.getY().toString(16)));
         } else if (publicKey instanceof CustomDsaPublicKey) {
             CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "DSA"));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Modulus", dsaPublicKey.getDsaP().toString(16)));
+                    createDefaultKeyHexValueContainer(
+                            "Modulus", dsaPublicKey.getDsaP().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Generator", dsaPublicKey.getDsaG().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("Q", dsaPublicKey.getDsaQ().toString(16)));
+                    createDefaultKeyHexValueContainer("Q", dsaPublicKey.getDsaQ().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer("X", dsaPublicKey.getY().toString(16)));
+                    createDefaultKeyHexValueContainer("X", dsaPublicKey.getY().toString(16)));
         } else if (publicKey instanceof CustomRsaPublicKey) {
             CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "RSA"));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Modulus", rsaPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyValueContainer(
+                    createDefaultKeyHexValueContainer(
                             "Public exponent", rsaPublicKey.getPublicExponent().toString(16)));
         } else if (publicKey instanceof CustomEcPublicKey) {
             CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;

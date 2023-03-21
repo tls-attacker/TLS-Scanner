@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -29,9 +28,13 @@ public class NamedGroupResult extends ProbeResult<ServerReport> {
     private final TestResult groupsDependOnCipherSuite;
     private final TestResult ignoresEcdsaGroupDisparity;
 
-    public NamedGroupResult(Map<NamedGroup, NamedGroupWitness> namedGroupsMap,
-        Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
-        TestResult supportsExplicitChar2, TestResult groupsDependOnCipherSuite, TestResult ignoresEcdsaGroupDisparity) {
+    public NamedGroupResult(
+            Map<NamedGroup, NamedGroupWitness> namedGroupsMap,
+            Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13,
+            TestResult supportsExplicitPrime,
+            TestResult supportsExplicitChar2,
+            TestResult groupsDependOnCipherSuite,
+            TestResult ignoresEcdsaGroupDisparity) {
         super(TlsProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;
         this.namedGroupsMapTls13 = namedGroupsMapTls13;
@@ -60,7 +63,7 @@ public class NamedGroupResult extends ProbeResult<ServerReport> {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
         report.putResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);
-        report.putResult(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
+        report.putResult(
+                TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
     }
-
 }

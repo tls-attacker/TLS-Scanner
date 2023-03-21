@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,18 +16,15 @@ import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
 import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurve;
 import de.rub.nds.tlsattacker.core.crypto.ec.FieldElementFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 public class InvalidCurvePointTest {
 
-    /**
-     * Test points of small order.
-     */
+    /** Test points of small order. */
     @Test
     public void testSmallOrder() {
         List<NamedGroup> knownGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
@@ -42,9 +38,7 @@ public class InvalidCurvePointTest {
         }
     }
 
-    /**
-     * Test points of alternative order.
-     */
+    /** Test points of alternative order. */
     @Test
     public void testAlternativeOrder() {
         List<NamedGroup> knownGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
@@ -58,9 +52,7 @@ public class InvalidCurvePointTest {
         }
     }
 
-    /**
-     * Test points of large order.
-     */
+    /** Test points of large order. */
     @Test
     public void testLargeOrder() {
         List<NamedGroup> knownGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
@@ -105,10 +97,11 @@ public class InvalidCurvePointTest {
             return false;
         } else if (invP2 != null && invP1.getOrder().compareTo(invP2.getOrder()) >= 0) {
             return false;
-        } else if (invP3 != null && invP2 != null && invP2.getOrder().compareTo(invP3.getOrder()) >= 0) {
+        } else if (invP3 != null
+                && invP2 != null
+                && invP2.getOrder().compareTo(invP3.getOrder()) >= 0) {
             return false;
         }
         return true;
     }
-
 }

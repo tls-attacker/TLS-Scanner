@@ -1,21 +1,20 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +26,7 @@ public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         int intialPort = report.getPort();
         ExtractedValueContainer<Integer> container =
-            report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
+                report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
 
         TestResult changesPort;
         try {
@@ -61,7 +60,7 @@ public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
             LOGGER.error(e.toString());
             changesPortToRandomPorts = TestResults.ERROR_DURING_TEST;
         }
-        report.putResult(TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
+        report.putResult(
+                TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
     }
-
 }

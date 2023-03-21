@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -20,17 +19,18 @@ public class SessionTicketZeroKeyResult extends ProbeResult<ServerReport> {
     private final TestResult hasDecryptableMasterSecret;
     private final TestResult hasGnuTlsMagicBytes;
 
-    public SessionTicketZeroKeyResult(TestResult hasDecryptableMasterSecret, TestResult hasGnuTlsMagicBytes) {
+    public SessionTicketZeroKeyResult(
+            TestResult hasDecryptableMasterSecret, TestResult hasGnuTlsMagicBytes) {
         super(TlsProbeType.SESSION_TICKET_ZERO_KEY);
         this.hasDecryptableMasterSecret = hasDecryptableMasterSecret;
         this.hasGnuTlsMagicBytes = hasGnuTlsMagicBytes;
-
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, this.hasDecryptableMasterSecret);
+        report.putResult(
+                TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+                this.hasDecryptableMasterSecret);
         report.putResult(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);
     }
-
 }

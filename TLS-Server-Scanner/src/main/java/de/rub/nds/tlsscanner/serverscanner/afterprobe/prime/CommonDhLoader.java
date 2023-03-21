@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.afterprobe.prime;
 
 import java.io.IOException;
@@ -23,15 +22,14 @@ import org.json.simple.parser.ParseException;
 
 public class CommonDhLoader {
 
-    private CommonDhLoader() {
-    }
+    private CommonDhLoader() {}
 
     public static List<CommonDhValues> loadCommonDhValues() {
         try {
             List<CommonDhValues> commonValuesList = new LinkedList<>();
             JSONParser parser = new JSONParser();
             InputStream resourceAsStream =
-                CommonDhLoader.class.getClassLoader().getResourceAsStream("common/common.json");
+                    CommonDhLoader.class.getClassLoader().getResourceAsStream("common/common.json");
             Object obj = parser.parse(new InputStreamReader(resourceAsStream));
 
             JSONObject jsonObject = (JSONObject) obj;
@@ -46,12 +44,13 @@ public class CommonDhLoader {
                 BigInteger modulus = new BigInteger((String) commonDh.get("p"));
                 Boolean prime = (Boolean) commonDh.get("prime");
                 Boolean safePrime = (Boolean) commonDh.get("safe_prime");
-                commonValuesList.add(new CommonDhValues(generator, modulus, length.intValue(), prime, safePrime, name));
+                commonValuesList.add(
+                        new CommonDhValues(
+                                generator, modulus, length.intValue(), prime, safePrime, name));
             }
             return commonValuesList;
         } catch (IOException | ParseException ex) {
             throw new RuntimeException("Could not load CommonDh Values");
         }
     }
-
 }

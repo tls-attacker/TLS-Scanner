@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.constants.TestResult;
@@ -30,7 +29,7 @@ public class AlpacaResult extends ProbeResult<ServerReport> {
     @Override
     protected void mergeData(ServerReport report) {
         if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
-            && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
+                && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
 
             TestResult alpacaMitigated;
             if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {

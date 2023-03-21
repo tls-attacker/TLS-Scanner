@@ -1,12 +1,11 @@
-/**
- * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
@@ -53,12 +52,13 @@ public abstract class ScanReport extends Observable implements Serializable {
         this.performedTcpConnections = performedTcpConnections;
     }
 
-    public synchronized Map<TrackableValue, ExtractedValueContainer> getExtractedValueContainerMap() {
+    public synchronized Map<TrackableValue, ExtractedValueContainer>
+            getExtractedValueContainerMap() {
         return extractedValueContainerMap;
     }
 
-    public synchronized void
-        setExtractedValueContainerList(Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap) {
+    public synchronized void setExtractedValueContainerList(
+            Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -84,8 +84,13 @@ public abstract class ScanReport extends Observable implements Serializable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResults.TRUE
-            : Objects.equals(result, Boolean.FALSE) ? TestResults.FALSE : TestResults.UNCERTAIN);
+        this.putResult(
+                property,
+                Objects.equals(result, Boolean.TRUE)
+                        ? TestResults.TRUE
+                        : Objects.equals(result, Boolean.FALSE)
+                                ? TestResults.FALSE
+                                : TestResults.UNCERTAIN);
     }
 
     public synchronized void markAsChangedAndNotify() {

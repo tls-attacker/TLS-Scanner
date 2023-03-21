@@ -1,12 +1,11 @@
-/**
- * TLS-Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.core.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
@@ -25,7 +24,10 @@ public abstract class TlsScanner {
         this(new LinkedList<>(), new LinkedList<>(), probesToExecute);
     }
 
-    public TlsScanner(List<ScannerProbe> probeList, List<AfterProbe> afterList, List<ProbeType> probeTypesToExecute) {
+    public TlsScanner(
+            List<ScannerProbe> probeList,
+            List<AfterProbe> afterList,
+            List<ProbeType> probeTypesToExecute) {
         this.probeTypesToExecute = probeTypesToExecute;
         this.afterList = afterList;
         this.probeList = probeList;
@@ -39,7 +41,7 @@ public abstract class TlsScanner {
 
     protected void addProbeToProbeList(TlsProbe probe, boolean addByDefault) {
         if ((probeTypesToExecute == null && addByDefault)
-            || (probeTypesToExecute != null && probeTypesToExecute.contains(probe.getType()))) {
+                || (probeTypesToExecute != null && probeTypesToExecute.contains(probe.getType()))) {
             probeList.add(probe);
         }
     }

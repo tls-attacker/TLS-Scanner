@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -835,7 +835,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 } else {
                     builder.append("ROCA (simple): not tested");
                 }
-                prettyAppend(builder, "Fingerprint (SHA256)", certReport.getSHA256Fingerprint());
+                prettyAppendHexString(
+                        builder, "Fingerprint (SHA256)", certReport.getSHA256Fingerprint());
             }
         }
         return builder;
@@ -846,21 +847,22 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "Static Diffie Hellman");
 
-            prettyAppend(builder, "Modulus", dhPublicKey.getModulus().toString(16));
-            prettyAppend(builder, "Generator", dhPublicKey.getModulus().toString(16));
-            prettyAppend(builder, "Y", dhPublicKey.getY().toString(16));
+            prettyAppendHexString(builder, "Modulus", dhPublicKey.getModulus().toString(16));
+            prettyAppendHexString(builder, "Generator", dhPublicKey.getModulus().toString(16));
+            prettyAppendHexString(builder, "Y", dhPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomDsaPublicKey) {
             CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "DSA");
-            prettyAppend(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
-            prettyAppend(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
-            prettyAppend(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
-            prettyAppend(builder, "X", dsaPublicKey.getY().toString(16));
+            prettyAppendHexString(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
+            prettyAppendHexString(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
+            prettyAppendHexString(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            prettyAppendHexString(builder, "X", dsaPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomRsaPublicKey) {
             CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "RSA");
-            prettyAppend(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
-            prettyAppend(builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
+            prettyAppendHexString(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
+            prettyAppendHexString(
+                    builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
         } else if (publicKey instanceof CustomEcPublicKey) {
             CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "EC");
@@ -869,7 +871,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             } else {
                 prettyAppend(builder, "Group", ecPublicKey.getGroup().name());
             }
-            prettyAppend(builder, "Public Point", ecPublicKey.getPoint().toString());
+            prettyAppendHexString(builder, "Public Point", ecPublicKey.getPoint().toString(16));
         } else {
             builder.append(publicKey.toString()).append("\n");
         }

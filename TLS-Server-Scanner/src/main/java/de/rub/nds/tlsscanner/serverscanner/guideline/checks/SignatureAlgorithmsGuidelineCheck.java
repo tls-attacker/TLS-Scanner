@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -18,12 +17,12 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -35,14 +34,19 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
         super(null, null);
     }
 
-    public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<SignatureAlgorithm> recommendedAlgorithms) {
+    public SignatureAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<SignatureAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    public SignatureAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, List<SignatureAlgorithm> recommendedAlgorithms) {
+    public SignatureAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<SignatureAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel, condition);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
@@ -58,7 +62,8 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
                 notRecommended.add(alg.getSignatureAlgorithm());
             }
         }
-        return new SignatureAlgorithmsGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()), notRecommended);
+        return new SignatureAlgorithmsGuidelineCheckResult(
+                TestResults.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override
