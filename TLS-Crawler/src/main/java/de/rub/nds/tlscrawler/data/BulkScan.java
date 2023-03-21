@@ -50,6 +50,7 @@ public class BulkScan implements Serializable {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 
+    @SuppressWarnings("unused")
     private BulkScan() {}
 
     public BulkScan(

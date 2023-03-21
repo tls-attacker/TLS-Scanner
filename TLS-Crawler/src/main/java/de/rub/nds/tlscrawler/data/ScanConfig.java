@@ -27,6 +27,7 @@ public class ScanConfig implements Serializable {
 
     private StarttlsType starttlsType;
 
+    @SuppressWarnings("unused")
     private ScanConfig() {}
 
     public ScanConfig(
