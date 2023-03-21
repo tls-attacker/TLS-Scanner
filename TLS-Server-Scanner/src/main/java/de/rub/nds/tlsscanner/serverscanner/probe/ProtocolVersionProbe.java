@@ -41,6 +41,8 @@ public class ProtocolVersionProbe
         if (configSelector.foundWorkingTls13Config()) {
             // the ConfigSelector is currently better at determining 1.3 support
             supportedVersionList.add(ProtocolVersion.TLS13);
+        } else {
+            unsupportedVersionList.add(ProtocolVersion.TLS13);
         }
 
         for (ProtocolVersion version : toTestList) {
