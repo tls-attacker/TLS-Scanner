@@ -80,13 +80,21 @@ public class OptionsRequirement extends Requirement {
 
     @Override
     public Enum<?>[] getRequirement() {
-        return type.name() == "ALPN"
-                ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_ALPN}
-                : type.name() == "SNI"
-                        ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_SNI}
-                        : type.name() == "RESUMPTION"
-                                ? new Enum<?>[] {SpecialRequirementTypes.OPTIONS_RESUMPTION}
-                                : new Enum<?>[] {null};
+        if (type == null) {
+            return new Enum<?>[] {null};
+        } else {
+            switch (type) {
+                case ALPN:
+                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_ALPN};
+                case SNI:
+                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_SNI};
+                case RESUMPTION:
+                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_RESUMPTION};
+                default:
+                    throw new IllegalArgumentException(
+                            "Invalid probe (" + type.name() + ") set for OptionsRequirement");
+            }
+        }
     }
 
     @Override
