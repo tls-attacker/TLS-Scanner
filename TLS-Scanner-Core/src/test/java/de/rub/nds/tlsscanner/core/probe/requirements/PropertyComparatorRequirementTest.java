@@ -28,7 +28,8 @@ public class PropertyComparatorRequirementTest {
                 report2 = new TestReport();
         ListResult<ProtocolVersion> protVer1 =
                 new ListResult<>(
-                        Arrays.asList(ProtocolVersion.TLS10), "SUPPORTED_PROTOCOL_VERSIONS");
+                        Arrays.asList(ProtocolVersion.TLS10),
+                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name());
         ListResult<ProtocolVersion> protVer2 =
                 new ListResult<>(
                         Arrays.asList(ProtocolVersion.TLS10, ProtocolVersion.DTLS12),

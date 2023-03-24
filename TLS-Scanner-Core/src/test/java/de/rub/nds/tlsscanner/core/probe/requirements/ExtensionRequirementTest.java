@@ -44,7 +44,8 @@ public class ExtensionRequirementTest {
 
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                new ListResult<>(Arrays.asList(extension), "SUPPORTED_EXTENSIONS"));
+                new ListResult<>(
+                        Arrays.asList(extension), TlsAnalyzedProperty.SUPPORTED_EXTENSIONS.name()));
         assertTrue(requirement.evaluate(report));
     }
 }

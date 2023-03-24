@@ -43,7 +43,9 @@ public class ProtocolRequirementTest {
 
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
-                new ListResult<>(Arrays.asList(protocolVersion), "SUPPORTED_PROTOCOL_VERSIONS"));
+                new ListResult<>(
+                        Arrays.asList(protocolVersion),
+                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name()));
         assertTrue(requirement.evaluate(report));
     }
 }

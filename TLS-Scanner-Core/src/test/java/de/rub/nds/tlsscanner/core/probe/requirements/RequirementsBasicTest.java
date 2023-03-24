@@ -44,7 +44,7 @@ public class RequirementsBasicTest {
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
                 new ListResult<>(
                         Arrays.asList(new ExtensionType[] {ExtensionType.ALPN}),
-                        "SUPPORTED_EXTENSIONS"));
+                        TlsAnalyzedProperty.SUPPORTED_EXTENSIONS.name()));
         assertTrue(requirements.evaluate(report));
 
         TlsProbeType probe = TlsProbeType.ALPN;
@@ -80,7 +80,9 @@ public class RequirementsBasicTest {
         assertFalse(requirements.evaluate(report));
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
-                new ListResult<>(Arrays.asList(prot), "SUPPORTED_PROTOCOL_VERSIONS"));
+                new ListResult<>(
+                        Arrays.asList(prot),
+                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name()));
         assertTrue(requirements.evaluate(report));
 
         ProbeRequirement requirement0 = new ProbeRequirement(TlsProbeType.BLEICHENBACHER);
