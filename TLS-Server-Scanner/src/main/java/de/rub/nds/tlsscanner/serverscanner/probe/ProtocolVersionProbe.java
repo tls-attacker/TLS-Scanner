@@ -55,6 +55,8 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
         if (configSelector.foundWorkingTls13Config()) {
             // the ConfigSelector is currently better at determining 1.3 support
             supportedProtocolVersions.add(ProtocolVersion.TLS13);
+        } else {
+            unsupportedProtocolVersions.add(ProtocolVersion.TLS13);
         }
 
         for (ProtocolVersion version : toTestList) {
