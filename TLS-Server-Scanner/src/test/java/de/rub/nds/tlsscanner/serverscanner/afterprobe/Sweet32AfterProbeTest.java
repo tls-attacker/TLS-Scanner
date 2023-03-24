@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
@@ -50,7 +51,11 @@ public class Sweet32AfterProbeTest {
     @MethodSource("provideVulnerableCipherSuites")
     public void testVulnerableCipherSuites(CipherSuite providedCipherSuite) {
         // test reports that only use vulnerable ciphers
-        report.setCipherSuites(Collections.singleton(providedCipherSuite));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        Collections.singleton(providedCipherSuite),
+                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(
                 TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
@@ -59,8 +64,13 @@ public class Sweet32AfterProbeTest {
         Set<CipherSuite> ciphers = new HashSet<>();
         ciphers.add(providedCipherSuite);
         ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
-        report.setCipherSuites(ciphers);
+
+        // add a number of "random" safe cipher suites to the mix
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(ciphers, TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
+
         assertEquals(
                 TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
@@ -68,7 +78,11 @@ public class Sweet32AfterProbeTest {
     @ParameterizedTest
     @MethodSource("provideSafeCipherSuites")
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
-        report.setCipherSuites(Collections.singleton(providedCipherSuite));
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        Collections.singleton(providedCipherSuite),
+                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
@@ -76,12 +90,19 @@ public class Sweet32AfterProbeTest {
 
     @Test
     public void testNoCipherSuites() {
-        report.setCipherSuites(new HashSet<>());
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                new SetResult<>(
+                        new HashSet<>(), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
         probe.analyze(report);
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
     }
 
+    /**
+     * Test if vulnerability to Sweet32 is uncertain when the ServerReport is empty without host and
+     * port.
+     */
     @Test
     public void testEmptyServerReport() {
         probe.analyze(report);

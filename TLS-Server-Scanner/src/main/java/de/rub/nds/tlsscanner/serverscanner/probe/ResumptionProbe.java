@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -38,8 +39,9 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ResumptionResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -48,49 +50,55 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ResumptionProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, ResumptionResult> {
+public class ResumptionProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private Set<CipherSuite> supportedSuites;
-    private TestResult supportsDtlsCookieExchangeInResumption;
-    private TestResult supportsDtlsCookieExchangeInTicketResumption;
-    private TestResult respectsPskModes;
+    private TestResult supportsDtlsCookieExchangeInResumption = TestResults.COULD_NOT_TEST;
+    private TestResult respectsPskModes = TestResults.COULD_NOT_TEST;
+    private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13SessionTicket = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
+    private TestResult supportsTls13ZeroRtt = TestResults.COULD_NOT_TEST;
+    private TestResult supportsDtlsCookieExchangeInSessionTicketResumption =
+            TestResults.COULD_NOT_TEST;
 
     public ResumptionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RESUMPTION, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES);
     }
 
     @Override
-    public ResumptionResult executeTest() {
+    public void executeTest() {
         this.respectsPskModes = TestResults.TRUE;
         if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
             supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
-            supportsDtlsCookieExchangeInTicketResumption =
+
+            supportsDtlsCookieExchangeInSessionTicketResumption =
                     getSupportsDtlsCookieExchangeInSessionTicketResumption();
-            return new ResumptionResult(
-                    getSupportsSessionResumption(),
-                    getSupportsSessionTicketResumption(),
-                    TestResults.NOT_TESTED_YET,
-                    TestResults.NOT_TESTED_YET,
-                    TestResults.NOT_TESTED_YET,
-                    TestResults.NOT_TESTED_YET,
-                    supportsDtlsCookieExchangeInResumption,
-                    supportsDtlsCookieExchangeInTicketResumption,
-                    respectsPskModes);
+            supportsTls13SessionTicket =
+                    supportsTls13PskDhe =
+                            supportsTls13Psk = supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
-            supportsDtlsCookieExchangeInTicketResumption = TestResults.NOT_TESTED_YET;
-            return new ResumptionResult(
-                    getSupportsSessionResumption(),
-                    getSupportsSessionTicketResumption(),
-                    getIssuesTls13SessionTicket(),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
-                    getSupports0rtt(),
-                    supportsDtlsCookieExchangeInResumption,
-                    supportsDtlsCookieExchangeInTicketResumption,
-                    respectsPskModes);
+            supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
+            supportsTls13SessionTicket = getIssuesTls13SessionTicket();
+            supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
+            supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
+            supportsTls13ZeroRtt = getSupports0rtt();
         }
+        supportsResumption = getSupportsSessionResumption();
+        supportsSessionTicketResumption = getSupportsSessionTicketResumption();
     }
 
     private TestResult getSupportsDtlsCookieExchangeInResumption() {
@@ -377,28 +385,33 @@ public class ResumptionProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.getCipherSuites() != null && (!report.getCipherSuites().isEmpty());
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = report.getCipherSuites();
+        supportedSuites = report.getSupportedCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override
-    public ResumptionResult getCouldNotExecuteResult() {
-        return new ResumptionResult(
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION, supportsResumption);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
+                supportsSessionTicketResumption);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                supportsDtlsCookieExchangeInResumption);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                supportsDtlsCookieExchangeInSessionTicketResumption);
+        put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 }

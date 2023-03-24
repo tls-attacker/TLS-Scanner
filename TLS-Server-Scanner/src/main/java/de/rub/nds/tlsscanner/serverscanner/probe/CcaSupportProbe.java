@@ -8,27 +8,32 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.CcaSupportResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class CcaSupportProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CcaSupportResult<ServerReport>> {
+public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult supportsCca = TestResults.COULD_NOT_TEST;
 
     public CcaSupportProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_CCA);
     }
 
     @Override
-    public CcaSupportResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAutoSelectCertificate(false);
@@ -36,22 +41,22 @@ public class CcaSupportProbe
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
                 HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return new CcaSupportResult(TestResults.TRUE);
+            supportsCca = TestResults.TRUE;
         } else {
-            return new CcaSupportResult(TestResults.FALSE);
+            supportsCca = TestResults.FALSE;
         }
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return configSelector.foundWorkingConfig();
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public CcaSupportResult getCouldNotExecuteResult() {
-        return new CcaSupportResult(TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        return new WorkingConfigRequirement(configSelector);
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_CCA, supportsCca);
     }
 }

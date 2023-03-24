@@ -36,11 +36,11 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
             ConfigFilterType.CIPHERSUITE_RC4,
             ConfigFilterType.CIPHERSUITE_NULL),
 
-    SLIGHTLY_REDUCED_NAMEDGROUPS(ConfigFilterType.NAMEDGROUP_GREASE),
-    MODERATELY_REDUCED_NAMEDGROUPS(
-            SLIGHTLY_REDUCED_NAMEDGROUPS.getConfigFilterTypes(), ConfigFilterType.NAMEDGROUP_SECT),
-    HIGHLY_REDUCED_NAMEDGROUPS(
-            MODERATELY_REDUCED_NAMEDGROUPS.getConfigFilterTypes(),
+    SLIGHTLY_REDUCED_NAMED_GROUPS(ConfigFilterType.NAMEDGROUP_GREASE),
+    MODERATELY_REDUCED_NAMED_GROUPS(
+            SLIGHTLY_REDUCED_NAMED_GROUPS.getConfigFilterTypes(), ConfigFilterType.NAMEDGROUP_SECT),
+    HIGHLY_REDUCED_NAMED_GROUPS(
+            MODERATELY_REDUCED_NAMED_GROUPS.getConfigFilterTypes(),
             ConfigFilterType.NAMEDGROUP_DEPRECATED),
 
     SLIGHTLY_REDUCED_SIGNATUREALGORITHMS(ConfigFilterType.SIGNATUREALGORITHM_GREASE),
@@ -58,11 +58,11 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
             ConfigFilterType.SIGNATUREALGORITHM_ED),
 
     RICH_TLS_13(),
-    CLEAN_NAMEDGROUPS_TLS_13(ConfigFilterType.NAMEDGROUP_DEPRECATED),
+    CLEAN_NAMED_GROUPS_TLS_13(ConfigFilterType.NAMEDGROUP_DEPRECATED),
     CLEAN_SIGNATUREALGORITHMS_TLS_13(ConfigFilterType.SIGNATUREALGORITHM_TLS13),
     CLEAN_TLS_13(
             ArrayConverter.concatenate(
-                    CLEAN_NAMEDGROUPS_TLS_13.getConfigFilterTypes(),
+                    CLEAN_NAMED_GROUPS_TLS_13.getConfigFilterTypes(),
                     CLEAN_SIGNATUREALGORITHMS_TLS_13.getConfigFilterTypes()));
 
     private final ConfigFilterType[] configFilterTypes;
@@ -93,9 +93,9 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
             MODERATELY_REDUCED_CIPHERSUITES,
             HIGHLY_REDUCED_CIPHERSUITES,
             EXTREMELY_REDUCED_CIPHERSUITES,
-            SLIGHTLY_REDUCED_NAMEDGROUPS,
-            MODERATELY_REDUCED_NAMEDGROUPS,
-            HIGHLY_REDUCED_NAMEDGROUPS,
+            SLIGHTLY_REDUCED_NAMED_GROUPS,
+            MODERATELY_REDUCED_NAMED_GROUPS,
+            HIGHLY_REDUCED_NAMED_GROUPS,
             SLIGHTLY_REDUCED_SIGNATUREALGORITHMS,
             MODERATELY_REDUCED_SIGNATUREALGORITHMS,
             HIGHLY_REDUCED_SIGNATUREALGORITHMS,
@@ -106,9 +106,9 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
     public static DefaultConfigProfile[] getTls13ConfigProfiles() {
         return new DefaultConfigProfile[] {
             RICH_TLS_13,
-            SLIGHTLY_REDUCED_NAMEDGROUPS,
-            MODERATELY_REDUCED_NAMEDGROUPS,
-            CLEAN_NAMEDGROUPS_TLS_13,
+            SLIGHTLY_REDUCED_NAMED_GROUPS,
+            MODERATELY_REDUCED_NAMED_GROUPS,
+            CLEAN_NAMED_GROUPS_TLS_13,
             CLEAN_SIGNATUREALGORITHMS_TLS_13,
             CLEAN_TLS_13
         };

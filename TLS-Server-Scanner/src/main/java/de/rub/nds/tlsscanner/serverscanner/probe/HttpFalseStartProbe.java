@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
@@ -28,21 +30,24 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class HttpFalseStartProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HttpFalseStartResult> {
+public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult supportsFalseStart = TestResults.COULD_NOT_TEST;
 
     public HttpFalseStartProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
     }
 
     @Override
-    public HttpFalseStartResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
 
@@ -71,34 +76,28 @@ public class HttpFalseStartProbe
                     action.getReceivedMessages().stream()
                             .anyMatch(FinishedMessage.class::isInstance);
         }
-
+        supportsFalseStart = TestResults.UNCERTAIN;
         if (action.getReceivedHttpMessages() != null
                 && !action.getReceivedHttpMessages().isEmpty()) {
             // review once HTTP layer is re-implemented to ensure that
             // other app data does not appear as http response
-            return new HttpFalseStartResult(TestResults.TRUE);
+            supportsFalseStart = TestResults.TRUE;
+        } else if (!receivedServerFinishedMessage) {
+            supportsFalseStart = TestResults.FALSE;
         }
-        if (!receivedServerFinishedMessage) {
-            // server sent no finished message, false start messed up the
-            // handshake
-            return new HttpFalseStartResult(TestResults.FALSE);
-        }
-        // received no http response -> maybe server did not understand
-        // request
-        return new HttpFalseStartResult(TestResults.UNCERTAIN);
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE
-                && configSelector.foundWorkingConfig();
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS)
+                .requires(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public HttpFalseStartResult getCouldNotExecuteResult() {
-        return new HttpFalseStartResult(TestResults.COULD_NOT_TEST);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, supportsFalseStart);
     }
 }

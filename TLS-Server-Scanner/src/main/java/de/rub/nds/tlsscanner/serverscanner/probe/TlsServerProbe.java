@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -22,9 +21,8 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsServerProbe<
-                ConfigSelector, Report extends TlsScanReport, Result extends ProbeResult<Report>>
-        extends TlsProbe<Report, Result> {
+public abstract class TlsServerProbe<ConfigSelector, Report extends TlsScanReport>
+        extends TlsProbe<Report> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 

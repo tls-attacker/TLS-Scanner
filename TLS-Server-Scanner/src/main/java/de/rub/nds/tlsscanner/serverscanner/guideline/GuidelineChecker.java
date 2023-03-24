@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
@@ -31,8 +33,11 @@ public class GuidelineChecker {
 
     public void fillReport(ServerReport report) {
         List<GuidelineReport> guidelineReports = report.getGuidelineReports();
+        if (guidelineReports == null) {
+            guidelineReports = new ArrayList<>();
+        }
         List<GuidelineCheckResult> results = new ArrayList<>();
-        for (GuidelineCheck check : this.guideline.getChecks()) {
+        for (GuidelineCheck check : guideline.getChecks()) {
             GuidelineCheckResult result;
             if (!check.passesCondition(report)) {
                 result =
@@ -81,5 +86,8 @@ public class GuidelineChecker {
         }
         guidelineReports.add(
                 new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
+        report.putResult(
+                TlsAnalyzedProperty.GUIDELINE_REPORTS,
+                new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
     }
 }

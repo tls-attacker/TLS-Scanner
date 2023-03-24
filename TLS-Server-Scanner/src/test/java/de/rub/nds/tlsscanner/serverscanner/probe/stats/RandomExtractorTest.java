@@ -20,8 +20,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,13 +31,13 @@ public class RandomExtractorTest {
 
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
-    private final Logger LOGGER = LogManager.getLogger();
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM1 =
             ArrayConverter.hexStringToByteArray(
                     "4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
 
+    @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM2 =
             ArrayConverter.hexStringToByteArray(
                     "CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");

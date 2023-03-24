@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
@@ -24,7 +25,7 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ConnectionClosingResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
@@ -34,13 +35,14 @@ import java.io.IOException;
  * probe. Note that NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server
  * didn't close the connection within our limit or the probe could not be executed.
  */
-public class ConnectionClosingProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, ConnectionClosingResult> {
+public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     public static final long NO_RESULT = -1;
     private static final long LIMIT = 5000;
 
     private boolean useHttpAppData = false;
+    private long closedAfterFinishedDelta = NO_RESULT;
+    private long closedAfterAppDataDelta = NO_RESULT;
 
     public ConnectionClosingProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -48,7 +50,7 @@ public class ConnectionClosingProbe
     }
 
     @Override
-    public ConnectionClosingResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         configSelector.repairConfig(tlsConfig);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
@@ -62,10 +64,8 @@ public class ConnectionClosingProbe
         } else {
             handshakeWithAppData.addTlsAction(new SendAction(new ApplicationMessage()));
         }
-
-        return new ConnectionClosingResult(
-                evaluateClosingDelta(tlsConfig, handshakeOnly),
-                evaluateClosingDelta(tlsConfig, handshakeWithAppData));
+        closedAfterFinishedDelta = evaluateClosingDelta(tlsConfig, handshakeOnly);
+        closedAfterAppDataDelta = evaluateClosingDelta(tlsConfig, handshakeWithAppData);
     }
 
     public WorkflowTrace getWorkflowTrace(Config tlsConfig) {
@@ -110,17 +110,18 @@ public class ConnectionClosingProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.HTTP_HEADER);
-    }
-
-    @Override
-    public ConnectionClosingResult getCouldNotExecuteResult() {
-        return new ConnectionClosingResult(NO_RESULT, NO_RESULT);
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {
         useHttpAppData = report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResults.TRUE;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
+        report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.HTTP_HEADER);
     }
 }

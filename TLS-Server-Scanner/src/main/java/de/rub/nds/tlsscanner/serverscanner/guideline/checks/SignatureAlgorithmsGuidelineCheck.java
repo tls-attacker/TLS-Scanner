@@ -53,17 +53,20 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        if (report.getSupportedSignatureAndHashAlgorithms() == null) {
+        List<SignatureAndHashAlgorithm> algorithms =
+                report.getSupportedSignatureAndHashAlgorithms();
+        if (algorithms != null) {
+            Set<SignatureAlgorithm> notRecommended = new HashSet<>();
+            for (SignatureAndHashAlgorithm alg : algorithms) {
+                if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
+                    notRecommended.add(alg.getSignatureAlgorithm());
+                }
+            }
+            return new SignatureAlgorithmsGuidelineCheckResult(
+                    TestResults.of(notRecommended.isEmpty()), notRecommended);
+        } else {
             return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
-        Set<SignatureAlgorithm> notRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
-            if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
-                notRecommended.add(alg.getSignatureAlgorithm());
-            }
-        }
-        return new SignatureAlgorithmsGuidelineCheckResult(
-                TestResults.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override

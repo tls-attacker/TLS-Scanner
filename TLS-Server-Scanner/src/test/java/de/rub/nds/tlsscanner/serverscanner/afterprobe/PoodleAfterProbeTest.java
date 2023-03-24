@@ -10,13 +10,15 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,11 @@ public class PoodleAfterProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.FALSE);
         VersionSuiteListPair versionSuiteListPair =
                 new VersionSuiteListPair(ProtocolVersion.TLS12, List.of(providedCipherSuite));
-        report.setVersionSuitePairs(List.of(versionSuiteListPair));
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        List.of(versionSuiteListPair),
+                        TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }
@@ -59,7 +65,11 @@ public class PoodleAfterProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
         VersionSuiteListPair versionSuiteListPair =
                 new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
-        report.setVersionSuitePairs(List.of(versionSuiteListPair));
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        List.of(versionSuiteListPair),
+                        TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }
@@ -74,8 +84,12 @@ public class PoodleAfterProbeTest {
         VersionSuiteListPair safeVersionSuiteListPair =
                 new VersionSuiteListPair(
                         ProtocolVersion.TLS12, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
-        report.setVersionSuitePairs(
-                List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair),
+                        TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
+
         probe.analyze(report);
         assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
 
@@ -84,8 +98,11 @@ public class PoodleAfterProbeTest {
         safeVersionSuiteListPair =
                 new VersionSuiteListPair(
                         ProtocolVersion.SSL3, List.of(CipherSuite.TLS_RSA_WITH_NULL_SHA));
-        report.setVersionSuitePairs(
-                List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair));
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        List.of(vulnerableVersionSuiteListPair, safeVersionSuiteListPair),
+                        TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }
@@ -96,7 +113,11 @@ public class PoodleAfterProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
         VersionSuiteListPair versionSuiteListPair =
                 new VersionSuiteListPair(ProtocolVersion.SSL3, List.of(providedCipherSuite));
-        report.setVersionSuitePairs(List.of(versionSuiteListPair));
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        List.of(versionSuiteListPair),
+                        TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }
@@ -109,8 +130,10 @@ public class PoodleAfterProbeTest {
         assertEquals(
                 TestResults.ERROR_DURING_TEST,
                 report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
-
-        report.setVersionSuitePairs(new LinkedList<>());
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                new ListResult<>(
+                        new LinkedList<>(), TlsAnalyzedProperty.VERSION_SUITE_PAIRS.name()));
         probe.analyze(report);
         assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_POODLE));
     }

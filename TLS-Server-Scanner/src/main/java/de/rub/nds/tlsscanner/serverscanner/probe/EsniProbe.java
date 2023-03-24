@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -19,19 +21,23 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.EsniResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 
-public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport, EsniResult> {
+public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult receivedCorrectNonce = TestResults.COULD_NOT_TEST;
 
     public EsniProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ESNI, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_ESNI);
     }
 
     @Override
-    public EsniResult executeTest() {
+    public void executeTest() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
@@ -50,25 +56,25 @@ public class EsniProbe extends TlsServerProbe<ConfigSelector, ServerReport, Esni
                                 context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(
                 HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return new EsniResult(TestResults.ERROR_DURING_TEST);
+            receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-            return (new EsniResult(TestResults.TRUE));
+            receivedCorrectNonce = TestResults.TRUE;
         } else {
-            return (new EsniResult(TestResults.FALSE));
+            receivedCorrectNonce = TestResults.FALSE;
         }
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public EsniResult getCouldNotExecuteResult() {
-        return new EsniResult(TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
     }
 }

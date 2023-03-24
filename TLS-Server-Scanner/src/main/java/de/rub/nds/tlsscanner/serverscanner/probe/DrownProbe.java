@@ -8,26 +8,36 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.GeneralDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.constans.DrownOracleType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport, DrownResult> {
+public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult generalDrown = TestResults.COULD_NOT_TEST;
+    private TestResult extraClear = TestResults.COULD_NOT_TEST;
 
     public DrownProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DROWN, configSelector);
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,
+                TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
     }
 
     @Override
-    public DrownResult executeTest() {
-        return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
+    public void executeTest() {
+        generalDrown = testForGeneralDrown();
+        extraClear = testForExtraClearDrown();
     }
 
     private TestResults testForGeneralDrown() {
@@ -46,16 +56,17 @@ public class DrownProbe extends TlsServerProbe<ConfigSelector, ServerReport, Dro
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_2) == TestResults.TRUE;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public DrownResult getCouldNotExecuteResult() {
-        return new DrownResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_2));
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, extraClear);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, generalDrown);
     }
 }

@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -26,19 +27,25 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsBugsResult;
 
-public class DtlsBugsProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, DtlsBugsResult<ClientReport>> {
+public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+
+    private TestResult isEarlyFinished = TestResults.COULD_NOT_TEST;
+    private TestResult isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
 
     public DtlsBugsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_COMMON_BUGS, scannerConfig);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
-    public DtlsBugsResult executeTest() {
-        return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
+    public void executeTest() {
+        isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished();
+        isEarlyFinished = isEarlyFinished();
     }
 
     private TestResult isAcceptingUnencryptedFinished() {
@@ -91,15 +98,16 @@ public class DtlsBugsProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsBugsResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

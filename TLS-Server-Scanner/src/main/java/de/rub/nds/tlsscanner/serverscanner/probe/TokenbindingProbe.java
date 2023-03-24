@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -16,8 +18,8 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.TokenbindingResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -27,24 +29,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, TokenbindingResult> {
+public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private List<TokenBindingVersion> supportedTokenBindingVersion;
+    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters;
 
     public TokenbindingProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TOKENBINDING, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_TOKENBINDING,
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS,
+                TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
     }
 
     @Override
-    public TokenbindingResult executeTest() {
-        List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
+    public void executeTest() {
+        supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
-        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
+        supportedTokenBindingKeyParameters = new LinkedList<>();
         if (!supportedTokenBindingVersion.isEmpty()) {
             supportedTokenBindingKeyParameters.addAll(
                     getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
-        return new TokenbindingResult(
-                supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
@@ -96,15 +103,27 @@ public class TokenbindingProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS, supportedTokenBindingVersion);
+        put(
+                TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS,
+                supportedTokenBindingKeyParameters);
+        if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
+            put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.TRUE);
+            List<ExtensionType> list = new LinkedList<>();
+            list.add(ExtensionType.TOKEN_BINDING);
+            addToList(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, list);
+        } else {
+            put(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING, TestResults.FALSE);
+        }
+        addToList(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, new LinkedList<>());
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public TokenbindingResult getCouldNotExecuteResult() {
-        return new TokenbindingResult(null, null);
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
     }
 }

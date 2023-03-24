@@ -13,6 +13,7 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -26,9 +27,9 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsApplicationFingerprintResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
@@ -37,19 +38,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DtlsApplicationFingerprintProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DtlsApplicationFingerprintResult> {
+public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<ApplicationProtocol> supportedApplications;
-    private TestResult isAcceptingUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedAppData = TestResults.COULD_NOT_TEST;
 
     public DtlsApplicationFingerprintProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_APPLICATION_FINGERPRINT, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
     }
 
     @Override
-    public DtlsApplicationFingerprintResult executeTest() {
+    public void executeTest() {
         supportedApplications = new ArrayList<>();
         isAcceptingUnencryptedAppData = TestResults.NOT_TESTED_YET;
         if (!isEchoServer()) {
@@ -58,8 +61,6 @@ public class DtlsApplicationFingerprintProbe
             isTurnSupported();
             isCoapSupported();
         }
-        return new DtlsApplicationFingerprintResult(
-                supportedApplications, isAcceptingUnencryptedAppData);
     }
 
     private boolean isEchoServer() {
@@ -178,7 +179,7 @@ public class DtlsApplicationFingerprintProbe
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         State state = new State(config, trace);
         executeState(state);
-        ProtocolMessage receivedMessage =
+        ProtocolMessage<?> receivedMessage =
                 WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
 
         trace =
@@ -193,7 +194,7 @@ public class DtlsApplicationFingerprintProbe
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         state = new State(config, trace);
         executeState(state);
-        ProtocolMessage receivedMessageModified =
+        ProtocolMessage<?> receivedMessageModified =
                 WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
         if (receivedMessage != null
                 && receivedMessageModified != null
@@ -205,15 +206,16 @@ public class DtlsApplicationFingerprintProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsApplicationFingerprintResult getCouldNotExecuteResult() {
-        return new DtlsApplicationFingerprintResult(null, TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, supportedApplications);
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

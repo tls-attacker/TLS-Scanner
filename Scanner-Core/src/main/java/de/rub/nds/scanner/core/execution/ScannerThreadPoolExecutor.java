@@ -38,6 +38,9 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
     /**
      * Call super and assign the semaphore
      *
+     * @param corePoolSize The corePoolSize
+     * @param threadFactory The threadFactory
+     * @param semaphore The semaphore
      * @param timeout The timeout after which tasks are cancelled in milliseconds.
      */
     public ScannerThreadPoolExecutor(
@@ -61,8 +64,9 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
     }
 
     /*
-     * We override the submit method(s). Next to submitting the original task, we submit a task that will kill the
-     * original task after the amount of time specified in timeout.
+     * We override the submit method(s). Next to submitting the original task, we
+     * submit a task that will kill the original task after the amount of time
+     * specified in timeout.
      */
     @Override
     public Future<?> submit(Runnable task) {

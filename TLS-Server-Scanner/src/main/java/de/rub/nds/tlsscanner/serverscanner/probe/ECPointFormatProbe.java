@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -24,45 +25,49 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ECPointFormatResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, ECPointFormatResult> {
+public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     private static final byte[] UNDEFINED_FORMAT = new byte[] {(byte) 0xE4, (byte) 0x04};
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
 
+    private TestResult supportsUncompressedPoint = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedPrime = TestResults.FALSE;
+    private TestResult supportsANSIX962CompressedChar2 = TestResults.FALSE;
+    private TestResult completesHandshakeWithUndefined = TestResults.FALSE;
+
+    private List<ECPointFormat> supportedFormats;
+    private TestResult tls13SecpCompression;
+
     public ECPointFormatProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT,
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+                TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION,
+                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT);
     }
 
     @Override
-    public ECPointFormatResult executeTest() {
-        List<ECPointFormat> pointFormats = null;
-        TestResult completedWithUndefined = TestResults.CANNOT_BE_TESTED;
+    public void executeTest() {
+        completesHandshakeWithUndefined = TestResults.CANNOT_BE_TESTED;
         if (shouldTestPointFormats) {
-            pointFormats = getSupportedPointFormats();
-            completedWithUndefined = canHandshakeWithUndefinedFormat();
+            supportedFormats = getSupportedPointFormats();
+            completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
         }
-        TestResult tls13SecpCompressionSupported;
-        if (shouldTestTls13) {
-            tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
-        } else {
-            tls13SecpCompressionSupported = TestResults.COULD_NOT_TEST;
-        }
-        if (pointFormats != null) {
-            return (new ECPointFormatResult(
-                    pointFormats, tls13SecpCompressionSupported, completedWithUndefined));
-
-        } else {
+        tls13SecpCompression =
+                shouldTestTls13 ? getTls13SecpCompressionSupported() : TestResults.COULD_NOT_TEST;
+        if (supportedFormats == null) {
             LOGGER.debug("Unable to determine supported point formats");
-            return (new ECPointFormatResult(
-                    null, tls13SecpCompressionSupported, completedWithUndefined));
         }
     }
 
@@ -180,17 +185,12 @@ public class ECPointFormatProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResults.TRUE
-                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
-                                == TestResults.TRUE);
-    }
-
-    @Override
-    public ECPointFormatResult getCouldNotExecuteResult() {
-        return new ECPointFormatResult(
-                null, TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        PropertyRequirement preqEcdh = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
+        PropertyRequirement preqTls13 =
+                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
+        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE)
+                .requires(new OrRequirement(preqEcdh, preqTls13));
     }
 
     @Override
@@ -216,7 +216,46 @@ public class ECPointFormatProbe
                 secpGroups.add(group);
             }
         }
-
         return secpGroups;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (supportedFormats != null) {
+            for (ECPointFormat format : supportedFormats) {
+                switch (format) {
+                    case UNCOMPRESSED:
+                        supportsUncompressedPoint = TestResults.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_PRIME:
+                        supportsANSIX962CompressedPrime = TestResults.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_CHAR2:
+                        supportsANSIX962CompressedChar2 = TestResults.TRUE;
+                        break;
+                    default:
+                        ; // will never occur as all enum types are caught
+                }
+            }
+        } else {
+            supportsUncompressedPoint = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedPrime = TestResults.COULD_NOT_TEST;
+            supportsANSIX962CompressedChar2 = TestResults.COULD_NOT_TEST;
+        }
+        put(TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME,
+                supportsANSIX962CompressedPrime);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2,
+                supportsANSIX962CompressedChar2);
+        put(
+                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
+                completesHandshakeWithUndefined);
+        if (tls13SecpCompression != null) {
+            put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
+        } else {
+            put(TlsAnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResults.COULD_NOT_TEST);
+        }
     }
 }

@@ -16,6 +16,10 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -35,9 +39,10 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.OcspResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -50,10 +55,13 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, OcspResult> {
+public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private List<CertificateChain> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
+
+    private List<OcspCertificateResult> certResults;
+    private List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
 
     public static final int NONCE_TEST_VALUE_1 = 42;
     public static final int NONCE_TEST_VALUE_2 = 1337;
@@ -62,11 +70,22 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
 
     public OcspProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.OCSP, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTS_OCSP,
+                TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING,
+                TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
+                TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE,
+                TlsAnalyzedProperty.MUST_STAPLE,
+                TlsAnalyzedProperty.SUPPORTS_NONCE,
+                TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
+                TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                TlsAnalyzedProperty.OCSP_RESULTS);
     }
 
     @Override
-    public OcspResult executeTest() {
-        List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
+    public void executeTest() {
+        certResults = new LinkedList<>();
         for (CertificateChain serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
@@ -76,13 +95,11 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
             }
             performRequest(serverCertChain.getCertificate(), certResult);
 
-            ocspCertResults.add(certResult);
+            certResults.add(certResult);
         }
-        List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
         if (!tls13NamedGroups.isEmpty()) {
             tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
         }
-        return new OcspResult(ocspCertResults, tls13CertStatus);
     }
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
@@ -210,20 +227,21 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        // We also need the tls13 groups to perform a tls13 handshake
-        return report.getCertificateChainList() != null
-                && !report.getCertificateChainList().isEmpty()
-                && report.isProbeAlreadyExecuted(TlsProbeType.NAMED_GROUPS);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
         for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
         }
-        tls13NamedGroups = report.getSupportedTls13Groups();
+        tls13NamedGroups =
+                ((ListResult<NamedGroup>)
+                                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS))
+                        .getList();
     }
 
     private List<CertificateStatusRequestExtensionMessage>
@@ -260,7 +278,126 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport, Ocsp
     }
 
     @Override
-    public OcspResult getCouldNotExecuteResult() {
-        return new OcspResult(null, null);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.OCSP_RESULTS, certResults);
+        put(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
+        put(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
+        put(
+                TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
+                getConclusiveIncludesCertMessage());
+        put(TlsAnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
+        put(TlsAnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
+        put(TlsAnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
+        put(TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
+
+        if (tls13CertStatus != null) {
+            if (tls13CertStatus.size() == 1) {
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.TRUE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            } else if (tls13CertStatus.size() > 1) {
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.TRUE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.TRUE);
+            } else {
+                put(
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                        TestResults.FALSE);
+                put(TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResults.FALSE);
+            }
+        } else {
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                    TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                    TestResults.COULD_NOT_TEST);
+        }
+    }
+
+    private TestResult getConclusiveSupportsOcsp() {
+        boolean foundFalse = false;
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (Boolean.TRUE.equals(result.getSupportsOcsp())) {
+                    return TestResults.TRUE;
+                } else if (Boolean.FALSE.equals(result.getSupportsOcsp())) {
+                    foundFalse = true;
+                }
+            }
+            if (foundFalse) {
+                return TestResults.FALSE;
+            }
+        }
+        return TestResults.ERROR_DURING_TEST;
+    }
+
+    private TestResult getConclusiveSupportsStapling() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsStapling()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveIncludesCertMessage() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveSupportsStapledNonce() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null
+                        && result.getStapledResponse().getNonce() != null) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveMustStaple() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isMustStaple()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveSupportsNonce() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsNonce()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
+    }
+
+    private TestResult getConclusiveStapledResponseExpired() {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isStapledResponseExpired()) {
+                    return TestResults.TRUE;
+                }
+            }
+        }
+        return TestResults.FALSE;
     }
 }

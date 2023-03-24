@@ -10,10 +10,13 @@ package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
@@ -80,6 +83,39 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
             }
         }
         return true;
+    }
+
+    @Override
+    public void analyze(TlsScanReport report) {
+
+        ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
+        ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+        ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
+        ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+        boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
+
+        List<ComparableByteArray> extractedCookieList =
+                cookieExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedRandomList =
+                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
+        List<ComparableByteArray> extractedIvList =
+                cbcIvExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedSessionIdList =
+                sessionIdExtractedValueContainer.getExtractedValueList();
+
+        List<EntropyReport> entropyReport = new LinkedList<>();
+        entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
+        entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
+        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
+        entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
+        report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
+        report.putResult(
+                TlsAnalyzedProperty.ENTROPY_REPORTS,
+                new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
     }
 
     public EntropyReport createEntropyReport(

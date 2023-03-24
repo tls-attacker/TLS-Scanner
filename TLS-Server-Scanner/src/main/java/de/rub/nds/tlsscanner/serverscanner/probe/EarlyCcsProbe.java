@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -26,31 +27,31 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.earlyccs.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.EarlyCcsResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport, EarlyCcsResult> {
+public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
     public EarlyCcsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, configSelector);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
     }
 
     @Override
-    public EarlyCcsResult executeTest() {
-        return new EarlyCcsResult(isVulnerable());
-    }
-
-    private EarlyCcsVulnerabilityType isVulnerable() {
+    public void executeTest() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
-            return EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+            earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_1) == TestResults.TRUE) {
-            return EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
+            earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
         }
-        return EarlyCcsVulnerabilityType.NOT_VULNERABLE;
+        earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.NOT_VULNERABLE;
     }
 
     private TestResults checkTargetVersion(TargetVersion targetVersion) {
@@ -93,16 +94,30 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport, 
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return configSelector.foundWorkingConfig();
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public EarlyCcsResult getCouldNotExecuteResult() {
-        return new EarlyCcsResult(null);
+    protected void mergeData(ServerReport report) {
+        if (earlyCcsVulnerabilityType == null) {
+            put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+        } else {
+            switch (earlyCcsVulnerabilityType) {
+                case VULN_EXPLOITABLE:
+                case VULN_NOT_EXPLOITABLE:
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.TRUE);
+                    break;
+                case NOT_VULNERABLE:
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.FALSE);
+                    break;
+                case UNKNOWN:
+                    put(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResults.COULD_NOT_TEST);
+            }
+        }
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return new WorkingConfigRequirement(configSelector);
     }
 
     private enum TargetVersion {

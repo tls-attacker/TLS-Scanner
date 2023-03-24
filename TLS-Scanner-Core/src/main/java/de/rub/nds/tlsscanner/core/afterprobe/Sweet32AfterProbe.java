@@ -14,6 +14,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.Set;
 
 public class Sweet32AfterProbe extends AfterProbe<TlsScanReport> {
 
@@ -21,8 +22,9 @@ public class Sweet32AfterProbe extends AfterProbe<TlsScanReport> {
     public void analyze(TlsScanReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-            if (report.getCipherSuites() != null) {
-                for (CipherSuite suite : report.getCipherSuites()) {
+            Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();
+            if (ciphersuites != null) {
+                for (CipherSuite suite : ciphersuites) {
                     if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
                         vulnerable = TestResults.TRUE;
                     }

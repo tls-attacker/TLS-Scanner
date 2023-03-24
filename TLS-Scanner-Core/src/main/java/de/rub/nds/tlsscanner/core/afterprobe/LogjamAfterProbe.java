@@ -21,8 +21,8 @@ public class LogjamAfterProbe extends AfterProbe<TlsScanReport> {
     public void analyze(TlsScanReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-            if (report.getCipherSuites() != null) {
-                for (CipherSuite suite : report.getCipherSuites()) {
+            if (report.getSupportedCipherSuites() != null) {
+                for (CipherSuite suite : report.getSupportedCipherSuites()) {
                     if (suite.name().contains("DH_anon_EXPORT")
                             || suite.name().contains("DH_DSS_EXPORT")
                             || suite.name().contains("DH_RSA_EXPORT")

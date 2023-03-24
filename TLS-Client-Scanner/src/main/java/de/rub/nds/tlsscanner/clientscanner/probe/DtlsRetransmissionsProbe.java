@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -23,20 +24,25 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendRecordsFromLastFlightActi
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsRetransmissionsResult;
 
-public class DtlsRetransmissionsProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, DtlsRetransmissionsResult<ClientReport>> {
+public class DtlsRetransmissionsProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+
+    private TestResult sendsRetransmissions = TestResults.COULD_NOT_TEST;
+    private TestResult processesRetransmissions = TestResults.COULD_NOT_TEST;
 
     public DtlsRetransmissionsProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_RETRANSMISSIONS, scannerConfig);
+        register(
+                TlsAnalyzedProperty.SENDS_RETRANSMISSIONS,
+                TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS);
     }
 
     @Override
-    public DtlsRetransmissionsResult executeTest() {
-        return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
+    public void executeTest() {
+        sendsRetransmissions = doesRetransmissions();
+        processesRetransmissions = processesRetransmissions();
     }
 
     private TestResult doesRetransmissions() {
@@ -86,16 +92,16 @@ public class DtlsRetransmissionsProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsRetransmissionsResult getCouldNotExecuteResult() {
-        return new DtlsRetransmissionsResult(
-                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
+        put(TlsAnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

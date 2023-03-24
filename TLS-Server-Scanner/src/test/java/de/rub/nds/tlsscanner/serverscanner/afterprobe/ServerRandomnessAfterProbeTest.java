@@ -118,7 +118,7 @@ public class ServerRandomnessAfterProbeTest {
         report.setExtractedValueContainerList(extractedValueContainerMap);
         probe.analyze(report);
 
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertFalse(entropyReport.isFailedFourierTest());
             assertFalse(entropyReport.isFailedRunsTest());
             assertFalse(entropyReport.isFailedFrequencyTest());
@@ -145,7 +145,7 @@ public class ServerRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()
@@ -168,7 +168,7 @@ public class ServerRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()

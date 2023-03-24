@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -30,7 +31,8 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketZeroKeyResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.security.InvalidAlgorithmParameterException;
@@ -60,8 +62,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * <p>Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777 Reference [2]:
  * https://www.gnutls.org/security-new.html
  */
-public class SessionTicketZeroKeyProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, SessionTicketZeroKeyResult> {
+public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     /** Magic Bytes the plaintext state in GnuTls starts with */
     public static final byte[] GNU_TLS_MAGIC_BYTES =
@@ -88,13 +89,19 @@ public class SessionTicketZeroKeyProbe
     /** Offset of the encrypted state according to the ticket struct in rfc5077 */
     public static final int SESSION_STATE_OFFSET = 34;
 
+    private TestResult hasDecryptableMasterSecret = TestResults.COULD_NOT_TEST;
+    private TestResult hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
+
     public SessionTicketZeroKeyProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, configSelector);
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+                TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
     }
 
     @Override
-    public SessionTicketZeroKeyResult executeTest() {
+    public void executeTest() {
         State state;
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAddSessionTicketTLSExtension(true);
@@ -114,12 +121,12 @@ public class SessionTicketZeroKeyProbe
 
         if (!WorkflowTraceUtil.didReceiveMessage(
                 HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(
-                    TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+            hasDecryptableMasterSecret = hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
+            return;
         }
 
         byte[] ticket = null;
-        for (ProtocolMessage msg :
+        for (ProtocolMessage<?> msg :
                 WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
             if (msg instanceof NewSessionTicketMessage) {
                 NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;
@@ -154,34 +161,29 @@ public class SessionTicketZeroKeyProbe
                 | BadPaddingException
                 | InvalidKeyException e) {
             LOGGER.debug(e);
-            return new SessionTicketZeroKeyResult(TestResults.FALSE, TestResults.FALSE);
+            hasDecryptableMasterSecret = hasGnuTlsMagicBytes = TestResults.FALSE;
+            return;
         }
         LOGGER.debug(
                 "decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         TestResult hasDecryptableMasterSecret;
         TestResult hasGnuTlsMagicBytes;
-
         if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
             hasDecryptableMasterSecret = TestResults.TRUE;
         } else {
             hasDecryptableMasterSecret = TestResults.FALSE;
         }
-
         if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
             hasGnuTlsMagicBytes = TestResults.TRUE;
-
         } else {
             hasGnuTlsMagicBytes = TestResults.FALSE;
         }
-
-        return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
-                        == TestResults.TRUE;
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
+                .requires(new ProbeRequirement(TlsProbeType.EXTENSIONS));
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -203,11 +205,11 @@ public class SessionTicketZeroKeyProbe
     }
 
     @Override
-    public SessionTicketZeroKeyResult getCouldNotExecuteResult() {
-        return new SessionTicketZeroKeyResult(
-                TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
-    public void adjustConfig(ServerReport report) {}
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, hasDecryptableMasterSecret);
+        put(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, hasGnuTlsMagicBytes);
+    }
 }

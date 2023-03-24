@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -16,48 +18,48 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.RecordFragmentationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class RecordFragmentationProbe
-        extends TlsServerProbe<
-                ConfigSelector, ServerReport, RecordFragmentationResult<ServerReport>> {
+public class RecordFragmentationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult supported = TestResults.COULD_NOT_TEST;
 
     public RecordFragmentationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, configSelector);
+        register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
     }
 
     @Override
-    public RecordFragmentationResult executeTest() {
+    public void executeTest() {
         Config config = configSelector.getAnyWorkingBaseConfig();
         config.setDefaultMaxRecordData(50);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        HandshakeMessageType expectedFinalMessage = HandshakeMessageType.SERVER_HELLO_DONE;
-        if (state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13) {
-            expectedFinalMessage = HandshakeMessageType.FINISHED;
-        }
-        if (WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())) {
-            return new RecordFragmentationResult(TestResults.TRUE);
-        } else {
-            return new RecordFragmentationResult(TestResults.FALSE);
-        }
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public RecordFragmentationResult getCouldNotExecuteResult() {
-        return new RecordFragmentationResult(null);
+        HandshakeMessageType expectedFinalMessage =
+                state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13
+                        ? HandshakeMessageType.FINISHED
+                        : HandshakeMessageType.SERVER_HELLO_DONE;
+        supported =
+                WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supported);
+    }
 }

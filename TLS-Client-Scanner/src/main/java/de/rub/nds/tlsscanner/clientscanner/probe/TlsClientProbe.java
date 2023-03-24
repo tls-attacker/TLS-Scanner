@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
@@ -16,11 +15,8 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsClientProbe<
-                ClientScannerConfig,
-                Report extends TlsScanReport,
-                Result extends ProbeResult<Report>>
-        extends TlsProbe<Report, Result> {
+public abstract class TlsClientProbe<ClientScannerConfig, Report extends TlsScanReport>
+        extends TlsProbe<Report> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 

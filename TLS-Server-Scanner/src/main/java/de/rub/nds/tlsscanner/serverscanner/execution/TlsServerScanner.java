@@ -144,8 +144,8 @@ public final class TlsServerScanner extends TlsScanner {
     public TlsServerScanner(
             ServerScannerConfig config,
             ParallelExecutor parallelExecutor,
-            List<ScannerProbe> probeList,
-            List<AfterProbe> afterList) {
+            List<ScannerProbe<?>> probeList,
+            List<AfterProbe<?>> afterList) {
         super(probeList.stream().map(ScannerProbe::getType).collect(Collectors.toList()));
         this.probeList.addAll(probeList);
         this.afterList.addAll(afterList);
@@ -219,7 +219,7 @@ public final class TlsServerScanner extends TlsScanner {
         afterList.add(new ServerRandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
+        afterList.add(new PaddingOracleIdentificationAfterProbe<>());
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
@@ -258,7 +258,7 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     private void setDefaultProbeWriter() {
-        for (ScannerProbe probe : probeList) {
+        for (ScannerProbe<?> probe : probeList) {
             StatsWriter statsWriter = new StatsWriter();
             statsWriter.addExtractor(new CookieExtractor());
             statsWriter.addExtractor(new RandomExtractor());

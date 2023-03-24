@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -94,11 +95,12 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
             onlySafePrime = TestResults.COULD_NOT_TEST;
             usesCommonDhPrimes = TestResults.COULD_NOT_TEST;
         }
-
         report.putResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, usesCommonDhPrimes);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, onlySafePrime);
-        report.setUsedCommonDhValueList(usedCommonValues);
+        report.putResult(
+                TlsAnalyzedProperty.COMMON_DH_VALUES,
+                new SetResult<>(usedCommonValues, TlsAnalyzedProperty.COMMON_DH_VALUES.name()));
         report.putResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
             report.setWeakestDhStrength(shortestBitLength);
