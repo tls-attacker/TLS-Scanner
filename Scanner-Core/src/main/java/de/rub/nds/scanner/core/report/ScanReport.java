@@ -135,6 +135,18 @@ public abstract class ScanReport extends Observable implements Serializable {
                                 : TestResults.UNCERTAIN);
     }
 
+    public synchronized void putResult(AnalyzedProperty property, List<?> result) {
+        this.putResult(property, new ListResult<>((List<?>) result, property.getName()));
+    }
+
+    public synchronized void putResult(AnalyzedProperty property, Set<?> result) {
+        this.putResult(property, new SetResult<>((Set<?>) result, property.getName()));
+    }
+
+    public synchronized void putResult(AnalyzedProperty property, Map<?, ?> result) {
+        this.putResult(property, new MapResult<>((Map<?, ?>) result, property.getName()));
+    }
+
     public synchronized void markAsChangedAndNotify() {
         this.hasChanged();
         this.notifyObservers();

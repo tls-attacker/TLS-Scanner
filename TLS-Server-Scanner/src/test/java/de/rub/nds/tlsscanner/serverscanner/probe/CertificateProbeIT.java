@@ -38,11 +38,11 @@ public class CertificateProbeIT extends AbstractProbeIT {
     @Override
     protected boolean executedAsPlanned() {
         return report.getCertificateChainList().size() == 1
-                && report.getEcdsaPkGroupsStatic().size() == 0
-                && report.getEcdsaPkGroupsEphemeral().size() == 0
-                && report.getEcdsaPkGroupsTls13().size() == 0
-                && report.getEcdsaSigGroupsStatic().size() == 0
-                && report.getEcdsaSigGroupsEphemeral().size() == 0
-                && report.getEcdsaSigGroupsTls13().size() == 0;
+                && report.getStaticEcdsaPkgGroups().size() == 0
+                && report.getEphemeralEcdsaPkgGroups().size() == 0
+                && report.getTls13EcdsaPkgGroups().size() == 0
+                && report.getStaticEcdsaSigGroups().size() == 0
+                && report.getEphemeralEcdsaSigGroups().size() == 0
+                && report.getTls13EcdsaSigGroups().size() == 0;
     }
 }

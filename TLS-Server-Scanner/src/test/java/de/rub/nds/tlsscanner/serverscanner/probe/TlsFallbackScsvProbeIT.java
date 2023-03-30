@@ -30,7 +30,8 @@ public class TlsFallbackScsvProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        report.setVersions(
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
                 Arrays.asList(ProtocolVersion.TLS10, ProtocolVersion.TLS11, ProtocolVersion.TLS12));
     }
 

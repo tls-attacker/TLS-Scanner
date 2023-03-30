@@ -43,12 +43,13 @@ public class NamedGroupsProbeIT extends AbstractProbeIT {
                         CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
                         CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
                         CipherSuite.TLS_AES_128_GCM_SHA256));
-        report.setCipherSuites(supportedCiphers);
-        report.setEcdsaPkGroupsEphemeral(new LinkedList<>());
-        report.setEcdsaPkGroupsTls13(new LinkedList<>());
-        report.setEcdsaSigGroupsStatic(new LinkedList<>());
-        report.setEcdsaSigGroupsStatic(new LinkedList<>());
-        report.setEcdsaSigGroupsTls13(new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, supportedCiphers);
+        report.putResult(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, new LinkedList<>());
+        report.putResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, new LinkedList<>());
     }
 
     @Override

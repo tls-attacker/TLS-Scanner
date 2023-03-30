@@ -442,7 +442,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
 
     private ReportContainer createAlpnContainer(ServerReport report) {
         ListContainer container = new ListContainer();
-        if (report.getSupportedAlpns() == null) {
+        if (report.getSupportedAlpnConstans() == null) {
             return container;
         }
         container.add(new HeadlineContainer("ALPN"));
@@ -450,7 +450,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
             if (alpnProtocol.isGrease()) {
                 continue;
             }
-            if (report.getSupportedAlpns().contains(alpnProtocol.getConstant())) {
+            if (report.getSupportedAlpnConstans().contains(alpnProtocol.getConstant())) {
                 container.add(
                         new KeyValueContainer(
                                 alpnProtocol.getPrintableName(),

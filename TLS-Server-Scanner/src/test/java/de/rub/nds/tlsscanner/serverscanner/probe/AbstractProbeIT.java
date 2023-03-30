@@ -13,7 +13,6 @@ import static org.junit.Assume.assumeNotNull;
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Image;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TransportType;
@@ -54,10 +53,9 @@ public abstract class AbstractProbeIT {
 
     private DockerTlsInstance dockerInstance;
     protected ServerReport report;
-    protected ProbeResult probeResult;
     protected ParallelExecutor parallelExecutor;
     protected ConfigSelector configSelector;
-    protected ServerScannerConfig config;
+    private ServerScannerConfig config;
 
     public AbstractProbeIT(
             TlsImplementationType implementation, String version, String additionalParameters) {
@@ -174,7 +172,8 @@ public abstract class AbstractProbeIT {
         // Executing probe
         TlsServerProbe probe = getProbe();
         probe.adjustConfig(report);
-        probe.executeTest().merge(report);
+        probe.executeTest();
+        probe.merge(report);
     }
 
     protected abstract TlsServerProbe getProbe();

@@ -12,6 +12,7 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,8 @@ public class SignatureAndHashAlgorithmProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        report.setVersions(
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
                 Arrays.asList(
                         ProtocolVersion.TLS10, ProtocolVersion.TLS11,
                         ProtocolVersion.TLS12, ProtocolVersion.TLS13));

@@ -31,9 +31,9 @@ public class HttpHeaderProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return report.getHeaderList().size() == 1
-                && report.getHeaderList().get(0).getHeaderName().getValue().equals("Content-type")
-                && report.getHeaderList().get(0).getHeaderValue().getValue().equals("text/html")
+        return report.getHttpHeader().size() == 1
+                && report.getHttpHeader().get(0).getHeaderName().getValue().equals("Content-type")
+                && report.getHttpHeader().get(0).getHeaderValue().getValue().equals("text/html")
                 && report.getHstsMaxAge() == null
                 && report.getHpkpMaxAge() == null
                 && report.getNormalHpkpPins().size() == 0

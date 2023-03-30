@@ -37,7 +37,7 @@ public class ProtocolVersionProbeIT extends AbstractProbeIT {
                 Arrays.asList(
                         ProtocolVersion.TLS10, ProtocolVersion.TLS11,
                         ProtocolVersion.TLS12, ProtocolVersion.TLS13);
-        List<ProtocolVersion> supportedVersions = report.getVersions();
+        List<ProtocolVersion> supportedVersions = report.getSupportedProtocolVersions();
         return expectedVersions.size() == supportedVersions.size()
                 && expectedVersions.containsAll(
                         supportedVersions.stream().collect(Collectors.toList()));

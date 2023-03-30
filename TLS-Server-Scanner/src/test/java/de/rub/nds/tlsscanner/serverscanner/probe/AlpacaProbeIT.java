@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
@@ -31,8 +30,8 @@ public class AlpacaProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        List<ExtensionType> supportedExtensions = Arrays.asList(ExtensionType.ALPN);
-        report.setSupportedExtensions(supportedExtensions);
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Arrays.asList(ExtensionType.ALPN));
     }
 
     @Override

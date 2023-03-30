@@ -2145,23 +2145,18 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendAlpn(StringBuilder builder) {
         @SuppressWarnings("unchecked")
-        ListResult<String> alpnResult =
-                (ListResult<String>)
-                        report.getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
-        if (alpnResult != null) {
-            List<String> alpns = alpnResult.getList();
-            if (alpns != null) {
-                prettyAppendHeading(builder, "ALPN");
-                for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
-                    if (alpnProtocol.isGrease()) {
-                        continue;
-                    }
-                    if (alpns.contains(alpnProtocol.getConstant())) {
-                        prettyAppend(builder, alpnProtocol.getPrintableName(), true);
-                    } else {
-                        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                            prettyAppend(builder, alpnProtocol.getPrintableName(), false);
-                        }
+        List<String> alpns = report.getSupportedAlpnConstans();
+        if (alpns != null) {
+            prettyAppendHeading(builder, "ALPN");
+            for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
+                if (alpnProtocol.isGrease()) {
+                    continue;
+                }
+                if (alpns.contains(alpnProtocol.getConstant())) {
+                    prettyAppend(builder, alpnProtocol.getPrintableName(), true);
+                } else {
+                    if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        prettyAppend(builder, alpnProtocol.getPrintableName(), false);
                     }
                 }
             }

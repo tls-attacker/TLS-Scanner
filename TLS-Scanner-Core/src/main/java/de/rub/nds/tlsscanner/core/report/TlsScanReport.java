@@ -42,9 +42,6 @@ public abstract class TlsScanReport extends ScanReport {
 
     private KnownPaddingOracleVulnerability knownPaddingOracleVulnerability = null;
 
-    // Extensions
-    private List<String> supportedAlpns = null;
-
     // DTLS
     private Integer totalReceivedRetransmissions = 0;
 
@@ -71,14 +68,6 @@ public abstract class TlsScanReport extends ScanReport {
     public synchronized void setKnownPaddingOracleVulnerability(
             KnownPaddingOracleVulnerability knownPaddingOracleVulnerability) {
         this.knownPaddingOracleVulnerability = knownPaddingOracleVulnerability;
-    }
-
-    public synchronized List<String> getSupportedAlpns() {
-        return supportedAlpns;
-    }
-
-    public synchronized void setSupportedAlpns(List<String> supportedAlpns) {
-        this.supportedAlpns = supportedAlpns;
     }
 
     public synchronized Integer getTotalReceivedRetransmissions() {
@@ -239,6 +228,13 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    public synchronized List<NamedGroup> getStaticEcdsaPkgGroups() {
+        @SuppressWarnings("unchecked")
+        ListResult<NamedGroup> listResult =
+                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS);
+        return listResult == null ? null : listResult.getList();
+    }
+
     public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
         @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
@@ -296,6 +292,13 @@ public abstract class TlsScanReport extends ScanReport {
         ListResult<TokenBindingKeyParameters> listResult =
                 (ListResult<TokenBindingKeyParameters>)
                         getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<String> getSupportedAlpnConstans() {
+        @SuppressWarnings("unchecked")
+        ListResult<String> listResult =
+                (ListResult<String>) getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
         return listResult == null ? null : listResult.getList();
     }
 }

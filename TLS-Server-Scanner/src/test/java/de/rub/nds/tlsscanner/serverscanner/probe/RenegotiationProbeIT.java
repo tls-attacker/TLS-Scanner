@@ -33,7 +33,7 @@ public class RenegotiationProbeIT extends AbstractProbeIT {
     protected void prepareReport() {
         Set<CipherSuite> supportedCiphers = new HashSet<>();
         supportedCiphers.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-        report.setCipherSuites(supportedCiphers);
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, supportedCiphers);
     }
 
     @Override

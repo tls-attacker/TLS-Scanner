@@ -30,7 +30,8 @@ public class NamedCurvesOrderProbeIT extends AbstractProbeIT {
 
     @Override
     protected void prepareReport() {
-        report.setSupportedNamedGroups(
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
                 Arrays.asList(
                         NamedGroup.SECP384R1,
                         NamedGroup.ECDH_X25519,

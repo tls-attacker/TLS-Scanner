@@ -67,7 +67,7 @@ public class CipherSuiteProbeIT extends AbstractProbeIT {
                         CipherSuite.TLS_AES_128_GCM_SHA256,
                         CipherSuite.TLS_AES_256_GCM_SHA384,
                         CipherSuite.TLS_CHACHA20_POLY1305_SHA256);
-        Set<CipherSuite> supportedCiphers = report.getCipherSuites();
+        Set<CipherSuite> supportedCiphers = report.getSupportedCipherSuites();
         return expectedCiphers.size() == supportedCiphers.size()
                 && expectedCiphers.containsAll(
                         supportedCiphers.stream().collect(Collectors.toList()))

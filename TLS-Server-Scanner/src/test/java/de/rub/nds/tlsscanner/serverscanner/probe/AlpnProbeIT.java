@@ -29,7 +29,7 @@ public class AlpnProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return report.getSupportedAlpns().size() == 1
-                && report.getSupportedAlpns().contains("http/1.1");
+        return report.getSupportedAlpnConstans().size() == 1
+                && report.getSupportedAlpnConstans().contains("http/1.1");
     }
 }
