@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -37,8 +38,8 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CommonBugProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
@@ -47,54 +48,73 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonBugProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CommonBugProbeResult> {
+public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     // does it handle unknown extensions correctly?
-    private TestResult extensionIntolerance;
+    private TestResult extensionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown cipher suites correctly?
-    private TestResult cipherSuiteIntolerance;
+    private TestResult cipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle long cipher suite length values correctly?
-    private TestResult cipherSuiteLengthIntolerance512;
+    private TestResult cipherSuiteLengthIntolerance512 = TestResults.COULD_NOT_TEST;
     // does it handle unknown compression algorithms correctly?
-    private TestResult compressionIntolerance;
+    private TestResult compressionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown versions correctly?
-    private TestResult versionIntolerance;
+    private TestResult versionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown alpn strings correctly?
-    private TestResult alpnIntolerance;
+    private TestResult alpnIntolerance = TestResults.COULD_NOT_TEST;
     // 256 - 511 <-- ch should be bigger than this?
-    private TestResult clientHelloLengthIntolerance;
+    private TestResult clientHelloLengthIntolerance = TestResults.COULD_NOT_TEST;
     // does it break on empty last extension?
-    private TestResult emptyLastExtensionIntolerance;
+    private TestResult emptyLastExtensionIntolerance = TestResults.COULD_NOT_TEST;
     // is only the second byte of the cipher suite evaluated?
-    private TestResult onlySecondCipherSuiteByteEvaluated;
+    private TestResult onlySecondCipherSuiteByteEvaluated = TestResults.COULD_NOT_TEST;
     // does it handle unknown groups correctly?
-    private TestResult namedGroupIntolerant;
+    private TestResult namedGroupIntolerant = TestResults.COULD_NOT_TEST;
     // does it handle signature and hash algorithms correctly?
-    private TestResult namedSignatureAndHashAlgorithmIntolerance;
+    private TestResult namedSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
     // does it ignore the offered cipher suites?
-    private TestResult ignoresCipherSuiteOffering;
+    private TestResult ignoresCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it reflect the offered cipher suites?
-    private TestResult reflectsCipherSuiteOffering;
+    private TestResult reflectsCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it ignore the offered named groups?
-    private TestResult ignoresOfferedNamedGroups;
+    private TestResult ignoresOfferedNamedGroups = TestResults.COULD_NOT_TEST;
     // does it ignore the sig hash algorithms?
-    private TestResult ignoresOfferedSignatureAndHashAlgorithms;
+    private TestResult ignoresOfferedSignatureAndHashAlgorithms = TestResults.COULD_NOT_TEST;
     // server does not like really big client hello messages
-    private TestResult maxLengthClientHelloIntolerant;
+    private TestResult maxLengthClientHelloIntolerant = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the supported groups extension?
-    private TestResult greaseNamedGroupIntolerance;
+    private TestResult greaseNamedGroupIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the cipher suites list?
-    private TestResult greaseCipherSuiteIntolerance;
+    private TestResult greaseCipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the signature and hash algorithms extension?
-    private TestResult greaseSignatureAndHashAlgorithmIntolerance;
+    private TestResult greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
 
     public CommonBugProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMMON_BUGS, configSelector);
+        register(
+                TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+                TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+                TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+                TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
+                TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
+                TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+                TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override
-    public CommonBugProbeResult executeTest() {
+    public void executeTest() {
         extensionIntolerance = hasExtensionIntolerance();
         cipherSuiteIntolerance = hasCipherSuiteIntolerance();
         cipherSuiteLengthIntolerance512 = hasCipherSuiteLengthIntolerance512();
@@ -114,35 +134,15 @@ public class CommonBugProbe
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
         greaseSignatureAndHashAlgorithmIntolerance =
                 hasGreaseSignatureAndHashAlgorithmIntolerance();
-        return new CommonBugProbeResult(
-                extensionIntolerance,
-                cipherSuiteIntolerance,
-                cipherSuiteLengthIntolerance512,
-                compressionIntolerance,
-                versionIntolerance,
-                alpnIntolerance,
-                clientHelloLengthIntolerance,
-                emptyLastExtensionIntolerance,
-                onlySecondCipherSuiteByteEvaluated,
-                namedGroupIntolerant,
-                namedSignatureAndHashAlgorithmIntolerance,
-                ignoresCipherSuiteOffering,
-                reflectsCipherSuiteOffering,
-                ignoresOfferedNamedGroups,
-                ignoresOfferedSignatureAndHashAlgorithms,
-                maxLengthClientHelloIntolerant,
-                greaseNamedGroupIntolerance,
-                greaseCipherSuiteIntolerance,
-                greaseSignatureAndHashAlgorithmIntolerance);
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
         TlsContext context = new TlsContext(config);
@@ -470,26 +470,37 @@ public class CommonBugProbe
     }
 
     @Override
-    public CommonBugProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
+        put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, cipherSuiteIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+                cipherSuiteLengthIntolerance512);
+        put(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, compressionIntolerance);
+        put(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
+        put(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, alpnIntolerance);
+        put(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, clientHelloLengthIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+                emptyLastExtensionIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+                onlySecondCipherSuiteByteEvaluated);
+        put(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
+        put(
+                TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+                namedSignatureAndHashAlgorithmIntolerance);
+        put(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, ignoresCipherSuiteOffering);
+        put(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, reflectsCipherSuiteOffering);
+        put(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
+        put(
+                TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+                ignoresOfferedSignatureAndHashAlgorithms);
+        put(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, maxLengthClientHelloIntolerant);
+        put(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, greaseNamedGroupIntolerance);
+        put(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, greaseCipherSuiteIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+                greaseSignatureAndHashAlgorithmIntolerance);
     }
 }

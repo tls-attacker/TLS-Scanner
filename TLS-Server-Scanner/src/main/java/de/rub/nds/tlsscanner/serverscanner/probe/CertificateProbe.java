@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -23,16 +24,16 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CertificateResult> {
+public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -50,12 +51,22 @@ public class CertificateProbe
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
+    private Set<CertificateChain> certificates;
+
     public CertificateProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, configSelector);
+        register(
+                TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS,
+                TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS,
+                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS,
+                TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
     }
 
     @Override
-    public CertificateResult executeTest() {
+    public void executeTest() {
         ecdsaPkGroupsStatic = new LinkedList<>();
         ecdsaPkGroupsEphemeral = new LinkedList<>();
         ecdsaPkGroupsTls13 = new LinkedList<>();
@@ -63,7 +74,7 @@ public class CertificateProbe
         ecdsaCertSigGroupsEphemeral = new LinkedList<>();
         ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
-        Set<CertificateChain> certificates = new HashSet<>();
+        certificates = new HashSet<>();
         if (configSelector.foundWorkingConfig()) {
             if (scanForRsaCert) {
                 certificates.addAll(getRsaCerts());
@@ -81,25 +92,16 @@ public class CertificateProbe
         if (scanForTls13) {
             certificates.addAll(getTls13Certs());
         }
-
         if (certificates.isEmpty()) {
-            return getCouldNotExecuteResult();
-        } else {
-            return new CertificateResult(
-                    certificates,
-                    ecdsaPkGroupsStatic,
-                    ecdsaPkGroupsEphemeral,
-                    ecdsaCertSigGroupsStatic,
-                    ecdsaCertSigGroupsEphemeral,
-                    ecdsaPkGroupsTls13,
-                    ecdsaCertSigGroupsTls13);
+            certificates = null;
+            ecdsaPkGroupsStatic =
+                    ecdsaPkGroupsEphemeral = ecdsaPkGroupsTls13 = ecdsaCertSigGroupsTls13 = null;
         }
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION);
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
@@ -119,11 +121,6 @@ public class CertificateProbe
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
-    }
-
-    @Override
-    public CertificateResult getCouldNotExecuteResult() {
-        return new CertificateResult(null, null, null, null, null, null, null);
     }
 
     private List<CertificateChain> getRsaCerts() {
@@ -341,7 +338,6 @@ public class CertificateProbe
                 curves.add(group);
             }
         }
-
         return curves;
     }
 
@@ -352,7 +348,6 @@ public class CertificateProbe
                 curves.add(group);
             }
         }
-
         return curves;
     }
 
@@ -466,5 +461,20 @@ public class CertificateProbe
             }
         }
         return algorithms;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        if (certificates != null) {
+            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new ArrayList<>(certificates));
+        } else {
+            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>());
+        }
+        put(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, ecdsaPkGroupsStatic);
+        put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
+        put(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, ecdsaPkGroupsTls13);
+        put(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsStatic);
+        put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsEphemeral);
+        put(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsTls13);
     }
 }

@@ -36,12 +36,8 @@ import java.security.PublicKey;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class TlsReportCreator extends ReportCreator {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public TlsReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
@@ -91,7 +87,7 @@ public class TlsReportCreator extends ReportCreator {
     protected ListContainer createSupportedCipherSuitesContainer(TlsScanReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Cipher Suites"));
-        for (CipherSuite suite : report.getCipherSuites()) {
+        for (CipherSuite suite : report.getSupportedCipherSuites()) {
             container.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
         }
         return container;

@@ -134,7 +134,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         table.setHeadlineList(getCipherSuitesTableHeadlines());
         for (CipherSuite suite :
                 CollectionUtils.mergeCollectionsIntoSet(
-                        getRealClientAdvertisedCipherSuites(report), report.getCipherSuites())) {
+                        getRealClientAdvertisedCipherSuites(report),
+                        report.getSupportedCipherSuites())) {
             List<TextContainer> currentTableRow = new LinkedList<>();
             currentTableRow.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
             if (report.getClientAdvertisedCipherSuites().contains(suite)) {
@@ -142,7 +143,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
             } else {
                 currentTableRow.add(createDefaultTextContainer("-"));
             }
-            if (report.getCipherSuites().contains(suite)) {
+            if (report.getSupportedCipherSuites().contains(suite)) {
                 currentTableRow.add(createDefaultTextContainer("x"));
             } else {
                 currentTableRow.add(createDefaultTextContainer("-"));

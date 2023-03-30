@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -24,10 +26,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.RandomnessResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
@@ -37,8 +40,7 @@ import java.util.List;
  * A probe which samples random material from the target host using ServerHello randoms, SessionIDs
  * and IVs.
  */
-public class RandomnessProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, RandomnessResult> {
+public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private ProtocolVersion bestVersion;
     private CipherSuite bestCipherSuite;
@@ -49,21 +51,14 @@ public class RandomnessProbe
     }
 
     @Override
-    public RandomnessResult executeTest() {
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(
+                TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION, TlsProbeType.EXTENSIONS);
+    }
+
+    @Override
+    public void executeTest() {
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
-        return new RandomnessResult();
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
-    }
-
-    @Override
-    public RandomnessResult getCouldNotExecuteResult() {
-        return new RandomnessResult();
     }
 
     @Override
@@ -75,7 +70,11 @@ public class RandomnessProbe
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
-        List<VersionSuiteListPair> versionSuitePairs = report.getVersionSuitePairs();
+        @SuppressWarnings("unchecked")
+        List<VersionSuiteListPair> versionSuitePairs =
+                ((ListResult<VersionSuiteListPair>)
+                                report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
+                        .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
                 int score = 0;
@@ -131,5 +130,10 @@ public class RandomnessProbe
             stateList.add(state);
         }
         executeState(stateList);
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        // Nothing to do here - all data analysis is done in the after probe
     }
 }

@@ -355,7 +355,7 @@ public class InvalidCurveAttacker {
                 || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
             protocolFlows = 1;
         } else {
-            double errorAttempt = (double) (1 - 2 * infinityProbability);
+            double errorAttempt = 1 - 2 * infinityProbability;
             int attempts = (int) Math.ceil(Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt));
 
             switch (scanType) {

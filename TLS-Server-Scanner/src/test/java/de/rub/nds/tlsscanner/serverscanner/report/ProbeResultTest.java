@@ -56,7 +56,7 @@ public class ProbeResultTest {
                                                 new ServerScannerConfig(new GeneralDelegate()),
                                                 new ParallelExecutor(1, 1));
                         ServerReport report = new ServerReport("somehost", 443);
-                        probe.getCouldNotExecuteResult().merge(report);
+                        probe.merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");
                         ServerReportPrinter printer =

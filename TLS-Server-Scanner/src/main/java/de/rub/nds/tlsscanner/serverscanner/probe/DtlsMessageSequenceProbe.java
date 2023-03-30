@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -27,27 +28,35 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsMessageSequenceResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsMessageSequenceProbe
-        extends TlsServerProbe<
-                ConfigSelector, ServerReport, DtlsMessageSequenceResult<ServerReport>> {
+public class DtlsMessageSequenceProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult acceptsStartedWithInvalidMessageNumber = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersOnce = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsSkippedMessageNumbersMultiple = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsRandomMessageNumbers = TestResults.COULD_NOT_TEST;
 
     public DtlsMessageSequenceProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, configSelector);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+                TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
     }
 
     @Override
-    public DtlsMessageSequenceResult executeTest() {
-        return new DtlsMessageSequenceResult(
-                acceptsStartedWithInvalidMessageNumber(),
-                acceptsSkippedMessageNumbersOnce(),
-                acceptsSkippedMessageNumbersMultiple(),
-                acceptsRandomMessageNumbers());
+    public void executeTest() {
+        acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber();
+        acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce();
+        acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple();
+        acceptsRandomMessageNumbers = acceptsRandomMessageNumbers();
     }
 
     private TestResult acceptsRandomMessageNumbers() {
@@ -64,7 +73,6 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
@@ -89,7 +97,6 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
@@ -113,7 +120,6 @@ public class DtlsMessageSequenceProbe
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
@@ -146,19 +152,31 @@ public class DtlsMessageSequenceProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsMessageSequenceResult getCouldNotExecuteResult() {
-        return new DtlsMessageSequenceResult(
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(
+                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                acceptsStartedWithInvalidMessageNumber);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                acceptsSkippedMessageNumbersOnce);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                acceptsSkippedMessageNumbersMultiple);
+        put(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        if (acceptsSkippedMessageNumbersOnce == TestResults.FALSE
+                && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
+                && acceptsRandomMessageNumbers == TestResults.FALSE) {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
+        } else {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+        }
+    }
 }

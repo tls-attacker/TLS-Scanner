@@ -9,7 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -21,16 +23,17 @@ import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttacker;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsscanner.core.probe.result.PaddingOracleResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class PaddingOracleProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, PaddingOracleResult<ClientReport>> {
+public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
@@ -44,6 +47,10 @@ public class PaddingOracleProbe
     private List<VersionSuiteListPair> clientSupportedSuites;
     private boolean sendsApplicationMessage;
 
+    private static final Logger LOGGER = LogManager.getLogger();
+    private List<InformationLeakTest<PaddingOracleTestInfo>> resultList;
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
+
     public PaddingOracleProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, scannerConfig);
@@ -56,13 +63,16 @@ public class PaddingOracleProbe
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ADDTIONAL_ITERATIONS
                         : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
+                TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
     }
 
     @Override
-    public PaddingOracleResult executeTest() {
+    public void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-        List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
+        resultList = new LinkedList<>();
         for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
             for (VersionSuiteListPair pair : clientSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
@@ -74,7 +84,7 @@ public class PaddingOracleProbe
                                     scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                                             ? PaddingRecordGeneratorType.SHORT
                                             : PaddingRecordGeneratorType.VERY_SHORT;
-                            testResultList.add(
+                            resultList.add(
                                     getPaddingOracleInformationLeakTest(
                                             vectorGeneratorType,
                                             recordGeneratorType,
@@ -87,10 +97,10 @@ public class PaddingOracleProbe
             }
         }
         LOGGER.debug("Finished evaluation");
-        if (isPotentiallyVulnerable(testResultList)
+        if (isPotentiallyVulnerable(resultList)
                 || scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
             LOGGER.debug("Starting extended evaluation");
-            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : resultList) {
                 if (fingerprint.isDistinctAnswers()
                         || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     extendFingerPrint(fingerprint, numberOfAddtionalIterations);
@@ -98,7 +108,16 @@ public class PaddingOracleProbe
             }
             LOGGER.debug("Finished extended evaluation");
         }
-        return new PaddingOracleResult(testResultList);
+        if (this.resultList != null) {
+            vulnerable = TestResults.FALSE;
+            for (InformationLeakTest<?> informationLeakTest : resultList) {
+                if (informationLeakTest.isSignificantDistinctAnswers()) {
+                    vulnerable = TestResults.TRUE;
+                }
+            }
+        } else {
+            vulnerable = TestResults.ERROR_DURING_TEST;
+        }
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
@@ -169,26 +188,24 @@ public class PaddingOracleProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        if (report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.isProbeAlreadyExecuted(TlsProbeType.APPLICATION_MESSAGE)) {
-            return Objects.equals(
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResults.TRUE);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public PaddingOracleResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {
         clientSupportedSuites = report.getVersionSuitePairs();
         sendsApplicationMessage =
                 report.getResult(TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE) == TestResults.TRUE;
+    }
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT, resultList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return new ProbeRequirement(
+                        TlsProbeType.PROTOCOL_VERSION,
+                        TlsProbeType.CIPHER_SUITE,
+                        TlsProbeType.APPLICATION_MESSAGE)
+                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }
 }

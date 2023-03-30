@@ -21,8 +21,8 @@ public class FreakAfterProbe extends AfterProbe<TlsScanReport> {
     public void analyze(TlsScanReport report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
-            if (report.getCipherSuites() != null) {
-                for (CipherSuite suite : report.getCipherSuites()) {
+            if (report.getSupportedCipherSuites() != null) {
+                for (CipherSuite suite : report.getSupportedCipherSuites()) {
                     if (suite.name().contains("RSA_EXPORT")) {
                         vulnerable = TestResults.TRUE;
                     }

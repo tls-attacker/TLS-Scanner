@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
@@ -25,8 +26,8 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.transport.TransportHandlerType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsIpAddressInCookieResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -34,25 +35,23 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  * Determines whether the server uses the client IP address for the DTLS cookie generation. It
  * requires a proxy so we limit the probe.
  */
-public class DtlsIpAddressInCookieProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DtlsIpAddressInCookieResult> {
+public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private static final String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
     private static final int PROXY_CONTROL_PORT = 5555;
     private static final String PROXY_DATA_HOSTNAME = "195.37.190.89";
     private static final int PROXY_DATA_PORT = 4444;
 
+    private TestResult usesIpAdressInCookie = TestResults.COULD_NOT_TEST;
+
     public DtlsIpAddressInCookieProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
+        register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
     }
 
     @Override
-    public DtlsIpAddressInCookieResult executeTest() {
-        return new DtlsIpAddressInCookieResult(usesIpAdressInCookie());
-    }
-
-    private TestResult usesIpAdressInCookie() {
+    public void executeTest() {
         Config config = configSelector.getBaseConfig();
         config.getDefaultClientConnection().setTransportHandlerType(TransportHandlerType.UDP_PROXY);
         config.getDefaultClientConnection().setProxyControlHostname(PROXY_CONTROL_HOSTNAME);
@@ -80,27 +79,26 @@ public class DtlsIpAddressInCookieProbe
             state.getTlsContext().setClientRandom(oldContext.getClientRandom());
             state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                return TestResults.FALSE;
-            } else {
-                return TestResults.TRUE;
-            }
+            usesIpAdressInCookie =
+                    WorkflowTraceUtil.didReceiveMessage(
+                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+                            ? TestResults.TRUE
+                            : TestResults.FALSE;
         } else {
-            return TestResults.CANNOT_BE_TESTED;
+            usesIpAdressInCookie = TestResults.CANNOT_BE_TESTED;
         }
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsIpAddressInCookieResult getCouldNotExecuteResult() {
-        return new DtlsIpAddressInCookieResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE, usesIpAdressInCookie);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

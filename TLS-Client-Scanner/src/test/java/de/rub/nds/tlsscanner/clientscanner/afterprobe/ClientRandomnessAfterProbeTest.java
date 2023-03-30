@@ -42,7 +42,8 @@ public class ClientRandomnessAfterProbeTest {
 
     private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
 
-    // generates "cryptographically strong random numbers" with constant seed for deterministic
+    // generates "cryptographically strong random numbers" with constant seed for
+    // deterministic
     // tests
     private final SecureRandom secureRandom =
             new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
@@ -101,7 +102,8 @@ public class ClientRandomnessAfterProbeTest {
     @Disabled
     @Test
     public void testSecureRandomness() {
-        // while this is not strictly validated, the probe recommends at least ~32000 bytes of
+        // while this is not strictly validated, the probe recommends at least ~32000
+        // bytes of
         // recorded randomness
         for (int i = 0; i < 1024; i++) {
             clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
@@ -110,7 +112,7 @@ public class ClientRandomnessAfterProbeTest {
         report.setExtractedValueContainerList(extractedValueContainerMap);
         probe.analyze(report);
 
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertFalse(entropyReport.isFailedFourierTest());
             assertFalse(entropyReport.isFailedRunsTest());
             assertFalse(entropyReport.isFailedFrequencyTest());
@@ -135,7 +137,7 @@ public class ClientRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()
@@ -156,7 +158,7 @@ public class ClientRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()

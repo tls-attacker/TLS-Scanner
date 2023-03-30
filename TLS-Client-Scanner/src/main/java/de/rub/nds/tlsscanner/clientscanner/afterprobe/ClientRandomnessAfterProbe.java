@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 
+import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -39,10 +40,15 @@ public class ClientRandomnessAfterProbe extends RandomnessAfterProbe<ClientRepor
         List<ComparableByteArray> extractedIvList =
                 cbcIvExtractedValueContainer.getExtractedValueList();
 
-        List<EntropyReport> entropyReport = new LinkedList<>();
+        List<EntropyReport> entropyReport = report.getEntropyReports();
+        if (entropyReport == null) {
+            entropyReport = new LinkedList<>();
+            report.putResult(
+                    TlsAnalyzedProperty.ENTROPY_REPORTS,
+                    new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+        }
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.setEntropyReportList(entropyReport);
     }
 }

@@ -71,14 +71,14 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<NamedGroup> supportedGroups =
-                this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
+                tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
             for (NamedGroup group : supportedGroups) {
-                if (this.requiredGroups.contains(group)) {
+                if (requiredGroups.contains(group)) {
                     found = true;
                     break;
                 }
@@ -92,7 +92,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
-            if (this.recommendedGroups != null && !this.recommendedGroups.contains(group)) {
+            if (recommendedGroups != null && !recommendedGroups.contains(group)) {
                 nonRecommended.add(group);
             }
         }

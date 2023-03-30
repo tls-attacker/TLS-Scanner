@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -19,12 +20,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.security.cert.CertificateParsingException;
@@ -35,16 +36,18 @@ import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-public class HandshakeSimulationProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HandshakeSimulationResult> {
+public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulationRequest> simulationRequestList;
+    private List<SimulatedClientResult> simulatedClientList;
 
     public HandshakeSimulationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, configSelector);
+        register(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
+
         simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList =
                 ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
@@ -73,19 +76,18 @@ public class HandshakeSimulationProbe
     }
 
     @Override
-    public HandshakeSimulationResult executeTest() {
+    public void executeTest() {
         List<State> clientStateList = new LinkedList<>();
-        List<SimulatedClientResult> resultList = new LinkedList<>();
+        simulatedClientList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {
             State state = request.getExecutableState(configSelector.getScannerConfig());
             clientStateList.add(state);
         }
         executeState(clientStateList);
-        for (SimulatedClientResult result : resultList) {
+        for (SimulatedClientResult result : simulatedClientList) {
             // evaluateClientConfig(result);
             // evaluateReceivedMessages(result);
         }
-        return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {
@@ -235,15 +237,15 @@ public class HandshakeSimulationProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public HandshakeSimulationResult getCouldNotExecuteResult() {
-        return new HandshakeSimulationResult(null);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS, simulatedClientList);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
     }
 }

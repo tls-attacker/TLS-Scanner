@@ -8,14 +8,16 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteOrderResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
@@ -23,15 +25,17 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CipherSuiteOrderProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, CipherSuiteOrderResult> {
+public class CipherSuiteOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+
+    private TestResult enforced = TestResults.COULD_NOT_TEST;
 
     public CipherSuiteOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);
+        register(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
     }
 
     @Override
-    public CipherSuiteOrderResult executeTest() {
+    public void executeTest() {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
@@ -39,10 +43,10 @@ public class CipherSuiteOrderProbe
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverse(toTestList);
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        return new CipherSuiteOrderResult(
-                firstSelectedCipherSuite == secondSelectedCipherSuite
+        enforced =
+                (firstSelectedCipherSuite == secondSelectedCipherSuite)
                         ? TestResults.TRUE
-                        : TestResults.FALSE);
+                        : TestResults.FALSE;
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -56,15 +60,15 @@ public class CipherSuiteOrderProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public CipherSuiteOrderResult getCouldNotExecuteResult() {
-        return new CipherSuiteOrderResult(TestResults.COULD_NOT_TEST);
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
     }
 }

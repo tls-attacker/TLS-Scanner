@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -26,23 +27,20 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsReorderingResult;
 
-public class DtlsReorderingProbe
-        extends TlsClientProbe<
-                ClientScannerConfig, ClientReport, DtlsReorderingResult<ClientReport>> {
+public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+
+    private TestResult supportsReordering = TestResults.COULD_NOT_TEST;
 
     public DtlsReorderingProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_REORDERING, scannerConfig);
+        register(TlsAnalyzedProperty.SUPPORTS_REORDERING);
     }
 
     @Override
-    public DtlsReorderingResult executeTest() {
-        return new DtlsReorderingResult(supportsReordering());
-    }
-
-    private TestResult supportsReordering() {
+    public void executeTest() {
         Config config = scannerConfig.createConfig();
 
         WorkflowTrace trace =
@@ -59,24 +57,25 @@ public class DtlsReorderingProbe
 
         State state = new State(config, trace);
         executeState(state);
+
         if (state.getWorkflowTrace().executedAsPlanned()
                 && receiveAction.getReceivedMessages().isEmpty()) {
-            return TestResults.TRUE;
+            supportsReordering = TestResults.TRUE;
         } else {
-            return TestResults.FALSE;
+            supportsReordering = TestResults.FALSE;
         }
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsReorderingResult getCouldNotExecuteResult() {
-        return new DtlsReorderingResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return Requirement.NO_REQUIREMENT;
+    }
 }

@@ -8,7 +8,11 @@
  */
 package de.rub.nds.scanner.core.constants;
 
+/** The interface for TestResults */
 public interface TestResult {
 
+    /**
+     * @return the name of the TestResult.
+     */
     public abstract String name();
 }

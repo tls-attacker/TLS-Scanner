@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -31,16 +33,17 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.FreakResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
 // See https://www.ieee-security.org/TC/SP2015/papers-archived/6949a535.pdf section V-D.
-public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, FreakResult> {
+public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
     private static final int FREAK_N_BITLENGTH = 512;
     private static final String FREAK_MODULUS =
@@ -51,14 +54,16 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
             "90628953731413115808641377987799987298343446077191735907575571"
                     + "61637582546998623882628794294395441240308041795327669106449640328485739194560936631604548017";
 
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
     private List<CipherSuite> supportedRsaCipherSuites;
 
     public FreakProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.FREAK, scannerConfig);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_FREAK);
     }
 
     @Override
-    public FreakResult executeTest() {
+    public void executeTest() {
         BigInteger modulus = new BigInteger(FREAK_MODULUS);
         BigInteger publicKey = new BigInteger(FREAK_PUBLIC_KEY);
         BigInteger privateKey = new BigInteger(FREAK_PRIVATE_KEY);
@@ -83,36 +88,38 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
                 WorkflowTraceUtil.getFirstReceivedMessage(
                         HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
         if (ckeMessage != null && ckeMessage instanceof RSAClientKeyExchangeMessage) {
-            RSAClientKeyExchangeMessage rsaCkeMessage = (RSAClientKeyExchangeMessage) ckeMessage;
-            BigInteger encryptedPMS = new BigInteger(1, rsaCkeMessage.getPublicKey().getValue());
+            RSAClientKeyExchangeMessage rsaCke = (RSAClientKeyExchangeMessage) ckeMessage;
+            BigInteger encryptedPMS = new BigInteger(1, rsaCke.getPublicKey().getValue());
             int encryptedPMSBitLength = encryptedPMS.bitLength();
             LOGGER.debug(
                     "FREAK probe encrypted premaster secret is {} bits", encryptedPMSBitLength);
-            if (encryptedPMSBitLength <= FREAK_N_BITLENGTH) {
-                return new FreakResult(TestResults.TRUE);
-            }
+            vulnerable =
+                    encryptedPMSBitLength <= FREAK_N_BITLENGTH
+                            ? TestResults.TRUE
+                            : TestResults.FALSE;
+        } else {
+            vulnerable = TestResults.FALSE;
         }
-        return new FreakResult(TestResults.FALSE);
-    }
-
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResults.TRUE;
-    }
-
-    @Override
-    public FreakResult getCouldNotExecuteResult() {
-        return new FreakResult(TestResults.COULD_NOT_TEST);
     }
 
     @Override
     public void adjustConfig(ClientReport report) {
         supportedRsaCipherSuites = new LinkedList<>();
-        for (CipherSuite suite : report.getCipherSuites()) {
+        for (CipherSuite suite : report.getSupportedCipherSuites()) {
             if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
                 supportedRsaCipherSuites.add(suite);
             }
         }
+    }
+
+    @Override
+    protected Requirement getRequirements() {
+        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_RSA)
+                .requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
+    }
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
     }
 }
