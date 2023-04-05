@@ -15,6 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 public class QuicConnectionMigrationResult extends ProbeResult<ServerReport> {
 
     private boolean portConnectionMigrationSuccessful;
+    private String ipv6Address;
     private boolean ipv6HandshakeSuccessful;
     private boolean ipv6ConnectionMigrationSuccessful;
 
@@ -24,10 +25,12 @@ public class QuicConnectionMigrationResult extends ProbeResult<ServerReport> {
 
     public QuicConnectionMigrationResult(
             boolean portConnectionMigrationSuccessful,
+            String ipv6Address,
             boolean ipv6HandshakeSuccessful,
             boolean ipv6ConnectionMigrationSuccessful) {
         this();
         this.portConnectionMigrationSuccessful = portConnectionMigrationSuccessful;
+        this.ipv6Address = ipv6Address;
         this.ipv6HandshakeSuccessful = ipv6HandshakeSuccessful;
         this.ipv6ConnectionMigrationSuccessful = ipv6ConnectionMigrationSuccessful;
     }
@@ -43,6 +46,14 @@ public class QuicConnectionMigrationResult extends ProbeResult<ServerReport> {
 
     public void setPortConnectionMigrationSuccessful(boolean portConnectionMigrationSuccessful) {
         this.portConnectionMigrationSuccessful = portConnectionMigrationSuccessful;
+    }
+
+    public String getIpv6Address() {
+        return ipv6Address;
+    }
+
+    public void setIpv6Address(String ipv6Address) {
+        this.ipv6Address = ipv6Address;
     }
 
     public boolean isIpv6HandshakeSuccessful() {

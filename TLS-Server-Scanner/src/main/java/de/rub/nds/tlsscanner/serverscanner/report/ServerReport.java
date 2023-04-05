@@ -120,6 +120,7 @@ public class ServerReport extends TlsScanReport {
     private Integer cookieLength = null;
 
     // QUIC
+    private Boolean quicRetryRequired = null;
     private List<QuicVersionResult.Entry> supportedQuicVersions = null;
     private QuicTransportParameters quicTransportParameters = null;
     private QuicTls12HandshakeResult quicTls12HandshakeResult = null;
@@ -685,6 +686,14 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
         this.closedAfterAppDataDelta = closedAfterAppDataDelta;
+    }
+
+    public Boolean getQuicRetryRequired() {
+        return quicRetryRequired;
+    }
+
+    public void setQuicRetryRequired(Boolean quicRetryRequired) {
+        this.quicRetryRequired = quicRetryRequired;
     }
 
     public synchronized List<QuicVersionResult.Entry> getSupportedQuicVersions() {

@@ -64,6 +64,7 @@ public class ConfigSelector {
 
     private boolean speaksProtocol = false;
     private boolean isHandshaking = false;
+    private boolean quicRetryRequired = false;
 
     public ConfigSelector(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         this.scannerConfig = scannerConfig;
@@ -131,6 +132,7 @@ public class ConfigSelector {
                     reportLimitation(configProfile, "TLS 1.3");
                     workingTl13Config = baseConfig.createCopy();
                     isHandshaking = true;
+                    quicRetryRequired = true;
                     return true;
                 }
             }
@@ -324,6 +326,10 @@ public class ConfigSelector {
 
     public boolean isSpeaksProtocol() {
         return speaksProtocol;
+    }
+
+    public boolean isQuicRetryRequired() {
+        return quicRetryRequired;
     }
 
     public ServerScannerConfig getScannerConfig() {

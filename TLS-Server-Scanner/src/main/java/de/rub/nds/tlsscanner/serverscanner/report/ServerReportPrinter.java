@@ -340,6 +340,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             .isPortConnectionMigrationSuccessful());
             prettyAppend(
                     builder,
+                    "IPV6 Address",
+                    report.getQuicConnectionMigrationResult().getIpv6Address());
+            prettyAppend(
+                    builder,
                     "IPV6 Handshake Successful",
                     report.getQuicConnectionMigrationResult().isIpv6HandshakeSuccessful());
             prettyAppend(

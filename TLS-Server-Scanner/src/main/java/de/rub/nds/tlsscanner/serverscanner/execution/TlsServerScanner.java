@@ -290,6 +290,7 @@ public final class TlsServerScanner extends TlsScanner {
         boolean isConnectable = false;
         boolean speaksProtocol = false;
         boolean isHandshaking = false;
+        boolean quicRetryRequired = false;
         ProtocolType protocolType = getProtocolType();
         ThreadedScanJobExecutor<ServerReport> executor = null;
         // TODO Kind of hacky - this extracts the hosts from the client delegate - otherwise its not
@@ -312,6 +313,7 @@ public final class TlsServerScanner extends TlsScanner {
                         config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
+                    quicRetryRequired = configSelector.isQuicRetryRequired();
                     LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
 
                     ScanJob job = new ScanJob(probeList, afterList);
@@ -346,6 +348,7 @@ public final class TlsServerScanner extends TlsScanner {
         serverReport.setSpeaksProtocol(speaksProtocol);
         serverReport.setIsHandshaking(isHandshaking);
         serverReport.setProtocolType(protocolType);
+        serverReport.setQuicRetryRequired(quicRetryRequired);
 
         if (executor != null) {
             executor.shutdown();

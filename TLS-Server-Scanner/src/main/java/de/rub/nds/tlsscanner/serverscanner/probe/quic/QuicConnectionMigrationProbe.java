@@ -44,23 +44,28 @@ public class QuicConnectionMigrationProbe
 
         result.setPortConnectionMigrationSuccessful(state.getWorkflowTrace().executedAsPlanned());
 
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-        OutboundConnection ipv6Connection =
-                new OutboundConnection(config.getDefaultClientConnection());
-        ipv6Connection.setUseIpv6(true);
-        config.setDefaultClientConnection(ipv6Connection);
-        state = new State(config);
-        executeState(state);
-
-        result.setIpv6HandshakeSuccessful(state.getWorkflowTrace().executedAsPlanned());
-
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            config.setWorkflowTraceType(WorkflowTraceType.QUIC_IPV6_CONNECTION_MIGRATION);
+        if (config.getDefaultClientConnection().getIpv6() != null) {
+            result.setIpv6Address(config.getDefaultClientConnection().getIpv6());
+            config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+            OutboundConnection ipv6Connection =
+                    new OutboundConnection(config.getDefaultClientConnection());
+            ipv6Connection.setUseIpv6(true);
+            config.setDefaultClientConnection(ipv6Connection);
             state = new State(config);
             executeState(state);
-            result.setIpv6ConnectionMigrationSuccessful(
-                    state.getWorkflowTrace().executedAsPlanned());
+            result.setIpv6HandshakeSuccessful(state.getWorkflowTrace().executedAsPlanned());
+
+            if (state.getWorkflowTrace().executedAsPlanned()) {
+                config.setWorkflowTraceType(WorkflowTraceType.QUIC_IPV6_CONNECTION_MIGRATION);
+                state = new State(config);
+                executeState(state);
+                result.setIpv6ConnectionMigrationSuccessful(
+                        state.getWorkflowTrace().executedAsPlanned());
+            } else {
+                result.setIpv6ConnectionMigrationSuccessful(false);
+            }
         } else {
+            result.setIpv6HandshakeSuccessful(false);
             result.setIpv6ConnectionMigrationSuccessful(false);
         }
 
