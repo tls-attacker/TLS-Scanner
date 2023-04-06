@@ -6,16 +6,15 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.afterprobe;
+package de.rub.nds.tlsscanner.core.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class LogjamAfterProbeTest {
 
-    private ServerReport report;
+    private TlsScanReport report;
     private LogjamAfterProbe probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
@@ -43,7 +42,7 @@ public class LogjamAfterProbeTest {
 
     @BeforeEach
     public void setup() {
-        report = new ServerReport();
+        report = new TlsCoreTestReport();
         probe = new LogjamAfterProbe();
     }
 
@@ -94,7 +93,7 @@ public class LogjamAfterProbeTest {
 
     @Test
     public void testEmptyServerReport() {
-        ServerReport emptyReport = new ServerReport();
+        TlsScanReport emptyReport = new TlsCoreTestReport();
         probe.analyze(emptyReport);
         assertEquals(
                 TestResults.UNCERTAIN,

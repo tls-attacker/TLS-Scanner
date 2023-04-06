@@ -6,28 +6,27 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.afterprobe;
+package de.rub.nds.tlsscanner.core.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DtlsRetransmissionAfterProbeTest {
 
-    private ServerReport report;
+    private TlsScanReport report;
     private DtlsRetransmissionAfterProbe probe;
     private ExtractedValueContainer<HandshakeMessageType> retransmissionsContainer;
 
     @BeforeEach
     public void setup() {
-        report = new ServerReport();
+        report = new TlsCoreTestReport();
         probe = new DtlsRetransmissionAfterProbe();
         retransmissionsContainer =
                 new ExtractedValueContainer<>(TrackableValueType.DTLS_RETRANSMISSIONS);
