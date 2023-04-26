@@ -31,7 +31,7 @@ public class QuicTransportParameterProbe
     public QuicTransportParameterResult executeTest() {
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(true);
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setQuicVersion(QuicVersion.VERSION_1.getByteValue());
         State state = new State(config);
         executeState(state);
