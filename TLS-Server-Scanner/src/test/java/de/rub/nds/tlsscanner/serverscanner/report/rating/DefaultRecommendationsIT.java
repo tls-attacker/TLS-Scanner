@@ -14,13 +14,16 @@ import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+
 import jakarta.xml.bind.JAXBException;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
 public class DefaultRecommendationsIT {
 

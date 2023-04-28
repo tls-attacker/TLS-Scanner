@@ -75,6 +75,13 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResu
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.util.Comparator;
@@ -86,11 +93,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
 
 public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 

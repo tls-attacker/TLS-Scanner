@@ -32,12 +32,14 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+
+import org.bouncycastle.crypto.tls.Certificate;
+
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 

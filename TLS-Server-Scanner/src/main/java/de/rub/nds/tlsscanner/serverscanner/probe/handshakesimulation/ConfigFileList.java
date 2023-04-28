@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;

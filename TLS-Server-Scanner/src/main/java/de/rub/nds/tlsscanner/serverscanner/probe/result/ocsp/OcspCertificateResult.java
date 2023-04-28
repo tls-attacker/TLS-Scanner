@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

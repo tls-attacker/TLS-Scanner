@@ -21,16 +21,18 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+
+import org.bouncycastle.crypto.prng.FixedSecureRandom;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bouncycastle.crypto.prng.FixedSecureRandom;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 public class ServerRandomnessAfterProbeTest {
 

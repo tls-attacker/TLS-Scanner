@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+
 import java.util.List;
 
 public abstract class PaddingVectorGenerator {

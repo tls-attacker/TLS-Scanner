@@ -14,6 +14,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+
 import java.util.Set;
 
 public class Sweet32AfterProbe extends AfterProbe<TlsScanReport> {

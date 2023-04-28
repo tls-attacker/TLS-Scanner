@@ -31,11 +31,13 @@ import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityErrorTranslator;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import java.util.LinkedList;
-import java.util.List;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /** Executes a padding oracle attack check. */
 public class PaddingOracleAttacker {

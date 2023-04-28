@@ -17,9 +17,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.jupiter.api.Test;
 
 public class NamedGroupsGuidelineCheckTest {
 

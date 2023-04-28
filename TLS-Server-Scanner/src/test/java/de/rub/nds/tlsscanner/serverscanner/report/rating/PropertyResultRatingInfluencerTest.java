@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
+
 import org.junit.jupiter.api.Test;
 
 public class PropertyResultRatingInfluencerTest {

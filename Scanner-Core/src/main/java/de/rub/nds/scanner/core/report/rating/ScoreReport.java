@@ -9,6 +9,7 @@
 package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
+
 import java.util.LinkedHashMap;
 
 public class ScoreReport {

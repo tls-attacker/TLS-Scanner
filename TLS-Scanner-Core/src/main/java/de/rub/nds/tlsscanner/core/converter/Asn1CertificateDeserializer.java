@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
 import org.bouncycastle.asn1.x509.Certificate;
 
 public class Asn1CertificateDeserializer extends StdDeserializer<Certificate> {

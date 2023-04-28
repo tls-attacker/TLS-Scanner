@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+
 import java.util.Collections;
 import java.util.List;
 

@@ -17,13 +17,15 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.HandshakeSimulationProbe;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Set;
 
 public class ProbeResultTest {
 

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+
 import de.rub.nds.tlsscanner.core.converter.Asn1CertificateSerializer;
 import de.rub.nds.tlsscanner.core.converter.Asn1FieldSerializer;
 import de.rub.nds.tlsscanner.core.converter.CertificateSerializer;
@@ -23,11 +24,13 @@ import de.rub.nds.tlsscanner.core.converter.CustomRsaPublicKeySerializer;
 import de.rub.nds.tlsscanner.core.converter.PointSerializer;
 import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ClientReportSerializer {
 
