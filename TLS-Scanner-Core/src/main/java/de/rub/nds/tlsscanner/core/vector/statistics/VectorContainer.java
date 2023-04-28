@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

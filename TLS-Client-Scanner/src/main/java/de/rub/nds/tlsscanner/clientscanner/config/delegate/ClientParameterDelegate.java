@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.config.delegate;
 
 import com.beust.jcommander.Parameter;
+
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;

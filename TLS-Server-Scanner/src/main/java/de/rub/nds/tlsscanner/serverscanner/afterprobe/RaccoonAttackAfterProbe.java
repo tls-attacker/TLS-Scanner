@@ -21,6 +21,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAtt
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackVulnerabilityPosition;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;

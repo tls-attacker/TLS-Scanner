@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.constants;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.SortOrder;
 
 public enum PrimeModulus {

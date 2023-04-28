@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+
 import java.util.Objects;
 
 public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {

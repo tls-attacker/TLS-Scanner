@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.Objects;

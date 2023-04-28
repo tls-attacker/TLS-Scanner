@@ -44,13 +44,15 @@ import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /** TODO: Need to be completed. */
 public class ServerContainerReportCreator extends TlsReportCreator {

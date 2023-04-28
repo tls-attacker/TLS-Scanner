@@ -17,6 +17,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+
 import java.util.LinkedList;
 import java.util.List;
 

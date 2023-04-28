@@ -30,12 +30,14 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+
+import org.bouncycastle.crypto.tls.Certificate;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 

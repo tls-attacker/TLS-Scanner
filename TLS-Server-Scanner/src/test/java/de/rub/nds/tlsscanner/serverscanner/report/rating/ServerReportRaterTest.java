@@ -15,8 +15,10 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
 
 public class ServerReportRaterTest {
 

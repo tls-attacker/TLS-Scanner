@@ -9,6 +9,7 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+
 import java.util.HashMap;
 
 public class ColorEncoding {
