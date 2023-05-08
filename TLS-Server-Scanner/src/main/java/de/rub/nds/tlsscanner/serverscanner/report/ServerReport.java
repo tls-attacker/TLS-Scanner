@@ -35,12 +35,15 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ServerReport extends TlsScanReport {
-
+    private static final Logger LOGGER = LogManager.getLogger();
     private final String host;
     private final Integer port;
 
@@ -286,10 +289,13 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized List<OcspCertificateResult> getOcspResults() {
         @SuppressWarnings("unchecked")
-        ListResult<OcspCertificateResult> listResult =
-                (ListResult<OcspCertificateResult>)
-                        this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
-        return listResult == null ? null : listResult.getList();
+        ListResult<OcspCertificateResult> listResult = null;
+        // ListResult<OcspCertificateResult> listResult =
+        //        (ListResult<OcspCertificateResult>)
+        //                this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
+        // return listResult == null ? null : listResult.getList();
+        // temporary fix
+        return null;
     }
 
     public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>

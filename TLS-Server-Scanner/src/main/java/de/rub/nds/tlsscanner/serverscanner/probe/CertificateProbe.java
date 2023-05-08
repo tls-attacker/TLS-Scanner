@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import static de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm.SM2_SM3;
-
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -339,13 +337,28 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
 
     private List<CertificateChain> getTls13CertsSm2SigHash() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SM2_SM3);
-        List<CertificateChain> tls13sm2Certs = new LinkedList<>();
-        performEcCertScanSm2(
-                tlsConfig, CipherSuite.getImplementedTls13CipherSuites(), tls13sm2Certs);
-        return tls13sm2Certs;
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+                SignatureAndHashAlgorithm.SM2_SM3);
+        List<CertificateChain> tls13Sm2Certs = new LinkedList<>();
+        performEcCertScanEcdsa(
+                tlsConfig,
+                getTls13Curves(),
+                CipherSuite.getImplementedTls13CipherSuites(),
+                tls13Sm2Certs,
+                ecdsaPkGroupsTls13,
+                ecdsaCertSigGroupsTls13);
+        return tls13Sm2Certs;
     }
-
+    /*
+        private List<CertificateChain> getTls13CertsSm2SigHash() {
+            Config tlsConfig = configSelector.getTls13BaseConfig();
+            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SM2_SM3);
+            List<CertificateChain> tls13sm2Certs = new LinkedList<>();
+            performEcCertScanSm2(
+                    tlsConfig, CipherSuite.getImplementedTls13CipherSuites(), tls13sm2Certs);
+            return tls13sm2Certs;
+        }
+    */
     private List<NamedGroup> getAllCurves() {
         LinkedList<NamedGroup> curves = new LinkedList<>();
 
@@ -456,7 +469,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             }
         } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
-
+    /*
     private void performEcCertScanSm2(
             Config tlsConfig,
             List<CipherSuite> cipherSuitesToTest,
@@ -482,7 +495,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             // selected cipher suite or certificate named group invalid
             cipherSuitesToTest.clear();
         }
-    }
+    }*/
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
