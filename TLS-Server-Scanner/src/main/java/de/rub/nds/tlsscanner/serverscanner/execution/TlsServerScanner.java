@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.CertificateSignatureAndHashAlgorithmAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
@@ -35,8 +36,12 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -130,6 +135,11 @@ public final class TlsServerScanner extends TlsScanner {
     protected void fillProbeLists() {
         addProbeToProbeList(new ProtocolVersionProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new CipherSuiteProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new NamedGroupsProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new CertificateProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new ExtensionProbe(configSelector, parallelExecutor));
+        afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
         /*
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(configSelector, parallelExecutor));

@@ -131,7 +131,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
-        /*
         appendExtensions(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
@@ -167,7 +166,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             appendGuidelines(builder);
         }
         appendPerformanceData(builder);
-        */
+
         return builder.toString();
     }
 
