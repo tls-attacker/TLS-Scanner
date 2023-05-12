@@ -19,6 +19,12 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.FreakAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
@@ -28,20 +34,67 @@ import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.CertificateSignatureAndHashAlgorithmAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.DestinationPortAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateTransparencyProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsIpAddressInCookieProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HelloRetryProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureHashAlgorithmOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -133,14 +186,6 @@ public final class TlsServerScanner extends TlsScanner {
 
     @Override
     protected void fillProbeLists() {
-        addProbeToProbeList(new ProtocolVersionProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new CipherSuiteProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new NamedGroupsProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new CertificateProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
-        addProbeToProbeList(new ExtensionProbe(configSelector, parallelExecutor));
-        afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
-        /*
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(configSelector, parallelExecutor));
         }
@@ -213,8 +258,6 @@ public final class TlsServerScanner extends TlsScanner {
                     new ConnectionClosingProbe(configSelector, parallelExecutor), false);
             afterList.add(new PoodleAfterProbe());
         }
-        */
-
         // Init StatsWriter
         setDefaultProbeWriter();
     }
