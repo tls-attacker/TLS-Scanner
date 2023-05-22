@@ -193,7 +193,7 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         PropertyRequirement pReqSsl3 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_3);
         PropertyRequirement pReqTls10 =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);

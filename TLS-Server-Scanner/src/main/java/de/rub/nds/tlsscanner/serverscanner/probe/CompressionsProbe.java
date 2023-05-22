@@ -84,7 +84,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new WorkingConfigRequirement(configSelector);
     }
 

@@ -89,7 +89,7 @@ public class HeartbleedProbe extends TlsServerProbe<ConfigSelector, ServerReport
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.EXTENSIONS)
                 .requires(new ExtensionRequirement(ExtensionType.HEARTBEAT));
     }

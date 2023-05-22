@@ -154,7 +154,7 @@ public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientR
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new OptionsRequirement(scannerConfig, getType());
     }
 }

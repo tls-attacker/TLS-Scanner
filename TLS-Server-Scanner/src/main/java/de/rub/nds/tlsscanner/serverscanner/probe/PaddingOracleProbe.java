@@ -159,7 +159,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
                 .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }

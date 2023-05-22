@@ -266,7 +266,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 

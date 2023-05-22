@@ -146,7 +146,7 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.BASIC)
                 .requires(
                         new PropertyRequirement(

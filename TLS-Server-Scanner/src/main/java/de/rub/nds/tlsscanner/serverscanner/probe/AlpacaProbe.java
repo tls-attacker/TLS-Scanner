@@ -81,7 +81,7 @@ public class AlpacaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.EXTENSIONS);
     }
 

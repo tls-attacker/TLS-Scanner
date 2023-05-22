@@ -75,7 +75,7 @@ public class DtlsReorderingProbe extends TlsClientProbe<ClientScannerConfig, Cli
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

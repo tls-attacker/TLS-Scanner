@@ -211,7 +211,7 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

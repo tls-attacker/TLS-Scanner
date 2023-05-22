@@ -239,7 +239,7 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

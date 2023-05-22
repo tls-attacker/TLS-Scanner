@@ -116,7 +116,7 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new WorkingConfigRequirement(configSelector);
     }
 

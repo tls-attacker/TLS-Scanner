@@ -180,7 +180,7 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE)
                 .requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
     }

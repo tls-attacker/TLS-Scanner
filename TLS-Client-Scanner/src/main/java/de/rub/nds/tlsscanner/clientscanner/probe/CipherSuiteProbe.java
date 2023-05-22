@@ -265,7 +265,7 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION);
     }
 

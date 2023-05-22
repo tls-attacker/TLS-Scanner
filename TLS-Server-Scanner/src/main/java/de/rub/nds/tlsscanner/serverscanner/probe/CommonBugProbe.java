@@ -141,7 +141,7 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 

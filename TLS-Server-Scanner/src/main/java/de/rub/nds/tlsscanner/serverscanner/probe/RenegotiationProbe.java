@@ -261,7 +261,7 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         ProbeRequirement cipherReq = new ProbeRequirement(TlsProbeType.CIPHER_SUITE);
         PropertyNotRequirement notTls13 =
                 new PropertyNotRequirement(

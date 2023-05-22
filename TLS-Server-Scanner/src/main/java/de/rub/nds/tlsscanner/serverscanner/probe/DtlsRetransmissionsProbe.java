@@ -106,7 +106,7 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

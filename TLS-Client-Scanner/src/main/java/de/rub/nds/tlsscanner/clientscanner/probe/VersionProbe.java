@@ -123,7 +123,7 @@ public class VersionProbe extends TlsClientProbe<ClientScannerConfig, ClientRepo
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.BASIC);
     }
 

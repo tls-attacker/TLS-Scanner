@@ -107,7 +107,7 @@ public class DtlsBugsProbe extends TlsClientProbe<ClientScannerConfig, ClientRep
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

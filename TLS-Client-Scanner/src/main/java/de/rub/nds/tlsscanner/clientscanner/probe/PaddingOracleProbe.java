@@ -203,7 +203,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(
                         TlsProbeType.PROTOCOL_VERSION,
                         TlsProbeType.CIPHER_SUITE,

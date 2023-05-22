@@ -64,7 +64,7 @@ public class CcaSupportProbe extends TlsClientProbe<ClientScannerConfig, ClientR
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

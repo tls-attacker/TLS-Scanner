@@ -12,6 +12,7 @@ import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -166,8 +167,21 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             appendGuidelines(builder);
         }
         appendPerformanceData(builder);
+        appendMissingProbesRequirements(builder);
 
         return builder.toString();
+    }
+
+    private void appendMissingProbesRequirements(StringBuilder builder) {
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppendHeading(
+                    builder, "Unexecuted Probes and the respectively missing Requirements");
+            for (ScannerProbe<?> unexecutedProbe : report.getUnexecutedProbes())
+                prettyAppend(
+                        builder,
+                        unexecutedProbe.getProbeName(),
+                        unexecutedProbe.getRequirements().getMissingRequirements(report).name());
+        }
     }
 
     private void appendDtlsSpecificResults(StringBuilder builder) {

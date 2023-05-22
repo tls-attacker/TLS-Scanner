@@ -19,6 +19,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -29,12 +30,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class ScanReport extends Observable implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
 
     private final Set<ProbeType> executedProbes;
+    private final Set<ScannerProbe<?>> unexecutedProbes;
 
     private final List<PerformanceData> performanceList;
 
@@ -46,6 +49,7 @@ public abstract class ScanReport extends Observable implements Serializable {
         performanceList = new LinkedList<>();
         resultMap = new HashMap<>();
         executedProbes = new HashSet<>();
+        unexecutedProbes = new HashSet<>();
         extractedValueContainerMap = new HashMap<>();
     }
 
@@ -142,19 +146,31 @@ public abstract class ScanReport extends Observable implements Serializable {
     }
 
     public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {
-        return (executedProbes.contains(type));
+        return executedProbes.stream().collect(Collectors.toSet()).contains(type);
     }
 
-    public synchronized void markProbeAsExecuted(ProbeType type) {
-        executedProbes.add(type);
+    public synchronized void markProbeAsExecuted(ProbeType probe) {
+        executedProbes.add(probe);
+    }
+
+    public synchronized void markProbeAsUnexecuted(ScannerProbe<?> probe) {
+        unexecutedProbes.add(probe);
     }
 
     public synchronized List<PerformanceData> getPerformanceList() {
         return performanceList;
     }
 
+    public synchronized Set<ProbeType> getUnexecutesProbeTypes() {
+        return unexecutedProbes.stream().map(probe -> probe.getType()).collect(Collectors.toSet());
+    }
+
     public synchronized Set<ProbeType> getExecutedProbes() {
         return executedProbes;
+    }
+
+    public synchronized Set<ScannerProbe<?>> getUnexecutedProbes() {
+        return unexecutedProbes;
     }
 
     public abstract String getFullReport(ScannerDetail detail, boolean printColorful);

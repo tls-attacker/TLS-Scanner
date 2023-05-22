@@ -73,7 +73,7 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
     /**
      * @return the requirement object of the probe. Override for respective probes.
      */
-    protected abstract Requirement getRequirements();
+    public abstract Requirement getRequirements();
 
     public abstract void merge(Report report);
 

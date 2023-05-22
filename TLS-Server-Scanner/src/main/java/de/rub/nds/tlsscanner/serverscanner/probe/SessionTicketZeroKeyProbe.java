@@ -184,7 +184,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
                 .requires(new ProbeRequirement(TlsProbeType.EXTENSIONS));
     }

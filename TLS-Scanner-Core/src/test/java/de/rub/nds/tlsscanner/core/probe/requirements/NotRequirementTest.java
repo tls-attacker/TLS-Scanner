@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
@@ -32,7 +33,8 @@ public class NotRequirementTest {
         assertArrayEquals(requirement.getRequirement(), new Enum<?>[] {TlsProbeType.BASIC});
         assertEquals(requirement.toString(), "(not BASIC)");
         assertTrue(requirement.evaluate(report));
-        report.markProbeAsExecuted(TlsProbeType.BASIC);
+        ScannerProbe<TestReport> basicProbe = new TestProbeBasic<TestReport>(null);
+        report.markProbeAsExecuted(basicProbe.getType());
         assertFalse(requirement.evaluate(report));
 
         Requirement reqMis = requirement.getMissingRequirements(report);

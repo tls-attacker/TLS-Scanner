@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
@@ -38,8 +39,8 @@ public class ProbeRequirementTest {
         assertArrayEquals(
                 ((ProbeRequirement) requirementMissing).getRequirement(),
                 requirement.getRequirement());
-
-        report.markProbeAsExecuted(probe);
+        ScannerProbe<TestReport> alpnProbe = new TestProbeAlpn<TestReport>(null);
+        report.markProbeAsExecuted(alpnProbe.getType());
         assertTrue(requirement.evaluate(report));
         assertTrue(requirementMissing.evaluate(report));
     }

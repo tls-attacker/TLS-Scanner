@@ -124,7 +124,7 @@ public class TokenbindingProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

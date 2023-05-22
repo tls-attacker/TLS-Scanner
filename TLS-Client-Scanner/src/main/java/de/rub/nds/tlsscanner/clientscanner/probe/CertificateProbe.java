@@ -166,7 +166,7 @@ public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, Client
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_CCA);
     }
 }

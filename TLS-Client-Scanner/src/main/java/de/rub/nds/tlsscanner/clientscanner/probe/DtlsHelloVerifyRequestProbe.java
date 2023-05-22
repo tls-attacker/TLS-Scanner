@@ -231,7 +231,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

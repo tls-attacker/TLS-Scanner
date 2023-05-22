@@ -183,7 +183,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         ProtocolRequirement pReqTls12 = new ProtocolRequirement(ProtocolVersion.TLS12);
         ProtocolRequirement pReqTls13 = new ProtocolRequirement(ProtocolVersion.TLS13);
         ProtocolRequirement pReqDtls12 = new ProtocolRequirement(ProtocolVersion.DTLS12);

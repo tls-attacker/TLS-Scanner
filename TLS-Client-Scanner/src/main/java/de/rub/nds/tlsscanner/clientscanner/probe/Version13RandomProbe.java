@@ -110,7 +110,7 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
     public void adjustConfig(ClientReport report) {}
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         PropertyRequirement tls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
         PropertyRequirement tls11 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
         PropertyRequirement tls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);

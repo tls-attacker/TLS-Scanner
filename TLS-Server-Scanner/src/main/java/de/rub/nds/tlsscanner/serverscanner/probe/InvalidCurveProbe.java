@@ -118,7 +118,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         PropertyRequirement requireTls13 =
                 new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
         PropertyRequirement requireStaticEcdh =

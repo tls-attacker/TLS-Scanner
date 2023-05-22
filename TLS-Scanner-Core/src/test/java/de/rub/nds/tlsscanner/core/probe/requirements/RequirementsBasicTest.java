@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -50,9 +51,10 @@ public class RequirementsBasicTest {
         assertTrue(requirements.evaluate(report));
 
         TlsProbeType probe = TlsProbeType.ALPN;
+        ScannerProbe<TestReport> alpnProbe = new TestProbeAlpn<TestReport>(null);
         requirements = requirements.requires(new ProbeRequirement(probe));
         assertFalse(requirements.evaluate(report));
-        report.markProbeAsExecuted(probe);
+        report.markProbeAsExecuted(alpnProbe.getType());
         assertTrue(requirements.evaluate(report));
 
         TlsAnalyzedProperty[] propertyNot =
@@ -91,13 +93,15 @@ public class RequirementsBasicTest {
         ProbeRequirement requirement1 = new ProbeRequirement(TlsProbeType.BASIC);
         requirements = requirements.requires(new OrRequirement(requirement0, requirement1));
         assertFalse(requirements.evaluate(report));
-        report.markProbeAsExecuted(TlsProbeType.BASIC);
+        ScannerProbe<TestReport> basicProbe = new TestProbeBasic<TestReport>(null);
+        report.markProbeAsExecuted(basicProbe.getType());
         assertTrue(requirements.evaluate(report));
 
         ProbeRequirement requirementNot = new ProbeRequirement(TlsProbeType.CCA);
         requirements = requirements.requires(new NotRequirement(requirementNot));
         assertTrue(requirements.evaluate(report));
-        report.markProbeAsExecuted(TlsProbeType.CCA);
+        ScannerProbe<TestReport> ccaProbe = new TestProbeCca<TestReport>(null);
+        report.markProbeAsExecuted(ccaProbe.getType());
         assertFalse(requirements.evaluate(report));
 
         assertEquals(
