@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-
 import java.math.BigInteger;
 
 @SuppressWarnings("SpellCheckingInspection")

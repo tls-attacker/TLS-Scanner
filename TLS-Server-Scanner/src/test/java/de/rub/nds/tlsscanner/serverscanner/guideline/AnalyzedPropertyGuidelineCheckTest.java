@@ -15,7 +15,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import org.junit.jupiter.api.Test;
 
 public class AnalyzedPropertyGuidelineCheckTest {

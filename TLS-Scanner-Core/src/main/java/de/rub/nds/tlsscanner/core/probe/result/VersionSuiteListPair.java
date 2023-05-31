@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.core.probe.result;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-
 import java.io.Serializable;
 import java.util.List;
 

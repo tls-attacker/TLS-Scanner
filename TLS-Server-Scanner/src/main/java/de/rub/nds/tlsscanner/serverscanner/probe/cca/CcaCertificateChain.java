@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.cca;
 
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPrivateKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
-
 import java.util.LinkedList;
 import java.util.List;
 

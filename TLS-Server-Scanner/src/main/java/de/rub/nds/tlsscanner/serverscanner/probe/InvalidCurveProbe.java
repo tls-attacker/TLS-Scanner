@@ -44,7 +44,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurv
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;

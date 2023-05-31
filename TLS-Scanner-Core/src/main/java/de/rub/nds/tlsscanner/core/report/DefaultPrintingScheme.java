@@ -18,7 +18,6 @@ import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.TestResultTextEncoder;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedPropertyCategory;
-
 import java.util.HashMap;
 
 public class DefaultPrintingScheme {

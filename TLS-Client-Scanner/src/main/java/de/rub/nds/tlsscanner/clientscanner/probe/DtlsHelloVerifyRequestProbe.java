@@ -37,7 +37,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-
 import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {

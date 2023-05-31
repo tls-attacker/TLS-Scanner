@@ -9,7 +9,6 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-
 import java.util.HashMap;
 
 public class AnalyzedPropertyTextEncoder extends Encoder<AnalyzedProperty> {

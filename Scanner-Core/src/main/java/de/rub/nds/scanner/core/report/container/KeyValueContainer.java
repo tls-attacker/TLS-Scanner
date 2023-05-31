@@ -10,7 +10,6 @@ package de.rub.nds.scanner.core.report.container;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.AnsiColor;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -10,13 +10,11 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class RecommendationsIOIT {
 

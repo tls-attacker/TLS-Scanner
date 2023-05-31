@@ -14,9 +14,7 @@ import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-
 import jakarta.xml.bind.annotation.*;
-
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)

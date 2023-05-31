@@ -10,13 +10,11 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
 public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest<T> {
 

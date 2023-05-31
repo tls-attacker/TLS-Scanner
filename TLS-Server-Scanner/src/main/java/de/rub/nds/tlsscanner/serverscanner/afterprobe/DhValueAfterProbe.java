@@ -19,7 +19,6 @@ import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;

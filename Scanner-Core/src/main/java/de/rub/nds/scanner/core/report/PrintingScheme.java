@@ -11,11 +11,9 @@ package de.rub.nds.scanner.core.report;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
 import de.rub.nds.scanner.core.constants.TestResult;
-
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.HashMap;
 
 public class PrintingScheme {
 

@@ -20,7 +20,6 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;

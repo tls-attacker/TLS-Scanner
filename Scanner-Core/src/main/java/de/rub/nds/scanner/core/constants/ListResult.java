@@ -11,7 +11,6 @@ package de.rub.nds.scanner.core.constants;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
 
 /**

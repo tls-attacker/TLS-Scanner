@@ -27,7 +27,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;

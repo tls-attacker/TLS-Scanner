@@ -16,11 +16,9 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaVector;
-
+import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
 
 public class CcaTask extends TlsTask {
 

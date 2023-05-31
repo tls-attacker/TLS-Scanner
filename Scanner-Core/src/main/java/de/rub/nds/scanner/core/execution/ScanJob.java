@@ -10,7 +10,6 @@ package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-
 import java.util.List;
 
 public class ScanJob {
