@@ -53,7 +53,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

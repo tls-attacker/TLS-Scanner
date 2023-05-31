@@ -9,11 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.io;
 
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import javax.xml.namespace.QName;
 
 @XmlRegistry

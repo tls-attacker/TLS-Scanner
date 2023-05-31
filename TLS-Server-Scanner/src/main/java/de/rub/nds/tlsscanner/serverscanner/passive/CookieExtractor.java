@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-
 import java.util.List;
 
 public class CookieExtractor extends StatExtractor<ComparableByteArray> {

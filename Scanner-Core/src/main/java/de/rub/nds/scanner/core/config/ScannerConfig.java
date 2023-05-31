@@ -9,12 +9,10 @@
 package de.rub.nds.scanner.core.config;
 
 import com.beust.jcommander.Parameter;
-
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-
 import java.util.Arrays;
 import java.util.List;
 

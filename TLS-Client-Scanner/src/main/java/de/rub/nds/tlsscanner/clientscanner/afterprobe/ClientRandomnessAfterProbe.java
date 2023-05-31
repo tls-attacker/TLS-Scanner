@@ -17,7 +17,6 @@ import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
-
 import java.util.LinkedList;
 import java.util.List;
 

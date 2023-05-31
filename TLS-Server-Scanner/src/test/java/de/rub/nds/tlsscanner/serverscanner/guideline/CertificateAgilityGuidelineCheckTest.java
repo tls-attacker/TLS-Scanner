@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import org.junit.jupiter.api.Test;
 
 public class CertificateAgilityGuidelineCheckTest {

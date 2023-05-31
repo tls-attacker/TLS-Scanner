@@ -9,11 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-
 import java.util.List;
 
 public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {

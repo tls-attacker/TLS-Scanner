@@ -32,7 +32,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

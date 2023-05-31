@@ -11,7 +11,12 @@ package de.rub.nds.tlsscanner.core.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.core.trust.TrustPlatform;
-
+import java.io.IOException;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -27,13 +32,6 @@ import org.bouncycastle.cert.path.validations.ParentCertIssuedValidation;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.est.jcajce.JsseDefaultHostnameAuthorizer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS

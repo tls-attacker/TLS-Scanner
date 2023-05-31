@@ -11,9 +11,7 @@ package de.rub.nds.tlsscanner.core.converter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import de.rub.nds.tlsscanner.core.vector.Vector;
-
 import java.io.IOException;
 
 public class VectorSerializer extends StdSerializer<Vector> {

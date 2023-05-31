@@ -13,10 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
-
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 public class Pkcs1VectorGeneratorTest {
 

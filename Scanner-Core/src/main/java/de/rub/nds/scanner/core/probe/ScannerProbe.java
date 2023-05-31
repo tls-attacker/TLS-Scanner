@@ -12,11 +12,9 @@ import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.report.ScanReport;
-
+import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.concurrent.Callable;
 
 public abstract class ScannerProbe<Report extends ScanReport> implements Callable {
 

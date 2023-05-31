@@ -8,12 +8,13 @@
  */
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
+import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
-import static java.lang.Math.*;
-
 import de.rub.nds.scanner.core.constants.RandomnessConstants;
-
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -21,10 +22,6 @@ import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jtransforms.fft.DoubleFFT_1D;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StatisticalTests {
 

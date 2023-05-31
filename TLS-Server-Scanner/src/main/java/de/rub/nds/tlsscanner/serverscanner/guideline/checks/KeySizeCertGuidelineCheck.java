@@ -18,11 +18,9 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.Locale;
 
 @XmlRootElement

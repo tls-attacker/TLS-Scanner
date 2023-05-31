@@ -46,9 +46,6 @@ import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-import org.bouncycastle.crypto.tls.Certificate;
-
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,6 +53,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import org.bouncycastle.crypto.tls.Certificate;
 
 public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 

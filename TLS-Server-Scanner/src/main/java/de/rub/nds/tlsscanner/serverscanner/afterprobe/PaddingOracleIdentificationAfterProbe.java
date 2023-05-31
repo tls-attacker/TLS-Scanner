@@ -14,11 +14,9 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttributor;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Objects;
 
 public class PaddingOracleIdentificationAfterProbe extends AfterProbe<ServerReport> {
 

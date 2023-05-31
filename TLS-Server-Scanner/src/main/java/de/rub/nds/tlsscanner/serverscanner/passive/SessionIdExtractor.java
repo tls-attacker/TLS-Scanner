@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-
 import java.util.Arrays;
 
 public class SessionIdExtractor extends StatExtractor<ComparableByteArray> {

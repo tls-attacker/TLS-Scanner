@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.leak;
 
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
-
 import java.util.Collections;
 import java.util.List;
 

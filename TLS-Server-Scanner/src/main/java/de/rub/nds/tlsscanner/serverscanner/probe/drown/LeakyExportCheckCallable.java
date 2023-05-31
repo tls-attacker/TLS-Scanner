@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
-
 import java.util.concurrent.Callable;
 
 /**

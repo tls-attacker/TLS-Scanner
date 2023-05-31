@@ -9,7 +9,6 @@
 package de.rub.nds.scanner.core.passive;
 
 import de.rub.nds.tlsattacker.core.state.State;
-
 import java.util.LinkedList;
 import java.util.List;
 

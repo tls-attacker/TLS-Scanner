@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
-
 import java.util.Arrays;
 import java.util.List;
 

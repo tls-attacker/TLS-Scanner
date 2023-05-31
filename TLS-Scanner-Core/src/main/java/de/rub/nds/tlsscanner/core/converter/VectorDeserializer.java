@@ -12,9 +12,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
 import de.rub.nds.tlsscanner.core.vector.Vector;
-
 import java.io.IOException;
 
 public class VectorDeserializer extends StdDeserializer<Vector> {
