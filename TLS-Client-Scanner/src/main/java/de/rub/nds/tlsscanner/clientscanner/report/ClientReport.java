@@ -34,6 +34,10 @@ public class ClientReport extends TlsScanReport {
     private Integer lowestPossibleDheModulusSize;
     private Integer highestPossibleDheModulusSize;
 
+    private Integer minimumServerCertificateKeySizeDH = -1;
+    private Integer minimumServerCertificateKeySizeRSA = -1;
+    private Integer minimumServerCertificateKeySizeDSS = -1;
+
     public ClientReport() {
         super();
     }
@@ -138,5 +142,32 @@ public class ClientReport extends TlsScanReport {
     @Override
     public synchronized String toString() {
         return getFullReport(ScannerDetail.NORMAL, false);
+    }
+
+    public synchronized Integer getMinimumServerCertificateKeySizeDH() {
+        return minimumServerCertificateKeySizeDH;
+    }
+
+    public synchronized void setMinimumServerCertificateKeySizeDH(
+            Integer minimumServerCertificateKeySizeDH) {
+        this.minimumServerCertificateKeySizeDH = minimumServerCertificateKeySizeDH;
+    }
+
+    public synchronized Integer getMinimumServerCertificateKeySizeRSA() {
+        return minimumServerCertificateKeySizeRSA;
+    }
+
+    public synchronized void setMinimumServerCertificateKeySizeRSA(
+            Integer minimumServerCertificateKeySizeRSA) {
+        this.minimumServerCertificateKeySizeRSA = minimumServerCertificateKeySizeRSA;
+    }
+
+    public synchronized Integer getMinimumServerCertificateKeySizeDSS() {
+        return minimumServerCertificateKeySizeDSS;
+    }
+
+    public synchronized void setMinimumServerCertificateKeySizeDSS(
+            Integer minimumServerCertificateKeySizeDSS) {
+        this.minimumServerCertificateKeySizeDSS = minimumServerCertificateKeySizeDSS;
     }
 }

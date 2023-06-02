@@ -71,7 +71,8 @@ public enum TlsProbeType implements ProbeType {
     VERSION_1_3_RANDOM_DOWNGRADE("TLS 1.3 DOWNGRADE Prevention"),
     DHE_PARAMETERS("DHE parameters"),
     BASIC("Basic"),
-    APPLICATION_MESSAGE("Application message");
+    APPLICATION_MESSAGE("Application message"),
+    SERVER_CERTIFICATE_MINIMUM_KEY_SIZE("Server Certificate Minimum Key Size");
 
     @Override
     public String getName() {

@@ -19,16 +19,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.io.IOException;
 
 /**
  * Determines when the server closes the connection. It's meant for tests in the lab so we limit the
@@ -37,12 +33,9 @@ import java.io.IOException;
  */
 public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    public static final long NO_RESULT = -1;
-    private static final long LIMIT = 5000;
-
     private boolean useHttpAppData = false;
-    private long closedAfterFinishedDelta = NO_RESULT;
-    private long closedAfterAppDataDelta = NO_RESULT;
+    private long closedAfterFinishedDelta = ConnectionClosingUtils.NO_RESULT;
+    private long closedAfterAppDataDelta = ConnectionClosingUtils.NO_RESULT;
 
     public ConnectionClosingProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -53,60 +46,23 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     public void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         configSelector.repairConfig(tlsConfig);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        tlsConfig.setWorkflowExecutorShouldClose(false);
 
-        WorkflowTrace handshakeOnly = getWorkflowTrace(tlsConfig);
-        WorkflowTrace handshakeWithAppData = getWorkflowTrace(tlsConfig);
+        WorkflowTrace handshakeOnly =
+                ConnectionClosingUtils.getWorkflowTrace(tlsConfig, RunningModeType.CLIENT);
+        WorkflowTrace handshakeWithAppData =
+                ConnectionClosingUtils.getWorkflowTrace(tlsConfig, RunningModeType.CLIENT);
         if (useHttpAppData) {
             tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
             handshakeWithAppData.addTlsAction(new SendAction(new HttpRequestMessage()));
         } else {
             handshakeWithAppData.addTlsAction(new SendAction(new ApplicationMessage()));
         }
-        closedAfterFinishedDelta = evaluateClosingDelta(tlsConfig, handshakeOnly);
-        closedAfterAppDataDelta = evaluateClosingDelta(tlsConfig, handshakeWithAppData);
-    }
-
-    public WorkflowTrace getWorkflowTrace(Config tlsConfig) {
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        return factory.createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
-    }
-
-    private long evaluateClosingDelta(Config tlsConfig, WorkflowTrace workflowTrace) {
-        State state = new State(tlsConfig, workflowTrace);
-        executeState(state);
-        long delta = 0;
-        SocketState socketState = null;
-        do {
-            try {
-                socketState =
-                        (((TcpTransportHandler) (state.getTlsContext().getTransportHandler()))
-                                .getSocketState());
-                switch (socketState) {
-                    case CLOSED:
-                    case IO_EXCEPTION:
-                    case PEER_WRITE_CLOSED:
-                    case SOCKET_EXCEPTION:
-                    case TIMEOUT:
-                        closeSocket(state);
-                        return delta;
-                    default:
-                }
-                Thread.sleep(10);
-                delta += 10;
-            } catch (InterruptedException ignored) {
-            }
-        } while (delta < LIMIT);
-        closeSocket(state);
-        return NO_RESULT;
-    }
-
-    public void closeSocket(State state) {
-        try {
-            state.getTlsContext().getTransportHandler().closeConnection();
-        } catch (IOException ignored) {
-        }
+        State runningState = new State(tlsConfig, handshakeOnly);
+        executeState(runningState);
+        closedAfterFinishedDelta = ConnectionClosingUtils.evaluateClosingDelta(runningState);
+        runningState = new State(tlsConfig, handshakeWithAppData);
+        executeState(runningState);
+        closedAfterAppDataDelta = ConnectionClosingUtils.evaluateClosingDelta(runningState);
     }
 
     @Override

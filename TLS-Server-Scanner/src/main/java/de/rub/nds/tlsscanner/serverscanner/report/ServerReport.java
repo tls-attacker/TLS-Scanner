@@ -87,9 +87,6 @@ public class ServerReport extends TlsScanReport {
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
 
-    private Long closedAfterFinishedDelta;
-    private Long closedAfterAppDataDelta;
-
     // Rating
     private int score;
     private ScoreReport scoreReport;
@@ -456,21 +453,5 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setConfigProfileIdentifierTls13(String configProfileIdentifierTls13) {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
-    }
-
-    public synchronized Long getClosedAfterFinishedDelta() {
-        return closedAfterFinishedDelta;
-    }
-
-    public synchronized void setClosedAfterFinishedDelta(long closedAfterFinishedDelta) {
-        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
-    }
-
-    public synchronized Long getClosedAfterAppDataDelta() {
-        return closedAfterAppDataDelta;
-    }
-
-    public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
-        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 }
