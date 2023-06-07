@@ -140,4 +140,10 @@ public class VectorContainer {
 
         return uniqueFps;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{distinct responses: %d, total responses %d, vector=%s}",
+            distinctResponsesCounterList.size(), responseList.size(), vector);
+    }
 }

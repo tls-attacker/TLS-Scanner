@@ -30,5 +30,6 @@ public enum AnalyzedPropertyCategory {
     EC,
     FFDHE,
     BEST_PRACTICES,
+    SESSION_TICKET_EVAL,
     HELLO_VERIFY_REQUEST
 }

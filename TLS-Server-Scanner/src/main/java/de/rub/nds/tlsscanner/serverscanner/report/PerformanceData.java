@@ -16,14 +16,16 @@ public class PerformanceData {
     private ProbeType type;
     private long startTime;
     private long stopTime;
+    private int connections;
 
     private PerformanceData() {
     }
 
-    public PerformanceData(ProbeType type, long startTime, long stopTime) {
+    public PerformanceData(ProbeType type, long startTime, long stopTime, int connections) {
         this.type = type;
         this.startTime = startTime;
         this.stopTime = stopTime;
+        this.connections = connections;
     }
 
     public ProbeType getType() {
@@ -48,6 +50,14 @@ public class PerformanceData {
 
     public void setStopTime(long stopTime) {
         this.stopTime = stopTime;
+    }
+
+    public int getConnections() {
+        return connections;
+    }
+
+    public void setConnections(int connections) {
+        this.connections = connections;
     }
 
 }

@@ -9,6 +9,18 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Observable;
+import java.util.Set;
+
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -26,8 +38,8 @@ import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -41,15 +53,16 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketManipulationProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketPaddingOracleProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.report.result.sessionticket.SessionTicketAfterProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
-
-import java.io.Serializable;
-import java.util.*;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -167,6 +180,13 @@ public class SiteReport extends Observable implements Serializable {
     private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
+
+    // SessionTicket
+    private SessionTicketProbeResult sessionTicketProbeResult = null;
+    private SessionTicketManipulationProbeResult sessionTicketManipulationResult = null;
+    private SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult = null;
+    private Map<ProtocolVersion, SessionTicketAfterProbeResult> sessionTicketAfterProbeResult =
+        new EnumMap<>(ProtocolVersion.class);
 
     // Rating
     private int score;
@@ -788,6 +808,41 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
+    }
+
+    public synchronized SessionTicketProbeResult getSessionTicketProbeResult() {
+        return sessionTicketProbeResult;
+    }
+
+    public synchronized void setSessionTicketProbeResult(SessionTicketProbeResult sessionTicketProbeResult) {
+        this.sessionTicketProbeResult = sessionTicketProbeResult;
+    }
+
+    public SessionTicketManipulationProbeResult getSessionTicketManipulationResult() {
+        return sessionTicketManipulationResult;
+    }
+
+    public void
+        setSessionTicketManipulationResult(SessionTicketManipulationProbeResult sessionTicketManipulationResult) {
+        this.sessionTicketManipulationResult = sessionTicketManipulationResult;
+    }
+
+    public SessionTicketPaddingOracleProbeResult getSessionTicketPaddingOracleResult() {
+        return sessionTicketPaddingOracleResult;
+    }
+
+    public void
+        setSessionTicketPaddingOracleResult(SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult) {
+        this.sessionTicketPaddingOracleResult = sessionTicketPaddingOracleResult;
+    }
+
+    public void putSessionTicketAfterProbeResult(ProtocolVersion version,
+        SessionTicketAfterProbeResult sessionTicketAfterProbeResult) {
+        this.sessionTicketAfterProbeResult.put(version, sessionTicketAfterProbeResult);
+    }
+
+    public Map<ProtocolVersion, SessionTicketAfterProbeResult> getSessionTicketAfterProbeResultMap() {
+        return sessionTicketAfterProbeResult;
     }
 
     public synchronized int getScore() {

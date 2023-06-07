@@ -58,6 +58,10 @@ public class ScannerConfig extends TLSDelegateConfig {
         description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
+    @Parameter(names = "-connectionTimeout", required = false,
+        description = "The connection timeout used for the scans in ms (default 8000)")
+    private int connectionTimeout = 8000;
+
     @Parameter(names = "-additionalRandomCollection", required = false,
         description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
@@ -206,6 +210,8 @@ public class ScannerConfig extends TLSDelegateConfig {
         if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
             config.getDefaultClientConnection().setFirstTimeout(timeout);
         }
+
+        config.getDefaultClientConnection().setConnectionTimeout(connectionTimeout);
         return config;
     }
 
@@ -215,6 +221,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 
     public Config getBaseConfig() {

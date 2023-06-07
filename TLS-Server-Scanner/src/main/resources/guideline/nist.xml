@@ -443,7 +443,7 @@
                         </or>
                     </condition>
                     <condition>
-                        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
+                        <analyzedProperty>SUPPORTS_BLOCK_CIPHERS</analyzedProperty>
                         <result>TRUE</result>
                     </condition>
                 </and>

@@ -53,7 +53,7 @@ public class GuidelineChecker {
                 result = new GuidelineCheckResult(TestResult.ERROR_DURING_TEST) {
                     @Override
                     public String display() {
-                        return throwable.getLocalizedMessage();
+                        return "" + throwable.getLocalizedMessage();
                     }
                 };
             }

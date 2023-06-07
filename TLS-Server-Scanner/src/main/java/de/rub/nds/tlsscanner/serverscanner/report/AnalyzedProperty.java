@@ -288,7 +288,23 @@ public enum AnalyzedProperty {
     SENDS_RETRANSMISSIONS(AnalyzedPropertyCategory.QUIRKS),
     PROCESSES_RETRANSMISSIONS(AnalyzedPropertyCategory.QUIRKS),
     CHANGES_PORT(AnalyzedPropertyCategory.QUIRKS),
-    CHANGES_PORT_TO_RANDOM_PORTS(AnalyzedPropertyCategory.QUIRKS);
+    CHANGES_PORT_TO_RANDOM_PORTS(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * SessionTicket
+     */
+    ISSUES_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    RESUMES_WITH_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    REPEATS_IV_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    UNENCRYPTED_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    DEFAULT_ENCRYPTION_KEY_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    ALLOW_CIPHERSUITE_CHANGE_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    NO_MAC_CHECK_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    DEFAULT_HMAC_KEY_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    PADDING_ORACLE_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    REPLAY_VULNERABLE_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    SUPPORTS_EARLY_DATA_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    REPLAY_VULNERABLE_EARLY_DATA_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL),
+    VERSION_CHANGE_TICKET(AnalyzedPropertyCategory.SESSION_TICKET_EVAL);
 
     private final AnalyzedPropertyCategory category;
 

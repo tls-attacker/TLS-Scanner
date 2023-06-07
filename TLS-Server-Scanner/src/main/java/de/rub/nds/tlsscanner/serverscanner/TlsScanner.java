@@ -25,19 +25,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DtlsRetransmissionAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.RandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.*;
 import de.rub.nds.tlsscanner.serverscanner.scan.ScanJob;
 import de.rub.nds.tlsscanner.serverscanner.scan.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
@@ -67,7 +55,7 @@ public class TlsScanner {
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
         setCallbacks();
-        fillDefaultProbeLists();
+        fillDefaultProbeListsForCrawl();
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -78,7 +66,7 @@ public class TlsScanner {
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
         setCallbacks();
-        fillDefaultProbeLists();
+        fillDefaultProbeListsForCrawl();
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
@@ -135,7 +123,13 @@ public class TlsScanner {
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
         addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
+        // this probe can be removed in the future since we are now using the more
+        // powerful SessionTicketProbe. keeping it here for backwards compatibility
+        // reasons
         addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketPaddingOracleProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketManipulationProbe(config, parallelExecutor));
         addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
         addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
         addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
@@ -155,6 +149,7 @@ public class TlsScanner {
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
+        afterList.add(new SessionTicketAfterProbe(config));
         if (config.getDtlsDelegate().isDTLS()) {
             addProbeToProbeList(new DtlsFeaturesProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
@@ -181,6 +176,15 @@ public class TlsScanner {
             afterList.add(new PoodleAfterProbe());
         }
 
+    }
+
+    private void fillDefaultProbeListsForCrawl() {
+        addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
+        addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketPaddingOracleProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketManipulationProbe(config, parallelExecutor));
+        afterList.add(new SessionTicketAfterProbe(config));
     }
 
     private void addProbeToProbeList(TlsProbe probe) {

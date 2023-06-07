@@ -51,7 +51,7 @@ public class ProbeResultTest {
                 LOGGER.info("Skipping: HandshakeSimulation due to performance reasons");
                 continue;
             }
-            // Trying to find equivalent preparator, message and serializer
+
             for (Constructor c : someProbeClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {

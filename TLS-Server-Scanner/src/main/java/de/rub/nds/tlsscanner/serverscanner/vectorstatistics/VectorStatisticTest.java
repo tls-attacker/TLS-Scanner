@@ -103,7 +103,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         return responseSet;
     }
 
-    private List<ResponseCounter> getAllResponseCounters() {
+    public List<ResponseCounter> getAllResponseCounters() {
         List<ResponseFingerprint> fingerprintList = new LinkedList<>();
         for (VectorContainer container : vectorContainerList) {
             fingerprintList.addAll(container.getResponseFingerprintList());
