@@ -112,4 +112,9 @@ public class SessionTicketMacFormat {
     public int getInputSuffixLength() {
         return inputSuffixLength;
     }
+
+    @Override
+    public String toString() {
+        return "SessionTicketMacFormat{" + "inputOffset=" + inputOffset + ", inputSuffixLength=" + inputSuffixLength + '}';
+    }
 }
