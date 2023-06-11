@@ -80,7 +80,7 @@ public class ClientScannerConfig extends TlsScannerConfig {
 
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(getTimeout());
-
+        config.setRespectClientProposedExtensions(true);
         return config;
     }
 

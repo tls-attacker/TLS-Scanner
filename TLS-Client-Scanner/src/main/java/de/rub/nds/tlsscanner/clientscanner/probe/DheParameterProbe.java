@@ -187,7 +187,8 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     public void adjustConfig(ClientReport report) {
         supportedDheCipherSuites = new LinkedList<>();
         for (CipherSuite suite : report.getSupportedCipherSuites()) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDhe()) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) != null
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDhe()) {
                 supportedDheCipherSuites.add(suite);
             }
         }

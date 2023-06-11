@@ -27,10 +27,8 @@ public class ConnectionClosingProbe extends TlsClientProbe<ClientScannerConfig, 
     private long closedAfterAppDataDelta = ConnectionClosingUtils.NO_RESULT;
 
     public ConnectionClosingProbe(
-            ParallelExecutor parallelExecutor,
-            TlsProbeType type,
-            ClientScannerConfig scannerConfig) {
-        super(parallelExecutor, type, scannerConfig);
+            ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
+        super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, scannerConfig);
     }
 
     @Override

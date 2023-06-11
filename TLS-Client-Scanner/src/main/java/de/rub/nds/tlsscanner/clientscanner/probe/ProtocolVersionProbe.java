@@ -58,6 +58,7 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
     public void executeTest() {
         supportedProtocolVersions = new LinkedList<>();
         unsupportedProtocolVersions = new LinkedList<>();
+        List<State> statesToExecute = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
             LOGGER.debug("Testing version {}", version);
 
@@ -75,13 +76,19 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
 
             List<CipherSuite> suitableCiphersuites = getSuitableCipherSuites(version);
             config.setDefaultServerSupportedCipherSuites(suitableCiphersuites);
-
-            if (testProtocolVersion(config, suitableCiphersuites)) {
-                supportedProtocolVersions.add(version);
-            } else {
-                unsupportedProtocolVersions.add(version);
-            }
+            statesToExecute.add(getStateForTest(config, suitableCiphersuites));
         }
+        executeState(statesToExecute);
+        statesToExecute.forEach(
+                state -> {
+                    if (state.getWorkflowTrace().executedAsPlanned()) {
+                        supportedProtocolVersions.add(
+                                state.getConfig().getDefaultSelectedProtocolVersion());
+                    } else {
+                        unsupportedProtocolVersions.add(
+                                state.getConfig().getDefaultSelectedProtocolVersion());
+                    }
+                });
     }
 
     private List<CipherSuite> getSuitableCipherSuites(ProtocolVersion version) {
@@ -109,21 +116,14 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
         return suitableCiphersuites;
     }
 
-    private boolean testProtocolVersion(Config config, List<CipherSuite> suitableCiphersuites) {
-        for (CipherSuite currentCipher : suitableCiphersuites) {
-            config.setDefaultSelectedCipherSuite(currentCipher);
-            WorkflowTrace trace =
-                    new WorkflowConfigurationFactory(config)
-                            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
-            trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+    private State getStateForTest(Config config, List<CipherSuite> suitableCiphersuites) {
+        config.setDefaultSelectedCipherSuite(suitableCiphersuites.get(0));
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
-            State state = new State(config, trace);
-            executeState(state);
-            if (state.getWorkflowTrace().executedAsPlanned()) {
-                return true;
-            }
-        }
-        return false;
+        return new State(config, trace);
     }
 
     private Config getBaseConfig() {
