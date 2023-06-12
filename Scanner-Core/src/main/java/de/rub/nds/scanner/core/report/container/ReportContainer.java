@@ -40,7 +40,7 @@ public abstract class ReportContainer {
 
     protected StringBuilder addColor(
             StringBuilder builder, AnsiColor color, String text, boolean useColor) {
-        if (useColor && color != null) {
+        if (useColor) {
             builder.append(color.getCode()).append(text).append(AnsiColor.RESET.getCode());
         } else {
             builder.append(text);

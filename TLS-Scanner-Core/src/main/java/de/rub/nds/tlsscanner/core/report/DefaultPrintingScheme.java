@@ -37,6 +37,7 @@ public class DefaultPrintingScheme {
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
         ansiColorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        ansiColorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);
         ansiColorMap.put(TestResults.FALSE, AnsiColor.DEFAULT_COLOR);
         ansiColorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
         ansiColorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
@@ -576,6 +577,7 @@ public class DefaultPrintingScheme {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
         colorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
         colorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        colorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);
         colorMap.put(TestResults.FALSE, falseColor);
         colorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
         colorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
