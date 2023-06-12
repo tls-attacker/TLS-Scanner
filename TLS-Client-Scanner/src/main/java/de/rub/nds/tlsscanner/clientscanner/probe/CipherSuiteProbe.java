@@ -147,7 +147,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
             LOGGER.debug("Testing cipher suites for version {}", version);
 
             List<CipherSuite> toTestList = getToTestCipherSuitesByVersion(version);
-            List<CipherSuite> supportedSuites = new LinkedList<>();
 
             while (!toTestList.isEmpty()) {
                 Config config;
@@ -169,7 +168,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
                 trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
                 State state = new State(config, trace);
-                state.stateName = currentSuite.name();
                 statesToExecute.add(state);
 
                 toTestList.remove(currentSuite);
