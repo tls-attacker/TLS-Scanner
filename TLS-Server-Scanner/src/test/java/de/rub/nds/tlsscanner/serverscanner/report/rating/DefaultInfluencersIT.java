@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+
+
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
@@ -998,6 +1004,16 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+
+
+        for (TlsAnalyzedProperty tlsAnalyzedProperty : TlsAnalyzedProperty.values()) {
+            assertTrue(influencers.stream()
+                .anyMatch(
+                    influencer ->
+                        influencer.getAnalyzedProperty() == tlsAnalyzedProperty), tlsAnalyzedProperty.name() + " does not have an rating influencer");
+        }
+
+
         RatingInfluencersIO.write(
                 new File("src/main/resources/" + DefaultRatingLoader.INFLUENCERS_RESOURCE_LOCATION),
                 new RatingInfluencers(influencers));
