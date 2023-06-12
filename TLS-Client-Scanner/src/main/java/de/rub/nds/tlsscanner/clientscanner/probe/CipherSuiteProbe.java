@@ -224,7 +224,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
         config.setStopActionsAfterWarning(true);
-        config.setAddRenegotiationInfoExtension(false);
         return config;
     }
 
