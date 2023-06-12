@@ -15,12 +15,14 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ECPointFormatExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.RenegotiationInfoExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -38,6 +40,7 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
+    private Boolean shouldAddRenegotiationInfo;
 
     private TestResult completesHandshakeWithUndefined = TestResults.FALSE;
 
@@ -95,6 +98,10 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
         modifiedExtension.setPointFormats(Modifiable.explicit(ECPointFormatUtils.UNDEFINED_FORMAT));
         List<ExtensionMessage> extensionList = new LinkedList<>();
         extensionList.add(modifiedExtension);
+        if (shouldAddRenegotiationInfo) {
+            extensionList.add(new RenegotiationInfoExtensionMessage());
+        }
+
         state.getWorkflowTrace()
                 .getFirstSendMessage(ServerHelloMessage.class)
                 .setExtensions(extensionList);
@@ -162,6 +169,10 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
     public void adjustConfig(ClientReport report) {
         shouldTestPointFormats = ECPointFormatUtils.testInPreTLS13(report);
         shouldTestTls13 = ECPointFormatUtils.testInPreTLS13(report);
+        shouldAddRenegotiationInfo =
+                report.getClientAdvertisedExtensions().contains(ExtensionType.RENEGOTIATION_INFO)
+                        || report.getClientAdvertisedCipherSuites()
+                                .contains(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
 
     @Override

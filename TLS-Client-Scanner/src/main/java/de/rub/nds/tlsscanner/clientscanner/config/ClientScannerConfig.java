@@ -81,6 +81,8 @@ public class ClientScannerConfig extends TlsScannerConfig {
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(getTimeout());
         config.setRespectClientProposedExtensions(true);
+        // will only be added if proposed by client
+        config.setAddRenegotiationInfoExtension(true);
         return config;
     }
 

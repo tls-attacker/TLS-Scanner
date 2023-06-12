@@ -130,12 +130,13 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
         Config config = scannerConfig.createConfig();
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
-        config.setAddRenegotiationInfoExtension(false);
+        config.setAddRenegotiationInfoExtension(true);
         return config;
     }
 
     private Config getTls13Config() {
         Config config = getBaseConfig();
+        config.setAddRenegotiationInfoExtension(false);
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
