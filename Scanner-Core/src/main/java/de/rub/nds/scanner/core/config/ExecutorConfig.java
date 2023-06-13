@@ -11,12 +11,10 @@ package de.rub.nds.scanner.core.config;
 import com.beust.jcommander.Parameter;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class ScannerConfig extends TLSDelegateConfig {
+public final class ExecutorConfig {
 
     @Parameter(
             names = "-noColor",
@@ -48,11 +46,21 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
             description = "The timeout for each probe in ms (default 1800000)")
     private int probeTimeout = 1800000;
 
-    protected List<ProbeType> probes = null;
+    @Parameter(
+            names = "-parallelProbes",
+            required = false,
+            description =
+                    "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
+    private int parallelProbes = 1;
 
-    public ScannerConfig(GeneralDelegate delegate) {
-        super(delegate);
-    }
+    @Parameter(
+            names = "-threads",
+            required = false,
+            description =
+                    "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed peer.")
+    private int overallThreads = 1;
+
+    private List<ProbeType> probes = null;
 
     public ScannerDetail getScanDetail() {
         return scanDetail;
@@ -108,5 +116,25 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
 
     public void setOutputFile(String outputFile) {
         this.outputFile = outputFile;
+    }
+
+    public int getParallelProbes() {
+        return parallelProbes;
+    }
+
+    public void setParallelProbes(int parallelProbes) {
+        this.parallelProbes = parallelProbes;
+    }
+
+    public int getOverallThreads() {
+        return overallThreads;
+    }
+
+    public void setOverallThreads(int overallThreads) {
+        this.overallThreads = overallThreads;
+    }
+
+    public boolean isMultithreaded() {
+        return (parallelProbes > 1 || overallThreads > 1);
     }
 }

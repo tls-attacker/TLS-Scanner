@@ -58,6 +58,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
                                 RESOURCE_FOLDER + "/" + configFileName);
                 if (configSelector
                         .getScannerConfig()
+                        .getExecutorConfig()
                         .getScanDetail()
                         .isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
@@ -80,7 +81,9 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
         List<State> clientStateList = new LinkedList<>();
         simulatedClientList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {
-            State state = request.getExecutableState(configSelector.getScannerConfig());
+            State state =
+                    request.getExecutableState(
+                            configSelector.getScannerConfig().getExecutorConfig());
             clientStateList.add(state);
         }
         executeState(clientStateList);

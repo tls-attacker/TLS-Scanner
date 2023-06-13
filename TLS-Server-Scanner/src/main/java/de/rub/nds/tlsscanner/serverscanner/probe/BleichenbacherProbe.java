@@ -52,7 +52,7 @@ public class BleichenbacherProbe extends TlsServerProbe<ConfigSelector, ServerRe
 
     public BleichenbacherProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.BLEICHENBACHER, configSelector);
-        scanDetail = configSelector.getScannerConfig().getScanDetail();
+        scanDetail = configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
         numberOfIterations =
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ITERATIONS
