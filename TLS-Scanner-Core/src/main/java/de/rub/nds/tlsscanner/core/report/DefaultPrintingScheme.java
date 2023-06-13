@@ -575,6 +575,7 @@ public class DefaultPrintingScheme {
     private static ColorEncoding getDefaultColorEncoding(
             AnsiColor trueColor, AnsiColor falseColor) {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
+        colorMap.put(TestResults.CANNOT_BE_TESTED, AnsiColor.WHITE);
         colorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
         colorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
         colorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);

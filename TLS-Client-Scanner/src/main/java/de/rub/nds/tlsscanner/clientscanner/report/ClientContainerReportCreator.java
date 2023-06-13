@@ -70,7 +70,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         rootContainer.add(createNamedGroupsContainer(report));
         rootContainer.add(createKeySharesContainer(report));
         rootContainer.add(createSignatureAndHashAlgorithmsContainer(report));
-        rootContainer.add(createPointFormatsContainer(report));
+        rootContainer.add(createAdvertisedPointFormatsContainer(report));
+        rootContainer.add(createSupportedPointFormatsContainer(report));
         rootContainer.add(createRecordFragmentationContainer(report));
         rootContainer.add(createAlpnContainer(report));
         rootContainer.add(createAttackVulnerabilitiesContainer(report));
@@ -79,6 +80,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         rootContainer.add(createSessionResumptionContainer(report));
         rootContainer.add(createDheParameterContainer(report));
         rootContainer.add(createClientAuthenticationContainer(report));
+        rootContainer.add(createServerCertificateKeySizeContainer(report));
         rootContainer.add(createCertificateContainer(report));
         rootContainer.add(createQuirksContainer(report));
         if (report.getProtocolType() == ProtocolType.DTLS) {
@@ -109,6 +111,86 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.HAS_CLIENT_HELLO_MISMATCH, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE, report));
+        return container;
+    }
+
+    protected ReportContainer createSupportedPointFormatsContainer(TlsScanReport report) {
+        ListContainer container = new ListContainer();
+        container.add(new HeadlineContainer("Supported Point Formats"));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Uncompressed",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "ANSI X9.62 Compressed Prime",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "ANSI X9.62 Compressed Char2",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Accepts Undefined Format",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT)));
+        return container;
+    }
+
+    protected ReportContainer createServerCertificateKeySizeContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        container.add(new HeadlineContainer("Expected Server Certificate Public Key Size"));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Minimum RSA Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Minimum DSS Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Minimum DH Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)));
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Minimum RSA Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Minimum DSS Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Minimum DH Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
         return container;
     }
 
@@ -220,7 +302,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ReportContainer createPointFormatsContainer(ClientReport report) {
+    private ReportContainer createAdvertisedPointFormatsContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         if (report.getClientAdvertisedPointFormatsList() != null) {
             container.add(new HeadlineContainer("Advertised Elliptic Curve Point Formats"));

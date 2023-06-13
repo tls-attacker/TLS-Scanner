@@ -47,6 +47,8 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
     private List<ECPointFormat> supportedFormats;
     private TestResult tls13SecpCompression;
 
+    private List<CipherSuite> clientAdvertisedCipherSuites = new LinkedList<>();
+
     public ECPointFormatProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, scannerConfig);
@@ -66,7 +68,7 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
 
     @Override
     public void executeTest() {
-        completesHandshakeWithUndefined = TestResults.CANNOT_BE_TESTED;
+        completesHandshakeWithUndefined = TestResults.COULD_NOT_TEST;
         if (shouldTestPointFormats) {
             supportedFormats = getSupportedPointFormats();
             completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
@@ -88,7 +90,8 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
 
     private TestResult canHandshakeWithUndefinedFormat() {
         ECPointFormat dummyFormat = ECPointFormat.UNCOMPRESSED;
-        List<CipherSuite> ourECDHCipherSuites = ECPointFormatUtils.getCipherSuitesForTest();
+        List<CipherSuite> ourECDHCipherSuites =
+                ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
         Config baseConfig = scannerConfig.createConfig();
 
         List<NamedGroup> groups = ECPointFormatUtils.getGroupsForTest(dummyFormat, baseConfig);
@@ -151,7 +154,8 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
-        List<CipherSuite> ourECDHCipherSuites = ECPointFormatUtils.getCipherSuitesForTest();
+        List<CipherSuite> ourECDHCipherSuites =
+                ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
 
         List<NamedGroup> groups =
                 ECPointFormatUtils.getGroupsForTest(format, scannerConfig.createConfig());
@@ -173,6 +177,7 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
                 report.getClientAdvertisedExtensions().contains(ExtensionType.RENEGOTIATION_INFO)
                         || report.getClientAdvertisedCipherSuites()
                                 .contains(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        clientAdvertisedCipherSuites.addAll(report.getClientAdvertisedCipherSuites());
     }
 
     @Override

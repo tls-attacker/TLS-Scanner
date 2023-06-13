@@ -215,6 +215,15 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
                     put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE);
                 }
             }
+            if (!toTestList.contains(ProtocolVersion.DTLS10_DRAFT)) {
+                put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.DTLS10)) {
+                put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.DTLS12)) {
+                put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            }
         } else {
             setPropertiesToCouldNotTest();
         }

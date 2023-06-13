@@ -46,6 +46,16 @@ public abstract class ECPointFormatUtils {
         return ourECDHCipherSuites;
     }
 
+    public static List<CipherSuite> getCipherSuitesForTest(List<CipherSuite> peerSupported) {
+        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
+        for (CipherSuite cipherSuite : peerSupported) {
+            if (cipherSuite.name().contains("TLS_ECDH")) {
+                ourECDHCipherSuites.add(cipherSuite);
+            }
+        }
+        return ourECDHCipherSuites;
+    }
+
     public static List<NamedGroup> getGroupsForTest(ECPointFormat format, Config baseConfig) {
         List<NamedGroup> groups = null;
         switch (format) {

@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 public class ServerCertificateKeySizeProbe
         extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
-    private TestResult enforcesMinimumKeySizeRSA,
-            enforcesMinimumKeySizeDSS,
-            enforcesMinimumKeySizeDH = TestResults.CANNOT_BE_TESTED;
+    private TestResult enforcesMinimumKeySizeRSA = TestResults.COULD_NOT_TEST;
+    private TestResult enforcesMinimumKeySizeDSS = TestResults.COULD_NOT_TEST;
+    private TestResult enforcesMinimumKeySizeDH = TestResults.COULD_NOT_TEST;
 
     private List<CertificateKeyPair> rsaCertKeyPairs = new LinkedList<>();
     private List<CertificateKeyPair> dssCertKeyPairs = new LinkedList<>();
@@ -55,30 +55,24 @@ public class ServerCertificateKeySizeProbe
     private List<CipherSuite> clientAdvertisedCipherSuites;
 
     private int ourLargestRSAKeySize, ourLargestDSSKeySize, ourLargestDHKeySize;
-    private int ourSmallestRSAKeySize,
-            ourSmallestDSSKeySize,
-            ourSmallestDHKeySize = Integer.MAX_VALUE;
+    private int ourSmallestRSAKeySize = Integer.MAX_VALUE;
+    private int ourSmallestDSSKeySize = Integer.MAX_VALUE;
+    private int ourSmallestDHKeySize = Integer.MAX_VALUE;
 
     public ServerCertificateKeySizeProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.SERVER_CERTIFICATE_MINIMUM_KEY_SIZE, scannerConfig);
         register(
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_DSS,
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_RSA,
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_DH);
+                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS,
+                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA,
+                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH);
     }
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.putResult(
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_RSA,
-                enforcesMinimumKeySizeRSA);
-        report.putResult(
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_DSS,
-                enforcesMinimumKeySizeDSS);
-        report.putResult(
-                TlsAnalyzedProperty.ENFORCES_SERVER_CERTIFICATE_MINIMUM_KEY_SIZE_DH,
-                enforcesMinimumKeySizeDH);
+        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA, enforcesMinimumKeySizeRSA);
+        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS, enforcesMinimumKeySizeDSS);
+        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH, enforcesMinimumKeySizeDH);
 
         report.setMinimumServerCertificateKeySizeRSA(minimumRSAKeySize);
         report.setMinimumServerCertificateKeySizeDSS(minimumDSSKeySize);
