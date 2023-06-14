@@ -16,6 +16,7 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class PropertyComparatorRequirementTest {
@@ -28,7 +29,7 @@ public class PropertyComparatorRequirementTest {
                 report2 = new TestReport();
         ListResult<ProtocolVersion> protVer1 =
                 new ListResult<>(
-                        Arrays.asList(ProtocolVersion.TLS10),
+                        List.of(ProtocolVersion.TLS10),
                         TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name());
         ListResult<ProtocolVersion> protVer2 =
                 new ListResult<>(
@@ -38,24 +39,23 @@ public class PropertyComparatorRequirementTest {
         report2.putResult(property, protVer2);
 
         // normal values
-        Requirement requirementGreater =
-                new PropertyComparatorRequirement(
-                        PropertyComparatorRequirement.GREATER, property, 2);
-        Requirement requirementSmaller =
-                new PropertyComparatorRequirement(
-                        PropertyComparatorRequirement.SMALLER, property, 2);
-        Requirement requirementEqual =
-                new PropertyComparatorRequirement(PropertyComparatorRequirement.EQUAL, property, 2);
+        Requirement<TestReport> requirementGreater =
+                new PropertyComparatorRequirement<>(
+                        PropertyComparatorRequirement.Operator.GREATER, property, 2);
+        Requirement<TestReport> requirementSmaller =
+                new PropertyComparatorRequirement<>(
+                        PropertyComparatorRequirement.Operator.SMALLER, property, 2);
+        Requirement<TestReport> requirementEqual =
+                new PropertyComparatorRequirement<>(
+                        PropertyComparatorRequirement.Operator.EQUAL, property, 2);
 
         // illegal
-        Requirement requirementNegative =
-                new PropertyComparatorRequirement(
-                        PropertyComparatorRequirement.EQUAL, property, -2);
-        Requirement requirementNullProperty =
-                new PropertyComparatorRequirement(PropertyComparatorRequirement.EQUAL, null, 2);
-        Requirement requirementNullValue =
-                new PropertyComparatorRequirement(
-                        PropertyComparatorRequirement.EQUAL, property, null);
+        Requirement<TestReport> requirementNegative =
+                new PropertyComparatorRequirement<>(
+                        PropertyComparatorRequirement.Operator.EQUAL, property, -2);
+        Requirement<TestReport> requirementNullValue =
+                new PropertyComparatorRequirement<>(
+                        PropertyComparatorRequirement.Operator.EQUAL, property, null);
 
         // true cases
         assertTrue(requirementEqual.evaluate(report2)); // 2 == 2
@@ -73,7 +73,6 @@ public class PropertyComparatorRequirementTest {
 
         // illegal and false
         assertFalse(requirementNegative.evaluate(report2));
-        assertFalse(requirementNullProperty.evaluate(report2));
         assertFalse(requirementNullValue.evaluate(report2));
     }
 }

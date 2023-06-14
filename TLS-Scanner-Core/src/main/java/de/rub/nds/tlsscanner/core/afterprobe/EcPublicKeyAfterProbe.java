@@ -16,10 +16,10 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public class EcPublicKeyAfterProbe extends AfterProbe<TlsScanReport> {
+public class EcPublicKeyAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
 
     @Override
-    public void analyze(TlsScanReport report) {
+    public void analyze(R report) {
         TestResult reuse;
         try {
             ExtractedValueContainer<?> valueContainer =

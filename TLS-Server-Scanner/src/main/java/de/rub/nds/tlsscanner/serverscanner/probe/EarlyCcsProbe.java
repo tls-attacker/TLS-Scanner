@@ -34,7 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequi
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class EarlyCcsProbe extends TlsServerProbe {
 
     private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
@@ -116,7 +116,7 @@ public class EarlyCcsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ServerReport> getRequirements() {
         return new WorkingConfigRequirement(configSelector);
     }
 

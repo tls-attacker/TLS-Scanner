@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -24,8 +25,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -38,7 +37,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
 
     private List<ProtocolVersion> versions;
 
@@ -182,12 +181,12 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe<ConfigSelecto
     }
 
     @Override
-    public Requirement getRequirements() {
-        ProtocolRequirement pReqTls12 = new ProtocolRequirement(ProtocolVersion.TLS12);
-        ProtocolRequirement pReqTls13 = new ProtocolRequirement(ProtocolVersion.TLS13);
-        ProtocolRequirement pReqDtls12 = new ProtocolRequirement(ProtocolVersion.DTLS12);
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
-                .requires(new OrRequirement(pReqDtls12, pReqTls12, pReqTls13));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
+                .and(
+                        new ProtocolRequirement<ServerReport>(ProtocolVersion.TLS12)
+                                .or(new ProtocolRequirement<>(ProtocolVersion.TLS13))
+                                .or(new ProtocolRequirement<>(ProtocolVersion.DTLS12)));
     }
 
     @Override

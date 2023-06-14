@@ -30,7 +30,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends AfterProbe<T> {
+public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -86,7 +86,7 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
     }
 
     @Override
-    public void analyze(TlsScanReport report) {
+    public void analyze(R report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
                 report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);

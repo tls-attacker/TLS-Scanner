@@ -15,10 +15,10 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public class LogjamAfterProbe extends AfterProbe<TlsScanReport> {
+public class LogjamAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
 
     @Override
-    public void analyze(TlsScanReport report) {
+    public void analyze(R report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             if (report.getSupportedCipherSuites() != null) {

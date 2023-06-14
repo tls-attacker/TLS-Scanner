@@ -10,9 +10,9 @@ package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 
-public abstract class ScanJobExecutor<Report extends ScanReport> {
+public abstract class ScanJobExecutor<R extends ScanReport<R>> {
 
-    public abstract Report execute(Report report);
+    public abstract R execute(R report);
 
     public abstract void shutdown();
 }

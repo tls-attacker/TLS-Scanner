@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -39,7 +40,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.Arrays;
 
-public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
 
     private TestResult acceptsLegacyServerVersionMismatch = TestResults.COULD_NOT_TEST;
     private TestResult acceptsHvrSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
@@ -230,7 +231,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe<ClientScannerCon
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ClientReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 }

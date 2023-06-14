@@ -10,13 +10,13 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
@@ -26,7 +26,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
 @XmlRootElement
 @XmlSeeAlso({TestResults.class})
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ScanReport> {
+public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private TlsAnalyzedProperty property;
 
@@ -57,7 +57,7 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ScanReport> {
     }
 
     @Override
-    public GuidelineCheckResult evaluate(ScanReport report) {
+    public GuidelineCheckResult evaluate(ServerReport report) {
         TestResult reportResult = report.getResult(this.property);
         switch ((TestResults) reportResult) {
             case UNCERTAIN:

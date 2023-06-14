@@ -13,21 +13,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DtlsRetransmissionAfterProbeTest {
 
-    private TlsScanReport report;
-    private DtlsRetransmissionAfterProbe probe;
+    private TlsCoreTestReport report;
+    private DtlsRetransmissionAfterProbe<TlsCoreTestReport> probe;
     private ExtractedValueContainer<HandshakeMessageType> retransmissionsContainer;
 
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new DtlsRetransmissionAfterProbe();
+        probe = new DtlsRetransmissionAfterProbe<>();
         retransmissionsContainer =
                 new ExtractedValueContainer<>(TrackableValueType.DTLS_RETRANSMISSIONS);
     }

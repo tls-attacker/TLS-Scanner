@@ -9,14 +9,14 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsClientProbe<ClientScannerConfig, Report extends TlsScanReport>
-        extends TlsProbe<Report> {
+public abstract class TlsClientProbe extends TlsProbe<ClientReport, TlsClientProbe> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 

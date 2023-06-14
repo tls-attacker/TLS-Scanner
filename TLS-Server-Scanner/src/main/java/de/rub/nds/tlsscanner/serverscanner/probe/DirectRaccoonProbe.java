@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -20,9 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
@@ -41,7 +40,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DirectRaccoonProbe extends TlsServerProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -191,23 +190,27 @@ public class DirectRaccoonProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    public Requirement getRequirements() {
-        PropertyRequirement pReqSsl3 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SSL_3);
-        PropertyRequirement pReqTls10 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        PropertyRequirement pReqTls11 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        PropertyRequirement pReqTls12 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        PropertyRequirement pReqDtls10 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
-        PropertyRequirement pReqDtls12 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE))
-                .requires(
-                        new OrRequirement(
-                                pReqDtls10, pReqDtls12, pReqSsl3, pReqTls10, pReqTls11, pReqTls12));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_DHE))
+                .and(
+                        new PropertyTrueRequirement<ServerReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_SSL_3)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_2)));
     }
 
     @Override

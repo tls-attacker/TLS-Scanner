@@ -57,7 +57,7 @@ public class PrintingScheme {
     }
 
     public String getEncodedString(
-            ScanReport report, AnalyzedProperty property, boolean useColors) {
+            ScanReport<?> report, AnalyzedProperty property, boolean useColors) {
         TestResult result = report.getResult(property);
         TestResultTextEncoder textEncoding = specialValueTextEncoding.get(property);
         if (textEncoding == null) {
@@ -74,7 +74,7 @@ public class PrintingScheme {
         }
     }
 
-    public String getEncodedValueText(ScanReport report, AnalyzedProperty property) {
+    public String getEncodedValueText(ScanReport<?> report, AnalyzedProperty property) {
         TestResult result = report.getResult(property);
         TestResultTextEncoder textEncoding = specialValueTextEncoding.get(property);
         if (textEncoding == null) {
@@ -84,21 +84,21 @@ public class PrintingScheme {
         return textEncoding.encode(result);
     }
 
-    public String getEncodedKeyText(ScanReport report, AnalyzedProperty property) {
+    public String getEncodedKeyText(ScanReport<?> report, AnalyzedProperty property) {
         Encoder textEncoding =
                 keyTextEncoding.getOrDefault(property, new AnalyzedPropertyTextEncoder(null));
 
         return textEncoding.encode(property);
     }
 
-    public AnsiColor getValueColor(ScanReport report, AnalyzedProperty property) {
+    public AnsiColor getValueColor(ScanReport<?> report, AnalyzedProperty property) {
         TestResult result = report.getResult(property);
         ColorEncoding colorEncoding =
                 valueColorEncodings.getOrDefault(property, defaultColorEncoding);
         return colorEncoding.getColor(result);
     }
 
-    public AnsiColor getKeyColor(ScanReport report, AnalyzedProperty property) {
+    public AnsiColor getKeyColor(ScanReport<?> report, AnalyzedProperty property) {
         return AnsiColor.DEFAULT_COLOR;
     }
 }

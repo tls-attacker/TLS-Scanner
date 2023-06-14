@@ -87,6 +87,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -174,11 +175,16 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
-            for (ScannerProbe<?> unexecutedProbe : report.getUnexecutedProbes())
+            for (ScannerProbe<ServerReport, ?> unexecutedProbe : report.getUnexecutedProbes())
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
-                        unexecutedProbe.getRequirements().getMissingRequirements(report).name());
+                        unexecutedProbe
+                                .getRequirements()
+                                .getUnfulfilledRequirements(report)
+                                .stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(";")));
         }
     }
 

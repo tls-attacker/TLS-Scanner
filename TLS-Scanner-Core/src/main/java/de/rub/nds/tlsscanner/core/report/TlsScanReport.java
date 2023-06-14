@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class TlsScanReport extends ScanReport {
+public abstract class TlsScanReport<R extends TlsScanReport<R>> extends ScanReport<R> {
 
     private ProtocolType protocolType = null;
 

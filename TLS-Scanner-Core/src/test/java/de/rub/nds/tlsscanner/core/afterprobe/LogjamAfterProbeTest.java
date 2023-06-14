@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +26,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class LogjamAfterProbeTest {
 
-    private TlsScanReport report;
-    private LogjamAfterProbe probe;
+    private TlsCoreTestReport report;
+    private LogjamAfterProbe<TlsCoreTestReport> probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
         return CipherSuite.getImplemented().stream()
@@ -43,7 +42,7 @@ public class LogjamAfterProbeTest {
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new LogjamAfterProbe();
+        probe = new LogjamAfterProbe<>();
     }
 
     @ParameterizedTest
@@ -93,7 +92,7 @@ public class LogjamAfterProbeTest {
 
     @Test
     public void testEmptyServerReport() {
-        TlsScanReport emptyReport = new TlsCoreTestReport();
+        TlsCoreTestReport emptyReport = new TlsCoreTestReport();
         probe.analyze(emptyReport);
         assertEquals(
                 TestResults.UNCERTAIN,

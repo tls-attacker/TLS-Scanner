@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +26,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class Sweet32AfterProbeTest {
 
-    private TlsScanReport report;
-    private Sweet32AfterProbe probe;
+    private TlsCoreTestReport report;
+    private Sweet32AfterProbe<TlsCoreTestReport> probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
         return CipherSuite.getImplemented().stream()
@@ -43,7 +42,7 @@ public class Sweet32AfterProbeTest {
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new Sweet32AfterProbe();
+        probe = new Sweet32AfterProbe<>();
     }
 
     @ParameterizedTest

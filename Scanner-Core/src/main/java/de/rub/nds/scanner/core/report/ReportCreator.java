@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.report.container.KeyValueContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
 
-public class ReportCreator {
+public class ReportCreator<R extends ScanReport<R>> {
 
     protected PrintingScheme printingScheme;
     protected ScannerDetail detail;
@@ -24,8 +24,7 @@ public class ReportCreator {
         this.detail = detail;
     }
 
-    protected ReportContainer createKeyValueContainer(
-            AnalyzedProperty property, ScanReport report) {
+    protected ReportContainer createKeyValueContainer(AnalyzedProperty property, R report) {
         String key = printingScheme.getEncodedKeyText(report, property);
         String value = printingScheme.getEncodedValueText(report, property);
         AnsiColor keyColour = printingScheme.getKeyColor(report, property);

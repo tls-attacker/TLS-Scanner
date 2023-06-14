@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequi
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CcaRequiredProbe extends TlsServerProbe {
 
     private TestResult requiresCca = TestResults.COULD_NOT_TEST;
 
@@ -60,9 +60,9 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_CCA)
-                .requires(new WorkingConfigRequirement(configSelector));
+    public Requirement<ServerReport> getRequirements() {
+        return new PropertyTrueRequirement<ServerReport>(TlsAnalyzedProperty.SUPPORTS_CCA)
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override

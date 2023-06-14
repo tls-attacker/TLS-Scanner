@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CompressionsProbe extends TlsServerProbe {
 
     private List<CompressionMethod> compressions;
 
@@ -83,7 +83,7 @@ public class CompressionsProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ServerReport> getRequirements() {
         return new WorkingConfigRequirement(configSelector);
     }
 

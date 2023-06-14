@@ -23,7 +23,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequi
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CcaSupportProbe extends TlsServerProbe {
 
     private TestResult supportsCca = TestResults.COULD_NOT_TEST;
 
@@ -51,7 +51,7 @@ public class CcaSupportProbe extends TlsServerProbe<ConfigSelector, ServerReport
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ServerReport> getRequirements() {
         return new WorkingConfigRequirement(configSelector);
     }
 

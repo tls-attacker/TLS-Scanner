@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -20,9 +21,8 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Probe that checks if server enforces the order of named groups sent by the client */
-public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class NamedCurvesOrderProbe extends TlsServerProbe {
 
     private Collection<NamedGroup> supportedGroups;
 
@@ -76,12 +76,13 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE))
-                .requires(
-                        new PropertyComparatorRequirement(
-                                PropertyComparatorRequirement.GREATER,
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_ECDHE))
+                .and(
+                        new PropertyComparatorRequirement<>(
+                                PropertyComparatorRequirement.Operator.GREATER,
                                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
                                 0));
     }

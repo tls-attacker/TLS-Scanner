@@ -9,63 +9,55 @@
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PrimitiveRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.util.ArrayList;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-/**
- * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
- * positively evaluated (TestResults.TRUE).
- */
-public class PropertyRequirement extends BooleanRequirement {
-    /**
-     * @param properties the required {@link TlsAnalyzedProperty} properties. Any amount possible.
-     */
-    public PropertyRequirement(TlsAnalyzedProperty... properties) {
+/** Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties. */
+public class PropertyRequirement<R extends TlsScanReport<R>>
+        extends PrimitiveRequirement<R, TlsAnalyzedProperty> {
+
+    private final TestResult requiredTestResult;
+
+    public PropertyRequirement(
+            TestResult requiredTestResult, List<TlsAnalyzedProperty> properties) {
         super(properties);
+        this.requiredTestResult = requiredTestResult;
+    }
+
+    public PropertyRequirement(TestResult requiredTestResult, TlsAnalyzedProperty... properties) {
+        super(List.of(properties));
+        this.requiredTestResult = requiredTestResult;
     }
 
     @Override
-    protected boolean evaluateInternal(ScanReport report) {
-        if (parameters == null || parameters.length == 0) {
+    public boolean evaluate(R report) {
+        if (parameters.size() == 0) {
             return true;
         }
-        boolean returnValue = true;
-        missingParameters = new ArrayList<>();
         Map<String, TestResult> propertyMap = report.getResultMap();
-        for (Enum<?> property : parameters) {
-            if (propertyMap.containsKey(property.toString())) {
-                if (propertyMap.get(property.toString()) instanceof TestResults
-                        && propertyMap.get(property.toString()) != TestResults.TRUE) {
-                    returnValue = false;
-                    missingParameters.add(property);
-                } else if (propertyMap.get(property.toString()) == null) {
-                    returnValue = false;
-                    missingParameters.add(property);
-                }
-            } else {
-                returnValue = false;
-                missingParameters.add(property);
+        for (TlsAnalyzedProperty property : parameters) {
+            if (!propertyMap.containsKey(property.toString())
+                    || propertyMap.get(property.toString()) != requiredTestResult) {
+                return false;
             }
         }
-        return returnValue;
+        return true;
+    }
+
+    public TestResult getRequiredTestResult() {
+        return requiredTestResult;
     }
 
     @Override
-    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateInternal(report) == false) {
-            return next.getMissingRequirementIntern(
-                    missing.requires(
-                            new PropertyRequirement(
-                                    this.missingParameters.toArray(
-                                            new TlsAnalyzedProperty
-                                                    [this.missingParameters.size()]))),
-                    report);
-        }
-        return next.getMissingRequirementIntern(missing, report);
+    public String toString() {
+        return String.format(
+                "PropertyRequirement[%s: %s]",
+                requiredTestResult,
+                parameters.stream().map(Object::toString).collect(Collectors.joining(" ")));
     }
 }

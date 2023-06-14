@@ -10,121 +10,137 @@ package de.rub.nds.scanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Abstract class to represent requirements of probes which can be chained to a "chain of
- * Requirements", which can be evaluated for fulfillness, which return their respective
- * "requirement", and which allow to retrieve the not yet fulfilled Requirements.
+ * Abstract class to represent requirements of probes which can be evaluated for fulfillness, which
+ * return their respective "requirement", and which allow to retrieve the not yet fulfilled
+ * requirements.
  */
-public abstract class Requirement {
-    protected enum SpecialRequirementTypes {
-        OPTIONS_ALPN,
-        OPTIONS_RESUMPTION,
-        OPTIONS_SNI,
-        WORKING_CONFIG
-    }
-
-    /*
-     * Holds the "next" Requirement. Holds the NO_REQUIREMENT by default if no
-     * Requirement is set as next.
-     */
-    protected Requirement next = Requirement.NO_REQUIREMENT;
-
-    /* no requirement, always evaluates to true */
-    public static BaseRequirement NO_REQUIREMENT = new BaseRequirement();
+public abstract class Requirement<R extends ScanReport<R>> {
 
     /**
-     * Evaluation of "this" Requirement itself.
+     * Evaluates this requirement.
      *
      * @param report the {@link ScanReport}.
-     * @return result of the evaluation of this Requirement as Boolean.
+     * @return result of the evaluation of this requirement as boolean.
      */
-    protected abstract boolean evaluateInternal(ScanReport report);
+    public abstract boolean evaluate(R report);
 
     /**
-     * Evaluation of "all" Requirement. This and the next ones.
+     * Creates a new {@link Requirement} which evaluates to true iff both requirements, this and
+     * other, evaluate to true. If this or other is an {@link AndRequirement} it will be flattened.
      *
-     * @param report the {@link ScanReport}
-     * @return result of the evaluation of this and the next Requirement as Boolean
+     * @param other other requirement to be met.
+     * @return a new requirement combining both individual requirements with a logical AND
+     *     operation.
      */
-    public boolean evaluate(ScanReport report) {
-        return next.evaluate(report) && evaluateInternal(report);
+    public AndRequirement<R> and(Requirement<R> other) {
+        return and(other, true);
     }
 
     /**
-     * Adds a Requirement to the Requirement chain. Important: only use this function once per
-     * Requirement. If using both options one Requirement will be ignored.
+     * Creates a new {@link Requirement} which evaluates to true iff both requirements, this and
+     * other, evaluate to true.
      *
-     * <p>Either exampleRequirement.requires(nextRequirement).requires(anotherRequirement) XOR
-     * exampleRequirement.requires(nextRequirement.requires(anotherRequirement)).
-     *
-     * @param next the requirement object to add.
-     * @return reference to the next requirement.
+     * @param other other requirement to be met.
+     * @param flatten If set to false, the requirements will not be flattened.
+     * @return a new requirement combining both individual requirements with a logical AND
+     *     operation.
      */
-    public Requirement requires(Requirement next) {
-        next.next = this;
-        return next;
+    public AndRequirement<R> and(Requirement<R> other, boolean flatten) {
+        List<Requirement<R>> requirements = new ArrayList<>();
+        if (this instanceof AndRequirement && flatten) {
+            requirements.addAll(((AndRequirement<R>) this).getContainedRequirements());
+        } else {
+            requirements.add(this);
+        }
+        if (other instanceof AndRequirement && flatten) {
+            requirements.addAll(((AndRequirement<R>) other).getContainedRequirements());
+        } else {
+            requirements.add(other);
+        }
+        return new AndRequirement<>(requirements);
     }
 
     /**
-     * Add this Requirement to a chain of not positively evaluated requirements.
+     * Creates a new {@link Requirement} which evaluates to true iff at least one of the two
+     * requirements is true. If this or other is an {@link OrRequirement} it will be flattened.
+     *
+     * @param other other requirements to be met.
+     * @return a new requirement combining the individual requirements with a logical OR operation.
+     */
+    public OrRequirement<R> or(Requirement<R> other) {
+        return or(other, true);
+    }
+
+    /**
+     * Creates a new {@link Requirement} which evaluates to true iff at least one of the two
+     * requirements is true.
+     *
+     * @param other other requirements to be met.
+     * @param flatten If set to false, the requirements will not be flattened.
+     * @return a new requirement combining the individual requirements with a logical OR operation.
+     */
+    public OrRequirement<R> or(Requirement<R> other, boolean flatten) {
+        List<Requirement<R>> requirements = new ArrayList<>();
+        if (this instanceof OrRequirement && flatten) {
+            requirements.addAll(((OrRequirement<R>) this).getContainedRequirements());
+        } else {
+            requirements.add(this);
+        }
+        if (other instanceof OrRequirement && flatten) {
+            requirements.addAll(((OrRequirement<R>) other).getContainedRequirements());
+        } else {
+            requirements.add(other);
+        }
+        return new OrRequirement<>(requirements);
+    }
+
+    /**
+     * Creates a new {@link Requirement} which evaluates to true iff this evaluates to false. If
+     * this is a {@link NotRequirement}, it will be flattened.
+     *
+     * @return a new requirement which represents a logical NOT on this requirement.
+     */
+    public Requirement<R> not() {
+        return not(true);
+    }
+
+    /**
+     * Creates a new {@link Requirement} which evaluates to true iff this evaluates to false.
+     *
+     * @param flatten If set to false, the requirement will not be flattened.
+     * @return a new requirement which represents a logical NOT on this requirement.
+     */
+    public Requirement<R> not(boolean flatten) {
+        if (this instanceof NotRequirement && flatten) {
+            return ((NotRequirement<R>) this).getContainedRequirements().get(0);
+        }
+        return new NotRequirement<>(this);
+    }
+
+    /**
+     * Creates a new {@link Requirement} which evaluates to true iff either this or other evaluates
+     * to true.
+     *
+     * @param other other requirement to be met.
+     * @return a new requirement combining both individual requirements with a logical XOR
+     *     operation.
+     */
+    public XorRequirement<R> xor(Requirement<R> other) {
+        return new XorRequirement<>(this, other);
+    }
+
+    /**
+     * Returns a list of requirements that need to be fulfilled for this requirement to evaluate to
+     * true. This will resolve any logical AND operations at the topmost level but may still contain
+     * composite requirements (logical OR / NOT).
      *
      * @param report the ScanReport.
-     * @return this and the next Requirement if they evaluate to false respectively.
+     * @return a list of requirements to be met for this requirement to evaluate to true.
      */
-    public Requirement getMissingRequirements(ScanReport report) {
-        Requirement missing = NO_REQUIREMENT;
-        return getMissingRequirementIntern(missing, report);
+    public List<Requirement<R>> getUnfulfilledRequirements(R report) {
+        return evaluate(report) ? List.of() : List.of(this);
     }
-
-    /**
-     * @return the next Requirement.
-     */
-    public Requirement getNext() {
-        return next;
-    }
-
-    /**
-     * @return returns String representation of the requirement.
-     */
-    public String name() {
-        if (!next.equals(NO_REQUIREMENT)) {
-            return toString() + " and " + next.name();
-        } else {
-            return toString();
-        }
-    }
-
-    /**
-     * @return returns the required parameters of the respective requirement.
-     */
-    public abstract Enum<?>[] getRequirement();
-
-    /**
-     * @return returns the complete requirements as boolean expression.
-     */
-    public Enum<?>[] getRequirements() {
-        if (next.equals(NO_REQUIREMENT)) {
-            return getRequirement();
-        } else {
-            List<Enum<?>> parameters = new ArrayList<>();
-            parameters.addAll(Arrays.asList(getRequirement()));
-            parameters.addAll(Arrays.asList(next.getRequirements()));
-            return parameters.toArray(new Enum<?>[0]);
-        }
-    }
-
-    /**
-     * Evaluates if this Requirement and the next are fulfilled or not and adds them to a
-     * Requirement chain of missing Requirements of not fulfilled.
-     *
-     * @param missing reference to the "first" missing Requirement of the missing Requirements chain
-     *     onto which the next missing Requirement is attached as next Requirement.
-     * @param report the ScanReport.
-     * @return a reference to the "first" currently missing Requirement of the missing Requirement
-     *     chain.
-     */
-    public abstract Requirement getMissingRequirementIntern(Requirement missing, ScanReport report);
 }

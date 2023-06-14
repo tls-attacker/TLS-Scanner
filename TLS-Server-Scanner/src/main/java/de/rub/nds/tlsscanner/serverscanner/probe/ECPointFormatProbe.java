@@ -31,7 +31,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class ECPointFormatProbe extends TlsServerProbe {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
@@ -141,7 +141,7 @@ public class ECPointFormatProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ServerReport> getRequirements() {
         return ECPointFormatUtils.getRequirements();
     }
 

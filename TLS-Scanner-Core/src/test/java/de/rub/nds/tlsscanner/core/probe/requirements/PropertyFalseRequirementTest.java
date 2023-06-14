@@ -13,11 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import org.junit.jupiter.api.Test;
 
-public class PropertyNotRequirementTest {
+public class PropertyFalseRequirementTest {
 
     @Test
     public void testPropertyNotRequirement() {
@@ -25,20 +24,15 @@ public class PropertyNotRequirementTest {
         TlsAnalyzedProperty[] propertyNot =
                 new TlsAnalyzedProperty[] {TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES};
 
-        PropertyNotRequirement requirement = new PropertyNotRequirement();
+        PropertyRequirement<TestReport> requirement = new PropertyFalseRequirement<>();
         assertTrue(requirement.evaluate(report));
 
-        requirement = new PropertyNotRequirement(new TlsAnalyzedProperty[0]);
+        requirement = new PropertyFalseRequirement<>(new TlsAnalyzedProperty[0]);
         assertTrue(requirement.evaluate(report));
 
-        requirement = new PropertyNotRequirement(propertyNot);
-        assertArrayEquals(requirement.getRequirement(), propertyNot);
+        requirement = new PropertyFalseRequirement<>(propertyNot);
+        assertArrayEquals(requirement.getParameters().toArray(), propertyNot);
         assertFalse(requirement.evaluate(report));
-
-        Requirement reqMis = requirement.getMissingRequirements(report);
-        assertFalse(requirement.evaluate(report));
-        assertArrayEquals(
-                ((PropertyNotRequirement) reqMis).getRequirement(), requirement.getRequirement());
 
         report.putResult(TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, TestResults.TRUE);
         assertFalse(requirement.evaluate(report));

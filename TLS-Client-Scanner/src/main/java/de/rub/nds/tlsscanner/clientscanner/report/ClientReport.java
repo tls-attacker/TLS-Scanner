@@ -28,7 +28,7 @@ import java.util.Set;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends TlsScanReport {
+public class ClientReport extends TlsScanReport<ClientReport> {
 
     // DHE
     private Integer lowestPossibleDheModulusSize;

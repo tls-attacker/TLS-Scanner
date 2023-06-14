@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,13 +30,11 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class Version13RandomProbe extends TlsClientProbe {
 
     private static final byte[] SERVER_RANDOM_12_POSTFIX = {
         0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x01
@@ -109,13 +108,18 @@ public class Version13RandomProbe extends TlsClientProbe<ClientScannerConfig, Cl
     public void adjustConfig(ClientReport report) {}
 
     @Override
-    public Requirement getRequirements() {
-        PropertyRequirement tls10 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_0);
-        PropertyRequirement tls11 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_1);
-        PropertyRequirement tls12 = new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
-        return new OrRequirement(tls10, tls11, tls12)
-                .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION))
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+    public Requirement<ClientReport> getRequirements() {
+        return new ProbeRequirement<ClientReport>(TlsProbeType.PROTOCOL_VERSION)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_TLS_1_3))
+                .and(
+                        new PropertyTrueRequirement<ClientReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_TLS_1_0)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2)));
     }
 
     @Override

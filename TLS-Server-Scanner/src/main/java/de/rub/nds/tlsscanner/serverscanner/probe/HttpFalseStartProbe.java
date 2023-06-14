@@ -30,14 +30,14 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class HttpFalseStartProbe extends TlsServerProbe {
 
     private TestResult supportsFalseStart = TestResults.COULD_NOT_TEST;
 
@@ -88,9 +88,9 @@ public class HttpFalseStartProbe extends TlsServerProbe<ConfigSelector, ServerRe
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_HTTPS)
-                .requires(new WorkingConfigRequirement(configSelector));
+    public Requirement<ServerReport> getRequirements() {
+        return new PropertyTrueRequirement<ServerReport>(TlsAnalyzedProperty.SUPPORTS_HTTPS)
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override

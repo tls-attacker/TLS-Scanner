@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
@@ -33,7 +34,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
-public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class DtlsFragmentationProbe extends TlsClientProbe {
 
     private static final int INDIVIDUAL_TRANSPORT_PACKET_COOLDOWN = 200;
 
@@ -211,7 +212,7 @@ public class DtlsFragmentationProbe extends TlsClientProbe<ClientScannerConfig, 
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ClientReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 }

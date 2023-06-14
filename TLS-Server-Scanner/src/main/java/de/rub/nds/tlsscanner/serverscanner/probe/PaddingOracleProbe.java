@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -21,8 +22,7 @@ import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttacker;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -32,7 +32,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class PaddingOracleProbe extends TlsServerProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -157,9 +157,10 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }
 
     @Override

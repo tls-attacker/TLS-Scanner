@@ -31,12 +31,13 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class ScanReport extends Observable implements Serializable {
+public abstract class ScanReport<R extends ScanReport<R>> extends Observable
+        implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
 
     private final Set<ProbeType> executedProbes;
-    private final Set<ScannerProbe<?>> unexecutedProbes;
+    private final Set<ScannerProbe<R, ?>> unexecutedProbes;
 
     private final List<PerformanceData> performanceList;
 
@@ -164,7 +165,7 @@ public abstract class ScanReport extends Observable implements Serializable {
         executedProbes.add(probe);
     }
 
-    public synchronized void markProbeAsUnexecuted(ScannerProbe<?> probe) {
+    public synchronized void markProbeAsUnexecuted(ScannerProbe<R, ?> probe) {
         unexecutedProbes.add(probe);
     }
 
@@ -180,7 +181,7 @@ public abstract class ScanReport extends Observable implements Serializable {
         return executedProbes;
     }
 
-    public synchronized Set<ScannerProbe<?>> getUnexecutedProbes() {
+    public synchronized Set<ScannerProbe<R, ?>> getUnexecutedProbes() {
         return unexecutedProbes;
     }
 

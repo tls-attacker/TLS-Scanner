@@ -53,7 +53,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
-public class ServerContainerReportCreator extends TlsReportCreator {
+public class ServerContainerReportCreator extends TlsReportCreator<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 

@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -35,7 +36,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  * Determines whether the server uses the client IP address for the DTLS cookie generation. It
  * requires a proxy so we limit the probe.
  */
-public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
 
     private static final String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
     private static final int PROXY_CONTROL_PORT = 5555;
@@ -98,7 +99,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe<ConfigSelector, S
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 }

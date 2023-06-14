@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -30,15 +31,13 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyNotRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class RenegotiationProbe extends TlsServerProbe {
 
     private Set<CipherSuite> supportedSuites;
 
@@ -260,16 +259,23 @@ public class RenegotiationProbe extends TlsServerProbe<ConfigSelector, ServerRep
     }
 
     @Override
-    public Requirement getRequirements() {
-        ProbeRequirement cipherReq = new ProbeRequirement(TlsProbeType.CIPHER_SUITE);
-        PropertyNotRequirement notTls13 =
-                new PropertyNotRequirement(
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                        TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
-                        TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
-        return new OrRequirement(cipherReq, notTls13);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.CIPHER_SUITE)
+                .and(
+                        new PropertyTrueRequirement<ServerReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_TLS_1_0)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_2)));
     }
 
     @Override
