@@ -50,14 +50,14 @@ public final class ExecutorConfig {
             names = "-parallelProbes",
             required = false,
             description =
-                    "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
+                    "Defines the number of threads responsible for different probes. If set to 1, only one specific probe can be run in time.")
     private int parallelProbes = 1;
 
     @Parameter(
             names = "-threads",
             required = false,
             description =
-                    "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed peer.")
+                    "The maximum number of threads used to execute probes located in the queue.")
     private int overallThreads = 1;
 
     private List<ProbeType> probes = null;
