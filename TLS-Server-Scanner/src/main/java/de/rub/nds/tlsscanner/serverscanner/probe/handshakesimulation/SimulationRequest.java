@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.config.ExecutorConfig;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -32,7 +32,7 @@ public class SimulationRequest {
         this.tlsClientConfig = tlsClientConfig;
     }
 
-    public State getExecutableState(ScannerConfig scannerConfig) {
+    public State getExecutableState(ExecutorConfig executorConfig) {
         Config config = tlsClientConfig.getConfig();
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);

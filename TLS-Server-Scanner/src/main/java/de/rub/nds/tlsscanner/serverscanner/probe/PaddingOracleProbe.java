@@ -52,7 +52,7 @@ public class PaddingOracleProbe extends TlsServerProbe<ConfigSelector, ServerRep
 
     public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, configSelector);
-        scanDetail = configSelector.getScannerConfig().getScanDetail();
+        scanDetail = configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
         numberOfIterations =
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ITERATIONS

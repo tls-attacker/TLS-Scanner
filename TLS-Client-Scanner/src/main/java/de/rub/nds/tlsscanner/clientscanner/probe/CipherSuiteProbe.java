@@ -193,7 +193,7 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
                 Arrays.asList(CipherSuite.values()).stream()
                         .filter(suite -> suite.isRealCipherSuite())
                         .collect(Collectors.toList());
-        switch (scannerConfig.getScanDetail()) {
+        switch (scannerConfig.getExecutorConfig().getScanDetail()) {
             case QUICK:
             case NORMAL:
                 return filterPskCipherSuites(filterForVersionSupported(realCipherSuites, version));
