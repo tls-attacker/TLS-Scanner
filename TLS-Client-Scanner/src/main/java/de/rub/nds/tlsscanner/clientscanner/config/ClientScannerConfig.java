@@ -59,7 +59,7 @@ public class ClientScannerConfig extends TlsScannerConfig {
             description =
                     "The directory the scanner should use to log the client output. Be wary: This creates a lot of files for a full scan")
     private String logDirectory = null;
-    
+
     private Function<State, Integer> externalRunCallback = null;
 
     public ClientScannerConfig(GeneralDelegate delegate) {
@@ -133,10 +133,10 @@ public class ClientScannerConfig extends TlsScannerConfig {
     }
 
     public Function<State, Integer> getRunCommandExecutionCallback() {
-        if(externalRunCallback != null) {
-           return externalRunCallback;
+        if (externalRunCallback != null) {
+            return externalRunCallback;
         } else {
-           return getRunCommandExecutionCallback(getRunCommand()); 
+            return getRunCommandExecutionCallback(getRunCommand());
         }
     }
 
