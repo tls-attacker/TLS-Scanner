@@ -49,6 +49,10 @@ public abstract class TlsScanReport extends ScanReport {
     private long scanStartTime;
     private long scanEndTime;
 
+    // If the peer closes the connection by itself if nothing gets sent
+    private Long closedAfterFinishedDelta;
+    private Long closedAfterAppDataDelta;
+
     public TlsScanReport() {
         super();
     }
@@ -293,6 +297,22 @@ public abstract class TlsScanReport extends ScanReport {
                 (ListResult<TokenBindingKeyParameters>)
                         getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
         return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized Long getClosedAfterFinishedDelta() {
+        return closedAfterFinishedDelta;
+    }
+
+    public synchronized void setClosedAfterFinishedDelta(Long closedAfterFinishedDelta) {
+        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
+    }
+
+    public synchronized Long getClosedAfterAppDataDelta() {
+        return closedAfterAppDataDelta;
+    }
+
+    public synchronized void setClosedAfterAppDataDelta(Long closedAfterAppDataDelta) {
+        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 
     public synchronized List<String> getSupportedAlpnConstans() {

@@ -141,25 +141,25 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
     @Override
     public void executeTest() {
         pairLists = new LinkedList<>();
+        List<State> statesToExecute = new LinkedList<>();
         for (ProtocolVersion version : protocolVersions) {
+            pairLists.add(new VersionSuiteListPair(version, new LinkedList<>()));
             LOGGER.debug("Testing cipher suites for version {}", version);
 
-            Config config;
-            if (version.isTLS13()) {
-                config = getTls13Config();
-            } else {
-                config = getBaseConfig();
-            }
-            config.setHighestProtocolVersion(version);
-            config.setDefaultSelectedProtocolVersion(version);
-            config.setEnforceSettings(true);
-
             List<CipherSuite> toTestList = getToTestCipherSuitesByVersion(version);
-            List<CipherSuite> supportedSuites = new LinkedList<>();
 
             while (!toTestList.isEmpty()) {
+                Config config;
+                if (version.isTLS13()) {
+                    config = getTls13Config();
+                } else {
+                    config = getBaseConfig();
+                }
+                config.setHighestProtocolVersion(version);
+                config.setDefaultSelectedProtocolVersion(version);
+                config.setEnforceSettings(true);
                 CipherSuite currentSuite = toTestList.get(0);
-                config.setDefaultServerSupportedCipherSuites(toTestList);
+                config.setDefaultServerSupportedCipherSuites(currentSuite);
                 config.setDefaultSelectedCipherSuite(currentSuite);
                 WorkflowTrace trace =
                         new WorkflowConfigurationFactory(config)
@@ -168,15 +168,27 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
                 trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
                 State state = new State(config, trace);
-                executeState(state);
-                if (state.getWorkflowTrace().executedAsPlanned()) {
-                    supportedSuites.add(currentSuite);
-                }
+                statesToExecute.add(state);
+
                 toTestList.remove(currentSuite);
             }
-
-            if (!supportedSuites.isEmpty()) {
-                pairLists.add(new VersionSuiteListPair(version, supportedSuites));
+        }
+        executeState(statesToExecute);
+        for (State executedState : statesToExecute) {
+            if (executedState.getWorkflowTrace().executedAsPlanned()
+                    && executedState.getTlsContext().getSelectedCipherSuite()
+                            == executedState.getConfig().getDefaultSelectedCipherSuite()) {
+                pairLists.stream()
+                        .filter(
+                                pair ->
+                                        pair.getVersion()
+                                                == executedState
+                                                        .getConfig()
+                                                        .getDefaultSelectedProtocolVersion())
+                        .findAny()
+                        .orElseThrow()
+                        .getCipherSuiteList()
+                        .add(executedState.getConfig().getDefaultSelectedCipherSuite());
             }
         }
     }
@@ -212,7 +224,6 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
         config.setStopActionsAfterIOException(true);
         config.setStopTraceAfterUnexpected(true);
         config.setStopActionsAfterWarning(true);
-        config.setAddRenegotiationInfoExtension(false);
         return config;
     }
 

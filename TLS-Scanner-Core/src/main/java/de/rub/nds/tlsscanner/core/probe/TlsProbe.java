@@ -79,7 +79,7 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
         }
     }
 
-    protected final void put(TlsAnalyzedProperty property, Object value) {
+    public final void put(TlsAnalyzedProperty property, Object value) {
         if (property == null) {
             LOGGER.error("Property to put (put) in " + getClass() + " is null!");
             return;

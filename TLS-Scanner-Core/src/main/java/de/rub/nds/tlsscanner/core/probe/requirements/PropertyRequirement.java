@@ -39,7 +39,11 @@ public class PropertyRequirement extends BooleanRequirement {
         Map<String, TestResult> propertyMap = report.getResultMap();
         for (Enum<?> property : parameters) {
             if (propertyMap.containsKey(property.toString())) {
-                if (propertyMap.get(property.toString()) != TestResults.TRUE) {
+                if (propertyMap.get(property.toString()) instanceof TestResults
+                        && propertyMap.get(property.toString()) != TestResults.TRUE) {
+                    returnValue = false;
+                    missingParameters.add(property);
+                } else if (propertyMap.get(property.toString()) == null) {
                     returnValue = false;
                     missingParameters.add(property);
                 }
