@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,8 @@ public class OrRequirementTest {
         assertArrayEquals(
                 ((OrRequirement) requirementMissing).getRequirement(),
                 requirement.getRequirement());
-
-        report.markProbeAsExecuted(TlsProbeType.BASIC);
+        ScannerProbe<TestReport> basicProbe = new TestProbeBasic<TestReport>(null);
+        report.markProbeAsExecuted(basicProbe.getType());
         assertTrue(requirement.evaluate(report));
 
         requirementMissing = requirement.getMissingRequirements(report);

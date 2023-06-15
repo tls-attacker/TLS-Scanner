@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -67,16 +67,16 @@ public final class TlsClientScanner extends TlsScanner {
     private boolean closeAfterFinishParallel;
 
     public TlsClientScanner(ClientScannerConfig config) {
-        super(config.getProbes());
+        super(config.getExecutorConfig().getProbes());
         this.config = config;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
+        parallelExecutor = new ParallelExecutor(config.getExecutorConfig().getOverallThreads(), 3);
         closeAfterFinishParallel = true;
         setCallbacks();
         fillProbeLists();
     }
 
     public TlsClientScanner(ClientScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(config.getProbes());
+        super(config.getExecutorConfig().getProbes());
         this.config = config;
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
@@ -142,7 +142,11 @@ public final class TlsClientScanner extends TlsScanner {
         ClientReport clientReport = new ClientReport();
         ScanJob job = new ScanJob(probeList, afterList);
         ThreadedScanJobExecutor<ClientReport> executor =
-                new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), "");
+                new ThreadedScanJobExecutor(
+                        config.getExecutorConfig(),
+                        job,
+                        config.getExecutorConfig().getParallelProbes(),
+                        "");
         long scanStartTime = System.currentTimeMillis();
         clientReport = executor.execute(clientReport);
         long scanEndTime = System.currentTimeMillis();
@@ -159,7 +163,8 @@ public final class TlsClientScanner extends TlsScanner {
     }
 
     private void adjustServerPort() {
-        if (config.isMultithreaded() && config.getServerDelegate().getPort() != 0) {
+        if (config.getExecutorConfig().isMultithreaded()
+                && config.getServerDelegate().getPort() != 0) {
             LOGGER.warn(
                     "Configured explicit server port, but also multithreaded execution. Ignoring explicit port.");
             config.getServerDelegate().setPort(0);

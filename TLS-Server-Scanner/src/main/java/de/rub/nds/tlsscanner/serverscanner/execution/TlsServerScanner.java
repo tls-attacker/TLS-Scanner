@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -118,12 +118,12 @@ public final class TlsServerScanner extends TlsScanner {
     private boolean closeAfterFinishParallel;
 
     public TlsServerScanner(ServerScannerConfig config) {
-        super(config.getProbes());
+        super(config.getExecutorConfig().getProbes());
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor =
                 new ParallelExecutor(
-                        config.getOverallThreads(),
+                        config.getExecutorConfig().getOverallThreads(),
                         3,
                         new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.configSelector = new ConfigSelector(config, parallelExecutor);
@@ -132,7 +132,7 @@ public final class TlsServerScanner extends TlsScanner {
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(config.getProbes());
+        super(config.getExecutorConfig().getProbes());
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
@@ -307,9 +307,9 @@ public final class TlsServerScanner extends TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor =
                             new ThreadedScanJobExecutor<>(
-                                    config,
+                                    config.getExecutorConfig(),
                                     job,
-                                    config.getParallelProbes(),
+                                    config.getExecutorConfig().getParallelProbes(),
                                     config.getClientDelegate().getHost());
                     long scanStartTime = System.currentTimeMillis();
                     serverReport = executor.execute(serverReport);

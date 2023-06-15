@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,7 +9,7 @@
 package de.rub.nds.scanner.core.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.config.ExecutorConfig;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
@@ -34,7 +34,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final ScannerConfig config;
+    private final ExecutorConfig config;
 
     private final ScanJob scanJob;
 
@@ -48,7 +48,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     private final Semaphore semaphore = new Semaphore(0);
 
     public ThreadedScanJobExecutor(
-            ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
+            ExecutorConfig config, ScanJob scanJob, int threadCount, String prefix) {
         long probeTimeout = config.getProbeTimeout();
         executor =
                 new ScannerThreadPoolExecutor(
@@ -58,7 +58,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     }
 
     public ThreadedScanJobExecutor(
-            ScannerConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
+            ExecutorConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
         this.executor = executor;
         this.config = config;
         this.scanJob = scanJob;
@@ -86,6 +86,7 @@ public class ThreadedScanJobExecutor<Report extends ScanReport> extends ScanJobE
     private void updateSiteReportWithNotExecutedProbes(Report report) {
         for (ScannerProbe probe : notScheduledTasks) {
             probe.merge(report);
+            report.markProbeAsUnexecuted(probe);
         }
     }
 

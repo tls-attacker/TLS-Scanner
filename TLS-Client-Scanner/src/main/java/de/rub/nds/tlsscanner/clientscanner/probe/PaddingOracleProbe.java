@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -54,7 +54,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     public PaddingOracleProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, scannerConfig);
-        this.scanDetail = scannerConfig.getScanDetail();
+        this.scanDetail = scannerConfig.getExecutorConfig().getScanDetail();
         this.numberOfIterations =
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ITERATIONS
@@ -201,7 +201,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(
                         TlsProbeType.PROTOCOL_VERSION,
                         TlsProbeType.CIPHER_SUITE,

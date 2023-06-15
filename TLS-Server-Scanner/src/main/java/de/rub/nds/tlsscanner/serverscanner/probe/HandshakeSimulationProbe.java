@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -58,6 +58,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
                                 RESOURCE_FOLDER + "/" + configFileName);
                 if (configSelector
                         .getScannerConfig()
+                        .getExecutorConfig()
                         .getScanDetail()
                         .isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
@@ -80,7 +81,9 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
         List<State> clientStateList = new LinkedList<>();
         simulatedClientList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {
-            State state = request.getExecutableState(configSelector.getScannerConfig());
+            State state =
+                    request.getExecutableState(
+                            configSelector.getScannerConfig().getExecutorConfig());
             clientStateList.add(state);
         }
         executeState(clientStateList);
@@ -245,7 +248,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return Requirement.NO_REQUIREMENT;
     }
 }

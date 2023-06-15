@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -152,7 +152,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
                 if (e.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on " + getProbeName());
                 } else {
-                    LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                    LOGGER.warn("Stapled OCSP message could not be parsed!");
                 }
             }
         }
@@ -179,9 +179,12 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
         ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
         ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-        certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
-        certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
-
+        try {
+            certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
+            certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
+        } catch (RuntimeException ex) {
+            LOGGER.warn("Request with OCSP url failed: " + ex.getMessage());
+        }
         // If nonce is supported used, check if server actually replies
         // with a different one immediately after
         if (certResult.getFirstResponse() != null
@@ -191,7 +194,6 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
             ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
             certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
-            LOGGER.debug(certResult.getSecondResponse().toString());
         } else {
             certResult.setSupportsNonce(false);
         }
@@ -227,7 +229,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
+    public Requirement getRequirements() {
         return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 

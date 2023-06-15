@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>3.0.4</version>
+        <version>3.2.3</version>
     </parent>
 
     <groupId>de.rub.nds.tls.scanner</groupId>
@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
-    <description>TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations.</description>
+    <description>TLS-Scanner is a tool created to assist pentesters and security researchers in the evaluation of TLS Server configurations.</description>
     <url>https://github.com/tls-attacker/TLS-Scanner</url>
     <inceptionYear>2017</inceptionYear>
 
@@ -29,12 +29,12 @@
         <developer>
             <id>ic0ns</id>
             <name>Robert Merget</name>
-            <email>robert.merget@rub.de</email>
-            <url>http://www.nds.rub.de/</url>
-            <organization>NDS</organization>
-            <organizationUrl>http://www.nds.rub.de</organizationUrl>
+            <email>robert.merget@tii.ae</email>
+            <url>https://github.com/ic0ns/</url>
+            <organization>TII</organization>
+            <organizationUrl>https://www.tii.ae/</organizationUrl>
             <roles>
-                <role>Developer</role>
+                <role>Team lead</role>
             </roles>
         </developer>
     </developers>
@@ -402,7 +402,7 @@
                             <spacesPerTab>4</spacesPerTab>
                         </indent>
                         <googleJavaFormat>
-                            <version>1.15.0</version>
+                            <version>1.16.0</version>
                             <style>AOSP</style>
                         </googleJavaFormat>
                         <licenseHeader>
