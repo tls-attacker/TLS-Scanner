@@ -47,9 +47,10 @@ public class Main {
                                 + ((System.currentTimeMillis() - time) / 1000)
                                 + "s\n"
                                 + report.getFullReport(
-                                        config.getReportDetail(), !config.isNoColor()));
-                if (config.isWriteReportToFile()) {
-                    File outputFile = new File(config.getOutputFile());
+                                        config.getExecutorConfig().getReportDetail(),
+                                        !config.getExecutorConfig().isNoColor()));
+                if (config.getExecutorConfig().isWriteReportToFile()) {
+                    File outputFile = new File(config.getExecutorConfig().getOutputFile());
                     ClientReportSerializer.serialize(outputFile, report);
                 }
             } catch (ConfigurationException e) {
