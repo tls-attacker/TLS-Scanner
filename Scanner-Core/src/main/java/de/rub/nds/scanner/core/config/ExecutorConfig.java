@@ -12,6 +12,7 @@ import com.beust.jcommander.Parameter;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class ExecutorConfig {
@@ -96,6 +97,20 @@ public final class ExecutorConfig {
 
     public void setProbes(ProbeType... probes) {
         this.probes = Arrays.asList(probes);
+    }
+
+    public void addProbes(List<ProbeType> probes) {
+        if (this.probes == null) {
+            this.probes = new LinkedList<>();
+        }
+        this.probes.addAll(probes);
+    }
+
+    public void addProbes(ProbeType... probes) {
+        if (this.probes == null) {
+            this.probes = new LinkedList<>();
+        }
+        this.probes.addAll(Arrays.asList(probes));
     }
 
     public int getProbeTimeout() {
