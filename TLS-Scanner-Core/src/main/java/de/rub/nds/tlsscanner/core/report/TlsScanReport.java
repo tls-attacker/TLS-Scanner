@@ -314,7 +314,7 @@ public abstract class TlsScanReport extends ScanReport {
     public synchronized void setClosedAfterAppDataDelta(Long closedAfterAppDataDelta) {
         this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
-    
+
     public synchronized List<String> getSupportedAlpnConstans() {
         @SuppressWarnings("unchecked")
         ListResult<String> listResult =
