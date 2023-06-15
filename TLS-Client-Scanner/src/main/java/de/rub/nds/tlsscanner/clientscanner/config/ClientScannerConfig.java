@@ -59,6 +59,8 @@ public class ClientScannerConfig extends TlsScannerConfig {
             description =
                     "The directory the scanner should use to log the client output. Be wary: This creates a lot of files for a full scan")
     private String logDirectory = null;
+    
+    private Function<State, Integer> externalRunCallback = null;
 
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -131,7 +133,11 @@ public class ClientScannerConfig extends TlsScannerConfig {
     }
 
     public Function<State, Integer> getRunCommandExecutionCallback() {
-        return getRunCommandExecutionCallback(getRunCommand());
+        if(externalRunCallback != null) {
+           return externalRunCallback;
+        } else {
+           return getRunCommandExecutionCallback(getRunCommand()); 
+        }
     }
 
     /** Provides a callback that executes the client run command. */
@@ -183,5 +189,13 @@ public class ClientScannerConfig extends TlsScannerConfig {
         }
         throw new RuntimeException(
                 "Got unknown ServerTransportHandler when trying to extract server port.");
+    }
+
+    public Function<State, Integer> getExternalRunCallback() {
+        return externalRunCallback;
+    }
+
+    public void setExternalRunCallback(Function<State, Integer> externalRunCallback) {
+        this.externalRunCallback = externalRunCallback;
     }
 }
