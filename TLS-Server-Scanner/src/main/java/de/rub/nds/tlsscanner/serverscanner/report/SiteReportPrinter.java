@@ -865,7 +865,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.ISSUES_TICKET);
         prettyAppend(builder, "Supports Session Resumption", AnalyzedProperty.RESUMES_WITH_TICKET);
         prettyAppend(builder, "Ticket contains plain secret", AnalyzedProperty.UNENCRYPTED_TICKET);
-        prettyAppend(builder, "Ticket use default STEK", AnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(builder, "Ticket use default STEK (enc)", AnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(builder, "Ticket use default STEK (MAC)", AnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
         prettyAppend(builder, "No (full) MAC check", AnalyzedProperty.NO_MAC_CHECK_TICKET);
         prettyAppend(builder, "Vulnerable to Padding Oracle", AnalyzedProperty.PADDING_ORACLE_TICKET);
 
