@@ -130,7 +130,6 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
         Config config = scannerConfig.createConfig();
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
-        config.setAddRenegotiationInfoExtension(true);
         return config;
     }
 
@@ -223,6 +222,25 @@ public class ProtocolVersionProbe extends TlsClientProbe<ClientScannerConfig, Cl
             }
             if (!toTestList.contains(ProtocolVersion.DTLS12)) {
                 put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            }
+
+            if (!toTestList.contains(ProtocolVersion.SSL2)) {
+                put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.SSL3)) {
+                put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.TLS10)) {
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.TLS11)) {
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.TLS12)) {
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.TLS13)) {
+                put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.COULD_NOT_TEST);
             }
         } else {
             setPropertiesToCouldNotTest();

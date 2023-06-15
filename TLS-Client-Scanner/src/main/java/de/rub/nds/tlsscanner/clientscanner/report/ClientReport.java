@@ -34,9 +34,9 @@ public class ClientReport extends TlsScanReport {
     private Integer lowestPossibleDheModulusSize;
     private Integer highestPossibleDheModulusSize;
 
-    private Integer minimumServerCertificateKeySizeDH = -1;
-    private Integer minimumServerCertificateKeySizeRSA = -1;
-    private Integer minimumServerCertificateKeySizeDSS = -1;
+    private Integer minimumServerCertificateKeySizeDH = null;
+    private Integer minimumServerCertificateKeySizeRSA = null;
+    private Integer minimumServerCertificateKeySizeDSS = null;
 
     public ClientReport() {
         super();

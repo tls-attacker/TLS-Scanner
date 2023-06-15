@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public abstract class ConnectionClosingUtils {
     public static final long NO_RESULT = -1;
-    protected static final long LIMIT = 5000;
+    public static final long LIMIT = 5000;
 
     private ConnectionClosingUtils() {}
 
