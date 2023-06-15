@@ -54,7 +54,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     public PaddingOracleProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, scannerConfig);
-        this.scanDetail = scannerConfig.getScanDetail();
+        this.scanDetail = scannerConfig.getExecutorConfig().getScanDetail();
         this.numberOfIterations =
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ITERATIONS

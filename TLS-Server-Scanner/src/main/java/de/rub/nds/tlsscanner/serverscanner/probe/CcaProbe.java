@@ -225,6 +225,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         if (configSelector
                 .getScannerConfig()
+                .getExecutorConfig()
                 .getScanDetail()
                 .isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
