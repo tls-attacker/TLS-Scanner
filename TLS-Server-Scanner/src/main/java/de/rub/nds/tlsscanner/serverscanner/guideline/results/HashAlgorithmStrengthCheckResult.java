@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 
 public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {

@@ -6,19 +6,14 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.core.guideline;
+package de.rub.nds.scanner.core.guideline;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementWrapper;
-import jakarta.xml.bind.annotation.XmlElements;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.*;
+
 import java.util.List;
 
 @XmlRootElement
@@ -34,10 +29,10 @@ public class GuidelineCheckCondition {
     @XmlElementWrapper(name = "or")
     private List<GuidelineCheckCondition> or;
 
-    @XmlElements({@XmlElement(name = "analyzedProperty", type = TlsAnalyzedProperty.class)})
+    @XmlAnyElement(lax = true)
     private AnalyzedProperty analyzedProperty;
 
-    @XmlElements({@XmlElement(name = "result", type = TestResults.class)})
+    @XmlAnyElement(lax = true)
     private TestResult result;
 
     private GuidelineCheckCondition() {}
