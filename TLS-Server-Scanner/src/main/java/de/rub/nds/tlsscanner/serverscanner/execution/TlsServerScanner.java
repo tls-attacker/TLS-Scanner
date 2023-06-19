@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.ScanJob;
+import de.rub.nds.scanner.core.execution.Scanner;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
@@ -26,7 +27,6 @@ import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
-import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
@@ -63,7 +63,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class TlsServerScanner
-        extends TlsScanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> {
+        extends Scanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
