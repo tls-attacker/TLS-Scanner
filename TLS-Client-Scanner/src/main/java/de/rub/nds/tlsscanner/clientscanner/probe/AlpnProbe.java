@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.List;
 import java.util.function.Function;
 
-public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class AlpnProbe extends TlsClientProbe {
 
     private static final String ALPN_FAKE_PROTOCOL = "This is not an ALPN Protocol";
 
@@ -107,7 +107,7 @@ public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport>
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ClientReport> getRequirements() {
         return new OptionsRequirement(scannerConfig, getType());
     }
 }

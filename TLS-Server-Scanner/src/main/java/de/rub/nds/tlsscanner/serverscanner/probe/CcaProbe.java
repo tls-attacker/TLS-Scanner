@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
@@ -24,8 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
@@ -40,7 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.task.CcaTask;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CcaProbe extends TlsServerProbe {
 
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
@@ -160,10 +160,10 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.REQUIRES_CCA)
-                .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION))
-                .requires(new WorkingConfigRequirement(configSelector));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.REQUIRES_CCA))
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override

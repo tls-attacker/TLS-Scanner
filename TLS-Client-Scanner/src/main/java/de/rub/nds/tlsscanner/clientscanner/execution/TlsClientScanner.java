@@ -8,40 +8,17 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.execution;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.scanner.core.passive.StatsWriter;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.AlpnProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ApplicationMessageProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CcaSupportProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CompressionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ConnectionClosingProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsBugsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsHelloVerifyRequestProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsMessageSequenceProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsReorderingProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsRetransmissionsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.RecordFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ServerCertificateKeySizeProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
@@ -61,7 +38,8 @@ import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class TlsClientScanner extends TlsScanner {
+public final class TlsClientScanner
+        extends TlsScanner<ClientReport, TlsClientProbe, AfterProbe<ClientReport>> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -105,14 +83,14 @@ public final class TlsClientScanner extends TlsScanner {
         addProbeToProbeList(new ServerCertificateKeySizeProbe(parallelExecutor, config));
         addProbeToProbeList(new ConnectionClosingProbe(parallelExecutor, config));
         addProbeToProbeList(new ECPointFormatProbe(parallelExecutor, config));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterProbe());
+        afterList.add(new Sweet32AfterProbe<>());
+        afterList.add(new FreakAfterProbe<>());
+        afterList.add(new LogjamAfterProbe<>());
         afterList.add(new ClientRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
+        afterList.add(new EcPublicKeyAfterProbe<>());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new AlpacaAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
+        afterList.add(new PaddingOracleIdentificationAfterProbe<>());
         if (config.getDtlsDelegate().isDTLS()) {
             addProbeToProbeList(new DtlsReorderingProbe(parallelExecutor, config));
             addProbeToProbeList(new DtlsFragmentationProbe(parallelExecutor, config));
@@ -120,7 +98,7 @@ public final class TlsClientScanner extends TlsScanner {
             addProbeToProbeList(new DtlsBugsProbe(parallelExecutor, config));
             addProbeToProbeList(new DtlsMessageSequenceProbe(parallelExecutor, config));
             addProbeToProbeList(new DtlsRetransmissionsProbe(parallelExecutor, config));
-            afterList.add(new DtlsRetransmissionAfterProbe());
+            afterList.add(new DtlsRetransmissionAfterProbe<>());
         } else {
             addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
             addProbeToProbeList(new RecordFragmentationProbe(parallelExecutor, config));
@@ -131,7 +109,7 @@ public final class TlsClientScanner extends TlsScanner {
     }
 
     private void setDefaultProbeWriter() {
-        for (ScannerProbe probe : probeList) {
+        for (TlsClientProbe probe : probeList) {
             StatsWriter statsWriter = new StatsWriter();
             statsWriter.addExtractor(new RandomExtractor());
             statsWriter.addExtractor(new DhPublicKeyExtractor());
@@ -146,9 +124,10 @@ public final class TlsClientScanner extends TlsScanner {
         adjustServerPort();
 
         ClientReport clientReport = new ClientReport();
-        ScanJob job = new ScanJob(probeList, afterList);
-        ThreadedScanJobExecutor<ClientReport> executor =
-                new ThreadedScanJobExecutor(
+        ScanJob<ClientReport, TlsClientProbe, AfterProbe<ClientReport>> job =
+                new ScanJob<>(probeList, afterList);
+        ThreadedScanJobExecutor<ClientReport, TlsClientProbe, AfterProbe<ClientReport>> executor =
+                new ThreadedScanJobExecutor<>(
                         config.getExecutorConfig(),
                         job,
                         config.getExecutorConfig().getParallelProbes(),

@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -31,8 +32,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.security.InvalidAlgorithmParameterException;
@@ -62,7 +62,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * <p>Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777 Reference [2]:
  * https://www.gnutls.org/security-new.html
  */
-public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SessionTicketZeroKeyProbe extends TlsServerProbe {
 
     /** Magic Bytes the plaintext state in GnuTls starts with */
     public static final byte[] GNU_TLS_MAGIC_BYTES =
@@ -181,9 +181,9 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
-                .requires(new ProbeRequirement(TlsProbeType.EXTENSIONS));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.EXTENSIONS)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS));
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {

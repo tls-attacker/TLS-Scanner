@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -26,8 +25,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class FreakAfterProbeTest {
 
-    private TlsScanReport report;
-    private FreakAfterProbe probe;
+    private TlsCoreTestReport report;
+    private FreakAfterProbe<TlsCoreTestReport> probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
         return CipherSuite.getImplemented().stream().filter(cs -> cs.name().contains("RSA_EXPORT"));
@@ -41,7 +40,7 @@ public class FreakAfterProbeTest {
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new FreakAfterProbe();
+        probe = new FreakAfterProbe<>();
     }
 
     @ParameterizedTest
@@ -92,7 +91,7 @@ public class FreakAfterProbeTest {
 
     @Test
     public void testEmptyServerReport() {
-        TlsScanReport emptyReport = new TlsCoreTestReport();
+        TlsCoreTestReport emptyReport = new TlsCoreTestReport();
         probe.analyze(emptyReport);
         assertEquals(
                 TestResults.UNCERTAIN,

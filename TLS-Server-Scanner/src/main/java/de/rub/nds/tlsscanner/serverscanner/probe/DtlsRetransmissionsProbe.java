@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -29,7 +30,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsRetransmissionsProbe extends TlsServerProbe {
 
     private TestResult sendsRetransmissions = TestResults.COULD_NOT_TEST;
     private TestResult processesRetransmissions = TestResults.COULD_NOT_TEST;
@@ -106,7 +107,7 @@ public class DtlsRetransmissionsProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 }

@@ -12,7 +12,7 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /** Implementation of ScanReport for tests */
-public class TestReport extends TlsScanReport {
+public class TestReport extends TlsScanReport<TestReport> {
     private static final long serialVersionUID = 1L;
 
     public TestReport() {

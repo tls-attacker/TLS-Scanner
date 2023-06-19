@@ -31,15 +31,13 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ServerCertificateKeySizeProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class ServerCertificateKeySizeProbe extends TlsClientProbe {
 
     private TestResult enforcesMinimumKeySizeRSA = TestResults.COULD_NOT_TEST;
     private TestResult enforcesMinimumKeySizeDSS = TestResults.COULD_NOT_TEST;
@@ -163,11 +161,10 @@ public class ServerCertificateKeySizeProbe
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new OrRequirement(
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_RSA),
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DSS),
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_STATIC_DH));
+    public Requirement<ClientReport> getRequirements() {
+        return new PropertyTrueRequirement<ClientReport>(TlsAnalyzedProperty.SUPPORTS_RSA)
+                .or(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_DSS))
+                .or(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_STATIC_DH));
     }
 
     private void adjustApplicableCertificates() {

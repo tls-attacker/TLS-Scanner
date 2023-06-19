@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
@@ -48,7 +49,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CommonBugProbe extends TlsServerProbe {
 
     // does it handle unknown extensions correctly?
     private TestResult extensionIntolerance = TestResults.COULD_NOT_TEST;
@@ -140,8 +141,8 @@ public class CommonBugProbe extends TlsServerProbe<ConfigSelector, ServerReport>
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {

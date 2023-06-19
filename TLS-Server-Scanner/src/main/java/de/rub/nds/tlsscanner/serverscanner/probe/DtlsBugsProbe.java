@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -32,7 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsBugsProbe extends TlsServerProbe {
 
     private TestResult isEarlyFinished = TestResults.COULD_NOT_TEST;
     private TestResult isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
@@ -94,8 +95,8 @@ public class DtlsBugsProbe extends TlsServerProbe<ConfigSelector, ServerReport> 
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 
     @Override

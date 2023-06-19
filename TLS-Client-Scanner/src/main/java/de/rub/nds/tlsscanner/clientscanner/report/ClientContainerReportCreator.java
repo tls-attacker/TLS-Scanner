@@ -32,7 +32,6 @@ import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -49,7 +48,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
-public class ClientContainerReportCreator extends TlsReportCreator {
+public class ClientContainerReportCreator extends TlsReportCreator<ClientReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -95,7 +94,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return rootContainer;
     }
 
-    protected ReportContainer createDtlsCookieContainer(TlsScanReport report) {
+    protected ReportContainer createDtlsCookieContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Hello Verify Request"));
         container.add(
@@ -114,7 +113,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    protected ReportContainer createSupportedPointFormatsContainer(TlsScanReport report) {
+    protected ReportContainer createSupportedPointFormatsContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Point Formats"));
         container.add(
@@ -194,7 +193,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ReportContainer createCipherSuiteContainer(ClientReport report) {
+    @Override
+    protected ReportContainer createCipherSuiteContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(createSupportedCipherSuitesContainer(report));
         container.add(createSupportedCipherSuitesByVersionContainer(report));
@@ -208,7 +208,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ListContainer createSupportedCipherSuitesContainer(ClientReport report) {
+    @Override
+    protected ListContainer createSupportedCipherSuitesContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Cipher Suites"));
         TableContainer table = new TableContainer();

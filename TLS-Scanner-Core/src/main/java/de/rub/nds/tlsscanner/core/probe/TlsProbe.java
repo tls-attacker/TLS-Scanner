@@ -29,7 +29,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProbe<Report> {
+public abstract class TlsProbe<R extends TlsScanReport<R>, P extends TlsProbe<R, P>>
+        extends ScannerProbe<R, P> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -135,9 +136,9 @@ public abstract class TlsProbe<Report extends TlsScanReport> extends ScannerProb
         }
     }
 
-    protected abstract void mergeData(Report report);
+    protected abstract void mergeData(R report);
 
-    public final void merge(Report report) {
+    public final void merge(R report) {
         if (getStartTime() != 0 && getStopTime() != 0) {
             report.getPerformanceList()
                     .add(new PerformanceData(getType(), getStartTime(), getStopTime()));

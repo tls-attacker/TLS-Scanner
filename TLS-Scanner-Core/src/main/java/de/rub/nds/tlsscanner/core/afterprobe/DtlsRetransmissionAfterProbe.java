@@ -18,10 +18,10 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DtlsRetransmissionAfterProbe extends AfterProbe<TlsScanReport> {
+public class DtlsRetransmissionAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
 
     @Override
-    public void analyze(TlsScanReport report) {
+    public void analyze(R report) {
         ExtractedValueContainer<HandshakeMessageType> container =
                 report.getExtractedValueContainerMap().get(TrackableValueType.DTLS_RETRANSMISSIONS);
 

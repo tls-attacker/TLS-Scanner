@@ -8,58 +8,33 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
-import de.rub.nds.scanner.core.probe.requirements.BooleanRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PrimitiveRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
-public class ProtocolRequirement extends BooleanRequirement {
-    /**
-     * @param protocols the required {@link ProtocolVersion}s. Any amount possible.
-     */
-    public ProtocolRequirement(ProtocolVersion... protocols) {
-        super(protocols);
+public class ProtocolRequirement<R extends TlsScanReport<R>>
+        extends PrimitiveRequirement<R, ProtocolVersion> {
+    public ProtocolRequirement(List<ProtocolVersion> protocolVersions) {
+        super(protocolVersions);
+    }
+
+    public ProtocolRequirement(ProtocolVersion... protocolVersions) {
+        super(List.of(protocolVersions));
     }
 
     @Override
-    protected boolean evaluateInternal(ScanReport report) {
-        if (parameters == null || parameters.length == 0) {
+    public boolean evaluate(R report) {
+        if (parameters.size() == 0) {
             return true;
         }
-        boolean returnValue = false;
-        missingParameters = new ArrayList<>();
-        List<ProtocolVersion> protocolVersions =
-                ((TlsScanReport) report).getSupportedProtocolVersions();
-        if (protocolVersions != null && !protocolVersions.isEmpty()) {
-            for (Enum<?> protocol : parameters) {
-                if (protocolVersions.contains(protocol)) {
-                    returnValue = true;
-                } else {
-                    missingParameters.add(protocol);
-                }
-            }
-        } else {
-            for (Enum<?> protocol : parameters) {
-                missingParameters.add(protocol);
-            }
+        List<ProtocolVersion> protocolVersions = report.getSupportedProtocolVersions();
+        if (protocolVersions == null) {
+            return false;
         }
-        return returnValue;
-    }
-
-    @Override
-    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateInternal(report) == false) {
-            return next.getMissingRequirementIntern(
-                    missing.requires(
-                            new ProtocolRequirement(
-                                    this.missingParameters.toArray(
-                                            new ProtocolVersion[this.missingParameters.size()]))),
-                    report);
-        }
-        return next.getMissingRequirementIntern(missing, report);
+        return new HashSet<>(protocolVersions).containsAll(parameters);
     }
 }

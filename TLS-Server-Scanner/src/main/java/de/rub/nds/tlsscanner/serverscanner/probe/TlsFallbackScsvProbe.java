@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
@@ -25,14 +26,13 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Collections;
 import java.util.List;
 
-public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class TlsFallbackScsvProbe extends TlsServerProbe {
 
     private ProtocolVersion secondHighestVersion;
     private TestResult result = TestResults.COULD_NOT_TEST;
@@ -73,11 +73,11 @@ public class TlsFallbackScsvProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION)
-                .requires(
-                        new PropertyComparatorRequirement(
-                                PropertyComparatorRequirement.GREATER,
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
+                .and(
+                        new PropertyComparatorRequirement<>(
+                                PropertyComparatorRequirement.Operator.GREATER,
                                 TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
                                 1));
     }

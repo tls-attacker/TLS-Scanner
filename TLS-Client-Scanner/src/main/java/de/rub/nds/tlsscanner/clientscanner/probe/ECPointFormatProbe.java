@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class ECPointFormatProbe extends TlsClientProbe {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
@@ -181,7 +181,7 @@ public class ECPointFormatProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ClientReport> getRequirements() {
         return ECPointFormatUtils.getRequirements();
     }
 }

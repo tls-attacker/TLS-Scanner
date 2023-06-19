@@ -14,6 +14,7 @@ import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
@@ -29,7 +30,6 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayInputStream;
@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CertificateTransparencyProbe extends TlsServerProbe {
 
     private Certificate serverCertChain;
 
@@ -212,8 +212,8 @@ public class CertificateTransparencyProbe extends TlsServerProbe<ConfigSelector,
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.OCSP, TlsProbeType.CERTIFICATE);
     }
 
     @Override

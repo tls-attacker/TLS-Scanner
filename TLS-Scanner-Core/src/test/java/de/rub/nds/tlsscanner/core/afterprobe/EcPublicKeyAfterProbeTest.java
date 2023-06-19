@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.math.BigInteger;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +28,14 @@ public class EcPublicKeyAfterProbeTest {
     private final CustomEcPublicKey ECDH_X448_PUBLIC_KEY =
             new CustomEcPublicKey(BigInteger.TWO, BigInteger.ONE, NamedGroup.ECDH_X448);
 
-    private TlsScanReport report;
-    private EcPublicKeyAfterProbe probe;
+    private TlsCoreTestReport report;
+    private EcPublicKeyAfterProbe<TlsCoreTestReport> probe;
     private ExtractedValueContainer<CustomEcPublicKey> publicKeyContainer;
 
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new EcPublicKeyAfterProbe();
+        probe = new EcPublicKeyAfterProbe<>();
         publicKeyContainer = new ExtractedValueContainer<>(TrackableValueType.ECDHE_PUBKEY);
     }
 

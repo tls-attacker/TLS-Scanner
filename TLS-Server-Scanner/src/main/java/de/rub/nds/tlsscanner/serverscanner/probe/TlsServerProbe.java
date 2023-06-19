@@ -17,12 +17,12 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsServerProbe<ConfigSelector, Report extends TlsScanReport>
-        extends TlsProbe<Report> {
+public abstract class TlsServerProbe extends TlsProbe<ServerReport, TlsServerProbe> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 

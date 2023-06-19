@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class SniProbe extends TlsClientProbe {
 
     private static final String SNI_CLIENT_EXPECTED = "tls-attackerhost.com";
     private static final String SNI_FAKE_NAME = "notarealtls-attackerhost.com";
@@ -120,7 +120,7 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> 
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ClientReport> getRequirements() {
         return new OptionsRequirement(scannerConfig, getType(), SNI_CLIENT_EXPECTED);
     }
 }

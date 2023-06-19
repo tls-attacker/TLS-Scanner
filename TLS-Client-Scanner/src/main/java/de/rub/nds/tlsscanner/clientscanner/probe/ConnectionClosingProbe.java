@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -21,7 +22,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
 
-public class ConnectionClosingProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class ConnectionClosingProbe extends TlsClientProbe {
 
     private long closedAfterFinishedDelta = ConnectionClosingUtils.NO_RESULT;
     private long closedAfterAppDataDelta = ConnectionClosingUtils.NO_RESULT;
@@ -55,8 +56,8 @@ public class ConnectionClosingProbe extends TlsClientProbe<ClientScannerConfig, 
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ClientReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 
     @Override

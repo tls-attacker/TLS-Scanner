@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -36,7 +37,7 @@ import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class HandshakeSimulationProbe extends TlsServerProbe {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
@@ -248,7 +249,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe<ConfigSelector, Ser
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 }

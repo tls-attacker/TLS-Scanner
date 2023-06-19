@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -30,7 +31,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class CipherSuiteProbe extends TlsClientProbe {
 
     private final List<ProtocolVersion> protocolVersions;
 
@@ -275,8 +275,8 @@ public class CipherSuiteProbe extends TlsClientProbe<ClientScannerConfig, Client
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION);
+    public Requirement<ClientReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override

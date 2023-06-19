@@ -16,10 +16,10 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Set;
 
-public class Sweet32AfterProbe extends AfterProbe<TlsScanReport> {
+public class Sweet32AfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
 
     @Override
-    public void analyze(TlsScanReport report) {
+    public void analyze(R report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();

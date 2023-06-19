@@ -12,6 +12,7 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -40,8 +41,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
@@ -58,7 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class MacProbe extends TlsServerProbe {
 
     private List<CipherSuite> suiteList;
 
@@ -401,13 +401,13 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE)
-                .requires(
-                        new PropertyRequirement(
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.CIPHER_SUITE)
+                .and(
+                        new PropertyTrueRequirement<>(
                                 TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
                                 TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS))
-                .requires(new WorkingConfigRequirement(configSelector));
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override

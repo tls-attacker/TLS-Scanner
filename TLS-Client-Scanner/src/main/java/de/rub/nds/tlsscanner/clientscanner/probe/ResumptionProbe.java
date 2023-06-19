@@ -33,7 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.function.Function;
 
-public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class ResumptionProbe extends TlsClientProbe {
 
     private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
     private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
@@ -153,7 +153,7 @@ public class ResumptionProbe extends TlsClientProbe<ClientScannerConfig, ClientR
     }
 
     @Override
-    public Requirement getRequirements() {
+    public Requirement<ClientReport> getRequirements() {
         return new OptionsRequirement(scannerConfig, getType());
     }
 }

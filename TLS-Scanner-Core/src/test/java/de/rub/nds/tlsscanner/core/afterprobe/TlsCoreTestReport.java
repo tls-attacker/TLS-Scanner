@@ -12,7 +12,7 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 @SuppressWarnings("serial")
-public class TlsCoreTestReport extends TlsScanReport {
+public class TlsCoreTestReport extends TlsScanReport<TlsCoreTestReport> {
 
     @Override
     public String getFullReport(ScannerDetail detail, boolean printColorful) {

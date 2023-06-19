@@ -9,32 +9,29 @@
 package de.rub.nds.tlsscanner.clientscanner.probe.requirements;
 
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
-/**
- * Represents a {@link Requirement} for additional, optional flags in commands. Can be extended by
- * adding a respective if clause in the evaluateIntern function.
- */
-public class OptionsRequirement extends Requirement {
+/** Represents a {@link Requirement} for additional, optional flags in commands. */
+public class OptionsRequirement extends Requirement<ClientReport> {
 
-    private ClientScannerConfig scannerConfig;
+    private final ClientScannerConfig scannerConfig;
 
-    /* Probetype of the respective option. */
-    private TlsProbeType type;
+    /* ProbeType of the respective option. */
+    private final TlsProbeType type;
 
     /* domain for sni option (optional). */
-    private String domain;
+    private final String domain;
 
     /**
      * @param scannerConfig the {@link ClientScannerConfig}.
      * @param type the {@link TlsProbeType} of the option.
      */
     public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type) {
-        super();
         this.scannerConfig = scannerConfig;
         this.type = type;
+        this.domain = null;
     }
 
     /**
@@ -43,66 +40,35 @@ public class OptionsRequirement extends Requirement {
      * @param domain the domain for the sni option.
      */
     public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type, String domain) {
-        super();
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.domain = domain;
     }
 
     @Override
-    protected boolean evaluateInternal(ScanReport report) {
+    public boolean evaluate(ClientReport report) {
         if (scannerConfig == null || type == null) {
             return false;
         }
-        if (type == TlsProbeType.ALPN) {
-            return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
+        switch (type) {
+            case ALPN:
+                return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
+            case SNI:
+                return domain != null
+                        && scannerConfig.getClientParameterDelegate().getSniOptions(domain) != null;
+            case RESUMPTION:
+                return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
         }
-        if (type == TlsProbeType.SNI) {
-            if (domain != null) {
-                return scannerConfig.getClientParameterDelegate().getSniOptions(domain) != null;
-            } else {
-                return false;
-            }
-        }
-        if (type == TlsProbeType.RESUMPTION) {
-            return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
-        }
-        return false;
+        throw new IllegalArgumentException(
+                String.format("Invalid probe (%s) set for OptionsRequirement", type));
     }
 
     @Override
     public String toString() {
-        if (domain == null) {
-            return "Option of " + type.toString() + "with domain " + domain;
-        }
-        return "Option of " + type.toString();
-    }
-
-    @Override
-    public Enum<?>[] getRequirement() {
-        if (type == null) {
-            return new Enum<?>[] {null};
+        if (domain != null) {
+            return String.format("OptionsRequirement[%s with domain %s]", type, domain);
         } else {
-            switch (type) {
-                case ALPN:
-                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_ALPN};
-                case SNI:
-                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_SNI};
-                case RESUMPTION:
-                    return new Enum<?>[] {SpecialRequirementTypes.OPTIONS_RESUMPTION};
-                default:
-                    throw new IllegalArgumentException(
-                            "Invalid probe (" + type.name() + ") set for OptionsRequirement");
-            }
+            return String.format("OptionsRequirement[%s]", type);
         }
-    }
-
-    @Override
-    public Requirement getMissingRequirementIntern(Requirement missing, ScanReport report) {
-        if (evaluateInternal(report) == false) {
-            return next.getMissingRequirementIntern(
-                    missing.requires(new OptionsRequirement(scannerConfig, type)), report);
-        }
-        return next.getMissingRequirementIntern(missing, report);
     }
 }

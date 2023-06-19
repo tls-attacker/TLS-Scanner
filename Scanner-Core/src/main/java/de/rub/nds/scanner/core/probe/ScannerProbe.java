@@ -16,7 +16,8 @@ import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ScannerProbe<Report extends ScanReport> implements Callable {
+public abstract class ScannerProbe<R extends ScanReport<R>, P extends ScannerProbe<R, P>>
+        implements Callable<P> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -55,27 +56,27 @@ public abstract class ScannerProbe<Report extends ScanReport> implements Callabl
 
     public abstract void executeTest();
 
-    public abstract void adjustConfig(Report report);
+    public abstract void adjustConfig(R report);
 
     @Override
-    public ScannerProbe<?> call() {
+    public P call() {
         LOGGER.debug("Executing: {}", getProbeName());
         this.startTime = System.currentTimeMillis();
         executeTest();
         this.stopTime = System.currentTimeMillis();
 
         LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
-        return this;
+        return (P) this;
     }
 
     /**
      * @return the requirement object of the probe. Override for respective probes.
      */
-    public abstract Requirement getRequirements();
+    public abstract Requirement<R> getRequirements();
 
-    public abstract void merge(Report report);
+    public abstract void merge(R report);
 
-    public final boolean canBeExecuted(Report report) {
+    public final boolean canBeExecuted(R report) {
         return getRequirements().evaluate(report);
     }
 

@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ServerReport extends TlsScanReport {
+public class ServerReport extends TlsScanReport<ServerReport> {
 
     private final String host;
     private final Integer port;

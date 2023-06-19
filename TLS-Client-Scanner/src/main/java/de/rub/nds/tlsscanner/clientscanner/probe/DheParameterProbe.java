@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -30,8 +31,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.SortOrder;
 
-public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class DheParameterProbe extends TlsClientProbe {
 
     private Random random;
 
@@ -178,9 +178,9 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_DHE)
-                .requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
+    public Requirement<ClientReport> getRequirements() {
+        return new ProbeRequirement<ClientReport>(TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_DHE));
     }
 
     @Override

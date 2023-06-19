@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -27,7 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class ProtocolVersionProbe extends TlsServerProbe {
 
     private List<ProtocolVersion> toTestList;
     private List<ProtocolVersion> supportedProtocolVersions;
@@ -152,8 +153,8 @@ public class ProtocolVersionProbe extends TlsServerProbe<ConfigSelector, ServerR
     }
 
     @Override
-    public Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 
     @Override

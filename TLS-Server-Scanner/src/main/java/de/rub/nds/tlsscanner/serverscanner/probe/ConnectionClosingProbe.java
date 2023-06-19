@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -22,7 +23,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -31,7 +31,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  * probe. Note that NO_RESULT may indicate that we couldn't identify a closing delta, i.e the server
  * didn't close the connection within our limit or the probe could not be executed.
  */
-public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class ConnectionClosingProbe extends TlsServerProbe {
 
     private boolean useHttpAppData = false;
     private long closedAfterFinishedDelta = ConnectionClosingUtils.NO_RESULT;
@@ -77,7 +77,7 @@ public class ConnectionClosingProbe extends TlsServerProbe<ConfigSelector, Serve
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.HTTP_HEADER);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.HTTP_HEADER);
     }
 }

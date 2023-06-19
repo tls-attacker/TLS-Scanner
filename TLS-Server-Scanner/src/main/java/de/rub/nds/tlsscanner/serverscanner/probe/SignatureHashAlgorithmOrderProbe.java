@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -18,8 +19,6 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.NotRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
@@ -27,7 +26,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe {
 
     private TestResult enforced = TestResults.COULD_NOT_TEST;
 
@@ -55,9 +54,9 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe<ConfigSelec
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new NotRequirement(
-                new ProbeRequirement(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.SIGNATURE_HASH_ALGORITHM_ORDER)
+                .not();
     }
 
     @Override
