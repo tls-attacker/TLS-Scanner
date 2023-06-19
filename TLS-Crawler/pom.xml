@@ -73,7 +73,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Crawler.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Crawler.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Crawler-Development.git</developerConnection>
         <tag>HEAD</tag>
         <url>https://github.com/tls-attacker/TLS-Crawler</url>
     </scm>
