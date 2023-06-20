@@ -59,9 +59,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
         this.clientDelegate = new ClientDelegate();
         this.ccaDelegate = new CcaDelegate();
+        this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(proxyDelegate);
     }
 
     public ServerScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
