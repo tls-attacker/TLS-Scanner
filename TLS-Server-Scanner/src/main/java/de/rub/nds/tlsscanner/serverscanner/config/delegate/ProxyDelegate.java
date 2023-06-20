@@ -37,9 +37,7 @@ public class ProxyDelegate extends Delegate {
     private int extractedDataProxyPort = -1;
 
     @Override
-    public void applyDelegate(Config config) throws ConfigurationException {
-        extractParameters();
-    }
+    public void applyDelegate(Config config) throws ConfigurationException {}
 
     public void extractParameters() {
         if (controlProxy == null) {
@@ -87,18 +85,30 @@ public class ProxyDelegate extends Delegate {
     }
 
     public String getExtractedControlProxyIp() {
+        if (controlProxy != null && extractedControlProxyIp == null) {
+            extractParameters();
+        }
         return extractedControlProxyIp;
     }
 
     public int getExtractedControlProxyPort() {
+        if (controlProxy != null && extractedControlProxyPort == -1) {
+            extractParameters();
+        }
         return extractedControlProxyPort;
     }
 
     public String getExtractedDataProxyIp() {
+        if (dataProxy != null && extractedDataProxyIp == null) {
+            extractParameters();
+        }
         return extractedDataProxyIp;
     }
 
     public int getExtractedDataProxyPort() {
+        if (dataProxy != null && extractedDataProxyPort == -1) {
+            extractParameters();
+        }
         return extractedDataProxyPort;
     }
 }
