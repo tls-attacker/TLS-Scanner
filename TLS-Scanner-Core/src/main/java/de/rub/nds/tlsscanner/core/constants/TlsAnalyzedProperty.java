@@ -54,7 +54,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
     CLIENT_SIMULATION_RESULTS(TlsAnalyzedPropertyCategory.QUIRKS),
     CCA_TEST_RESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
-    GUIDELINE_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
 
     CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),

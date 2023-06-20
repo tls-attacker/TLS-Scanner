@@ -6,38 +6,33 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.guideline;
+package de.rub.nds.scanner.core.guideline;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.scanner.core.report.ScanReport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class GuidelineChecker {
+public class GuidelineChecker<R extends ScanReport<R>> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
-    private final Guideline guideline;
+    private final Guideline<R> guideline;
 
-    public GuidelineChecker(Guideline guideline) {
+    public GuidelineChecker(Guideline<R> guideline) {
         this.guideline = guideline;
     }
 
-    public void fillReport(ServerReport report) {
+    public void fillReport(R report) {
         List<GuidelineReport> guidelineReports = report.getGuidelineReports();
         if (guidelineReports == null) {
             guidelineReports = new ArrayList<>();
         }
         List<GuidelineCheckResult> results = new ArrayList<>();
-        for (GuidelineCheck check : guideline.getChecks()) {
+        for (GuidelineCheck<R> check : guideline.getChecks()) {
             GuidelineCheckResult result;
             if (!check.passesCondition(report)) {
                 result =
@@ -86,8 +81,6 @@ public class GuidelineChecker {
         }
         guidelineReports.add(
                 new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
-        report.putResult(
-                TlsAnalyzedProperty.GUIDELINE_REPORTS,
-                new ListResult<>(guidelineReports, "GUIDELINE_REPORTS"));
+        report.setGuidelineReports(guidelineReports);
     }
 }

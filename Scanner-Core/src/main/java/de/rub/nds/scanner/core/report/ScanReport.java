@@ -17,6 +17,7 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
@@ -35,6 +36,8 @@ public abstract class ScanReport<R extends ScanReport<R>> extends Observable
         implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
+
+    private List<GuidelineReport> guidelineReports;
 
     private final Set<ProbeType> executedProbes;
     private final Set<ScannerProbe<R, ?>> unexecutedProbes;
@@ -131,6 +134,14 @@ public abstract class ScanReport<R extends ScanReport<R>> extends Observable
     public synchronized SetResult<?> getSetResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null || !(result instanceof SetResult)) ? null : (SetResult<?>) result;
+    }
+
+    public synchronized List<GuidelineReport> getGuidelineReports() {
+        return guidelineReports;
+    }
+
+    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
+        this.guidelineReports = guidelineReports;
     }
 
     public synchronized void removeResult(AnalyzedProperty property) {

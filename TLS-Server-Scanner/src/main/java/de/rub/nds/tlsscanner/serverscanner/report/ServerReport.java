@@ -23,7 +23,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
@@ -332,13 +331,6 @@ public class ServerReport extends TlsScanReport<ServerReport> {
         ListResult<SimulatedClientResult> listResult =
                 (ListResult<SimulatedClientResult>)
                         getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
-        return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized List<GuidelineReport> getGuidelineReports() {
-        @SuppressWarnings("unchecked")
-        ListResult<GuidelineReport> listResult =
-                (ListResult<GuidelineReport>) getListResult(TlsAnalyzedProperty.GUIDELINE_REPORTS);
         return listResult == null ? null : listResult.getList();
     }
 

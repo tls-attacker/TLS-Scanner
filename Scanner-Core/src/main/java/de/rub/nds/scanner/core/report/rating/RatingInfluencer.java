@@ -11,7 +11,6 @@ package de.rub.nds.scanner.core.report.rating;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
 import jakarta.xml.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
