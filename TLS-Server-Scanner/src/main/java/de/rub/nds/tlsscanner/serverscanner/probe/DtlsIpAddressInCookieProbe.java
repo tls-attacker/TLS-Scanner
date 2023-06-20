@@ -38,10 +38,10 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
  */
 public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
 
-    private static final String PROXY_CONTROL_HOSTNAME = "195.37.190.89";
-    private static final int PROXY_CONTROL_PORT = 5555;
-    private static final String PROXY_DATA_HOSTNAME = "195.37.190.89";
-    private static final int PROXY_DATA_PORT = 4444;
+    private final String PROXY_CONTROL_HOSTNAME;
+    private final int PROXY_CONTROL_PORT;
+    private final String PROXY_DATA_HOSTNAME;
+    private final int PROXY_DATA_PORT;
 
     private TestResult usesIpAdressInCookie = TestResults.COULD_NOT_TEST;
 
@@ -49,6 +49,14 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_IP_ADDRESS_IN_COOKIE, configSelector);
         register(TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE);
+        PROXY_CONTROL_HOSTNAME =
+                configSelector.getScannerConfig().getProxyDelegate().getExtractedControlProxyIp();
+        PROXY_CONTROL_PORT =
+                configSelector.getScannerConfig().getProxyDelegate().getExtractedControlProxyPort();
+        PROXY_DATA_HOSTNAME =
+                configSelector.getScannerConfig().getProxyDelegate().getExtractedDataProxyIp();
+        PROXY_DATA_PORT =
+                configSelector.getScannerConfig().getProxyDelegate().getExtractedDataProxyPort();
     }
 
     @Override
