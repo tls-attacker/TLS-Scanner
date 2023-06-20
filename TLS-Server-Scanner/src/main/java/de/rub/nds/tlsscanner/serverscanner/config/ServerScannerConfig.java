@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.ProxyDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class ServerScannerConfig extends TlsScannerConfig {
     @ParametersDelegate private ClientDelegate clientDelegate;
 
     @ParametersDelegate private CcaDelegate ccaDelegate;
+
+    @ParametersDelegate private ProxyDelegate proxyDelegate;
 
     @Parameter(
             names = "-applicationProtocol",
@@ -66,9 +69,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
         this.clientDelegate = clientDelegate;
         this.ccaDelegate = new CcaDelegate();
+        this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(proxyDelegate);
     }
 
     public ApplicationProtocol getApplicationProtocol() {
@@ -85,6 +90,10 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
     public CcaDelegate getCcaDelegate() {
         return ccaDelegate;
+    }
+
+    public ProxyDelegate getProxyDelegate() {
+        return proxyDelegate;
     }
 
     public int getAdditionalRandomnessHandshakes() {
