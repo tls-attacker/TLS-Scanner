@@ -108,7 +108,7 @@
         <name>Die folgenden Signaturverfahren werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <recommendedAlgorithms>RSA</recommendedAlgorithms>
@@ -119,7 +119,7 @@
         <name>Die folgenden Hashfunktionen werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <recommendedAlgorithms>SHA256</recommendedAlgorithms>
@@ -130,7 +130,7 @@
         <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
@@ -140,7 +140,7 @@
         <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
@@ -150,7 +150,7 @@
         <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
@@ -160,7 +160,7 @@
         <name>truncated_hmac sollte nicht unterstüzt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <requiredExtension>TRUNCATED_HMAC</requiredExtension>
@@ -169,7 +169,7 @@
         <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_TLS_COMPRESSION</property>
@@ -179,7 +179,7 @@
         <name>Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
@@ -189,7 +189,7 @@
         <name>Heartbeat sollte nicht unterstüzt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <requiredExtension>HEARTBEAT</requiredExtension>
@@ -198,7 +198,7 @@
         <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+            <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
@@ -208,7 +208,7 @@
         <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_TLS13_0_RTT</property>
@@ -229,7 +229,7 @@
         <name>Die folgenden Signaturverfahren werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
@@ -246,7 +246,7 @@
         <name>Die folgenden Signaturverfahren werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <recommendedAlgorithms>RSA_SHA256</recommendedAlgorithms>

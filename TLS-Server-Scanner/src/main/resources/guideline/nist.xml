@@ -82,11 +82,11 @@
         <condition>
             <or>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_0</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_1</property>
                     <result>TRUE</result>
                 </condition>
             </or>
@@ -215,15 +215,15 @@
         <condition>
             <or>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_0</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_1</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_2</property>
                     <result>TRUE</result>
                 </condition>
             </or>
@@ -242,15 +242,15 @@
         <condition>
             <or>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_0</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_1</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_2</property>
                     <result>TRUE</result>
                 </condition>
             </or>
@@ -264,11 +264,11 @@
         <condition>
             <or>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_2</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_3</property>
                     <result>TRUE</result>
                 </condition>
             </or>
@@ -290,17 +290,17 @@
                 <condition>
                     <or>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_0</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_1</property>
                             <result>TRUE</result>
                         </condition>
                     </or>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_3</property>
                     <result>FALSE</result>
                 </condition>
             </and>
@@ -314,11 +314,11 @@
         <condition>
             <or>
                 <condition>
-                    <analyzedProperty>SUPPORTS_ECDHE</analyzedProperty>
+                    <property>SUPPORTS_ECDHE</property>
                     <result>TRUE</result>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_3</property>
                     <result>TRUE</result>
                 </condition>
             </or>
@@ -349,7 +349,7 @@
         <name>The Key Share extension shall be supported if the server supports TLS 1.3</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <requiredExtension>KEY_SHARE</requiredExtension>
@@ -362,21 +362,21 @@
                 <condition>
                     <or>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_0</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_1</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_2</property>
                             <result>TRUE</result>
                         </condition>
                     </or>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_STATIC_ECDH</analyzedProperty>
+                    <property>SUPPORTS_STATIC_ECDH</property>
                     <result>TRUE</result>
                 </condition>
             </and>
@@ -391,21 +391,21 @@
                 <condition>
                     <or>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_0</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_1</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_2</property>
                             <result>TRUE</result>
                         </condition>
                     </or>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_OCSP</analyzedProperty>
+                    <property>SUPPORTS_OCSP</property>
                     <result>TRUE</result>
                 </condition>
             </and>
@@ -421,21 +421,21 @@
                 <condition>
                     <or>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_0</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_1</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                            <property>SUPPORTS_TLS_1_2</property>
                             <result>TRUE</result>
                         </condition>
                     </or>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_BLOCK_CIPHERS</analyzedProperty>
+                    <property>SUPPORTS_BLOCK_CIPHERS</property>
                     <result>TRUE</result>
                 </condition>
             </and>
@@ -451,17 +451,17 @@
                 <condition>
                     <or>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS13_PSK</analyzedProperty>
+                            <property>SUPPORTS_TLS13_PSK</property>
                             <result>TRUE</result>
                         </condition>
                         <condition>
-                            <analyzedProperty>SUPPORTS_TLS13_PSK_DHE</analyzedProperty>
+                            <property>SUPPORTS_TLS13_PSK_DHE</property>
                             <result>TRUE</result>
                         </condition>
                     </or>
                 </condition>
                 <condition>
-                    <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                    <property>SUPPORTS_TLS_1_3</property>
                     <result>TRUE</result>
                 </condition>
             </and>
@@ -473,7 +473,7 @@
         <name>The Supported Versions extension shall be supported if the server supports TLS 1.3</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <requiredExtension>SUPPORTED_VERSIONS</requiredExtension>
@@ -482,7 +482,7 @@
         <name>Servers that support TLS 1.3 may support the cookie extension</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <requiredExtension>COOKIE</requiredExtension>
@@ -491,7 +491,7 @@
         <name>The Signed Certificate Timestamps extension should be supported if the server’s certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_SCTS_PRECERTIFICATE</analyzedProperty>
+            <property>SUPPORTS_SCTS_PRECERTIFICATE</property>
             <result>FALSE</result>
         </condition>
         <property>SUPPORTS_SCTS_HANDSHAKE</property>
@@ -501,7 +501,7 @@
         <name>Servers should not process early data received in the ClientHello message.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+            <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_TLS13_0_RTT</property>
@@ -511,7 +511,7 @@
         <name>If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <analyzedProperty>SUPPORTS_TLS13_0_RTT</analyzedProperty>
+            <property>SUPPORTS_TLS13_0_RTT</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
