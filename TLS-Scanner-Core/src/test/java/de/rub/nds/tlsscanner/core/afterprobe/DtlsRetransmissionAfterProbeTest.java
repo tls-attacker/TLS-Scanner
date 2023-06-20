@@ -33,7 +33,7 @@ public class DtlsRetransmissionAfterProbeTest {
 
     @Test
     public void testNoRetransmissions() {
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(
                         TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
 
@@ -48,7 +48,7 @@ public class DtlsRetransmissionAfterProbeTest {
         for (HandshakeMessageType type : HandshakeMessageType.values()) {
             retransmissionsContainer.put(type);
         }
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(
                         TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
 
@@ -68,7 +68,7 @@ public class DtlsRetransmissionAfterProbeTest {
             retransmissionsContainer =
                     new ExtractedValueContainer<>(TrackableValueType.DTLS_RETRANSMISSIONS);
             retransmissionsContainer.put(type);
-            report.setExtractedValueContainerList(
+            report.setExtractedValueContainerMap(
                     Collections.singletonMap(
                             TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
 

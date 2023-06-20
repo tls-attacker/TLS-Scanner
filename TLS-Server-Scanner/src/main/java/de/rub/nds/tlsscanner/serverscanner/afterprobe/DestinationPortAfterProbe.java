@@ -26,7 +26,8 @@ public class DestinationPortAfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         int intialPort = report.getPort();
         ExtractedValueContainer<Integer> container =
-                report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
+                report.getExtractedValueContainer(
+                        TrackableValueType.DESTINATION_PORT, Integer.class);
 
         TestResult changesPort;
         try {

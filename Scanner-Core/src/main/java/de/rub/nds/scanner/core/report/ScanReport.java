@@ -41,7 +41,7 @@ public abstract class ScanReport<R extends ScanReport<R>> extends Observable
 
     private final List<PerformanceData> performanceList;
 
-    private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
+    private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
 
     private int performedTcpConnections = 0;
 
@@ -61,13 +61,24 @@ public abstract class ScanReport<R extends ScanReport<R>> extends Observable
         this.performedTcpConnections = performedTcpConnections;
     }
 
-    public synchronized Map<TrackableValue, ExtractedValueContainer>
+    public synchronized Map<TrackableValue, ExtractedValueContainer<?>>
             getExtractedValueContainerMap() {
         return extractedValueContainerMap;
     }
 
-    public synchronized void setExtractedValueContainerList(
-            Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap) {
+    public synchronized ExtractedValueContainer<?> getExtractedValueContainer(
+            TrackableValue trackableValue) {
+        return extractedValueContainerMap.get(trackableValue);
+    }
+
+    public synchronized <T> ExtractedValueContainer<T> getExtractedValueContainer(
+            TrackableValue trackableValue, Class<T> valueClass) {
+        //noinspection unchecked
+        return (ExtractedValueContainer<T>) extractedValueContainerMap.get(trackableValue);
+    }
+
+    public synchronized void setExtractedValueContainerMap(
+            Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 

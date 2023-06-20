@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 

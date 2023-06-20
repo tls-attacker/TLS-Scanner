@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ExtractedValueContainer<T> {
 
@@ -42,13 +43,16 @@ public class ExtractedValueContainer<T> {
     }
 
     public boolean areAllValuesDifferent() {
-        Set<T> set = new HashSet<>();
-        set.addAll(extractedValueList);
+        Set<T> set = new HashSet<>(extractedValueList);
         return set.size() == extractedValueList.size();
     }
 
     public List<T> getExtractedValueList() {
         return extractedValueList;
+    }
+
+    public <S> List<S> getExtractedValueList(Class<S> valueClass) {
+        return extractedValueList.stream().map(valueClass::cast).collect(Collectors.toList());
     }
 
     public int getNumberOfExtractedValues() {

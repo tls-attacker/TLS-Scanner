@@ -11,9 +11,7 @@ package de.rub.nds.scanner.core.guideline;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import jakarta.xml.bind.annotation.*;
-
 import java.util.List;
 
 @XmlRootElement

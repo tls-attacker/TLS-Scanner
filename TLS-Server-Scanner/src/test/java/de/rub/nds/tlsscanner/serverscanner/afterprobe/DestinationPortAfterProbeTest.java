@@ -34,7 +34,7 @@ public class DestinationPortAfterProbeTest {
         probe = new DestinationPortAfterProbe();
         destinationPortsContainer =
                 new ExtractedValueContainer<>(TrackableValueType.DESTINATION_PORT);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(
                         TrackableValueType.DESTINATION_PORT, destinationPortsContainer));
     }
