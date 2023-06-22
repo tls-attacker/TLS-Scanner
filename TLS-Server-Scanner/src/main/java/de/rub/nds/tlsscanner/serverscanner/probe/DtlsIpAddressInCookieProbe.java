@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ServerOptionsRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
@@ -109,6 +110,7 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
+        return new ProtocolTypeTrueRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ServerOptionsRequirement(configSelector.getScannerConfig(), getType()));
     }
 }

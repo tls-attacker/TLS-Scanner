@@ -36,6 +36,11 @@ public class ServerOptionsRequirement
             case HTTP_FALSE_START:
                 return scannerConfig.getApplicationProtocol() == ApplicationProtocol.HTTP
                         || scannerConfig.getApplicationProtocol() == ApplicationProtocol.UNKNOWN;
+            case DTLS_IP_ADDRESS_IN_COOKIE:
+                return scannerConfig.getProxyDelegate().getExtractedControlProxyIp() != null
+                        && scannerConfig.getProxyDelegate().getExtractedControlProxyPort() != -1
+                        && scannerConfig.getProxyDelegate().getExtractedDataProxyIp() != null
+                        && scannerConfig.getProxyDelegate().getExtractedDataProxyPort() != -1;
         }
         throw new IllegalArgumentException(
                 String.format("Invalid probe (%s) set for ServerOptionsRequirement", probeType));
