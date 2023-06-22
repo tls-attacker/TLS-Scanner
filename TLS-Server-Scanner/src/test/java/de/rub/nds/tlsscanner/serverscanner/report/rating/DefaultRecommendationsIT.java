@@ -12,6 +12,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.scanner.core.report.rating.RecommendationsIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
@@ -1182,10 +1183,11 @@ public class DefaultRecommendationsIT {
                                 "The server does not verify the message sequence numbers",
                                 "Configure your server to always verify the message sequence numbers"),
                         ""));
-        RecommendationsIO.write(
+        RecommendationsIO recommendationsIO = new RecommendationsIO(TlsAnalyzedProperty.class);
+        recommendationsIO.write(
                 new File("src/main/resources/rating/recommendations.xml"),
                 new Recommendations(recommendations));
-        RecommendationsIO.write(
+        recommendationsIO.write(
                 new File("src/main/resources/rating/recommendations_en.xml"),
                 new Recommendations(recommendations));
     }

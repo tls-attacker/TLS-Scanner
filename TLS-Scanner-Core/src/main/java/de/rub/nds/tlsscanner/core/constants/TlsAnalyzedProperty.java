@@ -14,7 +14,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
@@ -54,7 +54,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
     CLIENT_SIMULATION_RESULTS(TlsAnalyzedPropertyCategory.QUIRKS),
     CCA_TEST_RESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
-    GUIDELINE_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
 
     CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),

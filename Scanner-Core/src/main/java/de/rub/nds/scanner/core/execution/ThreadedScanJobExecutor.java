@@ -151,16 +151,19 @@ public class ThreadedScanJobExecutor<
     private void collectStatistics(R report) {
         LOGGER.debug("Evaluating executed handshakes...");
         List<P> allProbes = scanJob.getProbeList();
-        HashMap<TrackableValue, ExtractedValueContainer> containerMap = new HashMap<>();
+        HashMap<TrackableValue, ExtractedValueContainer<?>> containerMap = new HashMap<>();
         int stateCounter = 0;
         for (P probe : allProbes) {
-            List<ExtractedValueContainer> tempContainerList =
+            List<ExtractedValueContainer<?>> tempContainerList =
                     probe.getWriter().getCumulatedExtractedValues();
-            for (ExtractedValueContainer tempContainer : tempContainerList) {
+            for (ExtractedValueContainer<?> tempContainer : tempContainerList) {
                 if (containerMap.containsKey(tempContainer.getType())) {
-                    containerMap
-                            .get(tempContainer.getType())
-                            .getExtractedValueList()
+                    // This cast should not fail because we only combine containers of the same type
+                    //noinspection unchecked
+                    ((List<Object>)
+                                    containerMap
+                                            .get(tempContainer.getType())
+                                            .getExtractedValueList())
                             .addAll(tempContainer.getExtractedValueList());
                 } else {
                     containerMap.put(tempContainer.getType(), tempContainer);
@@ -169,7 +172,7 @@ public class ThreadedScanJobExecutor<
             stateCounter += probe.getWriter().getStateCounter();
         }
         report.setPerformedTcpConnections(stateCounter);
-        report.setExtractedValueContainerList(containerMap);
+        report.setExtractedValueContainerMap(containerMap);
         LOGGER.debug("Finished evaluation");
     }
 

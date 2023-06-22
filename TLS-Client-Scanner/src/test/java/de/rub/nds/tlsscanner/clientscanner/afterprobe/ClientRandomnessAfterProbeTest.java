@@ -40,7 +40,7 @@ public class ClientRandomnessAfterProbeTest {
     private ExtractedValueContainer<ComparableByteArray> clientRandomContainer;
     private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
 
-    private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
+    private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
 
     // generates "cryptographically strong random numbers" with constant seed for
     // deterministic
@@ -64,7 +64,7 @@ public class ClientRandomnessAfterProbeTest {
         extractedValueContainerMap = new HashMap<>();
         extractedValueContainerMap.put(TrackableValueType.RANDOM, clientRandomContainer);
         extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
-        report.setExtractedValueContainerList(extractedValueContainerMap);
+        report.setExtractedValueContainerMap(extractedValueContainerMap);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ClientRandomnessAfterProbeTest {
             clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
             cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
         }
-        report.setExtractedValueContainerList(extractedValueContainerMap);
+        report.setExtractedValueContainerMap(extractedValueContainerMap);
         probe.analyze(report);
 
         for (EntropyReport entropyReport : report.getEntropyReports()) {

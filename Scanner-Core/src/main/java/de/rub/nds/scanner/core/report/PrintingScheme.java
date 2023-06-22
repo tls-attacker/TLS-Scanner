@@ -25,7 +25,7 @@ public class PrintingScheme {
 
     private HashMap<AnalyzedProperty, TestResultTextEncoder> specialValueTextEncoding;
 
-    private HashMap<AnalyzedProperty, Encoder> keyTextEncoding;
+    private HashMap<AnalyzedProperty, Encoder<AnalyzedProperty>> keyTextEncoding;
 
     private TestResultTextEncoder defaultTextEncoding;
 
@@ -39,7 +39,7 @@ public class PrintingScheme {
             TestResultTextEncoder defaultTextEncoding,
             ColorEncoding defaultColorEncoding,
             HashMap<AnalyzedProperty, TestResultTextEncoder> specialTextEncoding,
-            HashMap<AnalyzedProperty, Encoder> keyTextEncoding) {
+            HashMap<AnalyzedProperty, Encoder<AnalyzedProperty>> keyTextEncoding) {
         this.valueColorEncodings = colorEncodings;
         this.valueTextEncodings = textEncodings;
         this.defaultTextEncoding = defaultTextEncoding;
@@ -85,7 +85,7 @@ public class PrintingScheme {
     }
 
     public String getEncodedKeyText(ScanReport<?> report, AnalyzedProperty property) {
-        Encoder textEncoding =
+        Encoder<AnalyzedProperty> textEncoding =
                 keyTextEncoding.getOrDefault(property, new AnalyzedPropertyTextEncoder(null));
 
         return textEncoding.encode(property);

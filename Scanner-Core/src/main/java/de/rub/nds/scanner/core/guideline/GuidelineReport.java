@@ -6,10 +6,9 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.serverscanner.guideline;
+package de.rub.nds.scanner.core.guideline;
 
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

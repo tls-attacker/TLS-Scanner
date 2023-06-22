@@ -10,7 +10,11 @@ package de.rub.nds.tlsscanner.serverscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.ScanJob;
+import de.rub.nds.scanner.core.execution.Scanner;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
+import de.rub.nds.scanner.core.guideline.Guideline;
+import de.rub.nds.scanner.core.guideline.GuidelineChecker;
+import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
@@ -26,7 +30,7 @@ import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
-import de.rub.nds.tlsscanner.core.execution.TlsScanner;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
@@ -42,9 +46,7 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
@@ -57,13 +59,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class TlsServerScanner
-        extends TlsScanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> {
+        extends Scanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -305,14 +308,41 @@ public final class TlsServerScanner
     private void executeGuidelineEvaluation(ServerReport report) {
         LOGGER.debug("Evaluating guidelines...");
         List<String> guidelines = Arrays.asList("bsi.xml", "nist.xml");
-
+        GuidelineIO<ServerReport> guidelineIO;
+        try {
+            guidelineIO =
+                    new GuidelineIO<>(
+                            TlsAnalyzedProperty.class,
+                            Set.of(
+                                    AnalyzedPropertyGuidelineCheck.class,
+                                    CertificateAgilityGuidelineCheck.class,
+                                    CertificateCurveGuidelineCheck.class,
+                                    CertificateSignatureCheck.class,
+                                    CertificateValidityGuidelineCheck.class,
+                                    CertificateVersionGuidelineCheck.class,
+                                    CipherSuiteGuidelineCheck.class,
+                                    ExtendedKeyUsageCertificateCheck.class,
+                                    ExtensionGuidelineCheck.class,
+                                    HashAlgorithmsGuidelineCheck.class,
+                                    HashAlgorithmStrengthCheck.class,
+                                    KeySizeCertGuidelineCheck.class,
+                                    KeyUsageCertificateCheck.class,
+                                    NamedGroupsGuidelineCheck.class,
+                                    SignatureAlgorithmsCertificateGuidelineCheck.class,
+                                    SignatureAlgorithmsGuidelineCheck.class,
+                                    SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
+                                    SignatureAndHashAlgorithmsGuidelineCheck.class));
+        } catch (JAXBException e) {
+            LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
+            return;
+        }
         for (String guidelineName : guidelines) {
             try {
                 InputStream guideLineStream =
-                        GuidelineIO.class.getResourceAsStream("/guideline/" + guidelineName);
-                Guideline guideline = GuidelineIO.read(guideLineStream);
+                        TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
+                Guideline<ServerReport> guideline = guidelineIO.read(guideLineStream);
                 LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
-                GuidelineChecker checker = new GuidelineChecker(guideline);
+                GuidelineChecker<ServerReport> checker = new GuidelineChecker<>(guideline);
                 checker.fillReport(report);
             } catch (JAXBException | IOException | XMLStreamException ex) {
                 LOGGER.error("Could not read guideline", ex);

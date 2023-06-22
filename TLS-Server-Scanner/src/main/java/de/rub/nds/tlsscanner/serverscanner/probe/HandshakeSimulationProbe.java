@@ -29,11 +29,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationR
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
@@ -50,8 +53,13 @@ public class HandshakeSimulationProbe extends TlsServerProbe {
         register(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
 
         simulationRequestList = new LinkedList<>();
-        ConfigFileList configFileList =
-                ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
+        ConfigFileList configFileList;
+        try {
+            configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
+        } catch (JAXBException | IOException | XMLStreamException e) {
+            LOGGER.error("Could not load config file list from file", e);
+            return;
+        }
         for (String configFileName : configFileList.getFiles()) {
             try {
                 TlsClientConfig tlsClientConfig =

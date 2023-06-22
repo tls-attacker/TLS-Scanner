@@ -49,7 +49,7 @@ public class DhValueAfterProbeTest {
                         16);
 
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
         probe.analyze(report);
 
@@ -72,7 +72,7 @@ public class DhValueAfterProbeTest {
         BigInteger modulus = new BigInteger("18");
 
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
         probe.analyze(report);
 
@@ -106,7 +106,7 @@ public class DhValueAfterProbeTest {
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
         probe.analyze(report);
 

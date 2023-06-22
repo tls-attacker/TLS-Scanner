@@ -10,11 +10,11 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;

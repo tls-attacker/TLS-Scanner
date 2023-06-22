@@ -89,13 +89,17 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
     public void analyze(R report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
+                report.getExtractedValueContainer(
+                        TrackableValueType.COOKIE, ComparableByteArray.class);
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+                report.getExtractedValueContainer(
+                        TrackableValueType.RANDOM, ComparableByteArray.class);
         ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
+                report.getExtractedValueContainer(
+                        TrackableValueType.SESSION_ID, ComparableByteArray.class);
         ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+                report.getExtractedValueContainer(
+                        TrackableValueType.CBC_IV, ComparableByteArray.class);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
         List<ComparableByteArray> extractedCookieList =

@@ -35,7 +35,7 @@ public class RaccoonAttackAfterProbeTest {
         report = new ServerReport();
         probe = new RaccoonAttackAfterProbe();
         publicKeyContainer = new ExtractedValueContainer<>(TrackableValueType.DHE_PUBLICKEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
     }
 
