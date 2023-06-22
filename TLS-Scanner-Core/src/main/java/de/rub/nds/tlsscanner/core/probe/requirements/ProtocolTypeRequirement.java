@@ -28,4 +28,10 @@ public class ProtocolTypeRequirement<R extends TlsScanReport<R>> extends Require
     public boolean evaluate(R report) {
         return (report.getProtocolType() == protocolType) == requiredBooleanResult;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "ProtocolTypeRequirement[%s: %s]", requiredBooleanResult, protocolType);
+    }
 }

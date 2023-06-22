@@ -45,4 +45,9 @@ public class ServerOptionsRequirement
         throw new IllegalArgumentException(
                 String.format("Invalid probe (%s) set for ServerOptionsRequirement", probeType));
     }
+
+    @Override
+    public String toString() {
+        return String.format("ServerOptionsRequirement[%s]", probeType);
+    }
 }
