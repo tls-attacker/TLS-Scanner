@@ -22,18 +22,8 @@ import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
 public class ClientOptionsRequirement
         extends OptionsRequirement<ClientReport, ClientScannerConfig> {
 
-    /* domain for sni option (optional). */
-    private final String domain;
-
     public ClientOptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType probeType) {
         super(scannerConfig, probeType);
-        this.domain = null;
-    }
-
-    public ClientOptionsRequirement(
-            ClientScannerConfig scannerConfig, TlsProbeType probeType, String domain) {
-        super(scannerConfig, probeType);
-        this.domain = domain;
     }
 
     @Override
@@ -45,8 +35,7 @@ public class ClientOptionsRequirement
             case ALPN:
                 return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
             case SNI:
-                return domain != null
-                        && scannerConfig.getClientParameterDelegate().getSniOptions(domain) != null;
+                return scannerConfig.getClientParameterDelegate().getSniOptions("") != null;
             case RESUMPTION:
                 return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
         }
@@ -56,10 +45,6 @@ public class ClientOptionsRequirement
 
     @Override
     public String toString() {
-        if (domain != null) {
-            return String.format("ClientOptionsRequirement[%s with domain %s]", probeType, domain);
-        } else {
-            return String.format("ClientOptionsRequirement[%s]", probeType);
-        }
+        return String.format("ClientOptionsRequirement[%s]", probeType);
     }
 }

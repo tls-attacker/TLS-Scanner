@@ -121,6 +121,6 @@ public class SniProbe extends TlsClientProbe {
 
     @Override
     public Requirement<ClientReport> getRequirements() {
-        return new ClientOptionsRequirement(scannerConfig, getType(), SNI_CLIENT_EXPECTED);
+        return new ClientOptionsRequirement(scannerConfig, getType());
     }
 }
