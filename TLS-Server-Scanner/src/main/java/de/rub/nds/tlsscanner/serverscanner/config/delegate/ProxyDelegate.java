@@ -40,9 +40,10 @@ public class ProxyDelegate extends Delegate {
     public void applyDelegate(Config config) throws ConfigurationException {}
 
     public void extractParameters() {
-        if (controlProxy == null) {
-            throw new ParameterException("Could not parse provided control proxy: " + controlProxy);
+        if (controlProxy == null || dataProxy == null) {
+            throw new ParameterException("Could not parse provided proxies:");
         }
+        
         controlProxy = IDN.toASCII(controlProxy);
         URI uriControlProxy;
         try {
@@ -62,9 +63,6 @@ public class ProxyDelegate extends Delegate {
         }
         extractedControlProxyIp = uriControlProxy.getHost();
 
-        if (dataProxy == null) {
-            throw new ParameterException("Could not parse provided data proxy: " + dataProxy);
-        }
         dataProxy = IDN.toASCII(dataProxy);
         URI uriDataProxy;
         try {
