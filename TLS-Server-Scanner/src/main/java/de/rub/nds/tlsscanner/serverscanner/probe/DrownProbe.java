@@ -13,9 +13,11 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.GeneralDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsscanner.serverscanner.probe.drown.constans.DrownOracleType;
@@ -60,7 +62,8 @@ public class DrownProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
                 .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SSL_2));
     }
 

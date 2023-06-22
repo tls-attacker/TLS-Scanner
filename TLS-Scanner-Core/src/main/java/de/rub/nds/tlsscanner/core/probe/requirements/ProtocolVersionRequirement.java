@@ -16,13 +16,13 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
-public class ProtocolRequirement<R extends TlsScanReport<R>>
+public class ProtocolVersionRequirement<R extends TlsScanReport<R>>
         extends PrimitiveRequirement<R, ProtocolVersion> {
-    public ProtocolRequirement(List<ProtocolVersion> protocolVersions) {
+    public ProtocolVersionRequirement(List<ProtocolVersion> protocolVersions) {
         super(protocolVersions);
     }
 
-    public ProtocolRequirement(ProtocolVersion... protocolVersions) {
+    public ProtocolVersionRequirement(ProtocolVersion... protocolVersions) {
         super(List.of(protocolVersions));
     }
 

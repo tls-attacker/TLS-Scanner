@@ -41,9 +41,9 @@ public class ProxyDelegate extends Delegate {
 
     public void extractParameters() {
         if (controlProxy == null || dataProxy == null) {
-            throw new ParameterException("Could not parse provided proxies:");
+            throw new ParameterException("Could not parse provided proxies");
         }
-        
+
         controlProxy = IDN.toASCII(controlProxy);
         URI uriControlProxy;
         try {

@@ -8,49 +8,40 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe.requirements;
 
+import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.ALPN;
+import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.RESUMPTION;
+import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.SNI;
+
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
 
 /** Represents a {@link Requirement} for additional, optional flags in commands. */
-public class OptionsRequirement extends Requirement<ClientReport> {
-
-    private final ClientScannerConfig scannerConfig;
-
-    /* ProbeType of the respective option. */
-    private final TlsProbeType type;
+public class ClientOptionsRequirement
+        extends OptionsRequirement<ClientReport, ClientScannerConfig> {
 
     /* domain for sni option (optional). */
     private final String domain;
 
-    /**
-     * @param scannerConfig the {@link ClientScannerConfig}.
-     * @param type the {@link TlsProbeType} of the option.
-     */
-    public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type) {
-        this.scannerConfig = scannerConfig;
-        this.type = type;
+    public ClientOptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType probeType) {
+        super(scannerConfig, probeType);
         this.domain = null;
     }
 
-    /**
-     * @param scannerConfig the {@link ClientScannerConfig}.
-     * @param type the {@link TlsProbeType} of the option.
-     * @param domain the domain for the sni option.
-     */
-    public OptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType type, String domain) {
-        this.scannerConfig = scannerConfig;
-        this.type = type;
+    public ClientOptionsRequirement(
+            ClientScannerConfig scannerConfig, TlsProbeType probeType, String domain) {
+        super(scannerConfig, probeType);
         this.domain = domain;
     }
 
     @Override
     public boolean evaluate(ClientReport report) {
-        if (scannerConfig == null || type == null) {
+        if (scannerConfig == null || probeType == null) {
             return false;
         }
-        switch (type) {
+        switch (probeType) {
             case ALPN:
                 return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
             case SNI:
@@ -60,15 +51,15 @@ public class OptionsRequirement extends Requirement<ClientReport> {
                 return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
         }
         throw new IllegalArgumentException(
-                String.format("Invalid probe (%s) set for OptionsRequirement", type));
+                String.format("Invalid probe (%s) set for ClientOptionsRequirement", probeType));
     }
 
     @Override
     public String toString() {
         if (domain != null) {
-            return String.format("OptionsRequirement[%s with domain %s]", type, domain);
+            return String.format("ClientOptionsRequirement[%s with domain %s]", probeType, domain);
         } else {
-            return String.format("OptionsRequirement[%s]", type);
+            return String.format("ClientOptionsRequirement[%s]", probeType);
         }
     }
 }
