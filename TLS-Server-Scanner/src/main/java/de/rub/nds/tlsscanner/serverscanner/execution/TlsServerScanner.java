@@ -176,7 +176,7 @@ public final class TlsServerScanner
         afterList.add(new PaddingOracleIdentificationAfterProbe<>());
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
-        // DTLS
+        // DTLS-specific
         addProbeToProbeList(new DtlsReorderingProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new DtlsFragmentationProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new DtlsHelloVerifyRequestProbe(configSelector, parallelExecutor));
@@ -188,7 +188,7 @@ public final class TlsServerScanner
                 new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
         afterList.add(new DtlsRetransmissionAfterProbe<>());
         afterList.add(new DestinationPortAfterProbe());
-        // !DTLS
+        // TLS-specific
         addProbeToProbeList(new HelloRetryProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new RecordFragmentationProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new EarlyCcsProbe(configSelector, parallelExecutor));
@@ -196,10 +196,8 @@ public final class TlsServerScanner
         addProbeToProbeList(new CcaProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new EsniProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new TokenbindingProbe(configSelector, parallelExecutor));
-        // HTTP or UNKOWN
         addProbeToProbeList(new HttpHeaderProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
-
         addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
         afterList.add(new PoodleAfterProbe());

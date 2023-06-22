@@ -91,7 +91,7 @@ public final class TlsClientScanner
         afterList.add(new DhValueAfterProbe());
         afterList.add(new AlpacaAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe<>());
-        // DTLS
+        // DTLS-specific
         addProbeToProbeList(new DtlsReorderingProbe(parallelExecutor, config));
         addProbeToProbeList(new DtlsFragmentationProbe(parallelExecutor, config));
         addProbeToProbeList(new DtlsHelloVerifyRequestProbe(parallelExecutor, config));
@@ -99,7 +99,7 @@ public final class TlsClientScanner
         addProbeToProbeList(new DtlsMessageSequenceProbe(parallelExecutor, config));
         addProbeToProbeList(new DtlsRetransmissionsProbe(parallelExecutor, config));
         afterList.add(new DtlsRetransmissionAfterProbe<>());
-        // !DTLS
+        // TLS-specific
         addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
         addProbeToProbeList(new RecordFragmentationProbe(parallelExecutor, config));
         addProbeToProbeList(new ResumptionProbe(parallelExecutor, config));
