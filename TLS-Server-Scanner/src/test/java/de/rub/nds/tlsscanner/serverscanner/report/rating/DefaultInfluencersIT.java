@@ -12,6 +12,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencersIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
@@ -998,8 +999,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
-        RatingInfluencersIO.write(
-                new File("src/main/resources/" + DefaultRatingLoader.INFLUENCERS_RESOURCE_LOCATION),
-                new RatingInfluencers(influencers));
+        new RatingInfluencersIO(TlsAnalyzedProperty.class)
+                .write(
+                        new File(
+                                "src/main/resources/"
+                                        + DefaultRatingLoader.INFLUENCERS_RESOURCE_LOCATION),
+                        new RatingInfluencers(influencers));
     }
 }

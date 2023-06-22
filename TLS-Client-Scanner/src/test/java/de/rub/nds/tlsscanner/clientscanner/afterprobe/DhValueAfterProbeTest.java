@@ -37,7 +37,7 @@ public class DhValueAfterProbeTest {
         report = new ClientReport();
         probe = new DhValueAfterProbe();
         publicKeyContainer = new ExtractedValueContainer<>(TrackableValueType.DHE_PUBLICKEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
     }
 

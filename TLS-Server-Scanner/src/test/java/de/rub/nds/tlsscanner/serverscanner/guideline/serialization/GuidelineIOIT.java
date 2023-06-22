@@ -11,13 +11,14 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.Guideline;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineIO;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -32,15 +34,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class GuidelineIOIT {
-    private Guideline original, result;
+    private Guideline<ServerReport> original, result;
+
+    private GuidelineIO<ServerReport> guidelineIO;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JAXBException {
         String testName = "guideline test name";
         String testLink = "www.guideline.test.link";
 
-        @SuppressWarnings("rawtypes")
-        List<GuidelineCheck> checks = new ArrayList<>();
+        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -48,7 +51,10 @@ public class GuidelineIOIT {
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
-        this.original = new Guideline(testName, testLink, checks);
+        this.original = new Guideline<>(testName, testLink, checks);
+        this.guidelineIO =
+                new GuidelineIO<>(
+                        TlsAnalyzedProperty.class, Set.of(AnalyzedPropertyGuidelineCheck.class));
     }
 
     @Test
@@ -56,8 +62,8 @@ public class GuidelineIOIT {
     public void testDeSerializationSimple(@TempDir File tempDir)
             throws IOException, JAXBException, XMLStreamException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        GuidelineIO.write(stream, this.original);
-        this.result = GuidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
+        guidelineIO.write(stream, this.original);
+        this.result = guidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
         assertEquals(
                 this.original.getChecks().size(),
@@ -77,8 +83,8 @@ public class GuidelineIOIT {
                 "Influencer length check.");
 
         File tempFile = new File(tempDir, "serializarion_test_simple.xml");
-        GuidelineIO.write(tempFile, this.original);
-        this.result = GuidelineIO.read(tempFile);
+        guidelineIO.write(tempFile, this.original);
+        this.result = guidelineIO.read(tempFile);
 
         assertEquals(
                 this.original.getChecks().size(),

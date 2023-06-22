@@ -8,42 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
-import jakarta.xml.bind.JAXB;
-import jakarta.xml.bind.JAXBContext;
+import de.rub.nds.scanner.core.io.JAXBIO;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Set;
 
-public class ConfigFileListIO {
+public class ConfigFileListIO extends JAXBIO<ConfigFileList> {
 
-    private ConfigFileListIO() {}
-
-    private static JAXBContext contextSingleton;
-
-    private static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
-        if (contextSingleton == null) {
-            contextSingleton = JAXBContext.newInstance(ConfigFileList.class);
-        }
-        return contextSingleton;
-    }
-
-    public static void write(ConfigFileList configFileList, File configFile) {
-        try (OutputStream os = new FileOutputStream(configFile)) {
-            JAXBContext context = getJAXBContext();
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(configFileList, os);
-        } catch (JAXBException | IOException ex) {
-            throw new RuntimeException("Could not format XML " + ex);
-        }
-    }
-
-    public static ConfigFileList read(InputStream stream) {
-        ConfigFileList configFileList = JAXB.unmarshal(stream, ConfigFileList.class);
-        return configFileList;
+    public ConfigFileListIO() throws JAXBException {
+        super(Set.of(ConfigFileListIO.class));
     }
 }

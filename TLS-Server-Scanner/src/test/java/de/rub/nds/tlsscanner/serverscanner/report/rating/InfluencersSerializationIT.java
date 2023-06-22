@@ -14,6 +14,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencersIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.ByteArrayInputStream;
@@ -57,8 +58,13 @@ public class InfluencersSerializationIT {
     @Tag(TestCategories.INTEGRATION_TEST)
     public void testSerializeDeserializeSimple() throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        RatingInfluencersIO.write(stream, original);
-        result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
+        RatingInfluencersIO ratingInfluencersIO =
+                new RatingInfluencersIO(TlsAnalyzedProperty.class);
+        ratingInfluencersIO.write(stream, original);
+        try (ByteArrayInputStream byteArrayInputStream =
+                new ByteArrayInputStream(stream.toByteArray())) {
+            result = ratingInfluencersIO.read(byteArrayInputStream);
+        }
 
         assertEquals(
                 original.getRatingInfluencers().size(),

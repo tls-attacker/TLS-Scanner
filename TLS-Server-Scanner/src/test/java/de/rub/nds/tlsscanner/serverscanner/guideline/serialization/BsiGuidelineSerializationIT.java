@@ -9,15 +9,16 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.Guideline;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineIO;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +35,7 @@ public class BsiGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck> checks = new ArrayList<>();
+        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -303,11 +305,20 @@ public class BsiGuidelineSerializationIT {
                 new KeySizeCertGuidelineCheck(
                         "Schlüssellängen", RequirementLevel.SHOULD, 2000, 2000, 250, 2000));
 
-        Guideline guideline =
-                new Guideline(
+        Guideline<ServerReport> guideline =
+                new Guideline<>(
                         "BSI TR-02102-2",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
-        GuidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
+        GuidelineIO<ServerReport> guidelineIO =
+                new GuidelineIO<>(
+                        TlsAnalyzedProperty.class,
+                        checks.stream()
+                                .map(
+                                        check ->
+                                                (Class<? extends GuidelineCheck<ServerReport>>)
+                                                        check.getClass())
+                                .collect(Collectors.toSet()));
+        guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
     }
 }

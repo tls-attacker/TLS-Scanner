@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 
 public class CertificateSignatureCheckResult extends GuidelineCheckResult {
 

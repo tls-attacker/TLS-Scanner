@@ -23,7 +23,8 @@ public class DtlsRetransmissionAfterProbe<R extends TlsScanReport<R>> extends Af
     @Override
     public void analyze(R report) {
         ExtractedValueContainer<HandshakeMessageType> container =
-                report.getExtractedValueContainerMap().get(TrackableValueType.DTLS_RETRANSMISSIONS);
+                report.getExtractedValueContainer(
+                        TrackableValueType.DTLS_RETRANSMISSIONS, HandshakeMessageType.class);
 
         Map<HandshakeMessageType, Integer> retransmissionCounters = new HashMap<>();
         for (HandshakeMessageType type : container.getExtractedValueList()) {

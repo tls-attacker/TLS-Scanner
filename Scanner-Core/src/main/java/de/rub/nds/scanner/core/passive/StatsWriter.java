@@ -14,7 +14,7 @@ import java.util.List;
 
 public class StatsWriter {
 
-    private final List<StatExtractor> extractorList;
+    private final List<StatExtractor<?>> extractorList;
 
     private int stateCounter = 0;
 
@@ -22,20 +22,20 @@ public class StatsWriter {
         extractorList = new LinkedList<>();
     }
 
-    public void addExtractor(StatExtractor extractor) {
+    public void addExtractor(StatExtractor<?> extractor) {
         extractorList.add(extractor);
     }
 
     public void extract(State state) {
-        for (StatExtractor extractor : extractorList) {
+        for (StatExtractor<?> extractor : extractorList) {
             extractor.extract(state);
         }
         stateCounter++;
     }
 
-    public List<ExtractedValueContainer> getCumulatedExtractedValues() {
-        List<ExtractedValueContainer> containerList = new LinkedList<>();
-        for (StatExtractor extractor : extractorList) {
+    public List<ExtractedValueContainer<?>> getCumulatedExtractedValues() {
+        List<ExtractedValueContainer<?>> containerList = new LinkedList<>();
+        for (StatExtractor<?> extractor : extractorList) {
             containerList.add(extractor.getContainer());
         }
         return containerList;

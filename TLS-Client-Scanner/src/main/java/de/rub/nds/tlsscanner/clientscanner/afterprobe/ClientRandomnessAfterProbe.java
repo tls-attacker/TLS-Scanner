@@ -30,9 +30,11 @@ public class ClientRandomnessAfterProbe extends RandomnessAfterProbe<ClientRepor
     @Override
     public void analyze(ClientReport report) {
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+                report.getExtractedValueContainer(
+                        TrackableValueType.RANDOM, ComparableByteArray.class);
         ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+                report.getExtractedValueContainer(
+                        TrackableValueType.CBC_IV, ComparableByteArray.class);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
         List<ComparableByteArray> extractedRandomList =

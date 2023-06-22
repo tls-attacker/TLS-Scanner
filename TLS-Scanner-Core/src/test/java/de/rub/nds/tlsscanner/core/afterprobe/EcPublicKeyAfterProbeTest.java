@@ -42,7 +42,7 @@ public class EcPublicKeyAfterProbeTest {
     @Test
     public void testSingleKey() {
         publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
         probe.analyze(report);
 
@@ -55,7 +55,7 @@ public class EcPublicKeyAfterProbeTest {
     public void testMultipleDifferentKeys() {
         publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
         publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
         probe.analyze(report);
 
@@ -66,7 +66,7 @@ public class EcPublicKeyAfterProbeTest {
     public void testReusedSingleKey() {
         publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
         publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
         probe.analyze(report);
 
@@ -79,7 +79,7 @@ public class EcPublicKeyAfterProbeTest {
         publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
         publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
         publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
-        report.setExtractedValueContainerList(
+        report.setExtractedValueContainerMap(
                 Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
         probe.analyze(report);
 
