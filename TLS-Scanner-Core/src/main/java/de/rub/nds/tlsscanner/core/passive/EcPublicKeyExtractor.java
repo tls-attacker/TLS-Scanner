@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class EcPublicKeyExtractor extends StatExtractor<Point> {
+public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
 
     public EcPublicKeyExtractor() {
         super(TrackableValueType.ECDHE_PUBKEY);

@@ -9,17 +9,17 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public class EcPublicKeyAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public class EcPublicKeyAfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         TestResult reuse;
         try {
             ExtractedValueContainer<?> valueContainer =

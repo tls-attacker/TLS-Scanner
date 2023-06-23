@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -39,7 +39,7 @@ public class RecordFragmentationProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config config = scannerConfig.createConfig();
         config.setDefaultMaxRecordData(50);
 

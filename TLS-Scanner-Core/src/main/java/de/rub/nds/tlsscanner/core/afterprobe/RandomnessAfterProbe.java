@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
@@ -30,7 +29,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
+        extends AfterProbe<ReportT> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -86,7 +86,7 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
     }
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
                 report.getExtractedValueContainer(
@@ -117,9 +117,7 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(
-                TlsAnalyzedProperty.ENTROPY_REPORTS,
-                new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
     }
 
     public EntropyReport createEntropyReport(

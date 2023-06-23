@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.ReportCreator;
@@ -37,13 +37,13 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<R> {
+public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreator<ReportT> {
 
     public TlsReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
     }
 
-    protected ReportContainer createProtocolVersionContainer(R report) {
+    protected ReportContainer createProtocolVersionContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Protocol Versions"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SSL_2, report));
@@ -58,7 +58,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createCompressionContainer(R report) {
+    protected ReportContainer createCompressionContainer(ReportT report) {
         ListContainer container = new ListContainer();
         if (report.getSupportedCompressionMethods() != null) {
             container.add(new HeadlineContainer("Supported Compressions"));
@@ -70,7 +70,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createCipherSuiteContainer(R report) {
+    protected ReportContainer createCipherSuiteContainer(ReportT report) {
         ListContainer cipherSuiteContainer = new ListContainer();
         cipherSuiteContainer.add(createSupportedCipherSuitesContainer(report));
         cipherSuiteContainer.add(createSupportedCipherSuitesByVersionContainer(report));
@@ -84,7 +84,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return cipherSuiteContainer;
     }
 
-    protected ListContainer createSupportedCipherSuitesContainer(R report) {
+    protected ListContainer createSupportedCipherSuitesContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Cipher Suites"));
         for (CipherSuite suite : report.getSupportedCipherSuites()) {
@@ -93,7 +93,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createSupportedCipherSuitesByVersionContainer(R report) {
+    protected ListContainer createSupportedCipherSuitesByVersionContainer(ReportT report) {
         ListContainer container = new ListContainer();
         if (report.getVersionSuitePairs() != null) {
             for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
@@ -119,7 +119,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createSupportedSymmetricAlgorithmsContainer(R report) {
+    protected ListContainer createSupportedSymmetricAlgorithmsContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Symmetric Supported"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, report));
@@ -138,7 +138,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createSupportedKeyExchangeAlgorithmsContainer(R report) {
+    protected ListContainer createSupportedKeyExchangeAlgorithmsContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Key Exchange Supported"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_RSA, report));
@@ -159,7 +159,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createSupportedKeyExchangeSignaturesContainer(R report) {
+    protected ListContainer createSupportedKeyExchangeSignaturesContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Key Exchange Signatures"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_RSA_CERT, report));
@@ -168,7 +168,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createSupportedCipherTypesContainer(R report) {
+    protected ListContainer createSupportedCipherTypesContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Cipher Types Supports"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS, report));
@@ -177,7 +177,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ListContainer createPerfectForwardSecrecyContainer(R report) {
+    protected ListContainer createPerfectForwardSecrecyContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Perfect Forward Secrecy"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_PFS, report));
@@ -186,7 +186,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createRecordFragmentationContainer(R report) {
+    protected ReportContainer createRecordFragmentationContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Record Fragmentation"));
         container.add(
@@ -194,7 +194,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createDtlsFragmenatationContainer(R report) {
+    protected ReportContainer createDtlsFragmenatationContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Fragmentation"));
         container.add(
@@ -214,7 +214,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createDtlsRetransmissionsContainer(R report) {
+    protected ReportContainer createDtlsRetransmissionsContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Retransmissions"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SENDS_RETRANSMISSIONS, report));
@@ -227,7 +227,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createDtlsBugsContainer(R report) {
+    protected ReportContainer createDtlsBugsContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS [EXPERIMENTAL]"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, report));
@@ -238,7 +238,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createDtlsMessageSequenceNumberContainer(R report) {
+    protected ReportContainer createDtlsMessageSequenceNumberContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Message Sequence Number"));
         container.add(
@@ -262,14 +262,14 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createDtlsReorderingContainer(R report) {
+    protected ReportContainer createDtlsReorderingContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Reordering"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_REORDERING, report));
         return container;
     }
 
-    protected ReportContainer createAlpacaContainer(R report) {
+    protected ReportContainer createAlpacaContainer(ReportT report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Alpaca Details"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.STRICT_ALPN, report));
@@ -278,7 +278,7 @@ public class TlsReportCreator<R extends TlsScanReport<R>> extends ReportCreator<
         return container;
     }
 
-    protected ReportContainer createCertificateContainer(R report) {
+    protected ReportContainer createCertificateContainer(ReportT report) {
         ListContainer container = new ListContainer();
         int certCtr = 1;
         if (report.getCertificateChainList() != null

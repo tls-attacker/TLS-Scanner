@@ -41,7 +41,7 @@ public class CipherSuiteProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         evaluationHelper.setPairLists(new LinkedList<>());
         for (ProtocolVersion version : evaluationHelper.getProtocolVersions()) {
             LOGGER.debug("Testing:" + version.name());

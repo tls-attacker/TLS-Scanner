@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -824,7 +824,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 new KeyValueContainer(
                         recommendation.getShortName(),
                         AnsiColor.DEFAULT_COLOR,
-                        influencer.getResult().name(),
+                        influencer.getResult().getName(),
                         color));
         int scoreInfluence = 0;
         String additionalInfo = "";
@@ -888,11 +888,11 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 container.add(
                         createDefaultKeyValueContainer(
                                 "TCP connections",
-                                String.valueOf(report.getPerformedTcpConnections())));
+                                String.valueOf(report.getPerformedConnections())));
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(

@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -86,7 +86,7 @@ public class HandshakeSimulationProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         List<State> clientStateList = new LinkedList<>();
         simulatedClientList = new LinkedList<>();
         for (SimulationRequest request : simulationRequestList) {

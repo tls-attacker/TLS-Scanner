@@ -10,9 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
@@ -27,8 +26,7 @@ public class ExtensionGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                new ListResult<>(
-                        Collections.singletonList(ExtensionType.COOKIE), "SUPPORTED_EXTENSIONS"));
+                Collections.singletonList(ExtensionType.COOKIE));
 
         ExtensionGuidelineCheck check =
                 new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
@@ -39,9 +37,7 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                new ListResult<>(Collections.emptyList(), "SUPPORTED_EXTENSIONS"));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Collections.emptyList());
 
         ExtensionGuidelineCheck check =
                 new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);

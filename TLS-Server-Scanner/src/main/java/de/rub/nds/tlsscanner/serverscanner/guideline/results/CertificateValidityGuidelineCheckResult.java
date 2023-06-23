@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 
 public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResult {
 

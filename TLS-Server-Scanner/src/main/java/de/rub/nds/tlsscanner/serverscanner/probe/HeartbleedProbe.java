@@ -9,10 +9,10 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -43,7 +43,7 @@ public class HeartbleedProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setAddHeartbeatExtension(true);
 

@@ -39,7 +39,7 @@ public class ConnectionClosingProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         // TODO extend with HTTP app data
         Config tlsConfig = scannerConfig.createConfig();
         WorkflowTrace handshakeOnly =

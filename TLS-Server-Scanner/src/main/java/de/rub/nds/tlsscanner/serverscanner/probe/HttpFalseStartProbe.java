@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
@@ -30,7 +31,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.ServerOptionsRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -48,7 +48,7 @@ public class HttpFalseStartProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
 

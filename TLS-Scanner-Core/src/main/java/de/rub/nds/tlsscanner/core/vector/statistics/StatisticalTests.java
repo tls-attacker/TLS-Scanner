@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
-import de.rub.nds.scanner.core.constants.RandomnessConstants;
+import de.rub.nds.tlsscanner.core.constants.RandomnessConstants;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

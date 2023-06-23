@@ -53,7 +53,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         for (ProtocolVersion version : versions) {

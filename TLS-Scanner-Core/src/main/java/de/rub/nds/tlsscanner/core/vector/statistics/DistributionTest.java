@@ -14,11 +14,12 @@ import java.util.List;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
+public class DistributionTest<TestInfoT extends TestInfo> extends VectorStatisticTest<TestInfoT> {
 
     private final double probability;
 
-    public DistributionTest(T testInfo, List<VectorResponse> responseList, double probability) {
+    public DistributionTest(
+            TestInfoT testInfo, List<VectorResponse> responseList, double probability) {
         super(testInfo, responseList);
         if (vectorContainerList.size() != 1) {
             throw new RuntimeException("DistributionTest expects exactly one VectorContainer");

@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class DtlsRetransmissionsExtractor extends StatExtractor<HandshakeMessageType> {
+public class DtlsRetransmissionsExtractor extends StatExtractor<State, HandshakeMessageType> {
 
     public DtlsRetransmissionsExtractor() {
         super(TrackableValueType.DTLS_RETRANSMISSIONS);

@@ -21,14 +21,6 @@
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
 
-    <dependencies>
-        <!-- scope: compile -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>scanner-core</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <!--################## clean lifecycle plugins ##################-->

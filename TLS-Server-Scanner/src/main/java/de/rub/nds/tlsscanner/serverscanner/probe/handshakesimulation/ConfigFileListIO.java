@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
-import de.rub.nds.scanner.core.io.JAXBIO;
+import de.rub.nds.scanner.core.util.JaxbSerializer;
 import jakarta.xml.bind.JAXBException;
 import java.util.Set;
 
-public class ConfigFileListIO extends JAXBIO<ConfigFileList> {
+public class ConfigFileListIO extends JaxbSerializer<ConfigFileList> {
 
     public ConfigFileListIO() throws JAXBException {
         super(Set.of(ConfigFileListIO.class));

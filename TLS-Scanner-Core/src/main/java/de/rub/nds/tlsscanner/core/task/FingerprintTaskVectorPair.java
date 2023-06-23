@@ -11,13 +11,13 @@ package de.rub.nds.tlsscanner.core.task;
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 
-public class FingerprintTaskVectorPair<T extends Vector> {
+public class FingerprintTaskVectorPair<VectorT extends Vector> {
 
     private final FingerPrintTask fingerPrintTask;
 
-    private final T vector;
+    private final VectorT vector;
 
-    public FingerprintTaskVectorPair(FingerPrintTask fingerPrintTask, T vector) {
+    public FingerprintTaskVectorPair(FingerPrintTask fingerPrintTask, VectorT vector) {
         this.fingerPrintTask = fingerPrintTask;
         this.vector = vector;
     }
@@ -26,7 +26,7 @@ public class FingerprintTaskVectorPair<T extends Vector> {
         return fingerPrintTask;
     }
 
-    public T getVector() {
+    public VectorT getVector() {
         return vector;
     }
 

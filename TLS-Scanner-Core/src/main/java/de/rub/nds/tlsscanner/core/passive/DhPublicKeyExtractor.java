@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.math.BigInteger;
 import java.util.List;
 
-public class DhPublicKeyExtractor extends StatExtractor<CustomDhPublicKey> {
+public class DhPublicKeyExtractor extends StatExtractor<State, CustomDhPublicKey> {
 
     public DhPublicKeyExtractor() {
         super(TrackableValueType.DHE_PUBLICKEY);

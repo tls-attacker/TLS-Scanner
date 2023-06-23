@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsServerProbe extends TlsProbe<ServerReport, TlsServerProbe> {
+public abstract class TlsServerProbe extends TlsProbe<ServerReport> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -38,7 +38,7 @@ public abstract class TlsServerProbe extends TlsProbe<ServerReport, TlsServerPro
      * @param extensionClass The requested extension class
      * @return The requested extension or null if no such extension was received
      */
-    protected <T extends ExtensionMessage> T getNegotiatedExtension(
+    protected <T extends ExtensionMessage<T>> T getNegotiatedExtension(
             WorkflowTrace workflowTrace, Class<T> extensionClass) {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, workflowTrace)) {
             ServerHelloMessage serverHello =

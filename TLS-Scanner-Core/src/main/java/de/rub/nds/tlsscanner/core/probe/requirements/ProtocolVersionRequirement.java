@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolVersion}s. */
-public class ProtocolVersionRequirement<R extends TlsScanReport<R>>
-        extends PrimitiveRequirement<R, ProtocolVersion> {
+public class ProtocolVersionRequirement<ReportT extends TlsScanReport>
+        extends PrimitiveRequirement<ReportT, ProtocolVersion> {
     public ProtocolVersionRequirement(List<ProtocolVersion> protocolVersions) {
         super(protocolVersions);
     }
@@ -27,7 +27,7 @@ public class ProtocolVersionRequirement<R extends TlsScanReport<R>>
     }
 
     @Override
-    public boolean evaluate(R report) {
+    public boolean evaluate(ReportT report) {
         if (parameters.size() == 0) {
             return true;
         }

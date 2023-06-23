@@ -12,7 +12,7 @@ import static org.junit.Assume.assumeNotNull;
 
 import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Image;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TransportType;
@@ -172,7 +172,7 @@ public abstract class AbstractProbeIT {
         // Executing probe
         TlsServerProbe probe = getProbe();
         probe.adjustConfig(report);
-        probe.executeTest();
+        probe.call();
         probe.merge(report);
     }
 

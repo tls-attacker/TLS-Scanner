@@ -11,9 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.primitives.Bytes;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -54,7 +54,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         supportedApplications = new ArrayList<>();
         isAcceptingUnencryptedAppData = TestResults.NOT_TESTED_YET;
         if (!isEchoServer()) {

@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientContainerReportCreator;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReportSerializer;
 import java.io.File;
@@ -36,19 +37,23 @@ public class Main {
                 return;
             }
             // Cmd was parsable
-            try {
-                TlsClientScanner scanner = new TlsClientScanner(config);
+            try (TlsClientScanner scanner = new TlsClientScanner(config)) {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 ClientReport report = scanner.scan();
+
+                // TODO: Implement ClientReportPrinter and use them.
+                StringBuilder builder = new StringBuilder();
+                new ClientContainerReportCreator(config.getExecutorConfig().getReportDetail())
+                        .createReport(report)
+                        .print(builder, 0, !config.getExecutorConfig().isNoColor());
+
                 LOGGER.info(
                         AnsiColor.RESET.getCode()
                                 + "Scanned in: "
                                 + ((System.currentTimeMillis() - time) / 1000)
                                 + "s\n"
-                                + report.getFullReport(
-                                        config.getExecutorConfig().getReportDetail(),
-                                        !config.getExecutorConfig().isNoColor()));
+                                + builder);
                 if (config.getExecutorConfig().isWriteReportToFile()) {
                     File outputFile = new File(config.getExecutorConfig().getOutputFile());
                     ClientReportSerializer.serialize(outputFile, report);

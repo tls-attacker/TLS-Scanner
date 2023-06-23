@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -46,7 +46,7 @@ public class EarlyCcsProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
             earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
