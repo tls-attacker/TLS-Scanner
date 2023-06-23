@@ -24,13 +24,13 @@ public class ProtocolRequirementTest {
         TestReport report = new TestReport();
         ProtocolVersion[] protocolVersion = new ProtocolVersion[] {ProtocolVersion.TLS10};
 
-        ProtocolRequirement<TestReport> requirement = new ProtocolRequirement<>();
+        ProtocolVersionRequirement<TestReport> requirement = new ProtocolVersionRequirement<>();
         assertTrue(requirement.evaluate(report));
 
-        requirement = new ProtocolRequirement<>(new ProtocolVersion[0]);
+        requirement = new ProtocolVersionRequirement<>(new ProtocolVersion[0]);
         assertTrue(requirement.evaluate(report));
 
-        requirement = new ProtocolRequirement<>(protocolVersion);
+        requirement = new ProtocolVersionRequirement<>(protocolVersion);
         assertArrayEquals(requirement.getParameters().toArray(), protocolVersion);
         assertFalse(requirement.evaluate(report));
 

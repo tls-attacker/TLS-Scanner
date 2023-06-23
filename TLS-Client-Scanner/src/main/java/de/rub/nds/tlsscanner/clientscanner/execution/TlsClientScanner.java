@@ -91,19 +91,18 @@ public final class TlsClientScanner
         afterList.add(new DhValueAfterProbe());
         afterList.add(new AlpacaAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe<>());
-        if (config.getDtlsDelegate().isDTLS()) {
-            addProbeToProbeList(new DtlsReorderingProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsFragmentationProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsHelloVerifyRequestProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsBugsProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsMessageSequenceProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsRetransmissionsProbe(parallelExecutor, config));
-            afterList.add(new DtlsRetransmissionAfterProbe<>());
-        } else {
-            addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
-            addProbeToProbeList(new RecordFragmentationProbe(parallelExecutor, config));
-            addProbeToProbeList(new ResumptionProbe(parallelExecutor, config));
-        }
+        // DTLS-specific
+        addProbeToProbeList(new DtlsReorderingProbe(parallelExecutor, config));
+        addProbeToProbeList(new DtlsFragmentationProbe(parallelExecutor, config));
+        addProbeToProbeList(new DtlsHelloVerifyRequestProbe(parallelExecutor, config));
+        addProbeToProbeList(new DtlsBugsProbe(parallelExecutor, config));
+        addProbeToProbeList(new DtlsMessageSequenceProbe(parallelExecutor, config));
+        addProbeToProbeList(new DtlsRetransmissionsProbe(parallelExecutor, config));
+        afterList.add(new DtlsRetransmissionAfterProbe<>());
+        // TLS-specific
+        addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
+        addProbeToProbeList(new RecordFragmentationProbe(parallelExecutor, config));
+        addProbeToProbeList(new ResumptionProbe(parallelExecutor, config));
         // Init StatsWriter
         setDefaultProbeWriter();
     }

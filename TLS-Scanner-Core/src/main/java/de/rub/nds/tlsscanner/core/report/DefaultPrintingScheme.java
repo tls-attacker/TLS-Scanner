@@ -24,6 +24,7 @@ public class DefaultPrintingScheme {
 
     public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
+        textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
         textEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
         textEncodingMap.put(TestResults.FALSE, "false");

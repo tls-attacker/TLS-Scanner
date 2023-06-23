@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolVersionRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -184,9 +184,9 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
     public Requirement<ServerReport> getRequirements() {
         return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
                 .and(
-                        new ProtocolRequirement<ServerReport>(ProtocolVersion.TLS12)
-                                .or(new ProtocolRequirement<>(ProtocolVersion.TLS13))
-                                .or(new ProtocolRequirement<>(ProtocolVersion.DTLS12)));
+                        new ProtocolVersionRequirement<ServerReport>(ProtocolVersion.TLS12)
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.TLS13))
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.DTLS12)));
     }
 
     @Override

@@ -28,9 +28,11 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -109,7 +111,8 @@ public class Version13RandomProbe extends TlsClientProbe {
 
     @Override
     public Requirement<ClientReport> getRequirements() {
-        return new ProbeRequirement<ClientReport>(TlsProbeType.PROTOCOL_VERSION)
+        return new ProtocolTypeFalseRequirement<ClientReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
                 .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_TLS_1_3))
                 .and(
                         new PropertyTrueRequirement<ClientReport>(
