@@ -45,7 +45,6 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
-import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
@@ -180,37 +179,31 @@ public final class TlsServerScanner
         afterList.add(new PaddingOracleIdentificationAfterProbe<>());
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
-        if (config.getDtlsDelegate().isDTLS()) {
-            addProbeToProbeList(new DtlsReorderingProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsFragmentationProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsHelloVerifyRequestProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsBugsProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsMessageSequenceProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new DtlsRetransmissionsProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(
-                    new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(
-                    new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
-            afterList.add(new DtlsRetransmissionAfterProbe<>());
-            afterList.add(new DestinationPortAfterProbe());
-        } else {
-            addProbeToProbeList(new HelloRetryProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new RecordFragmentationProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new EarlyCcsProbe(configSelector, parallelExecutor));
-            // addProbeToProbeList(new MacProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new CcaProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new EsniProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(new TokenbindingProbe(configSelector, parallelExecutor));
-            if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
-                    || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
-                addProbeToProbeList(new HttpHeaderProbe(configSelector, parallelExecutor));
-                addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
-            }
-            addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
-            addProbeToProbeList(
-                    new ConnectionClosingProbe(configSelector, parallelExecutor), false);
-            afterList.add(new PoodleAfterProbe());
-        }
+        // DTLS-specific
+        addProbeToProbeList(new DtlsReorderingProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsFragmentationProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsHelloVerifyRequestProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsBugsProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsMessageSequenceProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsRetransmissionsProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DtlsApplicationFingerprintProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(
+                new DtlsIpAddressInCookieProbe(configSelector, parallelExecutor), false);
+        afterList.add(new DtlsRetransmissionAfterProbe<>());
+        afterList.add(new DestinationPortAfterProbe());
+        // TLS-specific
+        addProbeToProbeList(new HelloRetryProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new RecordFragmentationProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new EarlyCcsProbe(configSelector, parallelExecutor));
+        // addProbeToProbeList(new MacProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new CcaProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new EsniProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new TokenbindingProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new HttpHeaderProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new HttpFalseStartProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new DrownProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new ConnectionClosingProbe(configSelector, parallelExecutor), false);
+        afterList.add(new PoodleAfterProbe());
         // Init StatsWriter
         setDefaultProbeWriter();
     }
@@ -247,6 +240,7 @@ public final class TlsServerScanner
                 new ServerReport(
                         config.getClientDelegate().getExtractedHost(),
                         config.getClientDelegate().getExtractedPort());
+        serverReport.setProtocolType(protocolType);
 
         if (isConnectable()) {
             isConnectable = true;
@@ -295,7 +289,6 @@ public final class TlsServerScanner
         serverReport.setServerIsAlive(isConnectable);
         serverReport.setSpeaksProtocol(speaksProtocol);
         serverReport.setIsHandshaking(isHandshaking);
-        serverReport.setProtocolType(protocolType);
 
         if (executor != null) {
             executor.shutdown();

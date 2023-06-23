@@ -27,10 +27,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ClientOptionsRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import java.util.function.Function;
 
 public class ResumptionProbe extends TlsClientProbe {
@@ -154,6 +156,7 @@ public class ResumptionProbe extends TlsClientProbe {
 
     @Override
     public Requirement<ClientReport> getRequirements() {
-        return new OptionsRequirement(scannerConfig, getType());
+        return new ProtocolTypeFalseRequirement<ClientReport>(ProtocolType.DTLS)
+                .and(new ClientOptionsRequirement(scannerConfig, getType()));
     }
 }

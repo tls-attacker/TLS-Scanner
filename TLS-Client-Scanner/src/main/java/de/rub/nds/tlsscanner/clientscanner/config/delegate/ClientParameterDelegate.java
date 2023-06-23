@@ -52,7 +52,7 @@ public class ClientParameterDelegate extends Delegate {
     }
 
     public String getSniOptions(String domain) {
-        if (sniOptions == null) {
+        if (sniOptions == null || !sniOptions.contains(SNI_REPLACEMENT_MARKER)) {
             return null;
         }
         return sniOptions.replace(SNI_REPLACEMENT_MARKER, domain);

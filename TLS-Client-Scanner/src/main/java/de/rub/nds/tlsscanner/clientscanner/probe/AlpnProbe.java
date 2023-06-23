@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ClientOptionsRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -108,6 +108,6 @@ public class AlpnProbe extends TlsClientProbe {
 
     @Override
     public Requirement<ClientReport> getRequirements() {
-        return new OptionsRequirement(scannerConfig, getType());
+        return new ClientOptionsRequirement(scannerConfig, getType());
     }
 }
