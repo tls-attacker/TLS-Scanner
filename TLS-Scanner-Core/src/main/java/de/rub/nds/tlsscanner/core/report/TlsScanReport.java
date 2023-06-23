@@ -13,10 +13,12 @@ import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -30,11 +32,13 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class TlsScanReport<R extends TlsScanReport<R>> extends ScanReport<R> {
 
@@ -320,5 +324,21 @@ public abstract class TlsScanReport<R extends TlsScanReport<R>> extends ScanRepo
         ListResult<String> listResult =
                 (ListResult<String>) getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
         return listResult == null ? null : listResult.getList();
+    }
+
+    public List<CipherSuite> getSupportedCipherSuitesWithKeyExchange(
+            KeyExchangeAlgorithm... algorithms) {
+        Set<CipherSuite> cipherSuites = getSupportedCipherSuites();
+        List<KeyExchangeAlgorithm> matchingKeyExchangeAlgorithms = Arrays.asList(algorithms);
+        if (cipherSuites == null) {
+            return new LinkedList<>();
+        } else {
+            return cipherSuites.stream()
+                    .filter(
+                            cipherSuite ->
+                                    matchingKeyExchangeAlgorithms.contains(
+                                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)))
+                    .collect(Collectors.toList());
+        }
     }
 }
