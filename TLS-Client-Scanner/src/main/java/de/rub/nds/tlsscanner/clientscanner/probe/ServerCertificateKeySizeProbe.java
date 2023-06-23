@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -32,10 +31,8 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServerCertificateKeySizeProbe extends TlsClientProbe {
 
@@ -50,7 +47,10 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
     private List<CertificateKeyPair> dssCertKeyPairs = new LinkedList<>();
     private List<CertificateKeyPair> dhCertKeyPairs = new LinkedList<>();
 
-    private boolean testRSA, testRSASig, testDSS, testDH;
+    private List<CipherSuite> rsaKexCipherSuites,
+            rsaSigCipherSuites,
+            dssCipherSuites,
+            dhCipherSuites;
     private int minimumRSAKeySize, minimumRSASigKeySize, minimumDSSKeySize, minimumDHKeySize;
 
     private List<CipherSuite> clientAdvertisedCipherSuites;
@@ -107,36 +107,24 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
 
     @Override
     public void executeTest() {
-        if (testRSA) {
-            minimumRSAKeySize = getMinimumKeySize(rsaCertKeyPairs, KeyExchangeAlgorithm.RSA);
+        if (!rsaKexCipherSuites.isEmpty()) {
+            minimumRSAKeySize = getMinimumKeySize(rsaCertKeyPairs, rsaKexCipherSuites);
             enforcesMinimumKeySizeRSA =
                     evaluateResult(ourLargestRSAKeySize, ourSmallestRSAKeySize, minimumRSAKeySize);
         }
-        if (testRSASig) {
-            minimumRSASigKeySize =
-                    getMinimumKeySize(
-                            rsaCertKeyPairs,
-                            KeyExchangeAlgorithm.DHE_RSA,
-                            KeyExchangeAlgorithm.ECDHE_RSA);
+        if (!rsaSigCipherSuites.isEmpty()) {
+            minimumRSASigKeySize = getMinimumKeySize(rsaCertKeyPairs, rsaSigCipherSuites);
             enforcesMinimumKeySizeRSASig =
                     evaluateResult(
                             ourLargestRSAKeySize, ourSmallestRSAKeySize, minimumRSASigKeySize);
         }
-        if (testDSS) {
-            minimumDSSKeySize =
-                    getMinimumKeySize(
-                            dssCertKeyPairs,
-                            KeyExchangeAlgorithm.DHE_DSS,
-                            KeyExchangeAlgorithm.DH_DSS);
+        if (!dssCipherSuites.isEmpty()) {
+            minimumDSSKeySize = getMinimumKeySize(dssCertKeyPairs, dssCipherSuites);
             enforcesMinimumKeySizeDSS =
                     evaluateResult(ourLargestDSSKeySize, ourLargestDSSKeySize, minimumDSSKeySize);
         }
-        if (testDH) {
-            minimumDHKeySize =
-                    getMinimumKeySize(
-                            dhCertKeyPairs,
-                            KeyExchangeAlgorithm.DH_DSS,
-                            KeyExchangeAlgorithm.DH_RSA);
+        if (!dhCipherSuites.isEmpty()) {
+            minimumDHKeySize = getMinimumKeySize(dhCertKeyPairs, dhCipherSuites);
             enforcesMinimumKeySizeDH =
                     evaluateResult(ourLargestDHKeySize, ourSmallestDHKeySize, minimumDHKeySize);
         }
@@ -155,24 +143,15 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
     }
 
     private int getMinimumKeySize(
-            List<CertificateKeyPair> certKeyPairList, KeyExchangeAlgorithm... algorithms) {
-        List<KeyExchangeAlgorithm> matchingKeyExchangeAlgorithms = Arrays.asList(algorithms);
-        List<CipherSuite> applicableCipherSuites =
-                clientAdvertisedCipherSuites.stream()
-                        .filter(
-                                cipherSuite ->
-                                        matchingKeyExchangeAlgorithms.contains(
-                                                AlgorithmResolver.getKeyExchangeAlgorithm(
-                                                        cipherSuite)))
-                        .collect(Collectors.toList());
+            List<CertificateKeyPair> certKeyPairList, List<CipherSuite> cipherSuitesToTest) {
         int minimumKeySize = Integer.MAX_VALUE;
 
         for (CertificateKeyPair listedCertKeyPair : certKeyPairList) {
             Config config = scannerConfig.createConfig();
-            config.setDefaultServerSupportedCipherSuites(applicableCipherSuites);
+            config.setDefaultServerSupportedCipherSuites(cipherSuitesToTest);
             config.setAutoSelectCertificate(false);
             config.setDefaultExplicitCertificateKeyPair(listedCertKeyPair);
-            config.setDefaultSelectedCipherSuite(applicableCipherSuites.get(0));
+            config.setDefaultSelectedCipherSuite(cipherSuitesToTest.get(0));
 
             WorkflowTrace trace =
                     new WorkflowConfigurationFactory(config)
@@ -192,10 +171,17 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
     @Override
     public void adjustConfig(ClientReport report) {
         adjustApplicableCertificates();
-        testDSS = report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResults.TRUE;
-        testRSA = report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResults.TRUE;
-        testRSASig = report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResults.TRUE;
-        testDH = report.getResult(TlsAnalyzedProperty.SUPPORTS_STATIC_DH) == TestResults.TRUE;
+        dssCipherSuites =
+                report.getSupportedCipherSuitesWithKeyExchange(
+                        KeyExchangeAlgorithm.DHE_DSS, KeyExchangeAlgorithm.DH_DSS);
+        rsaKexCipherSuites =
+                report.getSupportedCipherSuitesWithKeyExchange(KeyExchangeAlgorithm.RSA);
+        rsaSigCipherSuites =
+                report.getSupportedCipherSuitesWithKeyExchange(
+                        KeyExchangeAlgorithm.DHE_RSA, KeyExchangeAlgorithm.ECDHE_RSA);
+        dhCipherSuites =
+                report.getSupportedCipherSuitesWithKeyExchange(
+                        KeyExchangeAlgorithm.DH_DSS, KeyExchangeAlgorithm.DH_RSA);
         clientAdvertisedCipherSuites = new LinkedList<>(report.getClientAdvertisedCipherSuites());
     }
 
