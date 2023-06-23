@@ -87,7 +87,12 @@ public abstract class TlsProbe<R extends TlsScanReport<R>, P extends TlsProbe<R,
             TlsAnalyzedProperty propertyToSet,
             Object actualResult,
             String notApplicableReason) {
-        putIfEqual(determiningProperty, propertyToSet, actualResult, notApplicableReason, false);
+        putIfEqual(
+                determiningProperty,
+                propertyToSet,
+                actualResult,
+                notApplicableReason,
+                TestResults.FALSE);
     }
 
     public final void putIfTrue(
@@ -95,7 +100,12 @@ public abstract class TlsProbe<R extends TlsScanReport<R>, P extends TlsProbe<R,
             TlsAnalyzedProperty propertyToSet,
             Object actualResult,
             String notApplicableReason) {
-        putIfEqual(determiningProperty, propertyToSet, actualResult, notApplicableReason, true);
+        putIfEqual(
+                determiningProperty,
+                propertyToSet,
+                actualResult,
+                notApplicableReason,
+                TestResults.TRUE);
     }
 
     public final void putIfEqual(

@@ -68,6 +68,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
         rootContainer.add(createExtensionsContainer(report));
         rootContainer.add(createNamedGroupsContainer(report));
         rootContainer.add(createKeySharesContainer(report));
+        rootContainer.add(createSupportedNamedGroupsContainer(report));
         rootContainer.add(createSignatureAndHashAlgorithmsContainer(report));
         rootContainer.add(createAdvertisedPointFormatsContainer(report));
         rootContainer.add(createSupportedPointFormatsContainer(report));
@@ -145,19 +146,25 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
         container.add(new HeadlineContainer("Expected Server Certificate Public Key Size"));
         container.add(
                 createDefaultKeyValueContainer(
-                        "Minimum RSA Key Size Enforced",
+                        "RSA Key Size Enforced",
                         printingScheme.getEncodedValueText(
                                 report,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA)));
         container.add(
                 createDefaultKeyValueContainer(
-                        "Minimum DSS Key Size Enforced",
+                        "RSA Sig. Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "DSS Key Size Enforced",
                         printingScheme.getEncodedValueText(
                                 report,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)));
         container.add(
                 createDefaultKeyValueContainer(
-                        "Minimum DH Key Size Enforced",
+                        "DH Key Size Enforced",
                         printingScheme.getEncodedValueText(
                                 report, TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)));
 
@@ -165,9 +172,26 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 == TestResults.TRUE) {
             container.add(
                     new KeyValueContainer(
-                            "Minimum RSA Modulus Accepted",
+                            "Min. RSA Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            report.getNumericResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA.name())
+                                    .getValue()
+                                    .toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Min. RSA Sig. Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getNumericResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG
+                                                    .name())
+                                    .getValue()
+                                    .toString(),
                             AnsiColor.DEFAULT_COLOR));
         }
 
@@ -175,9 +199,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 == TestResults.TRUE) {
             container.add(
                     new KeyValueContainer(
-                            "Minimum DSS Modulus Accepted",
+                            "Min. DSS Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            report.getNumericResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS.name())
+                                    .getValue()
+                                    .toString(),
                             AnsiColor.DEFAULT_COLOR));
         }
 
@@ -185,9 +212,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 == TestResults.TRUE) {
             container.add(
                     new KeyValueContainer(
-                            "Minimum DH Modulus Accepted",
+                            "Min. DH Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getMinimumServerCertificateKeySizeRSA().toString(),
+                            report.getNumericResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH.name())
+                                    .getValue()
+                                    .toString(),
                             AnsiColor.DEFAULT_COLOR));
         }
         return container;
@@ -283,6 +313,37 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(new HeadlineContainer("Advertised Named Groups"));
             ListContainer listContainer = new ListContainer();
             for (NamedGroup group : report.getClientAdvertisedNamedGroupsList()) {
+                listContainer.add(createDefaultTextContainer(group.name()));
+            }
+            container.add(listContainer);
+        }
+        return container;
+    }
+
+    private ReportContainer createSupportedNamedGroupsContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS) != null
+                && report.getResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS)
+                        != TestResults.UNASSIGNED_ERROR) {
+            container.add(new HeadlineContainer("Supported Named Groups"));
+            ListContainer listContainer = new ListContainer();
+            for (NamedGroup group :
+                    (List<NamedGroup>)
+                            report.getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS)
+                                    .getList()) {
+                listContainer.add(createDefaultTextContainer(group.name()));
+            }
+            container.add(listContainer);
+        }
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS) != null
+                && report.getResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)
+                        != TestResults.UNASSIGNED_ERROR) {
+            container.add(new HeadlineContainer("Supported Named Groups (TLS 1.3)"));
+            ListContainer listContainer = new ListContainer();
+            for (NamedGroup group :
+                    (List<NamedGroup>)
+                            report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)
+                                    .getList()) {
                 listContainer.add(createDefaultTextContainer(group.name()));
             }
             container.add(listContainer);

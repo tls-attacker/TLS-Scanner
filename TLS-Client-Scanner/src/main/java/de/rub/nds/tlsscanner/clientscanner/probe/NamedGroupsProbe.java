@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
@@ -54,12 +55,15 @@ public class NamedGroupsProbe extends TlsClientProbe {
 
     public NamedGroupsProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, scannerConfig);
+        register(
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS);
     }
 
     @Override
     protected void mergeData(ClientReport report) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from
-        // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, supportedNamedGroups);
+        put(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, supportedTls13NamedGroups);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
         }
         if (!supportedTls13CipherSuites.isEmpty()) {
             supportedTls13NamedGroups.addAll(
-                    getSupportedGroupsTls13(ffdheToTest, supportedDheCipherSuites));
+                    getSupportedGroupsTls13(getTls13GroupsToTest(), supportedTls13CipherSuites));
         }
     }
 
@@ -82,6 +86,12 @@ public class NamedGroupsProbe extends TlsClientProbe {
                 .filter(NamedGroup::isCurve)
                 .filter(Predicate.not(NamedGroup::isGost))
                 .collect(Collectors.toList());
+    }
+
+    private List<NamedGroup> getTls13GroupsToTest() {
+        List<NamedGroup> groupList = getCurvesToTest();
+        NamedGroup.getImplemented().stream().filter(NamedGroup::isDhGroup).forEach(groupList::add);
+        return groupList;
     }
 
     private List<NamedGroup> getSupportedGroups(
@@ -110,12 +120,20 @@ public class NamedGroupsProbe extends TlsClientProbe {
         for (NamedGroup group : baseList) {
             Config config = scannerConfig.createConfig();
             setSharedConfigFields(config, group, cipherSuites);
-            WorkflowTrace workflowTrace =
-                    new WorkflowConfigurationFactory(config)
-                            .createDynamicHelloWorkflow(config.getDefaultServerConnection());
+            config.setHighestProtocolVersion(ProtocolVersion.TLS13);
+            config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS13);
+            config.setAddKeyShareExtension(true);
+            config.setAddSupportedVersionsExtension(true);
+            WorkflowTrace workflowTrace;
             if (advertisedKeyShareGroups.contains(group)) {
+                workflowTrace =
+                        new WorkflowConfigurationFactory(config)
+                                .createDynamicHelloWorkflow(config.getDefaultServerConnection());
                 workflowTrace.addTlsAction(new ReceiveAction(new FinishedMessage()));
             } else {
+                workflowTrace =
+                        new WorkflowConfigurationFactory(config)
+                                .createShortHelloWorkflow(config.getDefaultServerConnection());
                 ServerHelloMessage serverHello =
                         workflowTrace.getFirstSendMessage(ServerHelloMessage.class);
                 serverHello.setAutoSetHelloRetryModeInKeyShare(true);
