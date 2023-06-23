@@ -83,6 +83,7 @@ public final class TlsClientScanner
         addProbeToProbeList(new ServerCertificateKeySizeProbe(parallelExecutor, config));
         addProbeToProbeList(new ConnectionClosingProbe(parallelExecutor, config));
         addProbeToProbeList(new ECPointFormatProbe(parallelExecutor, config));
+        addProbeToProbeList(new NamedGroupsProbe(parallelExecutor, config));
         afterList.add(new Sweet32AfterProbe<>());
         afterList.add(new FreakAfterProbe<>());
         afterList.add(new LogjamAfterProbe<>());

@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.core.probe;
 
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
+import de.rub.nds.scanner.core.constants.NotApplicableResult;
+import de.rub.nds.scanner.core.constants.NumericResult;
 import de.rub.nds.scanner.core.constants.SetResult;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -72,11 +74,52 @@ public abstract class TlsProbe<R extends TlsScanReport<R>, P extends TlsProbe<R,
         }
     }
 
-    protected final void setPropertiesToCouldNotTest() {
+    public final void setPropertiesToCouldNotTest() {
         for (TlsAnalyzedProperty property : propertiesMap.keySet()) {
             if (propertiesMap.get(property) == TestResults.UNASSIGNED_ERROR) {
                 propertiesMap.put(property, TestResults.COULD_NOT_TEST);
             }
+        }
+    }
+
+    public final void putIfFalse(
+            TlsAnalyzedProperty determiningProperty,
+            TlsAnalyzedProperty propertyToSet,
+            Object actualResult,
+            String notApplicableReason) {
+        putIfEqual(
+                determiningProperty,
+                propertyToSet,
+                actualResult,
+                notApplicableReason,
+                TestResults.FALSE);
+    }
+
+    public final void putIfTrue(
+            TlsAnalyzedProperty determiningProperty,
+            TlsAnalyzedProperty propertyToSet,
+            Object actualResult,
+            String notApplicableReason) {
+        putIfEqual(
+                determiningProperty,
+                propertyToSet,
+                actualResult,
+                notApplicableReason,
+                TestResults.TRUE);
+    }
+
+    public final void putIfEqual(
+            TlsAnalyzedProperty determiningProperty,
+            TlsAnalyzedProperty propertyToSet,
+            Object actualResult,
+            String notApplicableReason,
+            Object expectedValue) {
+        if (!propertiesMap.containsKey(determiningProperty)
+                || propertiesMap.get(determiningProperty) == null
+                || !propertiesMap.get(determiningProperty).equals(expectedValue)) {
+            put(propertyToSet, new NotApplicableResult(propertyToSet, notApplicableReason));
+        } else {
+            put(propertyToSet, actualResult);
         }
     }
 
@@ -95,6 +138,10 @@ public abstract class TlsProbe<R extends TlsScanReport<R>, P extends TlsProbe<R,
                 result = new MapResult<>((Map<?, ?>) value, property.name());
             } else if (value instanceof Set<?>) {
                 result = new SetResult<>((Set<?>) value, property.name());
+            } else if (value instanceof Number) {
+                result = new NumericResult<>((Number) value, property.name());
+            } else if (value instanceof NotApplicableResult) {
+                result = (NotApplicableResult) value;
             } else {
                 result = TestResults.ERROR_DURING_TEST;
             }

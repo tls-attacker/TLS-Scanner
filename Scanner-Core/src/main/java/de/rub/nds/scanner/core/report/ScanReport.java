@@ -12,6 +12,7 @@ import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.CollectionResult;
 import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.constants.MapResult;
+import de.rub.nds.scanner.core.constants.NumericResult;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.SetResult;
@@ -107,6 +108,13 @@ public abstract class ScanReport<R extends ScanReport<R>> extends Observable
         return (result == null || !(result instanceof CollectionResult))
                 ? null
                 : (CollectionResult<?>) result;
+    }
+
+    public synchronized NumericResult<? extends Number> getNumericResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null || !(result instanceof NumericResult))
+                ? null
+                : (NumericResult<? extends Number>) result;
     }
 
     public synchronized ListResult<?> getListResult(AnalyzedProperty property) {
