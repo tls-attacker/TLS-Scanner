@@ -9,8 +9,9 @@
 package de.rub.nds.tlsscanner.core.report;
 
 import de.rub.nds.tlsscanner.core.constants.RandomType;
+import java.io.Serializable;
 
-public class EntropyReport {
+public class EntropyReport implements Serializable {
 
     private RandomType type;
 

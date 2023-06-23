@@ -24,7 +24,7 @@ public class PropertyTrueRequirementTest {
         TlsAnalyzedProperty[] property =
                 new TlsAnalyzedProperty[] {TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES};
 
-        PropertyRequirement<TestReport> requirement = new PropertyTrueRequirement<>();
+        PropertyValueRequirement<TestReport> requirement = new PropertyTrueRequirement<>();
         assertTrue(requirement.evaluate(report));
 
         requirement = new PropertyTrueRequirement<>(new TlsAnalyzedProperty[0]);
