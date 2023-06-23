@@ -18,7 +18,8 @@ import java.util.List;
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
  * positively evaluated (TestResults.TRUE).
  */
-public class PropertyTrueRequirement<R extends TlsScanReport<R>> extends PropertyRequirement<R> {
+public class PropertyTrueRequirement<R extends TlsScanReport<R>>
+        extends PropertyValueRequirement<R> {
     public PropertyTrueRequirement(List<TlsAnalyzedProperty> properties) {
         super(TestResults.TRUE, properties);
     }

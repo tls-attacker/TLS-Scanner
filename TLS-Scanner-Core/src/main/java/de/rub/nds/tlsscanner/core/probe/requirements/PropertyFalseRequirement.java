@@ -18,7 +18,8 @@ import java.util.List;
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
  * negatively evaluated (TestResults.FALSE).
  */
-public class PropertyFalseRequirement<R extends TlsScanReport<R>> extends PropertyRequirement<R> {
+public class PropertyFalseRequirement<R extends TlsScanReport<R>>
+        extends PropertyValueRequirement<R> {
     public PropertyFalseRequirement(List<TlsAnalyzedProperty> properties) {
         super(TestResults.FALSE, properties);
     }

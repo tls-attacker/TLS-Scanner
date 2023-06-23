@@ -8,6 +8,7 @@
  */
 package de.rub.nds.scanner.core.constants;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Collection;
  *
  * @param <T> the type of which the CollectionResult consists.
  */
-public class CollectionResult<T> implements TestResult {
+public class CollectionResult<T> implements TestResult, Serializable {
 
     private final String name;
     protected final Collection<T> collection;

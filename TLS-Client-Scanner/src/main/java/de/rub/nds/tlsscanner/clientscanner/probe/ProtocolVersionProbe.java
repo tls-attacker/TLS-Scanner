@@ -27,7 +27,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -147,9 +147,7 @@ public class ProtocolVersionProbe extends TlsClientProbe {
     @Override
     public Requirement<ClientReport> getRequirements() {
         return new ProbeRequirement<ClientReport>(TlsProbeType.BASIC)
-                .and(
-                        new PropertyTrueRequirement<>(
-                                TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES));
+                .and(new PropertyRequirement<>(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES));
     }
 
     @Override
