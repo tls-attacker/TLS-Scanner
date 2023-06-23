@@ -287,7 +287,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
 
-        prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
+        prettyAppendHeading(builder, "DTLS Bugs");
         prettyAppend(
                 builder,
                 "Accepts Finished with Epoch 0",
