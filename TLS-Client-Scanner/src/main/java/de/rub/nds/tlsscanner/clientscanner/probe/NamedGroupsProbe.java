@@ -30,6 +30,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -100,6 +101,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
         List<NamedGroup> supportedGroups = new LinkedList<>();
         for (NamedGroup group : baseList) {
             Config config = scannerConfig.createConfig();
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             setSharedConfigFields(config, group, cipherSuites);
             statesToExecute.add(new State(config));
         }
