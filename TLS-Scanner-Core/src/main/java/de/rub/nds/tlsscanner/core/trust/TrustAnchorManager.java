@@ -320,7 +320,7 @@ public class TrustAnchorManager {
     }
 
     public boolean hasCustomTrustAnchros() {
-        return customTrustAnchors.size() > 0;
+        return customTrustAnchors != null && !customTrustAnchors.isEmpty();
     }
 
     public boolean isCustomTrustAnchor(CertificateReport report) {
