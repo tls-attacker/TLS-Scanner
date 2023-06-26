@@ -11,6 +11,7 @@ package de.rub.nds.scanner.core.constants;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -21,9 +22,10 @@ import java.util.Map;
  */
 @XmlRootElement(name = "result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MapResult<S, T> extends CollectionResult<S> {
+public class MapResult<S, T> implements TestResult, Serializable {
 
     private final Map<S, T> map;
+    private final String name;
 
     /**
      * The constructor for the MapResult. Use property.name() for the name parameter.
@@ -32,7 +34,7 @@ public class MapResult<S, T> extends CollectionResult<S> {
      * @param name the name of the MapResult.
      */
     public MapResult(Map<S, T> map, String name) {
-        super(map.keySet(), name);
+        this.name = name;
         this.map = map;
     }
 
@@ -41,5 +43,10 @@ public class MapResult<S, T> extends CollectionResult<S> {
      */
     public Map<S, T> getMap() {
         return map;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 }
