@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RenegotiationProbe extends TlsServerProbe {
@@ -280,7 +281,7 @@ public class RenegotiationProbe extends TlsServerProbe {
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = report.getSupportedCipherSuites();
+        supportedSuites = new HashSet<>(report.getSupportedCipherSuites());
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
     }
