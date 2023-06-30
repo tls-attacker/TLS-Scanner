@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Represents a {@link Requirement} for required {@link ExtensionType}s. */
-public class ExtensionRequirement<R extends TlsScanReport<R>>
-        extends PrimitiveRequirement<R, ExtensionType> {
+public class ExtensionRequirement<ReportT extends TlsScanReport>
+        extends PrimitiveRequirement<ReportT, ExtensionType> {
 
     public ExtensionRequirement(List<ExtensionType> extensions) {
         super(extensions);
@@ -28,7 +28,7 @@ public class ExtensionRequirement<R extends TlsScanReport<R>>
     }
 
     @Override
-    public boolean evaluate(R report) {
+    public boolean evaluate(ReportT report) {
         if (parameters.size() == 0) {
             return true;
         }

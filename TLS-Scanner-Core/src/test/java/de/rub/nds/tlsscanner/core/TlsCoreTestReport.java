@@ -6,6 +6,8 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.scanner.core.passive;
+package de.rub.nds.tlsscanner.core;
 
-public interface TrackableValue {}
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+
+public class TlsCoreTestReport extends TlsScanReport {}

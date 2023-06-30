@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
@@ -41,8 +40,6 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
         }
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
-                new ListResult<>(
-                        new ArrayList<>(algorithms),
-                        TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT.name()));
+                new ArrayList<>(algorithms));
     }
 }

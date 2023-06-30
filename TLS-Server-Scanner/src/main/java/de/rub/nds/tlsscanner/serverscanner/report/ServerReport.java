@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.MapResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ServerReport extends TlsScanReport<ServerReport> {
+public class ServerReport extends TlsScanReport {
 
     private final String host;
     private final Integer port;
@@ -212,18 +212,13 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     }
 
     @Override
-    public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
+    public synchronized String toString() {
         return new ServerReportPrinter(
                         this,
-                        detail,
+                        ScannerDetail.NORMAL,
                         DefaultPrintingScheme.getDefaultPrintingScheme(),
-                        printColorful)
+                        false)
                 .getFullReport();
-    }
-
-    @Override
-    public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
     }
 
     public synchronized CheckPattern getMacCheckPatternFinished() {
@@ -259,31 +254,28 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     }
 
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> listResult =
-                (ListResult<InvalidCurveResponse>)
-                        getListResult(TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT);
+                getListResult(
+                        TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT, InvalidCurveResponse.class);
         return listResult == null ? null : listResult.getList();
     }
 
     // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
-        if (this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
+        if (getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
                 == TestResults.NOT_TESTED_YET) {
             return null;
         }
-        @SuppressWarnings("unchecked")
         ListResult<RaccoonAttackProbabilities> listResult =
-                (ListResult<RaccoonAttackProbabilities>)
-                        this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
+                getListResult(
+                        TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
+                        RaccoonAttackProbabilities.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<OcspCertificateResult> getOcspResults() {
-        @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> listResult =
-                (ListResult<OcspCertificateResult>)
-                        this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
+                getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -306,62 +298,60 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<CcaTestResult> listResult =
-                (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
+                getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS, CcaTestResult.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getNormalHpkpPins() {
-        @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult =
-                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
+                getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS, HpkpPin.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
-        @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult =
-                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+                getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, HpkpPin.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<SimulatedClientResult> listResult =
-                (ListResult<SimulatedClientResult>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS, SimulatedClientResult.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
-        @SuppressWarnings("unchecked")
         ListResult<ApplicationProtocol> listResult =
                 (ListResult<ApplicationProtocol>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
+                        getListResult(
+                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                                ApplicationProtocol.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized Set<CommonDhValues> getCommonDhValues() {
-        @SuppressWarnings("unchecked")
         SetResult<CommonDhValues> setResult =
-                (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
+                getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES, CommonDhValues.class);
         return setResult == null ? null : setResult.getSet();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
-        @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult =
-                (MapResult<NamedGroup, NamedGroupWitness>)
-                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
-        @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult =
-                (MapResult<NamedGroup, NamedGroupWitness>)
-                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
     }
 

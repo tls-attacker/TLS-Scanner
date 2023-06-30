@@ -6,8 +6,9 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.scanner.core.constants;
+package de.rub.nds.tlsscanner.core.constants;
 
+/** * Constants used by the statistical tests employed by the TlsRngAfterProbe */
 public class RandomnessConstants {
 
     // See NIST SP 800-22 2.4.4 (3)

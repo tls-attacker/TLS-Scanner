@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.transport.udp.ServerUdpTransportHandler;
 import de.rub.nds.tlsattacker.transport.udp.UdpTransportHandler;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 
-public class DestinationPortExtractor extends StatExtractor<Integer> {
+public class DestinationPortExtractor extends StatExtractor<State, Integer> {
 
     public DestinationPortExtractor() {
         super(TrackableValueType.DESTINATION_PORT);

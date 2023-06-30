@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -57,7 +56,7 @@ public class RandomnessProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
     }
 
@@ -70,10 +69,9 @@ public class RandomnessProbe extends TlsServerProbe {
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
-        @SuppressWarnings("unchecked")
         List<VersionSuiteListPair> versionSuitePairs =
-                ((ListResult<VersionSuiteListPair>)
-                                report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
+                report.getListResult(
+                                TlsAnalyzedProperty.VERSION_SUITE_PAIRS, VersionSuiteListPair.class)
                         .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {

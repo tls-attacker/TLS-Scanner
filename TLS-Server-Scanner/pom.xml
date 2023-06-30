@@ -25,10 +25,6 @@
         <!-- scope: compile -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>scanner-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>tls-scanner-core</artifactId>
         </dependency>
     </dependencies>

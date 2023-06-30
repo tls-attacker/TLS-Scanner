@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -19,7 +19,6 @@ import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TableContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
-import de.rub.nds.scanner.core.util.CollectionUtils;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -32,6 +31,7 @@ import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
+import de.rub.nds.tlsscanner.core.util.CollectionUtils;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -174,8 +174,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. RSA Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA.name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -187,9 +187,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. RSA Sig. Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG
-                                                    .name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -201,8 +200,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. DSS Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS.name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -214,8 +213,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. DH Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH.name())
+                            report.getIntegerResult(TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -691,7 +689,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(

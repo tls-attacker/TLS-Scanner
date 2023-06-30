@@ -16,11 +16,10 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -84,7 +83,7 @@ public class OcspProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         certResults = new LinkedList<>();
         for (CertificateChain serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
@@ -233,7 +232,6 @@ public class OcspProbe extends TlsServerProbe {
         return new ProbeRequirement<>(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
@@ -241,8 +239,7 @@ public class OcspProbe extends TlsServerProbe {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
-                ((ListResult<NamedGroup>)
-                                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS))
+                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, NamedGroup.class)
                         .getList();
     }
 

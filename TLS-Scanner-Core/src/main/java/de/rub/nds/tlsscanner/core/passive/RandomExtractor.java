@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class RandomExtractor extends StatExtractor<ComparableByteArray> {
+public class RandomExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public RandomExtractor() {
         super(TrackableValueType.RANDOM);

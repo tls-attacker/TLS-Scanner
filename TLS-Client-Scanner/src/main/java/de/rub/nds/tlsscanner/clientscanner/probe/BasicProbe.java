@@ -58,7 +58,7 @@ public class BasicProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config config = scannerConfig.createConfig();
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)

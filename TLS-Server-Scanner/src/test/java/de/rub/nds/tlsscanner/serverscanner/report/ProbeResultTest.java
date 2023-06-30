@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;

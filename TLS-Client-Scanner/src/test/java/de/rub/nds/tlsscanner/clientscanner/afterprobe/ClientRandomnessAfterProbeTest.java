@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -24,7 +24,6 @@ import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
@@ -61,10 +60,8 @@ public class ClientRandomnessAfterProbeTest {
         clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
         cbcIVContainer = new ExtractedValueContainer<>(TrackableValueType.CBC_IV);
 
-        extractedValueContainerMap = new HashMap<>();
-        extractedValueContainerMap.put(TrackableValueType.RANDOM, clientRandomContainer);
-        extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
-        report.setExtractedValueContainerMap(extractedValueContainerMap);
+        report.putExtractedValueContainer(TrackableValueType.RANDOM, clientRandomContainer);
+        report.putExtractedValueContainer(TrackableValueType.CBC_IV, cbcIVContainer);
     }
 
     @Test
@@ -109,7 +106,6 @@ public class ClientRandomnessAfterProbeTest {
             clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
             cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
         }
-        report.setExtractedValueContainerMap(extractedValueContainerMap);
         probe.analyze(report);
 
         for (EntropyReport entropyReport : report.getEntropyReports()) {

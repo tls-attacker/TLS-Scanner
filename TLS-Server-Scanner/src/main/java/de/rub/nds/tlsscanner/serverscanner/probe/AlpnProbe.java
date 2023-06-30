@@ -36,7 +36,7 @@ public class AlpnProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         supportedAlpnProtocols = getSupportedAlpnProtocols();
     }
 

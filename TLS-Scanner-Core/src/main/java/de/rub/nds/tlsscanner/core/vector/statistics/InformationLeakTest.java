@@ -16,9 +16,10 @@ import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest<T> {
+public class InformationLeakTest<TestInfoT extends TestInfo>
+        extends VectorStatisticTest<TestInfoT> {
 
-    public InformationLeakTest(T testInfo, List<VectorResponse> responseList) {
+    public InformationLeakTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         super(testInfo, responseList);
         updateInternals();
     }

@@ -17,7 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class CbcIvExtractor extends StatExtractor<ComparableByteArray> {
+public class CbcIvExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public CbcIvExtractor() {
         super(TrackableValueType.CBC_IV);

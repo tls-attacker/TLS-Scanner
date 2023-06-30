@@ -40,7 +40,6 @@
     </developers>
 
     <modules>
-        <module>Scanner-Core</module>
         <module>TLS-Client-Scanner</module>
         <module>TLS-Scanner-Core</module>
         <module>TLS-Server-Scanner</module>
@@ -68,11 +67,6 @@
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>de.rub.nds.tls.scanner</groupId>
-                <artifactId>scanner-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>de.rub.nds.tls.scanner</groupId>
                 <artifactId>tls-client-scanner</artifactId>
@@ -140,6 +134,10 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>modifiable-variable</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.rub.nds</groupId>
+            <artifactId>scanner-core</artifactId>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>

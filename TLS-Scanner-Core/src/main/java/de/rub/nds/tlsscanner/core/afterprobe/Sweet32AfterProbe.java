@@ -9,17 +9,17 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Set;
 
-public class Sweet32AfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public class Sweet32AfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             Set<CipherSuite> ciphersuites = report.getSupportedCipherSuites();

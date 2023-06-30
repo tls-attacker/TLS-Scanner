@@ -15,7 +15,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import java.util.Arrays;
 
-public class SessionIdExtractor extends StatExtractor<ComparableByteArray> {
+public class SessionIdExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public SessionIdExtractor() {
         super(TrackableValueType.SESSION_ID);

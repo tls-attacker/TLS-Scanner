@@ -8,13 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -175,16 +175,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
-            for (ScannerProbe<ServerReport, ?> unexecutedProbe : report.getUnexecutedProbes())
+            for (ScannerProbe<?, ?> unexecutedProbe : report.getUnexecutedProbes())
+                //noinspection unchecked
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
-                        unexecutedProbe
-                                .getRequirements()
-                                .getUnfulfilledRequirements(report)
-                                .stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(";")));
+                        ((ScannerProbe<ServerReport, ?>) unexecutedProbe)
+                                .getRequirements().getUnfulfilledRequirements(report).stream()
+                                        .map(Object::toString)
+                                        .collect(Collectors.joining(";")));
         }
     }
 
@@ -903,10 +902,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
         appendOcspOverview(builder);
-        @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> ocspResult =
-                (ListResult<OcspCertificateResult>)
-                        report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS);
+                report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
         if (ocspResult != null) {
             int certCtr = 1;
             for (OcspCertificateResult result : report.getOcspResults()) {
@@ -2670,10 +2667,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             try {
                 if (report.getProtocolType() == ProtocolType.TLS) {
                     prettyAppend(
-                            builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                            builder,
+                            "TCP connections",
+                            String.valueOf(report.getPerformedConnections()));
                 }
                 prettyAppendSubheading(builder, "Probe execution performance");
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     prettyAppend(
                             builder,

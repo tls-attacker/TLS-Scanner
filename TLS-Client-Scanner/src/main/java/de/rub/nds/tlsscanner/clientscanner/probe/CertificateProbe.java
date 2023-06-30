@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -29,7 +30,6 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class CertificateProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         clientCertificates = new HashSet<>();
         for (ClientCertificateType certType : getTestableCertTypes()) {
             Config config = getConfig(certType);
