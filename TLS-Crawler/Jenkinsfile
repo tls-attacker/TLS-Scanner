@@ -144,14 +144,10 @@ pipeline {
             steps {
                 unstash 'jar'
                 unstash 'lib'
-                withMaven(jdk: env.JDK_TOOL_NAME, maven: env.MAVEN_TOOL_NAME) {
-                    sh 'mvn dependency:get -Dartifact=co.elastic.apm:elastic-apm-agent:1.38.0'
-                    sh 'mvn dependency:copy -Dartifact=co.elastic.apm:elastic-apm-agent:1.38.0 -DoutputDirectory=.'
-                }
-                sh 'docker build -f ci.Dockerfile -t ${DOCKER_PUSH_URL}/tls-crawler:latest -t ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER} .'
+                sh 'docker build -f ci.Dockerfile -t ${DOCKER_PUSH_URL}/tls-crawler-development:latest -t ${DOCKER_PUSH_URL}/tls-crawler-development:${BUILD_TIMESTAMP}_${BUILD_NUMBER} .'
                 sh 'docker login -u $DOCKER_PUSH_USR -p $DOCKER_PUSH_PSW $DOCKER_PUSH_URL'
-                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:latest'
-                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler-development:latest'
+                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler-development:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
             }
 
 
