@@ -118,14 +118,14 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
         </dependency>
+        <!-- scope: compile -->
+        <dependency>
+            <groupId>de.rub.nds</groupId>
+            <artifactId>scanner-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
             <artifactId>tls-core</artifactId>
-        </dependency>
-        <!-- scope: compile -->
-        <dependency>
-            <groupId>de.rub.nds.tls.scanner</groupId>
-            <artifactId>scanner-core</artifactId>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.scanner</groupId>
