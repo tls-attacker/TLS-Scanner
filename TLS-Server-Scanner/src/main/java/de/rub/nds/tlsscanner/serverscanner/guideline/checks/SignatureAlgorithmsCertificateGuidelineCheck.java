@@ -8,22 +8,21 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
-
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -63,15 +62,15 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
-        if (report.getSignatureAndHashAlgorithm() == null) {
+        if (report.getSignatureAlgorithm() == null) {
             return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
         if (!this.recommendedAlgorithms.contains(
-                report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
-            nonRecommended.add(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm());
+                report.getSignatureAlgorithm())) {
+            nonRecommended.add(report.getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(
                 TestResults.of(nonRecommended.isEmpty()), nonRecommended);

@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
-
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement

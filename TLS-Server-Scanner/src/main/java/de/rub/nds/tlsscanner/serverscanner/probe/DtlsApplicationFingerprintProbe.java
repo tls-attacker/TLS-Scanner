@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.primitives.Bytes;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -33,12 +39,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -181,7 +181,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         State state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessage =
+        ProtocolMessage receivedMessage =
                 WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
 
         trace =
@@ -196,7 +196,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessageModified =
+        ProtocolMessage receivedMessageModified =
                 WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
         if (receivedMessage != null
                 && receivedMessageModified != null

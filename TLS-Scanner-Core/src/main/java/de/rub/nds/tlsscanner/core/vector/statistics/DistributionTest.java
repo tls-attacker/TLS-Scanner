@@ -9,12 +9,10 @@
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
-
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
 public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
 

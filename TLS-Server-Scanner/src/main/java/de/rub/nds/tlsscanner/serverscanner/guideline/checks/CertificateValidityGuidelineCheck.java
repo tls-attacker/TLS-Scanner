@@ -12,7 +12,7 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateValidityGuidelineCheckResult;
 
@@ -56,12 +56,12 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Duration validityPeriod =
                 Duration.between(
-                        Instant.ofEpochMilli(report.getValidFrom().getTime()),
-                        Instant.ofEpochMilli(report.getValidTo().getTime()));
+                        Instant.ofEpochMilli(report.getNotBefore().toDate().getTime()),
+                        Instant.ofEpochMilli(report.getNotAfter().toDate().getTime()));
         return new CertificateValidityGuidelineCheckResult(
                 TestResults.of(validityPeriod.toDays() <= this.days),
                 days,

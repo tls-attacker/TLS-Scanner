@@ -8,69 +8,55 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.config;
 
+import java.util.List;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 
-import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientAuthenticationDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 
-import java.util.List;
-
 public class ServerScannerConfig extends TlsScannerConfig {
 
-    @ParametersDelegate private ClientDelegate clientDelegate;
+    @ParametersDelegate
+    private ClientDelegate clientDelegate;
 
-    @ParametersDelegate private CcaDelegate ccaDelegate;
+    @ParametersDelegate
+    private ClientAuthenticationDelegate clientAuthenticationDelegate;
 
-    @Parameter(
-            names = "-applicationProtocol",
-            required = false,
-            description = "Which application data protocol the server is running.")
+    @Parameter(names = "-applicationProtocol", required = false, description = "Which application data protocol the server is running.")
     private ApplicationProtocol applicationProtocol = ApplicationProtocol.HTTP;
 
-    @Parameter(
-            names = "-additionalRandomCollection",
-            required = false,
-            description =
-                    "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
+    @Parameter(names = "-additionalRandomCollection", required = false, description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
 
-    @Parameter(
-            names = "-ca",
-            required = false,
-            variableArity = true,
-            description =
-                    "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
+    @Parameter(names = "-ca", required = false, variableArity = true, description = "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
     private List<String> customCAPathList = null;
 
-    @Parameter(
-            names = "-configSearchCooldown",
-            required = false,
-            description =
-                    "Pause between config tests to ensure the server finished processing the previously rejected messages")
+    @Parameter(names = "-configSearchCooldown", required = false, description = "Pause between config tests to ensure the server finished processing the previously rejected messages")
     private boolean configSearchCooldown = false;
 
     public ServerScannerConfig(GeneralDelegate delegate) {
         super(delegate);
 
         this.clientDelegate = new ClientDelegate();
-        this.ccaDelegate = new CcaDelegate();
+        this.clientAuthenticationDelegate = new ClientAuthenticationDelegate();
 
         addDelegate(clientDelegate);
-        addDelegate(ccaDelegate);
+        addDelegate(clientAuthenticationDelegate);
     }
 
     public ServerScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
         super(delegate);
 
         this.clientDelegate = clientDelegate;
-        this.ccaDelegate = new CcaDelegate();
+        this.clientAuthenticationDelegate = new ClientAuthenticationDelegate();
 
         addDelegate(clientDelegate);
-        addDelegate(ccaDelegate);
+        addDelegate(clientAuthenticationDelegate);
     }
 
     public ApplicationProtocol getApplicationProtocol() {
@@ -85,8 +71,8 @@ public class ServerScannerConfig extends TlsScannerConfig {
         return clientDelegate;
     }
 
-    public CcaDelegate getCcaDelegate() {
-        return ccaDelegate;
+    public ClientAuthenticationDelegate getClientAuthenticationDelegate() {
+        return clientAuthenticationDelegate;
     }
 
     public int getAdditionalRandomnessHandshakes() {

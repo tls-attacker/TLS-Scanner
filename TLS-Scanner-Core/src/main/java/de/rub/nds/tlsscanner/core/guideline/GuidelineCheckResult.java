@@ -9,9 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import de.rub.nds.scanner.core.constants.TestResult;
-
 import jakarta.xml.bind.annotation.XmlAnyElement;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

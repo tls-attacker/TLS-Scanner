@@ -8,12 +8,17 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.function.Function;
+
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.NameType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.constants.SniType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.sni.ServerNamePair;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -27,11 +32,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.function.Function;
 
 public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
@@ -74,7 +74,7 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> 
                 new LinkedList<>(
                         Arrays.asList(
                                 new ServerNamePair(
-                                        NameType.HOST_NAME.getValue(),
+                                        SniType.HOST_NAME.getValue(),
                                         SNI_FAKE_NAME.getBytes(Charset.forName("ASCII"))))));
 
         WorkflowTrace trace =

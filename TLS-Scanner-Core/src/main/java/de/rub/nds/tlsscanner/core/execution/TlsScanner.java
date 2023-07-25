@@ -12,7 +12,6 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-
 import java.util.LinkedList;
 import java.util.List;
 

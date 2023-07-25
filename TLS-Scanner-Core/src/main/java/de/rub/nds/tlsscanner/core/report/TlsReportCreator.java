@@ -8,6 +8,18 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
+import java.util.Date;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -21,22 +33,12 @@ import de.rub.nds.scanner.core.report.container.TextContainer;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-
-import java.security.PublicKey;
-import java.util.Date;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class TlsReportCreator extends ReportCreator {
 
@@ -98,15 +100,13 @@ public class TlsReportCreator extends ReportCreator {
         ListContainer container = new ListContainer();
         if (report.getVersionSuitePairs() != null) {
             for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
-                String enforcesCsOrderingSuffix =
-                        report.getResult(TlsAnalyzedProperty.ENFORCES_CS_ORDERING)
-                                        == TestResults.TRUE
+                String enforcesCsOrderingSuffix = report
+                        .getResult(TlsAnalyzedProperty.ENFORCES_CS_ORDERING) == TestResults.TRUE
                                 ? "(server order)"
                                 : "";
-                String versionHeadline =
-                        "Supported in "
-                                + pair.getVersion().toHumanReadable()
-                                + enforcesCsOrderingSuffix;
+                String versionHeadline = "Supported in "
+                        + pair.getVersion().toHumanReadable()
+                        + enforcesCsOrderingSuffix;
                 container.add(new HeadlineContainer(versionHeadline));
 
                 ListContainer versionSuites = new ListContainer();
@@ -209,8 +209,7 @@ public class TlsReportCreator extends ReportCreator {
                         report));
         container.add(
                 createKeyValueContainer(
-                        TlsAnalyzedProperty
-                                .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                        TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
                         report));
         return container;
     }
@@ -284,7 +283,7 @@ public class TlsReportCreator extends ReportCreator {
         int certCtr = 1;
         if (report.getCertificateChainList() != null
                 && !report.getCertificateChainList().isEmpty()) {
-            for (CertificateChain chain : report.getCertificateChainList()) {
+            for (CertificateChainReport chain : report.getCertificateChainList()) {
                 container.add(
                         new HeadlineContainer(
                                 "Certificate Chain (Certificate "
@@ -299,7 +298,7 @@ public class TlsReportCreator extends ReportCreator {
         return container;
     }
 
-    private void appendCertificate(ListContainer outerContainer, CertificateChain chain) {
+    private void appendCertificate(ListContainer outerContainer, CertificateChainReport chain) {
         ListContainer container = new ListContainer();
         container.add(
                 new KeyValueContainer(
@@ -341,45 +340,47 @@ public class TlsReportCreator extends ReportCreator {
                     subCertificateContainer.add(
                             createDefaultKeyValueContainer("Issuer", certReport.getIssuer()));
                 }
-                if (certReport.getValidFrom() != null) {
-                    if (certReport.getValidFrom().before(new Date())) {
+                if (certReport.getNotBefore() != null) {
+                    if (certReport.getNotBefore().isBeforeNow()) {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid From",
                                         AnsiColor.DEFAULT_COLOR,
-                                        certReport.getValidFrom().toString(),
+                                        certReport.getNotBefore().toString(),
                                         AnsiColor.GREEN));
                     } else {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid From",
                                         AnsiColor.DEFAULT_COLOR,
-                                        certReport.getValidFrom().toString() + " - NOT YET VALID",
+                                        certReport.getNotBefore().toString() + " - NOT YET VALID",
                                         AnsiColor.RED));
                     }
                 }
-                if (certReport.getValidTo() != null) {
-                    if (certReport.getValidTo().after(new Date())) {
+                if (certReport.getNotAfter() != null) {
+                    if (certReport.getNotAfter().isBeforeNow()) {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid Till",
                                         AnsiColor.DEFAULT_COLOR,
-                                        certReport.getValidTo().toString(),
+                                        certReport.getNotAfter().toString(),
                                         AnsiColor.GREEN));
                     } else {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid Till",
                                         AnsiColor.DEFAULT_COLOR,
-                                        certReport.getValidTo().toString() + " - EXPIRED",
+                                        certReport.getNotAfter().toString() + " - EXPIRED",
                                         AnsiColor.RED));
                     }
                 }
-                if (certReport.getValidFrom() != null
-                        && certReport.getValidTo() != null
-                        && certReport.getValidTo().after(new Date())) {
-                    long time = certReport.getValidTo().getTime() - System.currentTimeMillis();
-                    long days = TimeUnit.MILLISECONDS.toDays(time);
+                if (certReport.getNotBefore() != null
+                        && certReport.getNotAfter() != null
+                        && certReport.getNotAfter().isAfterNow()) {
+                    // number of days the certificate is still valid
+                    long days = TimeUnit.MILLISECONDS.toDays(
+                            certReport.getNotAfter().toDate().getTime()
+                                    - new Date().getTime());
                     if (days < 1) {
                         subCertificateContainer.add(
                                 new TextContainer(
@@ -433,27 +434,21 @@ public class TlsReportCreator extends ReportCreator {
                                             ? AnsiColor.RED
                                             : AnsiColor.GREEN));
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
+                if (certReport.getSignatureAlgorithm() != null) {
                     subCertificateContainer.add(
                             createDefaultKeyValueContainer(
                                     "Signature Algorithm",
-                                    certReport
-                                            .getSignatureAndHashAlgorithm()
-                                            .getSignatureAlgorithm()
-                                            .name()));
+                                    certReport.getSignatureAlgorithm().getHumanReadable()));
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
-                    if (certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.SHA1
-                            || certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.MD5) {
+                if (certReport.getHashAlgorithm() != null) {
+                    if (certReport.getHashAlgorithm() == HashAlgorithm.SHA1
+                            || certReport.getHashAlgorithm() == HashAlgorithm.MD5) {
                         if (!certReport.isTrustAnchor() && !certReport.getSelfSigned()) {
                             subCertificateContainer.add(
                                     new KeyValueContainer(
                                             "Hash Algorithm",
                                             AnsiColor.DEFAULT_COLOR,
                                             certReport
-                                                    .getSignatureAndHashAlgorithm()
                                                     .getHashAlgorithm()
                                                     .name(),
                                             AnsiColor.RED));
@@ -462,9 +457,8 @@ public class TlsReportCreator extends ReportCreator {
                                     createDefaultKeyValueContainer(
                                             "Hash Algorithm",
                                             certReport
-                                                            .getSignatureAndHashAlgorithm()
-                                                            .getHashAlgorithm()
-                                                            .name()
+                                                    .getHashAlgorithm()
+                                                    .name()
                                                     + " - Not critical"));
                         }
                     } else {
@@ -473,7 +467,6 @@ public class TlsReportCreator extends ReportCreator {
                                         "Hash Algorithm",
                                         AnsiColor.DEFAULT_COLOR,
                                         certReport
-                                                .getSignatureAndHashAlgorithm()
                                                 .getHashAlgorithm()
                                                 .name(),
                                         AnsiColor.GREEN));
@@ -559,16 +552,16 @@ public class TlsReportCreator extends ReportCreator {
                 }
                 subCertificateContainer.add(
                         createDefaultKeyValueContainer(
-                                "Fingerprint (SHA256)", certReport.getSHA256Fingerprint()));
+                                "Fingerprint (SHA256)", ArrayConverter.bytesToHexString(certReport.getSHA256Fingerprint(),false,false)));
                 container.add(subCertificateContainer);
             }
         }
         outerContainer.add(container);
     }
 
-    private void appendPublicKey(ListContainer outerContainer, PublicKey publicKey) {
-        if (publicKey instanceof CustomDhPublicKey) {
-            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+    private void appendPublicKey(ListContainer outerContainer, PublicKeyContainer publicKey) {
+        if (publicKey instanceof DhPublicKey) {
+            DhPublicKey dhPublicKey = (DhPublicKey) publicKey;
             outerContainer.add(
                     createDefaultKeyValueContainer("PublicKey Type:", "Static Diffie Hellman"));
 
@@ -579,22 +572,22 @@ public class TlsReportCreator extends ReportCreator {
                     createDefaultKeyHexValueContainer(
                             "Generator", dhPublicKey.getModulus().toString(16)));
             outerContainer.add(
-                    createDefaultKeyHexValueContainer("Y", dhPublicKey.getY().toString(16)));
-        } else if (publicKey instanceof CustomDsaPublicKey) {
-            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+                    createDefaultKeyHexValueContainer("PublicKey", dhPublicKey.getPublicKey().toString(16)));
+        } else if (publicKey instanceof DsaPublicKey) {
+            DsaPublicKey dsaPublicKey = (DsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "DSA"));
             outerContainer.add(
                     createDefaultKeyHexValueContainer(
-                            "Modulus", dsaPublicKey.getDsaP().toString(16)));
+                            "Modulus", dsaPublicKey.getModulus().toString(16)));
             outerContainer.add(
                     createDefaultKeyHexValueContainer(
-                            "Generator", dsaPublicKey.getDsaG().toString(16)));
+                            "Generator", dsaPublicKey.getGenerator().toString(16)));
             outerContainer.add(
-                    createDefaultKeyHexValueContainer("Q", dsaPublicKey.getDsaQ().toString(16)));
+                    createDefaultKeyHexValueContainer("Q", dsaPublicKey.getQ().toString(16)));
             outerContainer.add(
                     createDefaultKeyHexValueContainer("X", dsaPublicKey.getY().toString(16)));
-        } else if (publicKey instanceof CustomRsaPublicKey) {
-            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+        } else if (publicKey instanceof RsaPublicKey) {
+            RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
             outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "RSA"));
             outerContainer.add(
                     createDefaultKeyHexValueContainer(
@@ -602,20 +595,22 @@ public class TlsReportCreator extends ReportCreator {
             outerContainer.add(
                     createDefaultKeyHexValueContainer(
                             "Public exponent", rsaPublicKey.getPublicExponent().toString(16)));
-        } else if (publicKey instanceof CustomEcPublicKey) {
-            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
-            outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "EC"));
-            if (ecPublicKey.getGroup() == null) {
-                outerContainer.add(
-                        createDefaultKeyValueContainer(
-                                "Group (GOST)", ecPublicKey.getGostCurve().name()));
-            } else {
-                outerContainer.add(
-                        createDefaultKeyValueContainer("Group", ecPublicKey.getGroup().name()));
-            }
+        } else if (publicKey instanceof EcdhPublicKey) {
+            EcdhPublicKey ecPublicKey = (EcdhPublicKey) publicKey;
+            outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "ECDH"));
+            outerContainer.add(
+                    createDefaultKeyValueContainer("Group", ecPublicKey.getParameters().getName()));
+
             outerContainer.add(
                     createDefaultKeyValueContainer(
-                            "Public Point", ecPublicKey.getPoint().toString()));
+                            "Public Point", ecPublicKey.getPublicPoint().toString()));
+        } else if (publicKey instanceof EcdsaPublicKey) {
+            EcdsaPublicKey ecPublicKey = (EcdsaPublicKey) publicKey;
+            outerContainer.add(createDefaultKeyValueContainer("PublicKey Type:", "ECDH"));
+            outerContainer.add(createDefaultKeyValueContainer("Group", ecPublicKey.getParameters().getName()));
+            outerContainer.add(
+                    createDefaultKeyValueContainer(
+                            "Public Point", ecPublicKey.getPublicPoint().toString()));
         } else {
             outerContainer.add(createDefaultTextContainer(publicKey.toString()));
         }

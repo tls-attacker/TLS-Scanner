@@ -8,20 +8,20 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     private boolean supported;
-    private NamedGroup namedGroup;
+    private NamedEllipticCurveParameters namedEllipticCurveParameters;
 
     public CertificateCurveGuidelineCheckResult(
-            TestResult result, boolean supported, NamedGroup namedGroup) {
+            TestResult result, boolean supported, NamedEllipticCurveParameters namedEllipticCurveParameters) {
         super(result);
         this.supported = supported;
-        this.namedGroup = namedGroup;
+        this.namedEllipticCurveParameters = namedEllipticCurveParameters;
     }
 
     public CertificateCurveGuidelineCheckResult(TestResult result) {
@@ -30,11 +30,11 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        return supported ? namedGroup + " is recommended." : namedGroup + " is not recommended.";
+        return supported ? namedEllipticCurveParameters + " is recommended." : namedEllipticCurveParameters + " is not recommended.";
     }
 
-    public NamedGroup getNamedGroup() {
-        return namedGroup;
+    public NamedEllipticCurveParameters getNamedEllipticCurveParameters() {
+        return namedEllipticCurveParameters;
     }
 
     public boolean isSupported() {

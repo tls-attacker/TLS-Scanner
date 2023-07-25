@@ -8,22 +8,28 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateSignatureCheckResult;
-
+import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-import java.util.Locale;
-
-/** Checks if the certificate is signed with an algorithm consistent with the public key. */
+/**
+ * Checks if the certificate is signed with an algorithm consistent with the
+ * public key.
+ */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateSignatureCheck extends CertificateGuidelineCheck {
@@ -50,29 +56,38 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         SignatureAlgorithm signatureAlgorithm =
-                report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
-        String keyAlgorithm = report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH);
-        switch (keyAlgorithm) {
-            case "EC":
-                return new CertificateSignatureCheckResult(
-                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)),
-                        keyAlgorithm,
+                report.getSignatureAlgorithm();
+        PublicKeyContainer publicKey =  report.getPublicKey();
+        if(publicKey instanceof EcdsaPublicKey)
+        {       return new CertificateSignatureCheckResult(
+                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA),
+                        X509PublicKeyType.ECDH_ECDSA,
                         signatureAlgorithm);
-            case "DH":
+        }
+        if(publicKey instanceof DhPublicKey)
+        {
                 return new CertificateSignatureCheckResult(
-                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)),
-                        keyAlgorithm,
+                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA),
+                        X509PublicKeyType.DH,
                         signatureAlgorithm);
-            case "RSA":
-            case "DSA":
+        }
+        if(publicKey instanceof RsaPublicKey || publicKey instanceof DsaPublicKey)
+        {    
+                X509PublicKeyType publicKeyType;
+                if(publicKey instanceof RsaPublicKey)
+                {
+                    publicKeyType = X509PublicKeyType.RSA;
+                }else{
+                    publicKeyType = X509PublicKeyType.DSA;
+                }
                 return new CertificateSignatureCheckResult(
                         TestResults.of(
                                 signatureAlgorithm.equals(
-                                        SignatureAlgorithm.valueOf(keyAlgorithm))),
-                        keyAlgorithm,
+                                        SignatureAlgorithm.valueOf(publicKeyType))),
+                        publicKey,
                         signatureAlgorithm);
         }
         return new CertificateSignatureCheckResult(

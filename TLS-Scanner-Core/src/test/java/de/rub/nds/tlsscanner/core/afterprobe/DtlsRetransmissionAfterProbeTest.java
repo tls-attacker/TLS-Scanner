@@ -14,11 +14,9 @@ import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 public class DtlsRetransmissionAfterProbeTest {
 

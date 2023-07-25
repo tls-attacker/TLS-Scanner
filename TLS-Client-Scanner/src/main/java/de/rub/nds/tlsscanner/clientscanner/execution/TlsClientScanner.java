@@ -8,6 +8,11 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.execution;
 
+import java.util.function.Function;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.scanner.core.passive.StatsWriter;
@@ -54,11 +59,6 @@ import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.function.Function;
 
 public final class TlsClientScanner extends TlsScanner {
 
@@ -143,15 +143,14 @@ public final class TlsClientScanner extends TlsScanner {
 
         ClientReport clientReport = new ClientReport();
         ScanJob job = new ScanJob(probeList, afterList);
-        ThreadedScanJobExecutor<ClientReport> executor =
-                new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), "");
+        ThreadedScanJobExecutor<ClientReport> executor = new ThreadedScanJobExecutor(config, job,
+                config.getParallelProbes(), "");
         long scanStartTime = System.currentTimeMillis();
         clientReport = executor.execute(clientReport);
         long scanEndTime = System.currentTimeMillis();
         clientReport.setScanStartTime(scanStartTime);
         clientReport.setScanEndTime(scanEndTime);
-        ProtocolType protocolType =
-                config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
+        ProtocolType protocolType = config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
         clientReport.setProtocolType(protocolType);
 
         executor.shutdown();
@@ -169,7 +168,8 @@ public final class TlsClientScanner extends TlsScanner {
     }
 
     /**
-     * Sets the appropriate executor callbacks possibly provided through the callback delegate. The
+     * Sets the appropriate executor callbacks possibly provided through the
+     * callback delegate. The
      * client run command will be executed after the BeforeTransportInitCallback.
      */
     private void setCallbacks() {
@@ -201,7 +201,8 @@ public final class TlsClientScanner extends TlsScanner {
     }
 
     /**
-     * Provides a callback that kills all the processes that have been spawned during this state
+     * Provides a callback that kills all the processes that have been spawned
+     * during this state
      * execution.
      *
      * @return A callback that kills all spawned subprocesses

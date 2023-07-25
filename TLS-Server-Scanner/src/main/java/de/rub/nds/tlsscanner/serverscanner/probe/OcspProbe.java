@@ -41,7 +41,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -59,7 +59,7 @@ import java.util.Random;
 
 public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
-    private List<CertificateChain> serverCertChains;
+    private List<CertificateChainReport> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
 
     private List<OcspCertificateResult> certResults;
@@ -88,14 +88,14 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     public void executeTest() {
         certResults = new LinkedList<>();
-        for (CertificateChain serverCertChain : serverCertChains) {
+        for (CertificateChainReport serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
 
-            getMustStaple(serverCertChain.getCertificate(), certResult);
+            getMustStaple(serverCertChain.getCertificateChain(), certResult);
             if (configSelector.foundWorkingConfig()) {
                 getStapledResponse(certResult);
             }
-            performRequest(serverCertChain.getCertificate(), certResult);
+            performRequest(serverCertChain.getCertificateChain(), certResult);
 
             certResults.add(certResult);
         }
@@ -239,7 +239,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
-        for (CertificateChain chain : report.getCertificateChainList()) {
+        for (CertificateChainReport chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =

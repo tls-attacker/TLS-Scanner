@@ -10,22 +10,21 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.HandshakeSimulationProbe;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.Set;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 
 public class ProbeResultTest {
 
@@ -43,30 +42,23 @@ public class ProbeResultTest {
                 continue;
             }
             String testName = someProbeClass.getSimpleName().replace("Probe", "");
-            if (someProbeClass.equals(HandshakeSimulationProbe.class)) {
-                LOGGER.info("Skipping: HandshakeSimulation due to performance reasons");
-                continue;
-            }
             // Trying to find equivalent preparator, message and serializer
             for (Constructor c : someProbeClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ServerScannerConfig.class)) {
                         LOGGER.info("Testing mergeability:" + testName);
-                        TlsProbe probe =
-                                (TlsProbe)
-                                        c.newInstance(
-                                                new ServerScannerConfig(new GeneralDelegate()),
-                                                new ParallelExecutor(1, 1));
+                        TlsProbe probe = (TlsProbe) c.newInstance(
+                                new ServerScannerConfig(new GeneralDelegate()),
+                                new ParallelExecutor(1, 1));
                         ServerReport report = new ServerReport("somehost", 443);
                         probe.merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");
-                        ServerReportPrinter printer =
-                                new ServerReportPrinter(
-                                        report,
-                                        ScannerDetail.ALL,
-                                        DefaultPrintingScheme.getDefaultPrintingScheme(),
-                                        true);
+                        ServerReportPrinter printer = new ServerReportPrinter(
+                                report,
+                                ScannerDetail.ALL,
+                                DefaultPrintingScheme.getDefaultPrintingScheme(),
+                                true);
                         printer.getFullReport();
                         LOGGER.info("--Success");
                     }

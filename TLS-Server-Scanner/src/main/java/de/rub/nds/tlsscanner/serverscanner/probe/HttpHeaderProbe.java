@@ -80,20 +80,19 @@ public class HttpHeaderProbe extends TlsServerProbe<ConfigSelector, ServerReport
         ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
         HttpResponseMessage responseMessage = null;
         if (action.getReceivedHttpMessages() != null) {
-            for (HttpMessage<?> httpMsg : action.getReceivedHttpMessages()) {
-                if (httpMsg instanceof HttpResponseMessage) {
-                    responseMessage = (HttpResponseMessage) httpMsg;
+            for (HttpMessage httpMessage : action.getReceivedHttpMessages()) {
+                if (httpMessage instanceof HttpResponseMessage) {
+                    responseMessage = (HttpResponseMessage) httpMessage;
                     break;
                 }
             }
         }
-        boolean speaksHttps = responseMessage != null;
-        if (speaksHttps) {
+        if (responseMessage != null) {
             headerList = responseMessage.getHeader();
         } else {
             headerList = new LinkedList<>();
         }
-        this.speaksHttps = speaksHttps == true ? TestResults.TRUE : TestResults.FALSE;
+        this.speaksHttps = responseMessage != null ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override

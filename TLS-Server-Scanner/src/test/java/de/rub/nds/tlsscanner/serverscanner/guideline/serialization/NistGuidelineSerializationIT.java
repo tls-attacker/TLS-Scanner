@@ -8,8 +8,22 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
@@ -17,18 +31,21 @@ import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
-
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
 import jakarta.xml.bind.JAXBException;
-
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class NistGuidelineSerializationIT {
 
@@ -81,7 +98,7 @@ public class NistGuidelineSerializationIT {
                         "Shall be configured with an RSA signature certificate or an ECDSA signature certificate",
                         RequirementLevel.MUST,
                         true,
-                        Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.ECDSA)));
+                        Arrays.asList(SignatureAlgorithm.RSA_PKCS1, SignatureAlgorithm.ECDSA))); //TODO check if correct (pkcs#1)
         checks.add(
                 new CertificateCurveGuidelineCheck(
                         "For ECDSA: Curve P-256 or curve P-384 should be used in the public key",
@@ -233,7 +250,7 @@ public class NistGuidelineSerializationIT {
                 new HashAlgorithmStrengthCheck(
                         "All server and client certificates and certificates in their certification paths shall be signed using SHA-224 or a stronger hashing algorithm.",
                         RequirementLevel.MUST,
-                        HashAlgorithm.SHA224));
+                        HashAlgorithm.SHA512_224));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The server shall support secure renegotiation Extension.",

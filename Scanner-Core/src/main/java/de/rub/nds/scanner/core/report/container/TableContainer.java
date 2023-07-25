@@ -9,7 +9,6 @@
 package de.rub.nds.scanner.core.report.container;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

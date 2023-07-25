@@ -659,40 +659,40 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 if (certReport.getIssuer() != null) {
                     prettyAppend(builder, "Issuer", certReport.getIssuer());
                 }
-                if (certReport.getValidFrom() != null) {
-                    if (certReport.getValidFrom().before(new Date())) {
+                if (certReport.getNotBefore() != null) {
+                    if (certReport.getNotBefore().before(new Date())) {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString(),
+                                certReport.getNotBefore().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString() + " - NOT YET VALID",
+                                certReport.getNotBefore().toString() + " - NOT YET VALID",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidTo() != null) {
-                    if (certReport.getValidTo().after(new Date())) {
+                if (certReport.getNotAfter() != null) {
+                    if (certReport.getNotAfter().after(new Date())) {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString(),
+                                certReport.getNotAfter().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString() + " - EXPIRED",
+                                certReport.getNotAfter().toString() + " - EXPIRED",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidFrom() != null
-                        && certReport.getValidTo() != null
-                        && certReport.getValidTo().after(new Date())) {
-                    long time = certReport.getValidTo().getTime() - System.currentTimeMillis();
+                if (certReport.getNotBefore() != null
+                        && certReport.getNotAfter() != null
+                        && certReport.getNotAfter().after(new Date())) {
+                    long time = certReport.getNotAfter().getTime() - System.currentTimeMillis();
                     long days = TimeUnit.MILLISECONDS.toDays(time);
                     if (days < 1) {
                         prettyAppend(

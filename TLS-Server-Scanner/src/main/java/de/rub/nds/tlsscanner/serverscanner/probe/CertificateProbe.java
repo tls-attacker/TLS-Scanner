@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -27,12 +33,6 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
 
@@ -362,9 +362,9 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         if (WorkflowTraceUtil.didReceiveMessage(
                         HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                 && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
-                && state.getTlsContext().getServerCertificate() != null) {
+                && state.getTlsContext().getServerCertificateChain() != null) {
             return new CertificateChain(
-                    state.getTlsContext().getServerCertificate(),
+                    state.getTlsContext().getServerCertificateChain(),
                     tlsConfig.getDefaultClientConnection().getHostname());
         } else {
             return null;
@@ -386,13 +386,13 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             if (WorkflowTraceUtil.didReceiveMessage(
                             HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
-                    && state.getTlsContext().getServerCertificate() != null
-                    && state.getTlsContext().getEcCertificateCurve() != null
-                    && groupsToTest.contains(state.getTlsContext().getEcCertificateCurve())) {
-                groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
+                    && state.getTlsContext().getServerCertificateChain() != null
+                    && state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() != null
+                    && groupsToTest.contains(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() )) {
+                groupsToTest.remove(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() );
                 certificateList.add(
                         new CertificateChain(
-                                state.getTlsContext().getServerCertificate(),
+                                state.getTlsContext().getServerCertificateChain(),
                                 tlsConfig.getDefaultClientConnection().getHostname()));
             } else {
                 // selected cipher suite or certificate named group invalid

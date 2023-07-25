@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-
 import java.util.List;
 
 public class DtlsRetransmissionsExtractor extends StatExtractor<HandshakeMessageType> {

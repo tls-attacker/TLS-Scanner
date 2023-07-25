@@ -12,10 +12,10 @@ import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateVersionGuidelineCheckResult;
-
+import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,14 +24,14 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck {
 
-    private int version;
+    private X509Version version;
 
     private CertificateVersionGuidelineCheck() {
         super(null, null);
     }
 
     public CertificateVersionGuidelineCheck(
-            String name, RequirementLevel requirementLevel, int version) {
+            String name, RequirementLevel requirementLevel, X509Version version) {
         super(name, requirementLevel);
         this.version = version;
     }
@@ -40,7 +40,7 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
             String name,
             RequirementLevel requirementLevel,
             boolean onlyOneCertificate,
-            int version) {
+            X509Version version) {
         super(name, requirementLevel, onlyOneCertificate);
         this.version = version;
     }
@@ -50,17 +50,17 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             boolean onlyOneCertificate,
-            int version) {
+            X509Version version) {
         super(name, requirementLevel, condition, onlyOneCertificate);
         this.version = version;
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         return new CertificateVersionGuidelineCheckResult(
-                TestResults.of(this.version == report.getCertificate().getVersionNumber()),
-                report.getCertificate().getVersionNumber());
+                TestResults.of(this.version == report.getVersion()),
+                report.getVersion());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
         return "CertificateVersion_" + getRequirementLevel() + "_" + version;
     }
 
-    public int getVersion() {
+    public X509Version getVersion() {
         return version;
     }
 }

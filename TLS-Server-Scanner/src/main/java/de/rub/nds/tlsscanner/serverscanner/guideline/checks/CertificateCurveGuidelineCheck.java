@@ -8,46 +8,47 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import java.util.List;
+
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
 import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateCurveGuidelineCheckResult;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
-import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
 
-    private List<NamedGroup> recommendedGroups;
+    private List<NamedEllipticCurveParameters> recommendedNamedParameters;
 
     private CertificateCurveGuidelineCheck() {
         super(null, null);
     }
 
     public CertificateCurveGuidelineCheck(
-            String name, RequirementLevel requirementLevel, List<NamedGroup> recommendedGroups) {
+            String name, RequirementLevel requirementLevel,
+            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
         super(name, requirementLevel);
-        this.recommendedGroups = recommendedGroups;
+        this.recommendedNamedParameters = recommendedNamedParameters;
     }
 
     public CertificateCurveGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             boolean onlyOneCertificate,
-            List<NamedGroup> recommendedGroups) {
+            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
         super(name, requirementLevel, onlyOneCertificate);
-        this.recommendedGroups = recommendedGroups;
+        this.recommendedNamedParameters = recommendedNamedParameters;
     }
 
     public CertificateCurveGuidelineCheck(
@@ -55,23 +56,24 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             boolean onlyOneCertificate,
-            List<NamedGroup> recommendedGroups) {
+            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
         super(name, requirementLevel, condition, onlyOneCertificate);
-        this.recommendedGroups = recommendedGroups;
+        this.recommendedNamedParameters = recommendedNamedParameters;
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (!SignatureAlgorithm.ECDSA.equals(
-                report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
+                report.getSignatureAlgorithm())) {
             return new CertificateCurveGuidelineCheckResult(TestResults.TRUE);
         }
-        if (!(report.getPublicKey() instanceof CustomEcPublicKey)) {
+        if (!(report.getPublicKey() instanceof EcdsaPublicKey) && !(report.getPublicKey() instanceof EcdhPublicKey)) {
             return new CertificateCurveGuidelineCheckResult(TestResults.UNCERTAIN);
         }
-        NamedGroup group = ((CustomEcPublicKey) report.getPublicKey()).getGroup();
-        if (!this.recommendedGroups.contains(group)) {
+        // TODO unsafe check for ecdh
+        NamedEllipticCurveParameters group = ((EcdsaPublicKey) report.getPublicKey()).getParameters();
+        if (!this.recommendedNamedParameters.contains(group)) {
             return new CertificateCurveGuidelineCheckResult(TestResults.FALSE, false, group);
         }
         return new CertificateCurveGuidelineCheckResult(TestResults.TRUE, true, group);
@@ -79,10 +81,10 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
 
     @Override
     public String getId() {
-        return "CertificateCurve_" + getRequirementLevel() + "_" + recommendedGroups;
+        return "CertificateCurve_" + getRequirementLevel() + "_" + recommendedNamedParameters;
     }
 
-    public List<NamedGroup> getRecommendedGroups() {
-        return recommendedGroups;
+    public List<NamedEllipticCurveParameters> getRecommendedNamedParameters() {
+        return recommendedNamedParameters;
     }
 }

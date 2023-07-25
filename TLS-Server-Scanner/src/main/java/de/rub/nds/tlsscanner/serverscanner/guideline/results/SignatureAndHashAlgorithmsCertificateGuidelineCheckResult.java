@@ -14,6 +14,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 
 import java.util.Objects;
 import java.util.Set;
@@ -21,10 +22,10 @@ import java.util.Set;
 public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
         extends GuidelineCheckResult {
 
-    private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
+    private final Set<X509SignatureAlgorithm> notRecommendedAlgorithms;
 
     public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-            TestResult result, Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {
+            TestResult result, Set<X509SignatureAlgorithm> notRecommendedAlgorithms) {
         super(result);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
@@ -42,7 +43,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
         }
     }
 
-    public Set<SignatureAndHashAlgorithm> getNotRecommendedAlgorithms() {
+    public Set<X509SignatureAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
     }
 }

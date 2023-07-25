@@ -17,7 +17,7 @@ import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.signatureengine.keyparsers.PemUtil;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 import org.bouncycastle.crypto.tls.Certificate;
@@ -46,7 +46,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     @Test
     public void testMissingCertificateChain() {
         probe.analyze(report);
-        assertNull(report.getSupportedSignatureAndHashAlgorithmsCert());
+        assertNull(report.getSupportedCertSignatureAlgorithms());
     }
 
     @Test
@@ -54,10 +54,10 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(
-                        List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")),
+                        List.of(new CertificateChainReport(Certificate.EMPTY_CHAIN, "a.com")),
                         TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
         probe.analyze(report);
-        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
+        assertTrue(report.getSupportedCertSignatureAlgorithms().isEmpty());
     }
 
     @Test
@@ -73,15 +73,15 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
             report.putResult(
                     TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                     new ListResult<>(
-                            List.of(new CertificateChain(certificate, "a.com")),
+                            List.of(new CertificateChainReport(certificate, "a.com")),
                             TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
             probe.analyze(report);
         } catch (IOException | URISyntaxException | CertificateException e) {
             fail("Could not load certificate from resources");
         }
-        assertEquals(1, report.getSupportedSignatureAndHashAlgorithmsCert().size());
+        assertEquals(1, report.getSupportedCertSignatureAlgorithms().size());
         assertTrue(
-                report.getSupportedSignatureAndHashAlgorithmsCert()
+                report.getSupportedCertSignatureAlgorithms()
                         .contains(SignatureAndHashAlgorithm.RSA_SHA256));
     }
 }

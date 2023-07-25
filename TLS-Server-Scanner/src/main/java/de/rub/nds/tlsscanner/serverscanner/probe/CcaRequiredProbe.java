@@ -20,10 +20,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -41,14 +37,13 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     public void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAutoSelectCertificate(false);
-        CcaCertificateManager ccaCertificateManager =
-                new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
-        WorkflowTrace trace =
-                CcaWorkflowGenerator.generateWorkflow(
-                        tlsConfig,
-                        ccaCertificateManager,
-                        CcaWorkflowType.CRT_CKE_CCS_FIN,
-                        CcaCertificateType.EMPTY);
+        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(
+                configSelector.getScannerConfig().getClientAuthenticationDelegate());
+        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(
+                tlsConfig,
+                ccaCertificateManager,
+                CcaWorkflowType.CRT_CKE_CCS_FIN,
+                CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
@@ -66,7 +61,8 @@ public class CcaRequiredProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {}
+    public void adjustConfig(ServerReport report) {
+    }
 
     @Override
     protected void mergeData(ServerReport report) {

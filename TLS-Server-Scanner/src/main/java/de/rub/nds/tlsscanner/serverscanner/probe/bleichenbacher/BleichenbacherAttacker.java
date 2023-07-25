@@ -178,11 +178,11 @@ public class BleichenbacherAttacker {
         // not dynamically. We
         // will adjust this in future versions.
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
-            if (pair.getFingerPrintTask().getState().getTlsContext().getServerRSAModulus() != null
+            if (pair.getFingerPrintTask().getState().getTlsContext().getPeerX509Context().getSubjectRsaModulus() != null
                     && !pair.getFingerPrintTask()
                             .getState()
                             .getTlsContext()
-                            .getServerRSAModulus()
+                            .getPeerX509Context().getSubjectRsaModulus()
                             .equals(publicKey.getModulus())) {
                 throw new OracleUnstableException(
                         "Server sent us a different publickey during the scan. Aborting test");
