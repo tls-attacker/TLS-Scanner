@@ -8,11 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.task;
 
-import java.io.IOException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.rub.nds.protocol.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
@@ -20,6 +15,9 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class InvalidCurveTask extends TlsTask {
 
@@ -49,7 +47,7 @@ public class InvalidCurveTask extends TlsTask {
         try {
             WorkflowExecutor executor = getExecutor(state);
             executor.executeWorkflow();
-            //TODO only ephemeral
+            // TODO only ephemeral
             if (getState().getTlsContext().getServerEphemeralEcPublicKey() != null) {
                 receivedEcKey = getState().getTlsContext().getServerEphemeralEcPublicKey();
             }

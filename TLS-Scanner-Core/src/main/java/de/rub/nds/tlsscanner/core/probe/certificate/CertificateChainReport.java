@@ -8,24 +8,21 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.rub.nds.tlsscanner.core.trust.TrustPlatform;
 import de.rub.nds.x509attacker.trust.TrustPath;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Note: Please do not copy from this code - (or any other certificate related
- * code (or any TLS code)). This code is not meant for productive usage and is
- * very very likely doing things which are terribly bad in any real system.
- * This code is only built for security analysis purposes. Do not use it for 
- * anything but this!
+ * Note: Please do not copy from this code - (or any other certificate related code (or any TLS
+ * code)). This code is not meant for productive usage and is very very likely doing things which
+ * are terribly bad in any real system. This code is only built for security analysis purposes. Do
+ * not use it for anything but this!
  */
 public class CertificateChainReport {
 
@@ -65,8 +62,7 @@ public class CertificateChainReport {
 
     private List<TrustPath> trustPaths;
 
-    private CertificateChainReport() {
-    }
+    private CertificateChainReport() {}
 
     public CertificateChainReport(X509CertificateChain certificateChain, String uri) {
         certificateIssues = new LinkedList<>();
@@ -92,13 +88,14 @@ public class CertificateChainReport {
         containsMultipleLeaves = certificateChain.containsMultipleLeafs();
         containsValidLeaf = certificateChain.containsValidLeaf(uri);
         chainIsOrdered = certificateChain.isChainOrdered();
-        
-        chainIsComplete = true; //TODO
-     
+
+        chainIsComplete = true; // TODO
+
         containsNotYetValid = certificateChain.containsNotYetValidCertificate();
         containsExpired = certificateChain.containsExpiredCertificate();
-        containsWeakSignedNonTrustStoresCertificates = certificateChain.containsWeakSignedNonTrustStoresCertificates();
-        
+        containsWeakSignedNonTrustStoresCertificates =
+                certificateChain.containsWeakSignedNonTrustStoresCertificates();
+
         for (CertificateReport report : certificateReportList) {
             if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
                     && Objects.equals(report.getSelfSigned(), Boolean.TRUE)
@@ -126,11 +123,13 @@ public class CertificateChainReport {
             certificateIssues.add(CertificateIssue.WEAK_SIGNATURE_OR_HASH_ALGORITHM);
         }
 
-        trustPaths = certificateChain.getAllTrustPaths(null); //TODO add trust anchors
-        //TODO This is a weaker form of "generally trusted" which we had before as it only validates that there is a trust path
-        //we also need to validate that the trust path is correctly signed and that extensions are met.
+        trustPaths = certificateChain.getAllTrustPaths(null); // TODO add trust anchors
+        // TODO This is a weaker form of "generally trusted" which we had before as it only
+        // validates that there is a trust path
+        // we also need to validate that the trust path is correctly signed and that extensions are
+        // met.
     }
-    
+
     public List<TrustPath> getTrustPaths() {
         return trustPaths;
     }
@@ -165,7 +164,8 @@ public class CertificateChainReport {
 
     public void setContainsWeakSignedNonTrustStoresCertificates(
             Boolean containsWeakSignedNonTrustStoresCertificates) {
-        this.containsWeakSignedNonTrustStoresCertificates = containsWeakSignedNonTrustStoresCertificates;
+        this.containsWeakSignedNonTrustStoresCertificates =
+                containsWeakSignedNonTrustStoresCertificates;
     }
 
     public CertificateReport getTrustAnchor() {

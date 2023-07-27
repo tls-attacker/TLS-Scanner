@@ -29,7 +29,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -52,7 +52,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    private Set<CertificateChain> certificates;
+    private Set<CertificateChainReport> certificates;
 
     public CertificateProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, configSelector);
@@ -124,20 +124,20 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         }
     }
 
-    private List<CertificateChain> getRsaCerts() {
-        LinkedList<CertificateChain> rsaCerts = new LinkedList<>();
+    private List<CertificateChainReport> getRsaCerts() {
+        LinkedList<CertificateChainReport> rsaCerts = new LinkedList<>();
 
-        CertificateChain tlsRsaCert = getRsaCert();
+        CertificateChainReport tlsRsaCert = getRsaCert();
         if (tlsRsaCert != null) {
             rsaCerts.add(tlsRsaCert);
         }
 
-        CertificateChain dhRsaCert = getDhRsaCert();
+        CertificateChainReport dhRsaCert = getDhRsaCert();
         if (dhRsaCert != null) {
             rsaCerts.add(dhRsaCert);
         }
 
-        CertificateChain ecDheRsaCert = getEcDheRsaCert();
+        CertificateChainReport ecDheRsaCert = getEcDheRsaCert();
         if (ecDheRsaCert != null) {
             rsaCerts.add(ecDheRsaCert);
         }
@@ -147,7 +147,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return rsaCerts;
     }
 
-    private CertificateChain getRsaCert() {
+    private CertificateChainReport getRsaCert() {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -159,7 +159,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
     }
 
-    private CertificateChain getDhRsaCert() {
+    private CertificateChainReport getDhRsaCert() {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -171,7 +171,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
     }
 
-    private CertificateChain getEcDheRsaCert() {
+    private CertificateChainReport getEcDheRsaCert() {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -185,8 +185,8 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
     }
 
-    private List<CertificateChain> getEcdhRsaCerts() {
-        List<CertificateChain> ecdhRsaCerts = new LinkedList<>();
+    private List<CertificateChainReport> getEcdhRsaCerts() {
+        List<CertificateChainReport> ecdhRsaCerts = new LinkedList<>();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -200,15 +200,15 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return ecdhRsaCerts;
     }
 
-    private List<CertificateChain> getEcdsaCerts() {
-        LinkedList<CertificateChain> ecdsaCerts = new LinkedList<>();
+    private List<CertificateChainReport> getEcdsaCerts() {
+        LinkedList<CertificateChainReport> ecdsaCerts = new LinkedList<>();
         ecdsaCerts.addAll(getEcdhEcdsaCerts());
         ecdsaCerts.addAll(getEcdheEcdsaCerts());
         return ecdsaCerts;
     }
 
-    private List<CertificateChain> getEcdhEcdsaCerts() {
-        LinkedList<CertificateChain> ecdhEcdsaCerts = new LinkedList<>();
+    private List<CertificateChainReport> getEcdhEcdsaCerts() {
+        LinkedList<CertificateChainReport> ecdhEcdsaCerts = new LinkedList<>();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -227,8 +227,8 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return ecdhEcdsaCerts;
     }
 
-    private List<CertificateChain> getEcdheEcdsaCerts() {
-        LinkedList<CertificateChain> ecdheEcdsaCerts = new LinkedList<>();
+    private List<CertificateChainReport> getEcdheEcdsaCerts() {
+        LinkedList<CertificateChainReport> ecdheEcdsaCerts = new LinkedList<>();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
@@ -247,22 +247,22 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return ecdheEcdsaCerts;
     }
 
-    private List<CertificateChain> getDssCerts() {
-        LinkedList<CertificateChain> dssCerts = new LinkedList<>();
+    private List<CertificateChainReport> getDssCerts() {
+        LinkedList<CertificateChainReport> dssCerts = new LinkedList<>();
 
-        CertificateChain dhDssCert = getDhDssCert();
+        CertificateChainReport dhDssCert = getDhDssCert();
         if (dhDssCert != null) {
             dssCerts.add(dhDssCert);
         }
 
-        CertificateChain dheDssCert = getDheDssCert();
+        CertificateChainReport dheDssCert = getDheDssCert();
         if (dheDssCert != null) {
             dssCerts.add(dheDssCert);
         }
         return dssCerts;
     }
 
-    private CertificateChain getDhDssCert() {
+    private CertificateChainReport getDhDssCert() {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isDSS() && cipherSuite.isEphemeral() == false) {
@@ -272,7 +272,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
     }
 
-    private CertificateChain getDheDssCert() {
+    private CertificateChainReport getDheDssCert() {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isDSS() && cipherSuite.isEphemeral()) {
@@ -282,15 +282,15 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
     }
 
-    private List<CertificateChain> getGostCert() {
-        LinkedList<CertificateChain> gostCerts = new LinkedList<>();
+    private List<CertificateChainReport> getGostCert() {
+        LinkedList<CertificateChainReport> gostCerts = new LinkedList<>();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isGOST()) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        CertificateChain newCert =
+        CertificateChainReport newCert =
                 performCertScan(configSelector.getBaseConfig(), cipherSuitesToTest);
         if (newCert != null) {
             gostCerts.add(newCert);
@@ -299,9 +299,9 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return gostCerts;
     }
 
-    private List<CertificateChain> getTls13Certs() {
-        LinkedList<CertificateChain> tls13Certs = new LinkedList<>();
-        CertificateChain rsaSigHashCert = getTls13CertRsaSigHash();
+    private List<CertificateChainReport> getTls13Certs() {
+        LinkedList<CertificateChainReport> tls13Certs = new LinkedList<>();
+        CertificateChainReport rsaSigHashCert = getTls13CertRsaSigHash();
         if (rsaSigHashCert != null) {
             tls13Certs.add(rsaSigHashCert);
         }
@@ -309,7 +309,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return tls13Certs;
     }
 
-    private CertificateChain getTls13CertRsaSigHash() {
+    private CertificateChainReport getTls13CertRsaSigHash() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13RsaSigHash());
         tlsConfig.setDefaultClientNamedGroups(getTls13Curves());
@@ -317,10 +317,10 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return performCertScan(tlsConfig, CipherSuite.getImplementedTls13CipherSuites());
     }
 
-    private List<CertificateChain> getTls13CertsEcdsaSigHash() {
+    private List<CertificateChainReport> getTls13CertsEcdsaSigHash() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13EcdsaSigHash());
-        List<CertificateChain> tls13ecdsaCerts = new LinkedList<>();
+        List<CertificateChainReport> tls13ecdsaCerts = new LinkedList<>();
         performEcCertScanEcdsa(
                 tlsConfig,
                 getTls13Curves(),
@@ -352,7 +352,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
         return curves;
     }
 
-    private CertificateChain performCertScan(
+    private CertificateChainReport performCertScan(
             Config tlsConfig, List<CipherSuite> cipherSuitesToTest) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -363,7 +363,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                         HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                 && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                 && state.getTlsContext().getServerCertificateChain() != null) {
-            return new CertificateChain(
+            return new CertificateChainReport(
                     state.getTlsContext().getServerCertificateChain(),
                     tlsConfig.getDefaultClientConnection().getHostname());
         } else {
@@ -375,7 +375,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             Config tlsConfig,
             List<NamedGroup> groupsToTest,
             List<CipherSuite> cipherSuitesToTest,
-            List<CertificateChain> certificateList) {
+            List<CertificateChainReport> certificateList) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -391,7 +391,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
                     && groupsToTest.contains(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() )) {
                 groupsToTest.remove(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() );
                 certificateList.add(
-                        new CertificateChain(
+                        new CertificateChainReport(
                                 state.getTlsContext().getServerCertificateChain(),
                                 tlsConfig.getDefaultClientConnection().getHostname()));
             } else {
@@ -406,7 +406,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             Config tlsConfig,
             List<NamedGroup> groupsToTest,
             List<CipherSuite> cipherSuitesToTest,
-            List<CertificateChain> certificateList,
+            List<CertificateChainReport> certificateList,
             List<NamedGroup> pkGroups,
             List<NamedGroup> sigGroups) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
@@ -420,12 +420,12 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
             if (WorkflowTraceUtil.didReceiveMessage(
                             HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
-                    && state.getTlsContext().getServerCertificate() != null
+                    && state.getTlsContext().getServerCertificateChain() != null
                     && state.getTlsContext().getEcCertificateCurve() != null
                     && groupsToTest.contains(state.getTlsContext().getEcCertificateCurve())) {
                 groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
                 certificateList.add(
-                        new CertificateChain(
+                        new CertificateChainReport(
                                 state.getTlsContext().getServerCertificate(),
                                 tlsConfig.getDefaultClientConnection().getHostname()));
                 pkGroups.add(state.getTlsContext().getEcCertificateCurve());

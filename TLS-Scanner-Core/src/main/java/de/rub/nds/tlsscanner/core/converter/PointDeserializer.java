@@ -8,14 +8,12 @@
  */
 package de.rub.nds.tlsscanner.core.converter;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
 import de.rub.nds.protocol.crypto.ec.Point;
+import java.io.IOException;
 
 public class PointDeserializer extends StdDeserializer<Point> {
 

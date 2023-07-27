@@ -8,12 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.roca.RocaBrokenKey;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
@@ -21,6 +15,10 @@ import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.Extension;
 import de.rub.nds.x509attacker.x509.model.Extensions;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CertificateReportGenerator {
 
@@ -29,7 +27,8 @@ public class CertificateReportGenerator {
     public static List<CertificateReport> generateReports(X509CertificateChain certs) {
         List<CertificateReport> reportList = new LinkedList<>();
         if (certs != null) {
-            for (de.rub.nds.x509attacker.x509.model.X509Certificate cert : certs.getCertificateList()) {
+            for (de.rub.nds.x509attacker.x509.model.X509Certificate cert :
+                    certs.getCertificateList()) {
                 reportList.add(generateReport(cert));
             }
         }
@@ -100,8 +99,7 @@ public class CertificateReportGenerator {
         report.setAlternativeNames(cert.getSubjectAlternativeNames());
     }
 
-    private static void setValidFrom(
-            CertificateReport report, X509Certificate cert) {
+    private static void setValidFrom(CertificateReport report, X509Certificate cert) {
         report.setNotBefore(cert.getNotBefore());
     }
 
@@ -113,26 +111,20 @@ public class CertificateReportGenerator {
         if (cert.getPublicKeyContainer() != null) {
             report.setPublicKey(cert.getPublicKeyContainer());
         }
-
     }
 
-    private static void setWeakDebianKey(CertificateReport report, X509Certificate cert) {
-    }
+    private static void setWeakDebianKey(CertificateReport report, X509Certificate cert) {}
 
     private static void setIssuer(CertificateReport report, X509Certificate cert) {
         report.setIssuer(cert.getIssuerString());
     }
 
-    private static void setExtendedValidation(
-            CertificateReport report, X509Certificate cert) {
-    }
+    private static void setExtendedValidation(CertificateReport report, X509Certificate cert) {}
 
     private static void setCertificateTransparency(
-            CertificateReport report, X509Certificate cert) {
-    }
+            CertificateReport report, X509Certificate cert) {}
 
-    private static void setOcspMustStaple(
-            CertificateReport report, X509Certificate cert) {
+    private static void setOcspMustStaple(CertificateReport report, X509Certificate cert) {
         try {
             Boolean mustStaple = null; // TODO ocspCertInfoExtractor.getMustStaple();
             if (mustStaple != null) {
@@ -143,32 +135,24 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setCrlSupported(
-            CertificateReport report, X509Certificate cert) {
-    }
+    private static void setCrlSupported(CertificateReport report, X509Certificate cert) {}
 
-    private static void setOcspSupported(
-            CertificateReport report, X509Certificate cert) {
-        String ocspUrl = null;// TODO ocspCertInfoExtractor.getOcspServerUrl();
+    private static void setOcspSupported(CertificateReport report, X509Certificate cert) {
+        String ocspUrl = null; // TODO ocspCertInfoExtractor.getOcspServerUrl();
         report.setOcspSupported(ocspUrl != null);
     }
 
-    private static void setRevoked(
-            CertificateReport report, X509Certificate cert) {
+    private static void setRevoked(CertificateReport report, X509Certificate cert) {
         // TODO
     }
 
-    private static void setDnsCca(
-            CertificateReport report, X509Certificate cert) {
-    }
+    private static void setDnsCca(CertificateReport report, X509Certificate cert) {}
 
-    private static void setSha256Hash(
-            CertificateReport report, X509Certificate cert) {
+    private static void setSha256Hash(CertificateReport report, X509Certificate cert) {
         report.setSha256Fingerprint(cert.getSha256Fingerprint());
     }
 
-    private static void setVulnerableRoca(
-            CertificateReport report, X509Certificate cert) {
+    private static void setVulnerableRoca(CertificateReport report, X509Certificate cert) {
         if (report.getPublicKey() != null && report.getPublicKey() instanceof RsaPublicKey) {
             RsaPublicKey pubkey = (RsaPublicKey) report.getPublicKey();
             report.setRocaVulnerable(RocaBrokenKey.isAffected(pubkey));

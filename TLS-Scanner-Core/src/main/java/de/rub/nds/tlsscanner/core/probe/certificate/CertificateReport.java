@@ -8,14 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
@@ -28,6 +20,12 @@ import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import de.rub.nds.x509attacker.constants.X509Version;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 
 public class CertificateReport {
 
@@ -65,8 +63,7 @@ public class CertificateReport {
     private List<X509ExtensionType> supportedExtensionTypes;
     private Set<KeyUsage> keyUsageSet;
 
-    public CertificateReport() {
-    }
+    public CertificateReport() {}
 
     public Set<KeyUsage> getKeyUsageSet() {
         return keyUsageSet;
@@ -302,9 +299,7 @@ public class CertificateReport {
                     .append("\n");
         }
         if (hashAlgorithm != null) {
-            builder.append("Hash Algorithm     : ")
-                    .append(hashAlgorithm.name())
-                    .append("\n");
+            builder.append("Hash Algorithm     : ").append(hashAlgorithm.name()).append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");
@@ -409,10 +404,8 @@ public class CertificateReport {
                 || !Objects.equals(publicKey, otherReport.getPublicKey())
                 || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
                 || !Objects.equals(issuer, otherReport.getIssuer())
-                || !Objects.equals(
-                        signatureAlgorithm, otherReport.getSignatureAlgorithm())
-                || !Objects.equals(
-                        hashAlgorithm, otherReport.getHashAlgorithm())
+                || !Objects.equals(signatureAlgorithm, otherReport.getSignatureAlgorithm())
+                || !Objects.equals(hashAlgorithm, otherReport.getHashAlgorithm())
                 || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
                 || !Objects.equals(
                         certificateTransparency, otherReport.getCertificateTransparency())
@@ -489,7 +482,9 @@ public class CertificateReport {
             EcdhPublicKey ecPublicKey = (EcdhPublicKey) publicKey;
             builder.append("ECDH\n");
             builder.append("\t Group:").append(ecPublicKey.getParameters().getName()).append("\n");
-            builder.append("\t Public Point:").append(ecPublicKey.getPublicPoint().toString()).append("\n");
+            builder.append("\t Public Point:")
+                    .append(ecPublicKey.getPublicPoint().toString())
+                    .append("\n");
         } else if (publicKey instanceof EcdsaPublicKey) {
             EcdsaPublicKey ecPublicKey = (EcdsaPublicKey) publicKey;
             builder.append("ECDSA\n");

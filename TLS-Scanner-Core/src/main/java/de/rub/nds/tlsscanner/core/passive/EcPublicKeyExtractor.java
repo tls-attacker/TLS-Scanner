@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.passive;
 
-import java.util.List;
-
 import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.crypto.ec.Point;
 import de.rub.nds.protocol.crypto.ec.PointFormatter;
@@ -23,6 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessag
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import java.util.List;
 
 public class EcPublicKeyExtractor extends StatExtractor<Point> {
 
@@ -45,7 +44,10 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
                                             .getValue());
                     byte[] pointBytes =
                             ((ECDHEServerKeyExchangeMessage) message).getPublicKey().getValue();
-                    put(PointFormatter.formatFromByteArray((NamedEllipticCurveParameters) group.getGroupParameters(), pointBytes));
+                    put(
+                            PointFormatter.formatFromByteArray(
+                                    (NamedEllipticCurveParameters) group.getGroupParameters(),
+                                    pointBytes));
                 }
             }
         } else {
@@ -54,7 +56,10 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
                     NamedGroup group = state.getTlsContext().getChooser().getSelectedNamedGroup();
                     byte[] pointBytes =
                             ((ECDHClientKeyExchangeMessage) message).getPublicKey().getValue();
-                    put(PointFormatter.formatFromByteArray((NamedEllipticCurveParameters) group.getGroupParameters(), pointBytes));
+                    put(
+                            PointFormatter.formatFromByteArray(
+                                    (NamedEllipticCurveParameters) group.getGroupParameters(),
+                                    pointBytes));
                 }
             }
         }

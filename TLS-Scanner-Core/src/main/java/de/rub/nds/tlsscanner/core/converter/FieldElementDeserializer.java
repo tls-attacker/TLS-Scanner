@@ -8,13 +8,11 @@
  */
 package de.rub.nds.tlsscanner.core.converter;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
 import de.rub.nds.protocol.crypto.ec.FieldElement;
+import java.io.IOException;
 
 public class FieldElementDeserializer extends StdDeserializer<FieldElement> {
 

@@ -10,12 +10,6 @@ package de.rub.nds.tlsscanner.core.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigInteger;
-import java.util.Collections;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.scanner.core.constants.TestResults;
@@ -24,69 +18,79 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.math.BigInteger;
+import java.util.Collections;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EcPublicKeyAfterProbeTest {
 
-        private final EcdhPublicKey ECDH_X25519_PUBLIC_KEY = new EcdhPublicKey(BigInteger.ONE, BigInteger.TWO,
-                        (NamedEllipticCurveParameters) NamedGroup.ECDH_X25519.getGroupParameters());
-        private final EcdhPublicKey ECDH_X448_PUBLIC_KEY = new EcdhPublicKey(BigInteger.TWO, BigInteger.ONE,
-                        (NamedEllipticCurveParameters) NamedGroup.ECDH_X448.getGroupParameters());
+    private final EcdhPublicKey ECDH_X25519_PUBLIC_KEY =
+            new EcdhPublicKey(
+                    BigInteger.ONE,
+                    BigInteger.TWO,
+                    (NamedEllipticCurveParameters) NamedGroup.ECDH_X25519.getGroupParameters());
+    private final EcdhPublicKey ECDH_X448_PUBLIC_KEY =
+            new EcdhPublicKey(
+                    BigInteger.TWO,
+                    BigInteger.ONE,
+                    (NamedEllipticCurveParameters) NamedGroup.ECDH_X448.getGroupParameters());
 
-        private TlsScanReport report;
-        private EcPublicKeyAfterProbe probe;
-        private ExtractedValueContainer<EcdhPublicKey> publicKeyContainer;
+    private TlsScanReport report;
+    private EcPublicKeyAfterProbe probe;
+    private ExtractedValueContainer<EcdhPublicKey> publicKeyContainer;
 
-        @BeforeEach
-        public void setup() {
-                report = new TlsCoreTestReport();
-                probe = new EcPublicKeyAfterProbe();
-                publicKeyContainer = new ExtractedValueContainer<>(TrackableValueType.ECDHE_PUBKEY);
-        }
+    @BeforeEach
+    public void setup() {
+        report = new TlsCoreTestReport();
+        probe = new EcPublicKeyAfterProbe();
+        publicKeyContainer = new ExtractedValueContainer<>(TrackableValueType.ECDHE_PUBKEY);
+    }
 
-        @Test
-        public void testSingleKey() {
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                report.setExtractedValueContainerList(
-                                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
-                probe.analyze(report);
+    @Test
+    public void testSingleKey() {
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        report.setExtractedValueContainerList(
+                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
+        probe.analyze(report);
 
-                assertEquals(
-                                TestResults.COULD_NOT_TEST,
-                                report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
-        }
+        assertEquals(
+                TestResults.COULD_NOT_TEST,
+                report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
+    }
 
-        @Test
-        public void testMultipleDifferentKeys() {
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
-                report.setExtractedValueContainerList(
-                                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
-                probe.analyze(report);
+    @Test
+    public void testMultipleDifferentKeys() {
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
+        report.setExtractedValueContainerList(
+                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
+        probe.analyze(report);
 
-                assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
-        }
+        assertEquals(TestResults.FALSE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
+    }
 
-        @Test
-        public void testReusedSingleKey() {
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                report.setExtractedValueContainerList(
-                                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
-                probe.analyze(report);
+    @Test
+    public void testReusedSingleKey() {
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        report.setExtractedValueContainerList(
+                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
+        probe.analyze(report);
 
-                assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
-        }
+        assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
+    }
 
-        @Test
-        public void testReusedMultipleKeys() {
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
-                publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
-                publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
-                report.setExtractedValueContainerList(
-                                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
-                probe.analyze(report);
+    @Test
+    public void testReusedMultipleKeys() {
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
+        publicKeyContainer.put(ECDH_X25519_PUBLIC_KEY);
+        publicKeyContainer.put(ECDH_X448_PUBLIC_KEY);
+        report.setExtractedValueContainerList(
+                Collections.singletonMap(TrackableValueType.ECDHE_PUBKEY, publicKeyContainer));
+        probe.analyze(report);
 
-                assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
-        }
+        assertEquals(TestResults.TRUE, report.getResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY));
+    }
 }
