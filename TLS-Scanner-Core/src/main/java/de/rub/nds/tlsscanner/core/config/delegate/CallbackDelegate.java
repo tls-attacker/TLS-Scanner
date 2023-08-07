@@ -8,13 +8,16 @@
  */
 package de.rub.nds.tlsscanner.core.config.delegate;
 
+import java.io.IOException;
+import java.util.function.Function;
+
 import com.beust.jcommander.Parameter;
+
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsattacker.core.state.Context;
 import de.rub.nds.tlsattacker.core.state.State;
-import java.io.IOException;
-import java.util.function.Function;
 
 public class CallbackDelegate extends Delegate {
 
@@ -66,31 +69,31 @@ public class CallbackDelegate extends Delegate {
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {}
 
-    public Function<State, Integer> getBeforeTransportPreInitCallback() {
+    public Function<Context, Integer> getBeforeTransportPreInitCallback() {
         return getCallback(beforeTransportPreInitCommand);
     }
 
-    public Function<State, Integer> getBeforeTransportInitCallback() {
+    public Function<Context, Integer> getBeforeTransportInitCallback() {
         return getCallback(beforeTransportInitCommand);
     }
 
-    public Function<State, Integer> getAfterTransportInitCallback() {
+    public Function<Context, Integer> getAfterTransportInitCallback() {
         return getCallback(afterTransportInitCommand);
     }
 
-    public Function<State, Integer> getAfterExecutionCallback() {
+    public Function<Context, Integer> getAfterExecutionCallback() {
         return getCallback(afterExecutionCommand);
     }
 
-    private Function<State, Integer> getCallback(String command) {
+    private Function<Context, Integer> getCallback(String command) {
         if (command == null) {
             return null;
         }
-        return (State state) -> {
+        return (Context context) -> {
             try {
                 Process spawnedProcess = Runtime.getRuntime().exec(command.split(" "));
                 LOGGER.debug("Running command: {}", command);
-                state.addSpawnedSubprocess(spawnedProcess);
+                context.addSpawnedSubprocess(spawnedProcess);
             } catch (IOException E) {
                 LOGGER.error("Error during command execution", E);
             }
@@ -98,13 +101,13 @@ public class CallbackDelegate extends Delegate {
         };
     }
 
-    public static Function<State, Integer> mergeCallbacks(Function<State, Integer>... callbacks) {
-        return (State state) -> {
-            for (Function<State, Integer> callback : callbacks) {
+    public static Function<Context, Integer> mergeCallbacks(Function<Context, Integer>... callbacks) {
+        return (Context context) -> {
+            for (Function<Context, Integer> callback : callbacks) {
                 if (callback == null) {
                     continue;
                 }
-                callback.apply(state);
+                callback.apply(context);
             }
             return 0;
         };

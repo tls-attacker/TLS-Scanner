@@ -8,6 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import java.util.List;
+import java.util.function.Function;
+
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -15,6 +18,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.state.Context;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -27,9 +31,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-
-import java.util.List;
-import java.util.function.Function;
 
 public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
@@ -45,7 +46,7 @@ public class AlpnProbe extends TlsClientProbe<ClientScannerConfig, ClientReport>
 
     @Override
     public void executeTest() {
-        Function<State, Integer> beforeTransportInitCallback =
+        Function<Context, Integer> beforeTransportInitCallback =
                 getParallelExecutor().getDefaultBeforeTransportInitCallback();
         String runCommand =
                 scannerConfig.getRunCommand().strip()

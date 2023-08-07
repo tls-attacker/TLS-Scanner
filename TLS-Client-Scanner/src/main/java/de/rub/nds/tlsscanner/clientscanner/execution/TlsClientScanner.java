@@ -17,7 +17,7 @@ import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.state.Context;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
@@ -207,8 +207,8 @@ public final class TlsClientScanner extends TlsScanner {
      *
      * @return A callback that kills all spawned subprocesses
      */
-    private Function<State, Integer> getKillAllSpawnedSubprocessesCallback() {
-        return (State state) -> {
+    private Function<Context, Integer> getKillAllSpawnedSubprocessesCallback() {
+        return (Context state) -> {
             state.killAllSpawnedSubprocesses();
             return 0;
         };

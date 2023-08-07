@@ -8,27 +8,28 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.config;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParametersDelegate;
-
-import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.transport.TransportHandler;
-import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
-import de.rub.nds.tlsattacker.transport.udp.ServerUdpTransportHandler;
-import de.rub.nds.tlsscanner.clientscanner.config.delegate.ClientParameterDelegate;
-import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
+import java.io.File;
+import java.io.IOException;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.function.Function;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParametersDelegate;
+
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
+import de.rub.nds.tlsattacker.core.state.Context;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.transport.TransportHandler;
+import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
+import de.rub.nds.tlsattacker.transport.udp.ServerUdpTransportHandler;
+import de.rub.nds.tlsscanner.clientscanner.config.delegate.ClientParameterDelegate;
+import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
 
 public class ClientScannerConfig extends TlsScannerConfig {
 
@@ -131,17 +132,17 @@ public class ClientScannerConfig extends TlsScannerConfig {
         return new File(logDirectory);
     }
 
-    public Function<State, Integer> getRunCommandExecutionCallback() {
+    public Function<Context, Integer> getRunCommandExecutionCallback() {
         return getRunCommandExecutionCallback(getRunCommand());
     }
 
     /** Provides a callback that executes the client run command. */
-    public Function<State, Integer> getRunCommandExecutionCallback(String baseCommand) {
-        return (State state) -> {
+    public Function<Context, Integer> getRunCommandExecutionCallback(String baseCommand) {
+        return (Context context) -> {
             Integer serverPort = getServerDelegate().getPort();
             // port 0 = dynamic port allocation
             if (serverPort == 0) {
-                serverPort = getServerPort(state.getTlsContext().getTransportHandler());
+                serverPort = getServerPort(context.getTlsContext().getTransportHandler());
             }
             String command = baseCommand.replace(PORT_REPLACEMENT_MARKER, serverPort.toString());
             LOGGER.debug("Client run command: {}", command);
@@ -159,7 +160,7 @@ public class ClientScannerConfig extends TlsScannerConfig {
             }
             try {
                 Process runCommandProcess = runCommandBuilder.start();
-                state.addSpawnedSubprocess(runCommandProcess);
+                context.getState().addSpawnedSubprocess(runCommandProcess);
             } catch (IOException E) {
                 LOGGER.error("Error during client run command execution", E);
             }
