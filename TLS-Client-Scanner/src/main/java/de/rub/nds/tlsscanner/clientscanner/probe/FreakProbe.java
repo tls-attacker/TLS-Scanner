@@ -1,16 +1,18 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -36,14 +38,12 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
 // See https://www.ieee-security.org/TC/SP2015/papers-archived/6949a535.pdf section V-D.
-public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class FreakProbe extends TlsClientProbe {
 
     private static final int FREAK_N_BITLENGTH = 512;
     private static final String FREAK_MODULUS =
@@ -63,7 +63,7 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         BigInteger modulus = new BigInteger(FREAK_MODULUS);
         BigInteger publicKey = new BigInteger(FREAK_PUBLIC_KEY);
         BigInteger privateKey = new BigInteger(FREAK_PRIVATE_KEY);
@@ -113,9 +113,9 @@ public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_RSA)
-                .requires(new ProbeRequirement(TlsProbeType.CIPHER_SUITE));
+    public Requirement<ClientReport> getRequirements() {
+        return new ProbeRequirement<ClientReport>(TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_RSA));
     }
 
     @Override

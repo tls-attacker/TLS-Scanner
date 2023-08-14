@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -14,11 +14,12 @@ import java.util.List;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
+public class DistributionTest<TestInfoT extends TestInfo> extends VectorStatisticTest<TestInfoT> {
 
     private final double probability;
 
-    public DistributionTest(T testInfo, List<VectorResponse> responseList, double probability) {
+    public DistributionTest(
+            TestInfoT testInfo, List<VectorResponse> responseList, double probability) {
         super(testInfo, responseList);
         if (vectorContainerList.size() != 1) {
             throw new RuntimeException("DistributionTest expects exactly one VectorContainer");

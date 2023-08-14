@@ -1,44 +1,23 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.execution;
 
-import de.rub.nds.scanner.core.execution.ScanJob;
-import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.execution.Scanner;
 import de.rub.nds.scanner.core.passive.StatsWriter;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.AlpnProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ApplicationMessageProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CcaSupportProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CompressionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsBugsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsHelloVerifyRequestProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsMessageSequenceProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsReorderingProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsRetransmissionsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.RecordFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
@@ -48,7 +27,6 @@ import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterPro
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
-import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
@@ -58,7 +36,8 @@ import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class TlsClientScanner extends TlsScanner {
+public final class TlsClientScanner
+        extends Scanner<ClientReport, TlsClientProbe, AfterProbe<ClientReport>, State> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -67,103 +46,19 @@ public final class TlsClientScanner extends TlsScanner {
     private boolean closeAfterFinishParallel;
 
     public TlsClientScanner(ClientScannerConfig config) {
-        super(config.getProbes());
+        super(config.getExecutorConfig());
         this.config = config;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
+        parallelExecutor = new ParallelExecutor(config.getExecutorConfig().getOverallThreads(), 3);
         closeAfterFinishParallel = true;
         setCallbacks();
-        fillProbeLists();
     }
 
     public TlsClientScanner(ClientScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(config.getProbes());
+        super(config.getExecutorConfig());
         this.config = config;
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
-        fillProbeLists();
-    }
-
-    @Override
-    protected void fillProbeLists() {
-        addProbeToProbeList(new BasicProbe(parallelExecutor, config));
-        addProbeToProbeList(new ProtocolVersionProbe(parallelExecutor, config));
-        addProbeToProbeList(new CipherSuiteProbe(parallelExecutor, config));
-        addProbeToProbeList(new CompressionProbe(parallelExecutor, config));
-        addProbeToProbeList(new CcaSupportProbe(parallelExecutor, config));
-        addProbeToProbeList(new CertificateProbe(parallelExecutor, config));
-        addProbeToProbeList(new DheParameterProbe(parallelExecutor, config));
-        addProbeToProbeList(new FreakProbe(parallelExecutor, config));
-        addProbeToProbeList(new ApplicationMessageProbe(parallelExecutor, config));
-        addProbeToProbeList(new PaddingOracleProbe(parallelExecutor, config));
-        addProbeToProbeList(new AlpnProbe(parallelExecutor, config));
-        addProbeToProbeList(new SniProbe(parallelExecutor, config));
-        addProbeToProbeList(new ResumptionProbe(parallelExecutor, config));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterProbe());
-        afterList.add(new ClientRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
-        afterList.add(new DhValueAfterProbe());
-        afterList.add(new AlpacaAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
-        if (config.getDtlsDelegate().isDTLS()) {
-            addProbeToProbeList(new DtlsReorderingProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsFragmentationProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsHelloVerifyRequestProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsBugsProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsMessageSequenceProbe(parallelExecutor, config));
-            addProbeToProbeList(new DtlsRetransmissionsProbe(parallelExecutor, config));
-            afterList.add(new DtlsRetransmissionAfterProbe());
-        } else {
-            addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
-            addProbeToProbeList(new RecordFragmentationProbe(parallelExecutor, config));
-            addProbeToProbeList(new ResumptionProbe(parallelExecutor, config));
-        }
-        // Init StatsWriter
-        setDefaultProbeWriter();
-    }
-
-    private void setDefaultProbeWriter() {
-        for (ScannerProbe probe : probeList) {
-            StatsWriter statsWriter = new StatsWriter();
-            statsWriter.addExtractor(new RandomExtractor());
-            statsWriter.addExtractor(new DhPublicKeyExtractor());
-            statsWriter.addExtractor(new EcPublicKeyExtractor());
-            statsWriter.addExtractor(new CbcIvExtractor());
-            statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
-            probe.setWriter(statsWriter);
-        }
-    }
-
-    public ClientReport scan() {
-        adjustServerPort();
-
-        ClientReport clientReport = new ClientReport();
-        ScanJob job = new ScanJob(probeList, afterList);
-        ThreadedScanJobExecutor<ClientReport> executor =
-                new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), "");
-        long scanStartTime = System.currentTimeMillis();
-        clientReport = executor.execute(clientReport);
-        long scanEndTime = System.currentTimeMillis();
-        clientReport.setScanStartTime(scanStartTime);
-        clientReport.setScanEndTime(scanEndTime);
-        ProtocolType protocolType =
-                config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
-        clientReport.setProtocolType(protocolType);
-
-        executor.shutdown();
-        closeParallelExecutorIfNeeded();
-
-        return clientReport;
-    }
-
-    private void adjustServerPort() {
-        if (config.isMultithreaded() && config.getServerDelegate().getPort() != 0) {
-            LOGGER.warn(
-                    "Configured explicit server port, but also multithreaded execution. Ignoring explicit port.");
-            config.getServerDelegate().setPort(0);
-        }
     }
 
     /**
@@ -198,6 +93,85 @@ public final class TlsClientScanner extends TlsScanner {
         }
     }
 
+    @Override
+    protected ClientReport getEmptyReport() {
+        return new ClientReport();
+    }
+
+    @Override
+    protected StatsWriter<State> getDefaultProbeWriter() {
+        StatsWriter<State> statsWriter = new StatsWriter<>();
+        statsWriter.addExtractor(new RandomExtractor());
+        statsWriter.addExtractor(new DhPublicKeyExtractor());
+        statsWriter.addExtractor(new EcPublicKeyExtractor());
+        statsWriter.addExtractor(new CbcIvExtractor());
+        statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
+        return statsWriter;
+    }
+
+    @Override
+    protected void onScanStart() {
+        adjustServerPort();
+    }
+
+    private void adjustServerPort() {
+        if (config.getExecutorConfig().isMultithreaded()
+                && config.getServerDelegate().getPort() != 0) {
+            LOGGER.warn(
+                    "Configured explicit server port, but also multithreaded execution. Ignoring explicit port.");
+            config.getServerDelegate().setPort(0);
+        }
+    }
+
+    @Override
+    protected boolean checkScanPrerequisites(ClientReport report) {
+        ProtocolType protocolType =
+                config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
+        report.setProtocolType(protocolType);
+        return true;
+    }
+
+    @Override
+    protected void fillProbeLists() {
+        registerProbeForExecution(new BasicProbe(parallelExecutor, config));
+        registerProbeForExecution(new ProtocolVersionProbe(parallelExecutor, config));
+        registerProbeForExecution(new CipherSuiteProbe(parallelExecutor, config));
+        registerProbeForExecution(new CompressionProbe(parallelExecutor, config));
+        registerProbeForExecution(new CcaSupportProbe(parallelExecutor, config));
+        registerProbeForExecution(new CertificateProbe(parallelExecutor, config));
+        registerProbeForExecution(new DheParameterProbe(parallelExecutor, config));
+        registerProbeForExecution(new FreakProbe(parallelExecutor, config));
+        registerProbeForExecution(new ApplicationMessageProbe(parallelExecutor, config));
+        registerProbeForExecution(new PaddingOracleProbe(parallelExecutor, config));
+        registerProbeForExecution(new AlpnProbe(parallelExecutor, config));
+        registerProbeForExecution(new SniProbe(parallelExecutor, config));
+        registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+        registerProbeForExecution(new ServerCertificateKeySizeProbe(parallelExecutor, config));
+        registerProbeForExecution(new ConnectionClosingProbe(parallelExecutor, config));
+        registerProbeForExecution(new ECPointFormatProbe(parallelExecutor, config));
+        registerProbeForExecution(new NamedGroupsProbe(parallelExecutor, config));
+        registerProbeForExecution(new Sweet32AfterProbe<>());
+        registerProbeForExecution(new FreakAfterProbe<>());
+        registerProbeForExecution(new LogjamAfterProbe<>());
+        registerProbeForExecution(new ClientRandomnessAfterProbe());
+        registerProbeForExecution(new EcPublicKeyAfterProbe<>());
+        registerProbeForExecution(new DhValueAfterProbe());
+        registerProbeForExecution(new AlpacaAfterProbe());
+        registerProbeForExecution(new PaddingOracleIdentificationAfterProbe<>());
+        // DTLS-specific
+        registerProbeForExecution(new DtlsReorderingProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsFragmentationProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsHelloVerifyRequestProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsBugsProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsMessageSequenceProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsRetransmissionsProbe(parallelExecutor, config));
+        registerProbeForExecution(new DtlsRetransmissionAfterProbe<>());
+        // TLS-specific
+        registerProbeForExecution(new Version13RandomProbe(parallelExecutor, config));
+        registerProbeForExecution(new RecordFragmentationProbe(parallelExecutor, config));
+        registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+    }
+
     /**
      * Provides a callback that kills all the processes that have been spawned during this state
      * execution.
@@ -211,17 +185,10 @@ public final class TlsClientScanner extends TlsScanner {
         };
     }
 
-    private void closeParallelExecutorIfNeeded() {
+    @Override
+    public void close() {
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }
-    }
-
-    public void setCloseAfterFinishParallel(boolean closeAfterFinishParallel) {
-        this.closeAfterFinishParallel = closeAfterFinishParallel;
-    }
-
-    public boolean isCloseAfterFinishParallel() {
-        return closeAfterFinishParallel;
     }
 }

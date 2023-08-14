@@ -4,7 +4,7 @@
 ![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
 [![Build Status](https://hydrogen.cloud.nds.rub.de/buildStatus/icon.svg?job=TLS-Scanner)](https://hydrogen.cloud.nds.rub.de/job/TLS-Scanner/)
 
-TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations.
+TLS-Scanner is a tool to assist pentesters and security researchers in the evaluation of TLS server and client configurations.
 
 **Please note:**  *TLS-Scanner is a research tool intended for TLS developers, pentesters, administrators and researchers. There is no GUI. It is in the first version and may contain some bugs.*
 
@@ -59,18 +59,29 @@ feel free to issue a pull request*
 
 (TLS) probes sometimes have prerequisites that are required to execute this specific probe. The requirement system allows you to define sets of such requirements that must be met in order for the probe to be executed.
 
-Requirements can be concatenated in several ways. You can use a logical *not* by including a requirement in the `NotRequirement`, a logical *or* by putting the respective requirement objects in an `OrRequirement`, and a logical *and* by applying the require function to a requirement object by using the builder pattern of the requirement class.
-The different types of `Requirement`s can be the execution of one or multiple probes (`ProbeRequirement`), fulfilled (`PropertyRequirement`) or not fulfilled properties (`PropertyNotRequirement`), supported extension types (`ExtensionRequirement`), supported protocol versions (`ProtocolRequirement`), a working configuration (`WorkingConfigRequirement`), or optional flags (`OptionsRequirement`).
+Each requirement offers an `evaluate` function which returns a boolean value indicating whether the requirement has been fulfilled.
+Requirements can be concatenated in several ways using well-known logical operations. Each requirement offers `and`, `or`, `not`, and `xor`
+instance methods to chain multiple requirements. The following probes are currently implemented and can be used off the shelf:
 
-If nothing is required, you can use the static Requirement.NO_REQUIREMENT which always evaluates to true.
+- `FulfilledRequirement` - Always evalutes to `true`, useful to indicate no requirement.
+- `UnfulfillableRequirement` - Always evalutes to `false`, prevents execution of probes.
+- `ProbeRequirement` - Evaluates to `true` if the specified probe(s) has been executed.
+- `PropertyRequirement` - Evaluates to `true` if the specified analyzed properties have a predefined value. The value may either be provided as a constructor parameter or one may use `PropertyTrueRequirement` and `PropertyFalseRequirement` as a shorthand for `TestResults.TRUE` and `TestResults.FALSE`.
+- `PropertyComparatorRequirement` - Evaluates to `true` if the collection result of an analyzed property is smaller, equal, or greater than a constant value.
+- `ProtocolRequirement` - Evaluates to `true` if certain protocol versions are supported.
+- `ExtensionRequirement` - Evaluates to `true` if certain extensions are supported by the remote peer.
+- `OptionsRequirement` - Evaluates to `true` if additional cli flags are set. Currently used in some client probes (ALPN, SNI, session resumption).
+- `WorkingConfigRequirement` - Evaluates to `true` if a working configuration has been found.
 
-Examples like the following can be found in the `probe` packages of the `tls-client-` and `tls-server-scanner`.
+Aside from these predefined requirements one may also extend the `Requirement` class anonymously within the `getRequirements` method. If nothing is required, you can use may return a `FulfilledRequirement` which always evaluates to true.
 
-```code
+Examples on how to use requirements can be found in the `probe` packages of the `tls-client-scanner` and `tls-server-scanner`.
+
+```java
 @Override
-protected Requirement getRequirements() {
-    return new ProbeRequirement(TlsProbeType.EXTENSIONS)
-            .requires(new ExtensionRequirement(ExtensionType.ALPN));
+public Requirement<ClientReport> getRequirements() {
+    return new ProbeRequirement<ClientReport>(TlsProbeType.CIPHER_SUITE)
+            .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_DHE));
 }
 ```
 

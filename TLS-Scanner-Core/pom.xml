@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tls.scanner</groupId>
         <artifactId>tls-scanner</artifactId>
-        <version>5.2.5-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>tls-scanner-core</artifactId>
 
@@ -20,14 +20,6 @@
     <properties>
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
-
-    <dependencies>
-        <!-- scope: compile -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>scanner-core</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

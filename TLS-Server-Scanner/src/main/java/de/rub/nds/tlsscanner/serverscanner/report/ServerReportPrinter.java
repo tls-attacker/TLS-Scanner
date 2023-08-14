@@ -1,18 +1,20 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -44,7 +46,6 @@ import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -62,7 +63,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
@@ -87,6 +87,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -174,11 +175,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
-            for (ScannerProbe<?> unexecutedProbe : report.getUnexecutedProbes())
+            for (ScannerProbe<?, ?> unexecutedProbe : report.getUnexecutedProbes())
+                //noinspection unchecked
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
-                        unexecutedProbe.getRequirements().getMissingRequirements(report).name());
+                        ((ScannerProbe<ServerReport, ?>) unexecutedProbe)
+                                .getRequirements().getUnfulfilledRequirements(report).stream()
+                                        .map(Object::toString)
+                                        .collect(Collectors.joining(";")));
         }
     }
 
@@ -281,7 +286,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
 
-        prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
+        prettyAppendHeading(builder, "DTLS Bugs");
         prettyAppend(
                 builder,
                 "Accepts Finished with Epoch 0",
@@ -897,10 +902,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
         appendOcspOverview(builder);
-        @SuppressWarnings("unchecked")
         ListResult<OcspCertificateResult> ocspResult =
-                (ListResult<OcspCertificateResult>)
-                        report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS);
+                report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
         if (ocspResult != null) {
             int certCtr = 1;
             for (OcspCertificateResult result : report.getOcspResults()) {
@@ -2159,23 +2162,18 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendAlpn(StringBuilder builder) {
         @SuppressWarnings("unchecked")
-        ListResult<String> alpnResult =
-                (ListResult<String>)
-                        report.getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
-        if (alpnResult != null) {
-            List<String> alpns = alpnResult.getList();
-            if (alpns != null) {
-                prettyAppendHeading(builder, "ALPN");
-                for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
-                    if (alpnProtocol.isGrease()) {
-                        continue;
-                    }
-                    if (alpns.contains(alpnProtocol.getConstant())) {
-                        prettyAppend(builder, alpnProtocol.getPrintableName(), true);
-                    } else {
-                        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                            prettyAppend(builder, alpnProtocol.getPrintableName(), false);
-                        }
+        List<String> alpns = report.getSupportedAlpnConstans();
+        if (alpns != null) {
+            prettyAppendHeading(builder, "ALPN");
+            for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
+                if (alpnProtocol.isGrease()) {
+                    continue;
+                }
+                if (alpns.contains(alpnProtocol.getConstant())) {
+                    prettyAppend(builder, alpnProtocol.getPrintableName(), true);
+                } else {
+                    if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        prettyAppend(builder, alpnProtocol.getPrintableName(), false);
                     }
                 }
             }
@@ -2669,10 +2667,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             try {
                 if (report.getProtocolType() == ProtocolType.TLS) {
                     prettyAppend(
-                            builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                            builder,
+                            "TCP connections",
+                            String.valueOf(report.getPerformedConnections()));
                 }
                 prettyAppendSubheading(builder, "Probe execution performance");
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     prettyAppend(
                             builder,

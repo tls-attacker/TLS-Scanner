@@ -4,16 +4,16 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>3.2.3</version>
+        <version>3.4.1</version>
     </parent>
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>5.2.5-SNAPSHOT</version>
+    <version>5.3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
-    <description>TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations.</description>
+    <description>TLS-Scanner is a tool created to assist pentesters and security researchers in the evaluation of TLS Server configurations.</description>
     <url>https://github.com/tls-attacker/TLS-Scanner</url>
     <inceptionYear>2017</inceptionYear>
 
@@ -29,18 +29,17 @@
         <developer>
             <id>ic0ns</id>
             <name>Robert Merget</name>
-            <email>robert.merget@rub.de</email>
-            <url>http://www.nds.rub.de/</url>
-            <organization>NDS</organization>
-            <organizationUrl>http://www.nds.rub.de</organizationUrl>
+            <email>robert.merget@tii.ae</email>
+            <url>https://github.com/ic0ns/</url>
+            <organization>TII</organization>
+            <organizationUrl>https://www.tii.ae/</organizationUrl>
             <roles>
-                <role>Developer</role>
+                <role>Team lead</role>
             </roles>
         </developer>
     </developers>
 
     <modules>
-        <module>Scanner-Core</module>
         <module>TLS-Client-Scanner</module>
         <module>TLS-Scanner-Core</module>
         <module>TLS-Server-Scanner</module>
@@ -68,11 +67,6 @@
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>de.rub.nds.tls.scanner</groupId>
-                <artifactId>scanner-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>de.rub.nds.tls.scanner</groupId>
                 <artifactId>tls-client-scanner</artifactId>
@@ -143,6 +137,10 @@
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
+            <artifactId>scanner-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
         </dependency>
         <dependency>
@@ -194,6 +192,11 @@
             <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <!-- scope: test -->
+        <dependency>
+            <groupId>de.rub.nds.tls.dockerlib</groupId>
+            <artifactId>tls-docker-library</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

@@ -1,17 +1,19 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -23,8 +25,6 @@ import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttacker;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class PaddingOracleProbe extends TlsClientProbe {
 
     private static final int NUMBER_OF_ITERATIONS = 3;
     private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
@@ -54,7 +54,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     public PaddingOracleProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, scannerConfig);
-        this.scanDetail = scannerConfig.getScanDetail();
+        this.scanDetail = scannerConfig.getExecutorConfig().getScanDetail();
         this.numberOfIterations =
                 scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                         ? NUMBER_OF_ITERATIONS
@@ -69,7 +69,7 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
         resultList = new LinkedList<>();
@@ -201,11 +201,11 @@ public class PaddingOracleProbe extends TlsClientProbe<ClientScannerConfig, Clie
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(
+    public Requirement<ClientReport> getRequirements() {
+        return new ProbeRequirement<ClientReport>(
                         TlsProbeType.PROTOCOL_VERSION,
                         TlsProbeType.CIPHER_SUITE,
                         TlsProbeType.APPLICATION_MESSAGE)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }
 }

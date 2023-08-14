@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -12,6 +12,8 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -38,10 +40,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
@@ -58,7 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class MacProbe extends TlsServerProbe {
 
     private List<CipherSuite> suiteList;
 
@@ -73,7 +75,7 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
         if (correctFingerprint != null) {
             LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
@@ -401,13 +403,14 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE)
-                .requires(
-                        new PropertyRequirement(
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE))
+                .and(
+                        new PropertyTrueRequirement<>(
                                 TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
                                 TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS))
-                .requires(new WorkingConfigRequirement(configSelector));
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override

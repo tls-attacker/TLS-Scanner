@@ -1,14 +1,14 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -28,7 +28,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -40,7 +39,7 @@ import java.util.List;
  * A probe which samples random material from the target host using ServerHello randoms, SessionIDs
  * and IVs.
  */
-public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class RandomnessProbe extends TlsServerProbe {
 
     private ProtocolVersion bestVersion;
     private CipherSuite bestCipherSuite;
@@ -51,13 +50,13 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
     }
 
     @Override
-    public Requirement getRequirements() {
-        return new ProbeRequirement(
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(
                 TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION, TlsProbeType.EXTENSIONS);
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
     }
 
@@ -70,10 +69,9 @@ public class RandomnessProbe extends TlsServerProbe<ConfigSelector, ServerReport
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
-        @SuppressWarnings("unchecked")
         List<VersionSuiteListPair> versionSuitePairs =
-                ((ListResult<VersionSuiteListPair>)
-                                report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
+                report.getListResult(
+                                TlsAnalyzedProperty.VERSION_SUITE_PAIRS, VersionSuiteListPair.class)
                         .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {

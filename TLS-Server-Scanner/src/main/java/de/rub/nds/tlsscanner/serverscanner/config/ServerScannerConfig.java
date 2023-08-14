@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.ProxyDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class ServerScannerConfig extends TlsScannerConfig {
     @ParametersDelegate private ClientDelegate clientDelegate;
 
     @ParametersDelegate private CcaDelegate ccaDelegate;
+
+    @ParametersDelegate private ProxyDelegate proxyDelegate;
 
     @Parameter(
             names = "-applicationProtocol",
@@ -56,9 +59,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
         this.clientDelegate = new ClientDelegate();
         this.ccaDelegate = new CcaDelegate();
+        this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(proxyDelegate);
     }
 
     public ServerScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
@@ -66,9 +71,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
         this.clientDelegate = clientDelegate;
         this.ccaDelegate = new CcaDelegate();
+        this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(proxyDelegate);
     }
 
     public ApplicationProtocol getApplicationProtocol() {
@@ -85,6 +92,10 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
     public CcaDelegate getCcaDelegate() {
         return ccaDelegate;
+    }
+
+    public ProxyDelegate getProxyDelegate() {
+        return proxyDelegate;
     }
 
     public int getAdditionalRandomnessHandshakes() {

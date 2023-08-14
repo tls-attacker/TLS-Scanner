@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.signatureengine.keyparsers.PemUtil;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -51,9 +50,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     public void testEmptyCertificateChain() {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
-                new ListResult<>(
-                        List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")),
-                        TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
+                List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")));
         probe.analyze(report);
         assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
     }
@@ -70,9 +67,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
             Certificate certificate = PemUtil.readCertificate(certificateFile);
             report.putResult(
                     TlsAnalyzedProperty.CERTIFICATE_CHAINS,
-                    new ListResult<>(
-                            List.of(new CertificateChain(certificate, "a.com")),
-                            TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
+                    List.of(new CertificateChain(certificate, "a.com")));
             probe.analyze(report);
         } catch (IOException | URISyntaxException | CertificateException e) {
             fail("Could not load certificate from resources");

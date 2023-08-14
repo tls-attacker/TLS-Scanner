@@ -1,16 +1,17 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
-import de.rub.nds.scanner.core.report.rating.Recommendations;
-import de.rub.nds.scanner.core.report.rating.SiteReportRater;
+import de.rub.nds.scanner.core.report.rating.*;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencersIO;
+import de.rub.nds.scanner.core.report.rating.RecommendationsIO;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -43,7 +44,8 @@ public class DefaultRatingLoader {
             throws JAXBException, IOException, XMLStreamException {
         ClassLoader classLoader = ServerReport.class.getClassLoader();
         InputStream in = classLoader.getResourceAsStream(INFLUENCERS_RESOURCE_LOCATION);
-        RatingInfluencers ratingInfluencers = RatingInfluencersIO.read(in);
+        RatingInfluencers ratingInfluencers =
+                new RatingInfluencersIO(TlsAnalyzedProperty.class).read(in);
         String fileName = DEFAULT_RECOMMENDATIONS_TEMPLATE + "_" + recommendationLanguage + ".xml";
         URL u = classLoader.getResource(fileName);
         if (u == null) {
@@ -54,7 +56,7 @@ public class DefaultRatingLoader {
             fileName = DEFAULT_RECOMMENDATIONS_TEMPLATE + ".xml";
         }
         in = classLoader.getResourceAsStream(fileName);
-        Recommendations recommendations = RecommendationsIO.read(in);
+        Recommendations recommendations = new RecommendationsIO(TlsAnalyzedProperty.class).read(in);
 
         SiteReportRater instance = new SiteReportRater(ratingInfluencers, recommendations);
         return instance;

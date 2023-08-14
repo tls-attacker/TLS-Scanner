@@ -1,21 +1,21 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -58,32 +58,29 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         this.tls13 = tls13;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms = null;
+        List<SignatureAndHashAlgorithm> algorithms;
         if (tls13) {
             algorithms =
-                    ((ListResult<SignatureAndHashAlgorithm>)
-                                    report.getListResult(
-                                            TlsAnalyzedProperty
-                                                    .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13))
+                    report.getListResult(
+                                    TlsAnalyzedProperty
+                                            .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                                    SignatureAndHashAlgorithm.class)
                             .getList();
         } else {
             algorithms = new LinkedList<>();
             ListResult<SignatureAndHashAlgorithm> samResultCert =
-                    (ListResult<SignatureAndHashAlgorithm>)
-                            report.getListResult(
-                                    TlsAnalyzedProperty
-                                            .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
+                    report.getListResult(
+                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
+                            SignatureAndHashAlgorithm.class);
             if (samResultCert != null) {
                 algorithms.addAll(samResultCert.getList());
             }
             ListResult<SignatureAndHashAlgorithm> samResultSke =
-                    (ListResult<SignatureAndHashAlgorithm>)
-                            report.getListResult(
-                                    TlsAnalyzedProperty
-                                            .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
+                    report.getListResult(
+                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                            SignatureAndHashAlgorithm.class);
             if (samResultSke != null) {
                 algorithms.addAll(samResultSke.getList());
             }

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -21,7 +21,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class VectorStatisticTest<T extends TestInfo> {
+public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
 
     protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.05;
 
@@ -29,7 +29,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
 
     protected final List<VectorContainer> vectorContainerList;
 
-    protected final T testInfo;
+    protected final TestInfoT testInfo;
 
     protected double valueP;
 
@@ -37,7 +37,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
 
     protected boolean significantDistinctAnswers;
 
-    public VectorStatisticTest(T testInfo, List<VectorResponse> responseList) {
+    public VectorStatisticTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         this.testInfo = testInfo;
         vectorContainerList = new LinkedList<>();
         HashMap<Vector, List<ResponseFingerprint>> vectorMap = new HashMap<>();
@@ -68,7 +68,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         return valueP;
     }
 
-    public T getTestInfo() {
+    public TestInfoT getTestInfo() {
         return testInfo;
     }
 

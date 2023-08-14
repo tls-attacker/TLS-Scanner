@@ -1,14 +1,13 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -30,9 +29,11 @@ public class ClientRandomnessAfterProbe extends RandomnessAfterProbe<ClientRepor
     @Override
     public void analyze(ClientReport report) {
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
+                report.getExtractedValueContainer(
+                        TrackableValueType.RANDOM, ComparableByteArray.class);
         ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-                report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
+                report.getExtractedValueContainer(
+                        TrackableValueType.CBC_IV, ComparableByteArray.class);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
         List<ComparableByteArray> extractedRandomList =
@@ -40,15 +41,13 @@ public class ClientRandomnessAfterProbe extends RandomnessAfterProbe<ClientRepor
         List<ComparableByteArray> extractedIvList =
                 cbcIvExtractedValueContainer.getExtractedValueList();
 
-        List<EntropyReport> entropyReport = report.getEntropyReports();
-        if (entropyReport == null) {
-            entropyReport = new LinkedList<>();
-            report.putResult(
-                    TlsAnalyzedProperty.ENTROPY_REPORTS,
-                    new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+        List<EntropyReport> entropyReport = new LinkedList<>();
+        if (report.getEntropyReports() != null) {
+            entropyReport.addAll(report.getEntropyReports());
         }
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
+        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
     }
 }

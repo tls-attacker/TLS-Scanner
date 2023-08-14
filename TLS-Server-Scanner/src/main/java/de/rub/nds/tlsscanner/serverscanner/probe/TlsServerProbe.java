@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -17,12 +17,12 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsServerProbe<ConfigSelector, Report extends TlsScanReport>
-        extends TlsProbe<Report> {
+public abstract class TlsServerProbe extends TlsProbe<ServerReport> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -38,7 +38,7 @@ public abstract class TlsServerProbe<ConfigSelector, Report extends TlsScanRepor
      * @param extensionClass The requested extension class
      * @return The requested extension or null if no such extension was received
      */
-    protected <T extends ExtensionMessage> T getNegotiatedExtension(
+    protected <T extends ExtensionMessage<T>> T getNegotiatedExtension(
             WorkflowTrace workflowTrace, Class<T> extensionClass) {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, workflowTrace)) {
             ServerHelloMessage serverHello =

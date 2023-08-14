@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -52,7 +52,7 @@ public class ClientParameterDelegate extends Delegate {
     }
 
     public String getSniOptions(String domain) {
-        if (sniOptions == null) {
+        if (sniOptions == null || !sniOptions.contains(SNI_REPLACEMENT_MARKER)) {
             return null;
         }
         return sniOptions.replace(SNI_REPLACEMENT_MARKER, domain);
