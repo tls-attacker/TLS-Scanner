@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -64,7 +64,8 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (report.getSignatureAndHashAlgorithm() == null) {
-            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
+            return new SignatureAlgorithmsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
         if (!this.recommendedAlgorithms.contains(
@@ -72,11 +73,11 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
             nonRecommended.add(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(
-                TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAlgorithmsCert_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

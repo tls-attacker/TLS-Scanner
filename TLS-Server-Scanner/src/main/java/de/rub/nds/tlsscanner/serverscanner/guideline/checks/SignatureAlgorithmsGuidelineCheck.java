@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
@@ -63,14 +63,15 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
                 }
             }
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    TestResults.of(notRecommended.isEmpty()), notRecommended);
+                    getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
         } else {
-            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
+            return new SignatureAlgorithmsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

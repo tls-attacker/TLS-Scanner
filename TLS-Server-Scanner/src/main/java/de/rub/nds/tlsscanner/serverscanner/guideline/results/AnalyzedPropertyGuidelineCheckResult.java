@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.TestResult;
@@ -19,18 +20,19 @@ public class AnalyzedPropertyGuidelineCheckResult extends GuidelineCheckResult {
     private final TestResult actualResult;
 
     public AnalyzedPropertyGuidelineCheckResult(
-            TestResult result,
+            String checkName,
+            GuidelineAdherence adherence,
             AnalyzedProperty property,
             TestResult expectedResult,
             TestResult actualResult) {
-        super(result);
+        super(checkName, adherence);
         this.property = property;
         this.expectedResult = expectedResult;
         this.actualResult = actualResult;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return property + "=" + actualResult;
     }
 

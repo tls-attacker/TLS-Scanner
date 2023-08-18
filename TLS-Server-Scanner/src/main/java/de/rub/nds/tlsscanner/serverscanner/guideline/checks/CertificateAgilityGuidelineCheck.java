@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
@@ -50,7 +50,8 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
         @SuppressWarnings("unchecked")
         List<CertificateChain> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+            return new CertificateAgilityGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
@@ -62,19 +63,21 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
             CertificateChain chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+                return new CertificateAgilityGuidelineCheckResult(
+                        getName(), GuidelineAdherence.ADHERED);
             }
             if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
                 if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+                    return new CertificateAgilityGuidelineCheckResult(
+                            getName(), GuidelineAdherence.ADHERED);
                 }
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+        return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CertificateAgility_" + getRequirementLevel();
     }
 }

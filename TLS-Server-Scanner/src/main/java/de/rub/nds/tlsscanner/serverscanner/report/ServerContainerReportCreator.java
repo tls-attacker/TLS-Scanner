@@ -777,7 +777,8 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             rater = DefaultRatingLoader.getServerReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
-                    scoreReport.getInfluencers();
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(

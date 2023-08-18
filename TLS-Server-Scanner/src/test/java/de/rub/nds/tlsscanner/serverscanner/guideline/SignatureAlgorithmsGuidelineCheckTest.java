@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
@@ -34,7 +34,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
                         Collections.singletonList(
                                 SignatureAndHashAlgorithm.RSA_SHA1.getSignatureAlgorithm()));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
     @Test
@@ -50,6 +50,6 @@ public class SignatureAlgorithmsGuidelineCheckTest {
                         Collections.singletonList(
                                 SignatureAndHashAlgorithm.RSA_SHA1.getSignatureAlgorithm()));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }

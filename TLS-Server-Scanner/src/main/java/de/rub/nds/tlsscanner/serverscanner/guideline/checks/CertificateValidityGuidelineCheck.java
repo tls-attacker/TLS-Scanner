@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateValidityGuidelineCheckResult;
@@ -61,13 +61,14 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
                         Instant.ofEpochMilli(report.getValidFrom().getTime()),
                         Instant.ofEpochMilli(report.getValidTo().getTime()));
         return new CertificateValidityGuidelineCheckResult(
-                TestResults.of(validityPeriod.toDays() <= this.days),
+                getName(),
+                GuidelineAdherence.of(validityPeriod.toDays() <= this.days),
                 days,
                 validityPeriod.toDays());
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CertificateValidity_" + getRequirementLevel() + "_" + days;
     }
 

@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -86,7 +86,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         boolean passFlag = false;
         boolean uncertainFlag = false;
         boolean failedFlag = false;
-        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult();
+        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
         for (CertificateReport report : chain.getCertificateReportList()) {
             if (!(report.getPublicKey() instanceof CustomPublicKey)) {
                 uncertainFlag = true;
@@ -154,11 +154,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             }
         }
         if (failedFlag) {
-            result.setResult(TestResults.FALSE);
+            result.setAdherence(GuidelineAdherence.VIOLATED);
         } else if (uncertainFlag || !passFlag) {
-            result.setResult(TestResults.UNCERTAIN);
+            result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         } else {
-            result.setResult(TestResults.TRUE);
+            result.setAdherence(GuidelineAdherence.ADHERED);
         }
         return result;
     }
@@ -167,9 +167,9 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(TestResults.FALSE) {
+                return new GuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED) {
                     @Override
-                    public String display() {
+                    public String toString() {
                         return String.format(
                                 "Weakest DH size %d<%d",
                                 report.getWeakestDhStrength(), minimumDhKeyLength);
@@ -181,7 +181,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "KeySizeCert_"
                 + getRequirementLevel()
                 + "_"

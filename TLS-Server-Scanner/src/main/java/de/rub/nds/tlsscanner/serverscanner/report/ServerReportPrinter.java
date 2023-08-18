@@ -2357,43 +2357,42 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
         prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
-        prettyAppend(builder, "Passed: " + guidelineReport.getPassed().size(), AnsiColor.GREEN);
-        prettyAppend(builder, "Skipped: " + guidelineReport.getSkipped().size());
-        prettyAppend(builder, "Failed: " + guidelineReport.getFailed().size(), AnsiColor.RED);
+        prettyAppend(builder, "Adhered: " + guidelineReport.getAdhered().size(), AnsiColor.GREEN);
+        prettyAppend(builder, "Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED);
         prettyAppend(
-                builder, "Uncertain: " + guidelineReport.getUncertain().size(), AnsiColor.YELLOW);
+                builder, "Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW);
+        prettyAppend(builder, "Condition Not Met: " + guidelineReport.getConditionNotMet().size());
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
 
             if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
                 prettyAppendSubSubheading(builder, "Passed Checks:");
-                for (GuidelineCheckResult result : guidelineReport.getPassed()) {
-                    prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
+                    prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.GREEN);
                     prettyAppend(
                             builder,
-                            "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                            "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
                 }
             }
-            prettyAppendSubSubheading(builder, "Failed Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getFailed()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
+
+            prettyAppendSubSubheading(builder, "Violated Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getViolated()) {
+                prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.RED);
                 prettyAppend(
-                        builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                        builder, "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
             }
-            prettyAppendSubSubheading(builder, "Uncertain Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+
+            prettyAppendSubSubheading(builder, "Failed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
+                prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW);
                 prettyAppend(
-                        builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                        builder, "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
             }
 
             if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                prettyAppendSubSubheading(builder, "Skipped Checks:");
-                for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
-                    prettyAppend(builder, StringUtils.trim(result.getName()));
-                    prettyAppend(
-                            builder,
-                            "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                prettyAppendSubSubheading(builder, "Condition Not Met Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getConditionNotMet()) {
+                    prettyAppend(builder, StringUtils.trim(result.getCheckName()));
                 }
             }
         }
@@ -2411,7 +2410,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             ScoreReport scoreReport = report.getScoreReport();
             Recommendations recommendations = rater.getRecommendations();
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
-                    scoreReport.getInfluencers();
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(

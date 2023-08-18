@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 
 public class CertificateSignatureCheckResult extends GuidelineCheckResult {
@@ -18,14 +18,17 @@ public class CertificateSignatureCheckResult extends GuidelineCheckResult {
     private final SignatureAlgorithm signatureAlgorithm;
 
     public CertificateSignatureCheckResult(
-            TestResult result, String keyAlgorithm, SignatureAlgorithm signatureAlgorithm) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            String keyAlgorithm,
+            SignatureAlgorithm signatureAlgorithm) {
+        super(checkName, adherence);
         this.keyAlgorithm = keyAlgorithm;
         this.signatureAlgorithm = signatureAlgorithm;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return keyAlgorithm + " key is signed with " + signatureAlgorithm;
     }
 

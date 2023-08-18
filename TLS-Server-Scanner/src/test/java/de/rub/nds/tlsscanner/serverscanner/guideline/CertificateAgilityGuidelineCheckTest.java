@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import org.junit.jupiter.api.Test;
@@ -26,6 +26,6 @@ public class CertificateAgilityGuidelineCheckTest {
 
         GuidelineCheckResult result = check.evaluate(report);
 
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }
