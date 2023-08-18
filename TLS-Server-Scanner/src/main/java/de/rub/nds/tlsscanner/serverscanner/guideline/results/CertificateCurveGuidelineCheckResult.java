@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
@@ -18,18 +18,21 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
     private NamedGroup namedGroup;
 
     public CertificateCurveGuidelineCheckResult(
-            TestResult result, boolean supported, NamedGroup namedGroup) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            boolean supported,
+            NamedGroup namedGroup) {
+        super(checkName, adherence);
         this.supported = supported;
         this.namedGroup = namedGroup;
     }
 
-    public CertificateCurveGuidelineCheckResult(TestResult result) {
-        super(result);
+    public CertificateCurveGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
+        super(checkName, adherence);
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return supported ? namedGroup + " is recommended." : namedGroup + " is not recommended.";
     }
 

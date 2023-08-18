@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
@@ -66,29 +66,33 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Extensions extensions = report.convertToCertificateHolder().getExtensions();
         if (extensions == null) {
-            return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
+            return new KeyUsageCertificateCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, null);
         }
         KeyUsage extension = KeyUsage.fromExtensions(extensions);
         if (extension == null) {
-            return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
+            return new KeyUsageCertificateCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, null);
         }
         if (SIGNATURE_ALGORITHM_LIST.contains(
                 report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
                 return new KeyUsageCertificateCheckResult(
-                        TestResults.FALSE, false, "digitalSignature");
+                        getName(), GuidelineAdherence.VIOLATED, false, "digitalSignature");
             }
         }
         if (report.getPublicKey() instanceof CustomDhPublicKey) {
             if (!extension.hasUsages(KeyUsage.keyAgreement)) {
-                return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, "keyAgreement");
+                return new KeyUsageCertificateCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, false, "keyAgreement");
             }
         }
-        return new KeyUsageCertificateCheckResult(TestResults.TRUE, true, null);
+        return new KeyUsageCertificateCheckResult(
+                getName(), GuidelineAdherence.ADHERED, true, null);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "KeyUsageCertificate_" + getRequirementLevel();
     }
 }

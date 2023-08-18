@@ -78,8 +78,8 @@ public class GuidelineIOIT {
                 result.getChecks().get(0).getName(),
                 "Influencer length check.");
         assertEquals(
-                this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId(),
+                this.original.getChecks().get(0).toString(),
+                result.getChecks().get(0).toString(),
                 "Influencer length check.");
 
         File tempFile = new File(tempDir, "serializarion_test_simple.xml");
@@ -99,8 +99,8 @@ public class GuidelineIOIT {
                 result.getChecks().get(0).getName(),
                 "Influencer length check.");
         assertEquals(
-                this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId(),
+                this.original.getChecks().get(0).toString(),
+                result.getChecks().get(0).toString(),
                 "Influencer length check.");
     }
 }

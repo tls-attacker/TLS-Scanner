@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -44,7 +44,7 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(ProtocolVersion.TLS12),
                         Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
 
         check =
                 new CipherSuiteGuidelineCheck(
@@ -54,7 +54,7 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
 
         result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
     @Test
@@ -76,6 +76,6 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(ProtocolVersion.TLS12),
                         Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }

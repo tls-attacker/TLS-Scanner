@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -64,29 +64,29 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         boolean passFlag = false;
         boolean failFlag = false;
         boolean uncertainFlag = false;
-        CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
+        CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult(getName());
         @SuppressWarnings("unchecked")
         List<CertificateChain> certchains = report.getCertificateChainList();
         for (int i = 0; i < certchains.size(); i++) {
             CertificateChain chain = certchains.get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
-            if (Objects.equals(TestResults.TRUE, currentResult.getResult())) {
+            if (Objects.equals(GuidelineAdherence.ADHERED, currentResult.getAdherence())) {
                 passFlag = true;
-            } else if (Objects.equals(TestResults.FALSE, currentResult.getResult())) {
+            } else if (Objects.equals(GuidelineAdherence.VIOLATED, currentResult.getAdherence())) {
                 failFlag = true;
             } else {
                 uncertainFlag = true;
             }
         }
         if (this.atLeastOneCertificateShallPass && passFlag) {
-            result.setResult(TestResults.TRUE);
+            result.setAdherence(GuidelineAdherence.ADHERED);
         } else if (passFlag && !uncertainFlag && !failFlag) {
-            result.setResult(TestResults.TRUE);
+            result.setAdherence(GuidelineAdherence.ADHERED);
         } else if (failFlag) {
-            result.setResult(TestResults.FALSE);
+            result.setAdherence(GuidelineAdherence.VIOLATED);
         } else {
-            result.setResult(TestResults.UNCERTAIN);
+            result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         }
         return result;
     }

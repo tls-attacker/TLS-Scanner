@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -64,11 +64,11 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
         return new CipherSuiteGuidelineCheckResult(
-                TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CipherSuite_"
                 + getRequirementLevel()
                 + "_"

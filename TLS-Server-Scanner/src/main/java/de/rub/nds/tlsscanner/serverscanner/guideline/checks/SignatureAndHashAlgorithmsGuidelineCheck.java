@@ -8,12 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.scanner.core.probe.result.ListResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
@@ -87,7 +87,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         }
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-                    TestResults.UNCERTAIN, null);
+                    getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -96,11 +96,11 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
             }
         }
         return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-                TestResults.of(notRecommended.isEmpty()), notRecommended);
+                getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAndHashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

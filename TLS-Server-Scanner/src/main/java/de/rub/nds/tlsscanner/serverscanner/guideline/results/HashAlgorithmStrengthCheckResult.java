@@ -8,9 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import java.util.Objects;
 
@@ -18,14 +17,15 @@ public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
 
     private final HashAlgorithm hashAlgorithm;
 
-    public HashAlgorithmStrengthCheckResult(TestResult result, HashAlgorithm hashAlgorithm) {
-        super(result);
+    public HashAlgorithmStrengthCheckResult(
+            String checkName, GuidelineAdherence adherence, HashAlgorithm hashAlgorithm) {
+        super(checkName, adherence);
         this.hashAlgorithm = hashAlgorithm;
     }
 
     @Override
-    public String display() {
-        if (Objects.equals(TestResults.TRUE, getResult())) {
+    public String toString() {
+        if (Objects.equals(GuidelineAdherence.ADHERED, getAdherence())) {
             return "Used Hash Algorithms are strong enough.";
         }
         return hashAlgorithm + " is too weak";

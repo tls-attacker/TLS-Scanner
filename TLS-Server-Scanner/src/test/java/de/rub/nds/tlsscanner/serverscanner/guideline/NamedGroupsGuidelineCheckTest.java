@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
@@ -38,7 +38,7 @@ public class NamedGroupsGuidelineCheckTest {
                         false,
                         1);
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class NamedGroupsGuidelineCheckTest {
                         false,
                         1);
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
 
         check =
                 new NamedGroupsGuidelineCheck(
@@ -68,6 +68,6 @@ public class NamedGroupsGuidelineCheckTest {
                         false,
                         1);
         result = check.evaluate(report);
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }

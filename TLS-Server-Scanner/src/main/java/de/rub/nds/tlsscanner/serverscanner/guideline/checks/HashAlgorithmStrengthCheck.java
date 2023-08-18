@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -73,14 +73,15 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             HashAlgorithm hashAlgorithm = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                return new HashAlgorithmStrengthCheckResult(TestResults.FALSE, hashAlgorithm);
+                return new HashAlgorithmStrengthCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(TestResults.TRUE, null);
+        return new HashAlgorithmStrengthCheckResult(getName(), GuidelineAdherence.ADHERED, null);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "HashAlgorithmStrength_" + getRequirementLevel() + "_" + minimumStrength;
     }
 
