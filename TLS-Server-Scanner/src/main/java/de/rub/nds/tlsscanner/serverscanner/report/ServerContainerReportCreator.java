@@ -1,23 +1,38 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
-import de.rub.nds.scanner.core.report.container.*;
-import de.rub.nds.scanner.core.report.rating.*;
+import de.rub.nds.scanner.core.report.container.HeadlineContainer;
+import de.rub.nds.scanner.core.report.container.KeyValueContainer;
+import de.rub.nds.scanner.core.report.container.ListContainer;
+import de.rub.nds.scanner.core.report.container.ReportContainer;
+import de.rub.nds.scanner.core.report.container.TextContainer;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendation;
+import de.rub.nds.scanner.core.report.rating.ScoreReport;
+import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
+import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -29,14 +44,16 @@ import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
-public class ServerContainerReportCreator extends TlsReportCreator {
+public class ServerContainerReportCreator extends TlsReportCreator<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -175,13 +192,13 @@ public class ServerContainerReportCreator extends TlsReportCreator {
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_ESNI, report));
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             container.add(new HeadlineContainer("Tokenbinding Version"));
-            for (TokenBindingVersion version : report.getSupportedTokenBindingVersion()) {
+            for (TokenBindingVersion version : report.getSupportedTokenbindingVersions()) {
                 container.add(new TextContainer(version.toString(), AnsiColor.DEFAULT_COLOR));
             }
 
             container.add(new HeadlineContainer("Tokenbinding Key Parameters"));
             for (TokenBindingKeyParameters keyParameter :
-                    report.getSupportedTokenBindingKeyParameters()) {
+                    report.getSupportedTokenbindingKeyParameters()) {
                 container.add(new TextContainer(keyParameter.toString(), AnsiColor.DEFAULT_COLOR));
             }
         }
@@ -425,7 +442,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
 
     private ReportContainer createAlpnContainer(ServerReport report) {
         ListContainer container = new ListContainer();
-        if (report.getSupportedAlpns() == null) {
+        if (report.getSupportedAlpnConstans() == null) {
             return container;
         }
         container.add(new HeadlineContainer("ALPN"));
@@ -433,7 +450,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
             if (alpnProtocol.isGrease()) {
                 continue;
             }
-            if (report.getSupportedAlpns().contains(alpnProtocol.getConstant())) {
+            if (report.getSupportedAlpnConstans().contains(alpnProtocol.getConstant())) {
                 container.add(
                         new KeyValueContainer(
                                 alpnProtocol.getPrintableName(),
@@ -557,7 +574,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                     container.add(createDefaultTextContainer("Not supported"));
                 }
                 container.add(new HeadlineContainer("HTTPS Response Header"));
-                for (HttpHeader header : report.getHeaderList()) {
+                for (HttpHeader header : report.getHttpHeader()) {
                     container.add(
                             createDefaultKeyValueContainer(
                                     header.getHeaderName().getValue(),
@@ -581,9 +598,8 @@ public class ServerContainerReportCreator extends TlsReportCreator {
         container.add(createKeyValueContainer(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, report));
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, report));
-        if (report.getUsedCommonDhValueList() != null
-                && report.getUsedCommonDhValueList().size() != 0) {
-            for (CommonDhValues value : report.getUsedCommonDhValueList()) {
+        if (report.getCommonDhValues() != null && report.getCommonDhValues().size() != 0) {
+            for (CommonDhValues value : report.getCommonDhValues()) {
                 container.add(new TextContainer(value.getName(), AnsiColor.YELLOW));
             }
         }
@@ -808,7 +824,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                 new KeyValueContainer(
                         recommendation.getShortName(),
                         AnsiColor.DEFAULT_COLOR,
-                        influencer.getResult().name(),
+                        influencer.getResult().getName(),
                         color));
         int scoreInfluence = 0;
         String additionalInfo = "";
@@ -872,11 +888,11 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                 container.add(
                         createDefaultKeyValueContainer(
                                 "TCP connections",
-                                String.valueOf(report.getPerformedTcpConnections())));
+                                String.valueOf(report.getPerformedConnections())));
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(

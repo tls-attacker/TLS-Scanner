@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.passive;
 
 import de.rub.nds.scanner.core.passive.StatExtractor;
@@ -20,7 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import java.util.List;
 
-public class CookieExtractor extends StatExtractor<ComparableByteArray> {
+public class CookieExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public CookieExtractor() {
         super(TrackableValueType.COOKIE);
@@ -30,13 +29,14 @@ public class CookieExtractor extends StatExtractor<ComparableByteArray> {
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         List<ProtocolMessage> allReceivedMessages =
-            WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof HelloVerifyRequestMessage
-                && ((HelloVerifyRequestMessage) message).getCookie() != null) {
-                put(new ComparableByteArray(((HelloVerifyRequestMessage) message).getCookie().getValue()));
+                    && ((HelloVerifyRequestMessage) message).getCookie() != null) {
+                put(
+                        new ComparableByteArray(
+                                ((HelloVerifyRequestMessage) message).getCookie().getValue()));
             }
         }
     }
-
 }

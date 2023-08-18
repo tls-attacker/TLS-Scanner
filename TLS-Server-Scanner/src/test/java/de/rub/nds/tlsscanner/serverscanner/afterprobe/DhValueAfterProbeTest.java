@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,14 +10,13 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.math.BigInteger;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,8 +48,7 @@ public class DhValueAfterProbeTest {
                         16);
 
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(
@@ -72,8 +70,7 @@ public class DhValueAfterProbeTest {
         BigInteger modulus = new BigInteger("18");
 
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(
@@ -106,8 +103,7 @@ public class DhValueAfterProbeTest {
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
         publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerList(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(

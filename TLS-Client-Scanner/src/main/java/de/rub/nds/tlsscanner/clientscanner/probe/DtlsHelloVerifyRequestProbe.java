@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,8 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -33,27 +34,39 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.DtlsHelloVerifyRequestResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import java.util.Arrays;
 
-public class DtlsHelloVerifyRequestProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, DtlsHelloVerifyRequestResult> {
+public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
+
+    private TestResult acceptsLegacyServerVersionMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsHvrSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsServerHelloSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult hasClientHelloMismatch = TestResults.COULD_NOT_TEST;
+    private TestResult acceptsEmptyCookie = TestResults.COULD_NOT_TEST;
 
     public DtlsHelloVerifyRequestProbe(
             ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH,
+                TlsAnalyzedProperty.ACCEPTS_HVR_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                TlsAnalyzedProperty.ACCEPTS_SERVER_HELLO_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                TlsAnalyzedProperty.HAS_CLIENT_HELLO_MISMATCH,
+                TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE);
     }
 
     @Override
-    public DtlsHelloVerifyRequestResult executeTest() {
-        return new DtlsHelloVerifyRequestResult(
-                acceptsLegacyServerVersionMismatch(),
-                acceptsHvrSequenceNumberMismatch(),
-                acceptsServerHelloSequenceNumberMismatch(),
-                hasClientHelloMismatch(),
-                acceptsEmptyCookie());
+    protected void executeTest() {
+        acceptsLegacyServerVersionMismatch = acceptsLegacyServerVersionMismatch();
+        acceptsHvrSequenceNumberMismatch = acceptsHvrSequenceNumberMismatch();
+        acceptsServerHelloSequenceNumberMismatch = acceptsServerHelloSequenceNumberMismatch();
+        hasClientHelloMismatch = hasClientHelloMismatch();
+        acceptsEmptyCookie = acceptsEmptyCookie();
     }
 
     private TestResult acceptsLegacyServerVersionMismatch() {
@@ -201,20 +214,25 @@ public class DtlsHelloVerifyRequestProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsHelloVerifyRequestResult getCouldNotExecuteResult() {
-        return new DtlsHelloVerifyRequestResult(
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(
+                TlsAnalyzedProperty.ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH,
+                acceptsLegacyServerVersionMismatch);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_HVR_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                acceptsHvrSequenceNumberMismatch);
+        put(
+                TlsAnalyzedProperty.ACCEPTS_SERVER_HELLO_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                acceptsServerHelloSequenceNumberMismatch);
+        put(TlsAnalyzedProperty.HAS_CLIENT_HELLO_MISMATCH, hasClientHelloMismatch);
+        put(TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE, acceptsEmptyCookie);
+    }
+
+    @Override
+    public Requirement<ClientReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
+    }
 }

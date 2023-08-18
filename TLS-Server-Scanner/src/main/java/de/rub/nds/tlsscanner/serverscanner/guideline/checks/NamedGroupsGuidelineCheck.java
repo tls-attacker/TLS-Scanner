@@ -1,41 +1,37 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.NamedGroupsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    /**
-     * Only these are allowed.
-     */
+    /** Only these are allowed. */
     private List<NamedGroup> recommendedGroups;
-    /**
-     * At least one of these has to be present.
-     */
+    /** At least one of these has to be present. */
     private List<NamedGroup> requiredGroups;
+
     private boolean tls13;
     private int minGroupCount = 0;
 
@@ -43,8 +39,13 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         super(null, null);
     }
 
-    public NamedGroupsGuidelineCheck(String name, RequirementLevel requirementLevel, List<NamedGroup> recommendedGroups,
-        List<NamedGroup> requiredGroups, boolean tls13, int minGroupCount) {
+    public NamedGroupsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<NamedGroup> recommendedGroups,
+            List<NamedGroup> requiredGroups,
+            boolean tls13,
+            int minGroupCount) {
         super(name, requirementLevel);
         this.recommendedGroups = recommendedGroups;
         this.requiredGroups = requiredGroups;
@@ -52,8 +53,14 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         this.minGroupCount = minGroupCount;
     }
 
-    public NamedGroupsGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
-        List<NamedGroup> recommendedGroups, List<NamedGroup> requiredGroups, boolean tls13, int minGroupCount) {
+    public NamedGroupsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<NamedGroup> recommendedGroups,
+            List<NamedGroup> requiredGroups,
+            boolean tls13,
+            int minGroupCount) {
         super(name, requirementLevel, condition);
         this.recommendedGroups = recommendedGroups;
         this.requiredGroups = requiredGroups;
@@ -64,14 +71,14 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<NamedGroup> supportedGroups =
-            this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
+                tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
             return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
             for (NamedGroup group : supportedGroups) {
-                if (this.requiredGroups.contains(group)) {
+                if (requiredGroups.contains(group)) {
                     found = true;
                     break;
                 }
@@ -85,7 +92,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
-            if (this.recommendedGroups != null && !this.recommendedGroups.contains(group)) {
+            if (recommendedGroups != null && !recommendedGroups.contains(group)) {
                 nonRecommended.add(group);
             }
         }
@@ -98,8 +105,16 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     @Override
     public String getId() {
-        return "NamedGroups_" + getRequirementLevel() + "_" + recommendedGroups + "_" + requiredGroups + "_" + tls13
-            + "_" + minGroupCount;
+        return "NamedGroups_"
+                + getRequirementLevel()
+                + "_"
+                + recommendedGroups
+                + "_"
+                + requiredGroups
+                + "_"
+                + tls13
+                + "_"
+                + minGroupCount;
     }
 
     public List<NamedGroup> getRequiredGroups() {
@@ -117,5 +132,4 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
     public boolean isTls13() {
         return tls13;
     }
-
 }

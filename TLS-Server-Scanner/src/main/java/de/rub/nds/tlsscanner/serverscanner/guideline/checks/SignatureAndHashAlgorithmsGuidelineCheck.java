@@ -1,28 +1,30 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -35,15 +37,22 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         super(null, null);
     }
 
-    public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
+    public SignatureAndHashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<SignatureAndHashAlgorithm> recommendedAlgorithms,
+            boolean tls13) {
         super(name, requirementLevel);
         this.recommendedAlgorithms = recommendedAlgorithms;
         this.tls13 = tls13;
     }
 
-    public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
+    public SignatureAndHashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<SignatureAndHashAlgorithm> recommendedAlgorithms,
+            boolean tls13) {
         super(name, requirementLevel, condition);
         this.recommendedAlgorithms = recommendedAlgorithms;
         this.tls13 = tls13;
@@ -51,10 +60,34 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms = tls13 ? report.getSupportedSignatureAndHashAlgorithmsTls13()
-            : report.getSupportedSignatureAndHashAlgorithms();
-        if (algorithms == null) {
-            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.UNCERTAIN, null);
+        List<SignatureAndHashAlgorithm> algorithms;
+        if (tls13) {
+            algorithms =
+                    report.getListResult(
+                                    TlsAnalyzedProperty
+                                            .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                                    SignatureAndHashAlgorithm.class)
+                            .getList();
+        } else {
+            algorithms = new LinkedList<>();
+            ListResult<SignatureAndHashAlgorithm> samResultCert =
+                    report.getListResult(
+                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
+                            SignatureAndHashAlgorithm.class);
+            if (samResultCert != null) {
+                algorithms.addAll(samResultCert.getList());
+            }
+            ListResult<SignatureAndHashAlgorithm> samResultSke =
+                    report.getListResult(
+                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                            SignatureAndHashAlgorithm.class);
+            if (samResultSke != null) {
+                algorithms.addAll(samResultSke.getList());
+            }
+        }
+        if (algorithms == null || algorithms.isEmpty()) {
+            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+                    TestResults.UNCERTAIN, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -62,8 +95,8 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResults.of(notRecommended.isEmpty()),
-            notRecommended);
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+                TestResults.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override

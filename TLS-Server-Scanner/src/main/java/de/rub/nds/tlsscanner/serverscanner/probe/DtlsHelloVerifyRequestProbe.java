@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,8 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -32,47 +33,67 @@ import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DtlsHelloVerifyRequestResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 
-public class DtlsHelloVerifyRequestProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DtlsHelloVerifyRequestResult> {
+public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
+
+    public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
+
+    private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;
+    private TestResult checksCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesPortInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesVersionInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesRandomInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesSessionIdInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesCiphersuitesInCookie = TestResults.COULD_NOT_TEST;
+    private TestResult usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
 
     private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, configSelector);
+        register(
+                TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS,
+                TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
+                TlsAnalyzedProperty.USES_PORT_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
     }
 
     @Override
-    public DtlsHelloVerifyRequestResult executeTest() {
+    protected void executeTest() {
         try {
-            return new DtlsHelloVerifyRequestResult(
-                    hasHvrRetransmissions(),
-                    checksCookie(),
-                    cookieLength,
-                    usesPortInCookie(),
-                    usesVersionInCookie(),
-                    usesRandomInCookie(),
-                    usesSessionIdInCookie(),
-                    usesCiphersuitesInCookie(),
-                    usesCompressionsInCookie());
+            hasHvrRetransmissions = hasHvrRetransmissions();
+            checksCookie = checksCookie();
+            usesPortInCookie = usesPortInCookie();
+            usesVersionInCookie = usesVersionInCookie();
+            usesRandomInCookie = usesRandomInCookie();
+            usesSessionIdInCookie = usesSessionIdInCookie();
+            usesCiphersuitesInCookie = usesCiphersuitesInCookie();
+            usesCompressionsInCookie = usesCompressionsInCookie();
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsHelloVerifyRequestResult(
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST,
-                    null,
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST,
-                    TestResults.ERROR_DURING_TEST);
+            hasHvrRetransmissions =
+                    checksCookie =
+                            usesPortInCookie =
+                                    usesVersionInCookie =
+                                            usesRandomInCookie =
+                                                    usesSessionIdInCookie =
+                                                            usesCiphersuitesInCookie =
+                                                                    usesCompressionsInCookie =
+                                                                            TestResults
+                                                                                    .COULD_NOT_TEST;
+            cookieLength = COOKIE_LENGTH_ERROR_VALUE;
         }
     }
 
@@ -88,7 +109,7 @@ public class DtlsHelloVerifyRequestProbe
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        HandshakeMessage message =
+        HandshakeMessage<?> message =
                 WorkflowTraceUtil.getLastReceivedMessage(
                         HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace());
         if (message != null) {
@@ -246,24 +267,23 @@ public class DtlsHelloVerifyRequestProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsHelloVerifyRequestResult getCouldNotExecuteResult() {
-        return new DtlsHelloVerifyRequestResult(
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                null,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST,
-                TestResults.COULD_NOT_TEST);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
+        put(TlsAnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
+        put(TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
+        put(TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
+        put(TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
+        put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
+        put(TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, usesPortInCookie);
+        report.setCookieLength(cookieLength);
+    }
 }

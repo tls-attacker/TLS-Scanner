@@ -1,15 +1,19 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -20,15 +24,17 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaTaskVectorPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -36,7 +42,7 @@ import de.rub.nds.tlsscanner.serverscanner.task.CcaTask;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaResult> {
+public class CcaProbe extends TlsServerProbe {
 
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
@@ -48,13 +54,18 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
 
     private static final int REEXECUTIONS = 3;
 
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
+    private List<CcaTestResult> resultList;
+
     public CcaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA, configSelector);
         versionSuiteListPairsList = new LinkedList<>();
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, TlsAnalyzedProperty.CCA_TEST_RESULTS);
     }
 
     @Override
-    public CcaResult executeTest() {
+    protected void executeTest() {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = configSelector.getScannerConfig().getCcaDelegate();
@@ -70,7 +81,8 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return new CcaResult(TestResults.COULD_NOT_TEST, null);
+            vulnerable = TestResults.COULD_NOT_TEST;
+            return;
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -121,7 +133,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
             }
         }
 
-        List<CcaTestResult> resultList = new LinkedList<>();
+        resultList = new LinkedList<>();
         boolean handshakeSucceeded = false;
         parallelExecutor.bulkExecuteTasks(taskList);
         for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
@@ -146,24 +158,20 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
                                 ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-        return new CcaResult(handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE, resultList);
+        vulnerable = handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return (report.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE)
-                && (report.getVersionSuitePairs() != null)
-                && configSelector.foundWorkingConfig();
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.REQUIRES_CCA))
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
-    }
-
-    @Override
-    public CcaResult getCouldNotExecuteResult() {
-        return new CcaResult(TestResults.COULD_NOT_TEST, null);
+        versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     private Config generateConfig() {
@@ -177,7 +185,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
     private List<VersionSuiteListPair> getVersionSuitePairList(
             List<ProtocolVersion> desiredVersions) {
         List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
-        for (VersionSuiteListPair versionSuiteListPair : this.versionSuiteListPairsList) {
+        for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairsList) {
             if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
                 versionSuiteListPairs.add(versionSuiteListPair);
             }
@@ -192,7 +200,6 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
             versionSuiteListPairList =
                     getDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
         }
-
         return versionSuiteListPairList;
     }
 
@@ -221,6 +228,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         if (configSelector
                 .getScannerConfig()
+                .getExecutorConfig()
                 .getScanDetail()
                 .isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
@@ -240,5 +248,11 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport, CcaRe
             }
         }
         return versionSuiteListPairList;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
+        put(TlsAnalyzedProperty.CCA_TEST_RESULTS, resultList);
     }
 }

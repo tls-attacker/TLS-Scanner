@@ -1,20 +1,19 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -31,13 +30,17 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
         super(null, null);
     }
 
-    public ExtensionGuidelineCheck(String name, RequirementLevel requirementLevel, ExtensionType requiredExtension) {
+    public ExtensionGuidelineCheck(
+            String name, RequirementLevel requirementLevel, ExtensionType requiredExtension) {
         super(name, requirementLevel);
         this.requiredExtension = requiredExtension;
     }
 
-    public ExtensionGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
-        ExtensionType requiredExtension) {
+    public ExtensionGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            ExtensionType requiredExtension) {
         super(name, requirementLevel, condition);
         this.requiredExtension = requiredExtension;
     }
@@ -45,8 +48,9 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
-            report.getSupportedExtensions().contains(requiredExtension), requiredExtension);
+                TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
+                report.getSupportedExtensions().contains(requiredExtension),
+                requiredExtension);
     }
 
     @Override

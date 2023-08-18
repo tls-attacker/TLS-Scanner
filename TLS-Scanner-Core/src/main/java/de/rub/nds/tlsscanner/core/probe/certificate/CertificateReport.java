@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -440,34 +440,23 @@ public class CertificateReport {
         if (publicKey instanceof CustomDhPublicKey) {
             CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
             builder.append("Static Diffie Hellman\n");
-            builder.append("\t Modulus:")
-                    .append(dhPublicKey.getModulus().toString(16))
-                    .append("\n");
-            builder.append("\t Generator:")
-                    .append(dhPublicKey.getModulus().toString(16))
-                    .append("\n");
-            builder.append("\t Y:").append(dhPublicKey.getY().toString(16)).append("\n");
+            appendHexString(builder, "Modulus", dhPublicKey.getModulus().toString(16));
+            appendHexString(builder, "Generator", dhPublicKey.getModulus().toString(16));
+            appendHexString(builder, "Y", dhPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomDsaPublicKey) {
             CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
             builder.append("DSA\n");
-            builder.append("\t Modulus:").append(dsaPublicKey.getDsaP().toString(16)).append("\n");
-            builder.append("\t Generator:")
-                    .append(dsaPublicKey.getDsaG().toString(16))
-                    .append("\n");
-            builder.append("\t Q:").append(dsaPublicKey.getDsaQ().toString(16)).append("\n");
-            builder.append("\t X:").append(dsaPublicKey.getY().toString(16)).append("\n");
+            appendHexString(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
+            appendHexString(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
+            appendHexString(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            appendHexString(builder, "X", dsaPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomRsaPublicKey) {
             CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
             builder.append("RSA\n");
-            builder.append("\t Modulus:")
-                    .append(rsaPublicKey.getModulus().toString(16))
-                    .append("\n");
-            builder.append("\t Generator:")
-                    .append(rsaPublicKey.getModulus().toString(16))
-                    .append("\n");
-            builder.append("\t Public exponent:")
-                    .append(rsaPublicKey.getPublicExponent().toString(16))
-                    .append("\n");
+            appendHexString(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
+            appendHexString(builder, "Generator", rsaPublicKey.getModulus().toString(16));
+            appendHexString(
+                    builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
         } else if (publicKey instanceof CustomEcPublicKey) {
             CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
             builder.append("Elliptic Curve\n");
@@ -484,5 +473,9 @@ public class CertificateReport {
             builder.append(publicKey.toString()).append("\n");
         }
         return builder.toString();
+    }
+
+    private StringBuilder appendHexString(StringBuilder builder, String title, String value) {
+        return builder.append("\t " + title + ":").append("0x" + value).append("\n");
     }
 }

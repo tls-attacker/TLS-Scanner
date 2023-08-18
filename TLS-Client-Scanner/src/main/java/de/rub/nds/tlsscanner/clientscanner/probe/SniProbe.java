@@ -1,15 +1,16 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.NameType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -22,25 +23,30 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.SniResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.requirements.ClientOptionsRequirement;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.function.Function;
 
-public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, SniResult> {
+public class SniProbe extends TlsClientProbe {
 
     private static final String SNI_CLIENT_EXPECTED = "tls-attackerhost.com";
     private static final String SNI_FAKE_NAME = "notarealtls-attackerhost.com";
 
+    private TestResult strictSni = TestResults.COULD_NOT_TEST;
+    private TestResult requiresSni = TestResults.COULD_NOT_TEST;
+
     public SniProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.SNI, scannerConfig);
+        register(TlsAnalyzedProperty.STRICT_SNI, TlsAnalyzedProperty.REQUIRES_SNI);
     }
 
     @Override
-    public SniResult executeTest() {
+    protected void executeTest() {
         Function<State, Integer> beforeTransportInitCallback =
                 getParallelExecutor().getDefaultBeforeTransportInitCallback();
         String runCommand =
@@ -54,10 +60,10 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, 
                 .setDefaultBeforeTransportInitCallback(
                         scannerConfig.getRunCommandExecutionCallback(runCommand));
 
-        SniResult result = new SniResult(supportsStrictSni(), requiresSni());
+        strictSni = supportsStrictSni();
+        requiresSni = requiresSni();
 
         getParallelExecutor().setDefaultBeforeTransportInitCallback(beforeTransportInitCallback);
-        return result;
     }
 
     private TestResult supportsStrictSni() {
@@ -105,16 +111,16 @@ public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, 
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return scannerConfig.getClientParameterDelegate().getSniOptions(SNI_CLIENT_EXPECTED)
-                != null;
-    }
-
-    @Override
-    public SniResult getCouldNotExecuteResult() {
-        return new SniResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
+        put(TlsAnalyzedProperty.REQUIRES_SNI, requiresSni);
+    }
+
+    @Override
+    public Requirement<ClientReport> getRequirements() {
+        return new ClientOptionsRequirement(scannerConfig, getType());
+    }
 }

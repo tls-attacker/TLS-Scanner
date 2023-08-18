@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -17,9 +16,7 @@ import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- */
+/** */
 public class InvalidCurveVector implements Vector {
 
     private ProtocolVersion protocolVersion;
@@ -30,12 +27,16 @@ public class InvalidCurveVector implements Vector {
     private boolean attackInRenegotiation;
     private List<NamedGroup> ecdsaRequiredGroups;
 
-    private InvalidCurveVector() {
-    }
+    private InvalidCurveVector() {}
 
-    public InvalidCurveVector(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup,
-        ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation,
-        List<NamedGroup> ecdsaRequiredGroups) {
+    public InvalidCurveVector(
+            ProtocolVersion protocolVersion,
+            CipherSuite cipherSuite,
+            NamedGroup namedGroup,
+            ECPointFormat pointFormat,
+            boolean twistAttack,
+            boolean attackInRenegotiation,
+            List<NamedGroup> ecdsaRequiredGroups) {
 
         this.protocolVersion = protocolVersion;
         this.cipherSuite = cipherSuite;
@@ -93,9 +94,15 @@ public class InvalidCurveVector implements Vector {
         String parameter = ">";
         parameter = parameter + cipherSuite.toString();
 
-        parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">"
-            + (attackInRenegotiation ? "Renegotiation>" : "") + pointFormat.toString() + parameter
-            + (twistAttack ? ">CurveTwist" : "");
+        parameter =
+                protocolVersion.toString()
+                        + ">"
+                        + namedGroup.toString()
+                        + ">"
+                        + (attackInRenegotiation ? "Renegotiation>" : "")
+                        + pointFormat.toString()
+                        + parameter
+                        + (twistAttack ? ">CurveTwist" : "");
         return parameter;
     }
 
@@ -107,8 +114,7 @@ public class InvalidCurveVector implements Vector {
     }
 
     /**
-     * @param attackInRenegotiation
-     *                              the attackInRenegotiation to set
+     * @param attackInRenegotiation the attackInRenegotiation to set
      */
     public void setAttackInRenegotiation(boolean attackInRenegotiation) {
         this.attackInRenegotiation = attackInRenegotiation;
@@ -124,10 +130,13 @@ public class InvalidCurveVector implements Vector {
     }
 
     public boolean equals(InvalidCurveVector toCompare) {
-        if (protocolVersion != toCompare.getProtocolVersion() || cipherSuite != toCompare.getCipherSuite()
-            || namedGroup != toCompare.getNamedGroup() || pointFormat != toCompare.getPointFormat()
-            || twistAttack != toCompare.isTwistAttack() || attackInRenegotiation != toCompare.isAttackInRenegotiation()
-            || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
+        if (protocolVersion != toCompare.getProtocolVersion()
+                || cipherSuite != toCompare.getCipherSuite()
+                || namedGroup != toCompare.getNamedGroup()
+                || pointFormat != toCompare.getPointFormat()
+                || twistAttack != toCompare.isTwistAttack()
+                || attackInRenegotiation != toCompare.isAttackInRenegotiation()
+                || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
             return false;
         }
 

@@ -1,15 +1,15 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -19,7 +19,6 @@ import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TableContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
-import de.rub.nds.scanner.core.util.CollectionUtils;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -32,7 +31,7 @@ import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.core.util.CollectionUtils;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -49,7 +48,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
-public class ClientContainerReportCreator extends TlsReportCreator {
+public class ClientContainerReportCreator extends TlsReportCreator<ClientReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -69,8 +68,10 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         rootContainer.add(createExtensionsContainer(report));
         rootContainer.add(createNamedGroupsContainer(report));
         rootContainer.add(createKeySharesContainer(report));
+        rootContainer.add(createSupportedNamedGroupsContainer(report));
         rootContainer.add(createSignatureAndHashAlgorithmsContainer(report));
-        rootContainer.add(createPointFormatsContainer(report));
+        rootContainer.add(createAdvertisedPointFormatsContainer(report));
+        rootContainer.add(createSupportedPointFormatsContainer(report));
         rootContainer.add(createRecordFragmentationContainer(report));
         rootContainer.add(createAlpnContainer(report));
         rootContainer.add(createAttackVulnerabilitiesContainer(report));
@@ -79,6 +80,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         rootContainer.add(createSessionResumptionContainer(report));
         rootContainer.add(createDheParameterContainer(report));
         rootContainer.add(createClientAuthenticationContainer(report));
+        rootContainer.add(createServerCertificateKeySizeContainer(report));
         rootContainer.add(createCertificateContainer(report));
         rootContainer.add(createQuirksContainer(report));
         if (report.getProtocolType() == ProtocolType.DTLS) {
@@ -93,7 +95,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return rootContainer;
     }
 
-    protected ReportContainer createDtlsCookieContainer(TlsScanReport report) {
+    protected ReportContainer createDtlsCookieContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DTLS Hello Verify Request"));
         container.add(
@@ -112,7 +114,115 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ReportContainer createCipherSuiteContainer(ClientReport report) {
+    protected ReportContainer createSupportedPointFormatsContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        container.add(new HeadlineContainer("Supported Point Formats"));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Uncompressed",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "ANSI X9.62 Compressed Prime",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "ANSI X9.62 Compressed Char2",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Accepts Undefined Format",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT)));
+        return container;
+    }
+
+    protected ReportContainer createServerCertificateKeySizeContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        container.add(new HeadlineContainer("Expected Server Certificate Public Key Size"));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "RSA Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "RSA Sig. Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "DSS Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "DH Key Size Enforced",
+                        printingScheme.getEncodedValueText(
+                                report, TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)));
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Min. RSA Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA)
+                                    .getValue()
+                                    .toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Min. RSA Sig. Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
+                                    .getValue()
+                                    .toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Min. DSS Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS)
+                                    .getValue()
+                                    .toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+
+        if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)
+                == TestResults.TRUE) {
+            container.add(
+                    new KeyValueContainer(
+                            "Min. DH Modulus Accepted",
+                            AnsiColor.DEFAULT_COLOR,
+                            report.getIntegerResult(TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH)
+                                    .getValue()
+                                    .toString(),
+                            AnsiColor.DEFAULT_COLOR));
+        }
+        return container;
+    }
+
+    @Override
+    protected ReportContainer createCipherSuiteContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(createSupportedCipherSuitesContainer(report));
         container.add(createSupportedCipherSuitesByVersionContainer(report));
@@ -126,7 +236,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ListContainer createSupportedCipherSuitesContainer(ClientReport report) {
+    @Override
+    protected ListContainer createSupportedCipherSuitesContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Supported Cipher Suites"));
         TableContainer table = new TableContainer();
@@ -134,7 +245,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         table.setHeadlineList(getCipherSuitesTableHeadlines());
         for (CipherSuite suite :
                 CollectionUtils.mergeCollectionsIntoSet(
-                        getRealClientAdvertisedCipherSuites(report), report.getCipherSuites())) {
+                        getRealClientAdvertisedCipherSuites(report),
+                        report.getSupportedCipherSuites())) {
             List<TextContainer> currentTableRow = new LinkedList<>();
             currentTableRow.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
             if (report.getClientAdvertisedCipherSuites().contains(suite)) {
@@ -142,7 +254,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
             } else {
                 currentTableRow.add(createDefaultTextContainer("-"));
             }
-            if (report.getCipherSuites().contains(suite)) {
+            if (report.getSupportedCipherSuites().contains(suite)) {
                 currentTableRow.add(createDefaultTextContainer("x"));
             } else {
                 currentTableRow.add(createDefaultTextContainer("-"));
@@ -206,6 +318,37 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
+    private ReportContainer createSupportedNamedGroupsContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS) != null
+                && report.getResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS)
+                        != TestResults.UNASSIGNED_ERROR) {
+            container.add(new HeadlineContainer("Supported Named Groups"));
+            ListContainer listContainer = new ListContainer();
+            for (NamedGroup group :
+                    (List<NamedGroup>)
+                            report.getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS)
+                                    .getList()) {
+                listContainer.add(createDefaultTextContainer(group.name()));
+            }
+            container.add(listContainer);
+        }
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS) != null
+                && report.getResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)
+                        != TestResults.UNASSIGNED_ERROR) {
+            container.add(new HeadlineContainer("Supported Named Groups (TLS 1.3)"));
+            ListContainer listContainer = new ListContainer();
+            for (NamedGroup group :
+                    (List<NamedGroup>)
+                            report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS)
+                                    .getList()) {
+                listContainer.add(createDefaultTextContainer(group.name()));
+            }
+            container.add(listContainer);
+        }
+        return container;
+    }
+
     private ReportContainer createKeySharesContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         if (report.getClientAdvertisedKeyShareNamedGroupsList() != null) {
@@ -219,7 +362,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         return container;
     }
 
-    private ReportContainer createPointFormatsContainer(ClientReport report) {
+    private ReportContainer createAdvertisedPointFormatsContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         if (report.getClientAdvertisedPointFormatsList() != null) {
             container.add(new HeadlineContainer("Advertised Elliptic Curve Point Formats"));
@@ -546,7 +689,7 @@ public class ClientContainerReportCreator extends TlsReportCreator {
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(

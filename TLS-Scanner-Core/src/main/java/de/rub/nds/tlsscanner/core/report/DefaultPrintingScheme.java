@@ -1,17 +1,17 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -24,6 +24,7 @@ public class DefaultPrintingScheme {
 
     public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
+        textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
         textEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
         textEncodingMap.put(TestResults.FALSE, "false");
@@ -37,6 +38,7 @@ public class DefaultPrintingScheme {
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
         ansiColorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        ansiColorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);
         ansiColorMap.put(TestResults.FALSE, AnsiColor.DEFAULT_COLOR);
         ansiColorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
         ansiColorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);
@@ -545,15 +547,13 @@ public class DefaultPrintingScheme {
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, "TLS 1.2");
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, "TLS 1.3");
 
-        PrintingScheme scheme =
-                new PrintingScheme(
-                        colorMap,
-                        textMap,
-                        defaultTextEncoding,
-                        defaultColorEncoding,
-                        specialTextMap,
-                        new HashMap<>());
-        return scheme;
+        return new PrintingScheme(
+                colorMap,
+                textMap,
+                defaultTextEncoding,
+                defaultColorEncoding,
+                specialTextMap,
+                new HashMap<>());
     }
 
     private static TestResultTextEncoder getAlpacaTextEncoding() {
@@ -574,8 +574,10 @@ public class DefaultPrintingScheme {
     private static ColorEncoding getDefaultColorEncoding(
             AnsiColor trueColor, AnsiColor falseColor) {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
+        colorMap.put(TestResults.CANNOT_BE_TESTED, AnsiColor.WHITE);
         colorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
         colorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        colorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);
         colorMap.put(TestResults.FALSE, falseColor);
         colorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
         colorMap.put(TestResults.TIMEOUT, AnsiColor.PURPLE_BACKGROUND);

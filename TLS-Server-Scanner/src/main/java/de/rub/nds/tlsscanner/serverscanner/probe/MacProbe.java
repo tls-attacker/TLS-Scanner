@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -12,6 +12,9 @@ import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -37,7 +40,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintChecker;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
@@ -46,39 +52,41 @@ import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.MacResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacResult> {
+public class MacProbe extends TlsServerProbe {
 
     private List<CipherSuite> suiteList;
 
     private ResponseFingerprint correctFingerprint;
+
+    private CheckPattern appPattern;
+    private CheckPattern finishedPattern;
+    private CheckPattern verifyPattern;
 
     public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, configSelector);
     }
 
     @Override
-    public MacResult executeTest() {
+    protected void executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
-        if (correctFingerprint == null) {
-            return new MacResult(null, null, null);
+        if (correctFingerprint != null) {
+            LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
+            if (receivedAppdata(correctFingerprint)) {
+                appPattern = getCheckPattern(Check.APPDATA);
+            } else {
+                appPattern = null;
+            }
+            finishedPattern = getCheckPattern(Check.FINISHED);
+            verifyPattern = getCheckPattern(Check.VERIFY_DATA);
         }
-        LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
-        CheckPattern appPattern;
-        if (receivedAppdata(correctFingerprint)) {
-            appPattern = getCheckPattern(Check.APPDATA);
-        } else {
-            appPattern = null;
-        }
-        CheckPattern finishedPattern = getCheckPattern(Check.FINISHED);
-        CheckPattern verifyPattern = getCheckPattern(Check.VERIFY_DATA);
-        return new MacResult(appPattern, finishedPattern, verifyPattern);
     }
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
@@ -395,26 +403,23 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacRe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        List<CipherSuite> allSuiteList = new LinkedList<>();
-        if (report.getCipherSuites() == null) {
-            return false;
-        }
-        allSuiteList.addAll(report.getCipherSuites());
-        for (CipherSuite suite : allSuiteList) {
-            if (suite.isUsingMac() && configSelector.foundWorkingConfig()) {
-                return true;
-            }
-        }
-        return false;
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE))
+                .and(
+                        new PropertyTrueRequirement<>(
+                                TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
+                                TlsAnalyzedProperty.SUPPORTS_STREAM_CIPHERS))
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
-        if (report.getCipherSuites() != null) {
 
-            allSuiteList.addAll(report.getCipherSuites());
+        Set<CipherSuite> ciphersuitesResult = report.getSupportedCipherSuites();
+        if (ciphersuitesResult != null) {
+            allSuiteList.addAll(ciphersuitesResult);
             suiteList = new LinkedList<>();
             for (CipherSuite suite : allSuiteList) {
                 if (suite.isUsingMac()) {
@@ -427,7 +432,9 @@ public class MacProbe extends TlsServerProbe<ConfigSelector, ServerReport, MacRe
     }
 
     @Override
-    public MacResult getCouldNotExecuteResult() {
-        return new MacResult(null, null, null);
+    protected void mergeData(ServerReport report) {
+        report.setMacCheckPatternAppData(appPattern);
+        report.setMacCheckPatternFinished(finishedPattern);
+        report.setVerifyCheckPattern(verifyPattern);
     }
 }

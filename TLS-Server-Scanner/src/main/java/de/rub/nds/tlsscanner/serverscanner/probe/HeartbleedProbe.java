@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,8 +9,12 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -23,24 +27,23 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ExtensionRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class HeartbleedProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, HeartbleedResult> {
+public class HeartbleedProbe extends TlsServerProbe {
+
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public HeartbleedProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HEARTBLEED, configSelector);
+        register(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
     }
 
     @Override
-    public HeartbleedResult executeTest() {
-        return new HeartbleedResult(isVulnerable());
-    }
-
-    private TestResults isVulnerable() {
+    protected void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setAddHeartbeatExtension(true);
 
@@ -48,12 +51,12 @@ public class HeartbleedProbe
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
                 ProtocolMessageType.HEARTBEAT, state.getWorkflowTrace())) {
-            return TestResults.TRUE;
+            vulnerable = TestResults.TRUE;
         } else if (!WorkflowTraceUtil.didReceiveMessage(
                 HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResults.UNCERTAIN;
+            vulnerable = TestResults.UNCERTAIN;
         } else {
-            return TestResults.FALSE;
+            vulnerable = TestResults.FALSE;
         }
     }
 
@@ -83,16 +86,16 @@ public class HeartbleedProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
-                && !report.getSupportedExtensions().isEmpty();
-    }
-
-    @Override
     public void adjustConfig(ServerReport report) {}
 
     @Override
-    public HeartbleedResult getCouldNotExecuteResult() {
-        return new HeartbleedResult(TestResults.COULD_NOT_TEST);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.EXTENSIONS)
+                .and(new ExtensionRequirement<>(ExtensionType.HEARTBEAT));
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, vulnerable);
     }
 }

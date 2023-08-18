@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -13,11 +13,10 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportSerializer;
 import java.io.File;
 import java.io.IOException;
@@ -38,10 +37,7 @@ public class Main {
                 return;
             }
             // Cmd was parsable
-            try {
-                config.setProbes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.EXTENSIONS, QuicProbeType.CONNECTION_MIGRATION);
-//                config.setProbes(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE, TlsProbeType.CERTIFICATE, TlsProbeType.SESSION_TICKET_ZERO_KEY, QuicProbeType.SUPPORTED_VERSION, QuicProbeType.TRANSPORT_PARAMETERS, QuicProbeType.TLS12_HANDSHAKE);
-                TlsServerScanner scanner = new TlsServerScanner(config);
+            try (TlsServerScanner scanner = new TlsServerScanner(config)) {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 ServerReport report = scanner.scan();
@@ -50,10 +46,14 @@ public class Main {
                                 + "Scanned in: "
                                 + ((System.currentTimeMillis() - time) / 1000)
                                 + "s\n"
-                                + report.getFullReport(
-                                        config.getReportDetail(), !config.isNoColor()));
-                if (config.isWriteReportToFile()) {
-                    File outputFile = new File(config.getOutputFile());
+                                + new ServerReportPrinter(
+                                                report,
+                                                config.getExecutorConfig().getReportDetail(),
+                                                DefaultPrintingScheme.getDefaultPrintingScheme(),
+                                                !config.getExecutorConfig().isNoColor())
+                                        .getFullReport());
+                if (config.getExecutorConfig().isWriteReportToFile()) {
+                    File outputFile = new File(config.getExecutorConfig().getOutputFile());
                     ServerReportSerializer.serialize(outputFile, report);
                 }
             } catch (ConfigurationException e) {

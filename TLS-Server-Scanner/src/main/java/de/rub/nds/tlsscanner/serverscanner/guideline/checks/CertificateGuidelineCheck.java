@@ -1,24 +1,25 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 import java.util.Objects;
 
 @XmlRootElement
@@ -64,8 +65,10 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         boolean failFlag = false;
         boolean uncertainFlag = false;
         CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
-        for (int i = 0; i < report.getCertificateChainList().size(); i++) {
-            CertificateChain chain = report.getCertificateChainList().get(i);
+        @SuppressWarnings("unchecked")
+        List<CertificateChain> certchains = report.getCertificateChainList();
+        for (int i = 0; i < certchains.size(); i++) {
+            CertificateChain chain = certchains.get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
             if (Objects.equals(TestResults.TRUE, currentResult.getResult())) {

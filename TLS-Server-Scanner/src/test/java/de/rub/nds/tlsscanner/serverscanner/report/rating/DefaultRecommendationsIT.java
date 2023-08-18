@@ -1,17 +1,18 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.scanner.core.report.rating.RecommendationsIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
@@ -1182,10 +1183,11 @@ public class DefaultRecommendationsIT {
                                 "The server does not verify the message sequence numbers",
                                 "Configure your server to always verify the message sequence numbers"),
                         ""));
-        RecommendationsIO.write(
+        RecommendationsIO recommendationsIO = new RecommendationsIO(TlsAnalyzedProperty.class);
+        recommendationsIO.write(
                 new File("src/main/resources/rating/recommendations.xml"),
                 new Recommendations(recommendations));
-        RecommendationsIO.write(
+        recommendationsIO.write(
                 new File("src/main/resources/rating/recommendations_en.xml"),
                 new Recommendations(recommendations));
     }

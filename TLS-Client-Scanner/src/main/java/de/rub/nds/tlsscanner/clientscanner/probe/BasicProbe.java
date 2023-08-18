@@ -1,13 +1,15 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -26,14 +28,14 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.BasicResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport, BasicResult> {
+public class BasicProbe extends TlsClientProbe {
 
     private List<CipherSuite> clientAdvertisedCipherSuites = null;
     private List<CompressionMethod> clientAdvertisedCompressions = null;
@@ -45,23 +47,18 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
 
     public BasicProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.BASIC, scannerConfig);
+        register(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
     }
 
     @Override
-    public BasicResult executeTest() {
-        receiveClientHello();
-
-        return new BasicResult(
-                clientAdvertisedCipherSuites,
-                clientAdvertisedCompressions,
-                clientAdvertisedSignatureAndHashAlgorithms,
-                clientAdvertisedExtensions,
-                clientAdvertisedNamedGroupsList,
-                clientKeyShareNamedGroupsList,
-                clientAdvertisedPointFormatsList);
-    }
-
-    public void receiveClientHello() {
+    protected void executeTest() {
         Config config = scannerConfig.createConfig();
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
@@ -99,15 +96,25 @@ public class BasicProbe extends TlsClientProbe<ClientScannerConfig, ClientReport
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public BasicResult getCouldNotExecuteResult() {
-        return new BasicResult(null, null, null, null, null, null, null);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    public Requirement<ClientReport> getRequirements() {
+        return new FulfilledRequirement<>();
+    }
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, clientAdvertisedCipherSuites);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS, clientAdvertisedCompressions);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                clientAdvertisedSignatureAndHashAlgorithms);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                clientKeyShareNamedGroupsList);
+        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, clientAdvertisedPointFormatsList);
+    }
 }

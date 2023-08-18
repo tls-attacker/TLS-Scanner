@@ -1,12 +1,11 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -35,10 +34,14 @@ public class ConfigFilter {
         List<CipherSuite> reducedCipherSuites = baseConfig.getDefaultClientSupportedCipherSuites();
         switch (filterType) {
             case CIPHERSUITE_ANON:
-                String anonEnumSubstring = filterType.name().replace("CIPHERSUITE_", "").toLowerCase();
+                String anonEnumSubstring =
+                        filterType.name().replace("CIPHERSUITE_", "").toLowerCase();
                 reducedCipherSuites =
-                    reducedCipherSuites.stream().filter(cipherSuite -> !cipherSuite.name().contains(anonEnumSubstring))
-                        .collect(Collectors.toList());
+                        reducedCipherSuites.stream()
+                                .filter(
+                                        cipherSuite ->
+                                                !cipherSuite.name().contains(anonEnumSubstring))
+                                .collect(Collectors.toList());
                 break;
             case CIPHERSUITE_ECCPWD:
             case CIPHERSUITE_EXPORT:
@@ -54,13 +57,18 @@ public class ConfigFilter {
             case CIPHERSUITE_RC4:
             case CIPHERSUITE_NULL:
                 String filteredEnumSubstring = filterType.name().replace("CIPHERSUITE_", "");
-                reducedCipherSuites = reducedCipherSuites.stream()
-                    .filter(cipherSuite -> !cipherSuite.name().contains(filteredEnumSubstring))
-                    .collect(Collectors.toList());
+                reducedCipherSuites =
+                        reducedCipherSuites.stream()
+                                .filter(
+                                        cipherSuite ->
+                                                !cipherSuite.name().contains(filteredEnumSubstring))
+                                .collect(Collectors.toList());
                 break;
             case CIPHERSUITE_UNNEGOTIABLE:
-                reducedCipherSuites = reducedCipherSuites.stream()
-                    .filter(cipherSuite -> cipherSuite.isRealCipherSuite()).collect(Collectors.toList());
+                reducedCipherSuites =
+                        reducedCipherSuites.stream()
+                                .filter(cipherSuite -> cipherSuite.isRealCipherSuite())
+                                .collect(Collectors.toList());
                 break;
             default:
                 throw new IllegalArgumentException("No behavior defined for filter " + filterType);
@@ -74,12 +82,16 @@ public class ConfigFilter {
             case NAMEDGROUP_GREASE:
             case NAMEDGROUP_SECT:
                 String filteredEnumSubstring = filterType.name().replace("NAMEDGROUP_", "");
-                reducedNamedGroups = reducedNamedGroups.stream()
-                    .filter(group -> !group.name().contains(filteredEnumSubstring)).collect(Collectors.toList());
+                reducedNamedGroups =
+                        reducedNamedGroups.stream()
+                                .filter(group -> !group.name().contains(filteredEnumSubstring))
+                                .collect(Collectors.toList());
                 break;
             case NAMEDGROUP_DEPRECATED:
                 reducedNamedGroups =
-                    reducedNamedGroups.stream().filter(NamedGroup::isTls13).collect(Collectors.toList());
+                        reducedNamedGroups.stream()
+                                .filter(NamedGroup::isTls13)
+                                .collect(Collectors.toList());
                 break;
             default:
                 throw new IllegalArgumentException("No behavior defined for filter " + filterType);
@@ -89,13 +101,18 @@ public class ConfigFilter {
 
     private static void filterSignatureAlgorithms(Config baseConfig, ConfigFilterType filterType) {
         List<SignatureAndHashAlgorithm> reducedSignatureAlgorithms =
-            baseConfig.getDefaultClientSupportedSignatureAndHashAlgorithms();
+                baseConfig.getDefaultClientSupportedSignatureAndHashAlgorithms();
         switch (filterType) {
             case SIGNATUREALGORITHM_DEPRECATED:
-                reducedSignatureAlgorithms = reducedSignatureAlgorithms.stream()
-                    .filter(algo -> !algo.name().contains("NONE") && !algo.name().contains("MD5")
-                        && !algo.name().contains("SHA1") && !algo.name().contains("SHA224"))
-                    .collect(Collectors.toList());
+                reducedSignatureAlgorithms =
+                        reducedSignatureAlgorithms.stream()
+                                .filter(
+                                        algo ->
+                                                !algo.name().contains("NONE")
+                                                        && !algo.name().contains("MD5")
+                                                        && !algo.name().contains("SHA1")
+                                                        && !algo.name().contains("SHA224"))
+                                .collect(Collectors.toList());
                 break;
             case SIGNATUREALGORITHM_RSA_PSS_PSS:
             case SIGNATUREALGORITHM_ED:
@@ -104,13 +121,19 @@ public class ConfigFilter {
             case SIGNATUREALGORITHM_DSA:
             case SIGNATUREALGORITHM_GREASE:
                 String filteredEnumSubstring = filterType.name().replace("SIGNATUREALGORITHM_", "");
-                reducedSignatureAlgorithms = reducedSignatureAlgorithms.stream()
-                    .filter(algo -> !algo.name().contains(filteredEnumSubstring)).collect(Collectors.toList());
+                reducedSignatureAlgorithms =
+                        reducedSignatureAlgorithms.stream()
+                                .filter(algo -> !algo.name().contains(filteredEnumSubstring))
+                                .collect(Collectors.toList());
                 break;
             case SIGNATUREALGORITHM_TLS13:
-                reducedSignatureAlgorithms = reducedSignatureAlgorithms.stream()
-                    .filter(SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()::contains)
-                    .collect(Collectors.toList());
+                reducedSignatureAlgorithms =
+                        reducedSignatureAlgorithms.stream()
+                                .filter(
+                                        SignatureAndHashAlgorithm
+                                                        .getTls13SignatureAndHashAlgorithms()
+                                                ::contains)
+                                .collect(Collectors.toList());
                 break;
             default:
                 throw new IllegalArgumentException("No behavior defined for filter " + filterType);

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -24,7 +24,6 @@ import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
@@ -40,9 +39,10 @@ public class ClientRandomnessAfterProbeTest {
     private ExtractedValueContainer<ComparableByteArray> clientRandomContainer;
     private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
 
-    private Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap;
+    private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
 
-    // generates "cryptographically strong random numbers" with constant seed for deterministic
+    // generates "cryptographically strong random numbers" with constant seed for
+    // deterministic
     // tests
     private final SecureRandom secureRandom =
             new SecureRandom(ByteBuffer.allocate(4).putInt(123456).array());
@@ -60,10 +60,8 @@ public class ClientRandomnessAfterProbeTest {
         clientRandomContainer = new ExtractedValueContainer<>(TrackableValueType.RANDOM);
         cbcIVContainer = new ExtractedValueContainer<>(TrackableValueType.CBC_IV);
 
-        extractedValueContainerMap = new HashMap<>();
-        extractedValueContainerMap.put(TrackableValueType.RANDOM, clientRandomContainer);
-        extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
-        report.setExtractedValueContainerList(extractedValueContainerMap);
+        report.putExtractedValueContainer(TrackableValueType.RANDOM, clientRandomContainer);
+        report.putExtractedValueContainer(TrackableValueType.CBC_IV, cbcIVContainer);
     }
 
     @Test
@@ -101,16 +99,16 @@ public class ClientRandomnessAfterProbeTest {
     @Disabled
     @Test
     public void testSecureRandomness() {
-        // while this is not strictly validated, the probe recommends at least ~32000 bytes of
+        // while this is not strictly validated, the probe recommends at least ~32000
+        // bytes of
         // recorded randomness
         for (int i = 0; i < 1024; i++) {
             clientRandomContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
             cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
         }
-        report.setExtractedValueContainerList(extractedValueContainerMap);
         probe.analyze(report);
 
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertFalse(entropyReport.isFailedFourierTest());
             assertFalse(entropyReport.isFailedRunsTest());
             assertFalse(entropyReport.isFailedFrequencyTest());
@@ -135,7 +133,7 @@ public class ClientRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()
@@ -156,7 +154,7 @@ public class ClientRandomnessAfterProbeTest {
         probe.analyze(report);
 
         // it should be noticed by at least one of the tests
-        for (EntropyReport entropyReport : report.getEntropyReportList()) {
+        for (EntropyReport entropyReport : report.getEntropyReports()) {
             assertTrue(
                     entropyReport.isFailedEntropyTest()
                             || entropyReport.isFailedFourierTest()

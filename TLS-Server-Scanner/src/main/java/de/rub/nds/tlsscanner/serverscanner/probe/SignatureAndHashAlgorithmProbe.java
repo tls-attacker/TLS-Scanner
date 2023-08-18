@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -21,8 +23,9 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SignatureAndHashAlgorithmResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolVersionRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -34,21 +37,26 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class SignatureAndHashAlgorithmProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, SignatureAndHashAlgorithmResult> {
+public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
 
     private List<ProtocolVersion> versions;
+
+    private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
+    private List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
 
     public SignatureAndHashAlgorithmProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, configSelector);
+        register(
+                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
     }
 
     @Override
-    public SignatureAndHashAlgorithmResult executeTest() {
+    protected void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
-        for (ProtocolVersion version : this.versions) {
+        for (ProtocolVersion version : versions) {
             if (version.isTLS13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
             } else {
@@ -56,8 +64,8 @@ public class SignatureAndHashAlgorithmProbe
                         testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
-        return new SignatureAndHashAlgorithmResult(
-                new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13));
+        signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);
+        signatureAndHashAlgorithmListTls13 = new ArrayList<>(supportedTls13);
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(
@@ -173,17 +181,18 @@ public class SignatureAndHashAlgorithmProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
-                && (report.getVersions().contains(ProtocolVersion.TLS12)
-                        || report.getVersions().contains(ProtocolVersion.TLS13)
-                        || report.getVersions().contains(ProtocolVersion.DTLS12));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.PROTOCOL_VERSION)
+                .and(
+                        new ProtocolVersionRequirement<ServerReport>(ProtocolVersion.TLS12)
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.TLS13))
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.DTLS12)));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
         this.versions = new ArrayList<>();
-        for (ProtocolVersion version : report.getVersions()) {
+        for (ProtocolVersion version : report.getSupportedProtocolVersions()) {
             if (version.equals(ProtocolVersion.DTLS12)
                     || version.equals(ProtocolVersion.TLS12)
                     || version.isTLS13()) {
@@ -193,7 +202,12 @@ public class SignatureAndHashAlgorithmProbe
     }
 
     @Override
-    public SignatureAndHashAlgorithmResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null, null);
+    protected void mergeData(ServerReport report) {
+        put(
+                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                signatureAndHashAlgorithmListSke);
+        put(
+                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                signatureAndHashAlgorithmListTls13);
     }
 }

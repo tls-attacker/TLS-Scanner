@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -14,6 +14,8 @@ import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
@@ -27,7 +29,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends AfterProbe<T> {
+public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
+        extends AfterProbe<ReportT> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -80,6 +83,41 @@ public abstract class RandomnessAfterProbe<T extends TlsScanReport> extends Afte
             }
         }
         return true;
+    }
+
+    @Override
+    public void analyze(ReportT report) {
+
+        ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
+                report.getExtractedValueContainer(
+                        TrackableValueType.COOKIE, ComparableByteArray.class);
+        ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
+                report.getExtractedValueContainer(
+                        TrackableValueType.RANDOM, ComparableByteArray.class);
+        ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
+                report.getExtractedValueContainer(
+                        TrackableValueType.SESSION_ID, ComparableByteArray.class);
+        ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
+                report.getExtractedValueContainer(
+                        TrackableValueType.CBC_IV, ComparableByteArray.class);
+        boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
+
+        List<ComparableByteArray> extractedCookieList =
+                cookieExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedRandomList =
+                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
+        List<ComparableByteArray> extractedIvList =
+                cbcIvExtractedValueContainer.getExtractedValueList();
+        List<ComparableByteArray> extractedSessionIdList =
+                sessionIdExtractedValueContainer.getExtractedValueList();
+
+        List<EntropyReport> entropyReport = new LinkedList<>();
+        entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
+        entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
+        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
+        entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
+        report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
+        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
     }
 
     public EntropyReport createEntropyReport(

@@ -1,25 +1,21 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
-import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -27,7 +23,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
@@ -41,8 +36,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigra
 import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTls12HandshakeResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,27 +49,7 @@ public class ServerReport extends TlsScanReport {
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
 
-    // Application
-    private List<ApplicationProtocol> supportedApplications = null;
-
     // Attacks
-    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList;
-    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList;
-    private List<InvalidCurveResponse> invalidCurveResultList;
-    private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
-
-    // Extensions
-    private List<ExtensionType> supportedExtensions = null;
-    private List<NamedGroup> supportedNamedGroups = null;
-    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses;
-    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13;
-    private List<NamedGroup> supportedTls13Groups = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13 = null;
-    private List<TokenBindingVersion> supportedTokenBindingVersion = null;
-    private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
-
     private NamedGroup helloRetryRequestSelectedNamedGroup = null;
 
     // RFC
@@ -85,17 +58,8 @@ public class ServerReport extends TlsScanReport {
     private CheckPattern verifyCheckPattern = null;
 
     // Certificate
-    private List<NamedGroup> ecdsaPkGroupsStatic;
-    private List<NamedGroup> ecdsaPkGroupsEphemeral;
-    private List<NamedGroup> ecdsaPkGroupsTls13;
-    private List<NamedGroup> ecdsaSigGroupsStatic;
-    private List<NamedGroup> ecdsaSigGroupsEphemeral;
-    private List<NamedGroup> ecdsaSigGroupsTls13;
     private int minimumRsaCertKeySize;
     private int minimumDssCertKeySize;
-
-    // OCSP
-    private List<OcspCertificateResult> ocspResults;
 
     // Certificate Transparency
     private SignedCertificateTimestampList precertificateSctList = null;
@@ -110,11 +74,8 @@ public class ServerReport extends TlsScanReport {
     private GcmPattern gcmPattern = null;
 
     // HTTPS Header
-    private List<HttpHeader> headerList = null;
     private Long hstsMaxAge = null;
-    private Integer hpkpMaxAge = null;
-    private List<HpkpPin> normalHpkpPins;
-    private List<HpkpPin> reportOnlyHpkpPins;
+    private Integer hpkpMaxAge = null; //
 
     // DTLS
     private Integer cookieLength = null;
@@ -127,7 +88,6 @@ public class ServerReport extends TlsScanReport {
     private QuicConnectionMigrationResult quicConnectionMigrationResult = null;
 
     // PublicKey Params
-    private Set<CommonDhValues> usedCommonDhValueList = null;
     private Integer weakestDhStrength = null;
 
     // Handshake Simulation
@@ -135,22 +95,6 @@ public class ServerReport extends TlsScanReport {
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
-    private List<SimulatedClientResult> simulatedClientList = null;
-
-    // CCA
-    private Boolean ccaSupported = null;
-    private Boolean ccaRequired = null;
-    private List<CcaTestResult> ccaTestResultList;
-
-    private Long closedAfterFinishedDelta;
-    private Long closedAfterAppDataDelta;
-
-    // Guidelines
-    private List<GuidelineReport> guidelineReports = new ArrayList<>();
-
-    private List<ProbeType> probeTypeList;
-
-    private int performedTcpConnections = 0;
 
     // Rating
     private int score;
@@ -170,15 +114,6 @@ public class ServerReport extends TlsScanReport {
         super();
         this.host = host;
         this.port = port;
-    }
-
-    public synchronized List<ApplicationProtocol> getSupportedApplications() {
-        return supportedApplications;
-    }
-
-    public synchronized void setSupportedApplications(
-            List<ApplicationProtocol> supportedApplications) {
-        this.supportedApplications = supportedApplications;
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -203,86 +138,6 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
-    }
-
-    public synchronized List<TokenBindingVersion> getSupportedTokenBindingVersion() {
-        return supportedTokenBindingVersion;
-    }
-
-    public synchronized void setSupportedTokenBindingVersion(
-            List<TokenBindingVersion> supportedTokenBindingVersion) {
-        this.supportedTokenBindingVersion = supportedTokenBindingVersion;
-    }
-
-    public synchronized List<TokenBindingKeyParameters> getSupportedTokenBindingKeyParameters() {
-        return supportedTokenBindingKeyParameters;
-    }
-
-    public synchronized void setSupportedTokenBindingKeyParameters(
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
-        this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
-    }
-
-    public synchronized List<NamedGroup> getSupportedNamedGroups() {
-        return supportedNamedGroups;
-    }
-
-    public synchronized void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
-        this.supportedNamedGroups = supportedNamedGroups;
-    }
-
-    public synchronized List<NamedGroup> getSupportedTls13Groups() {
-        return supportedTls13Groups;
-    }
-
-    public synchronized void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
-        this.supportedTls13Groups = supportedTls13Groups;
-    }
-
-    public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
-        if (supportedSignatureAndHashAlgorithmsCert != null) {
-            combined.addAll(supportedSignatureAndHashAlgorithmsCert);
-        }
-        if (supportedSignatureAndHashAlgorithmsSke != null) {
-            combined.addAll(supportedSignatureAndHashAlgorithmsSke);
-        }
-        return new ArrayList<>(combined);
-    }
-
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
-        return supportedSignatureAndHashAlgorithmsTls13;
-    }
-
-    public void setSupportedSignatureAndHashAlgorithmsTls13(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13) {
-        this.supportedSignatureAndHashAlgorithmsTls13 = supportedSignatureAndHashAlgorithmsTls13;
-    }
-
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
-        return supportedSignatureAndHashAlgorithmsCert;
-    }
-
-    public synchronized void setSupportedSignatureAndHashAlgorithmsCert(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
-        this.supportedSignatureAndHashAlgorithmsCert = supportedSignatureAndHashAlgorithms;
-    }
-
-    public synchronized void setSupportedSignatureAndHashAlgorithmsSke(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
-        this.supportedSignatureAndHashAlgorithmsSke = supportedSignatureAndHashAlgorithms;
-    }
-
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
-        return supportedSignatureAndHashAlgorithmsSke;
-    }
-
-    public synchronized List<ExtensionType> getSupportedExtensions() {
-        return supportedExtensions;
-    }
-
-    public synchronized void setSupportedExtensions(List<ExtensionType> supportedExtensions) {
-        this.supportedExtensions = supportedExtensions;
     }
 
     public synchronized CheckPattern getMacCheckPatternAppData() {
@@ -366,28 +221,14 @@ public class ServerReport extends TlsScanReport {
         this.connectionInsecureCounter = connectionInsecureCounter;
     }
 
-    public synchronized List<SimulatedClientResult> getSimulatedClientList() {
-        return simulatedClientList;
-    }
-
-    public synchronized void setSimulatedClientList(
-            List<SimulatedClientResult> simulatedClientList) {
-        this.simulatedClientList = simulatedClientList;
-    }
-
-    @Override
-    public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new ServerReportPrinter(
-                        this,
-                        detail,
-                        DefaultPrintingScheme.getDefaultPrintingScheme(),
-                        printColorful)
-                .getFullReport();
-    }
-
     @Override
     public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
+        return new ServerReportPrinter(
+                        this,
+                        ScannerDetail.NORMAL,
+                        DefaultPrintingScheme.getDefaultPrintingScheme(),
+                        false)
+                .getFullReport();
     }
 
     public synchronized CheckPattern getMacCheckPatternFinished() {
@@ -396,24 +237,6 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
-    }
-
-    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>
-            getDirectRaccoonResultList() {
-        return directRaccoonResultList;
-    }
-
-    public synchronized void setDirectRaccoonResultList(
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
-        this.directRaccoonResultList = directRaccoonResultList;
-    }
-
-    public synchronized List<HttpHeader> getHeaderList() {
-        return headerList;
-    }
-
-    public synchronized void setHeaderList(List<HttpHeader> headerList) {
-        this.headerList = headerList;
     }
 
     public synchronized Long getHstsMaxAge() {
@@ -432,30 +255,6 @@ public class ServerReport extends TlsScanReport {
         this.hpkpMaxAge = hpkpMaxAge;
     }
 
-    public synchronized List<HpkpPin> getNormalHpkpPins() {
-        return normalHpkpPins;
-    }
-
-    public synchronized void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
-        this.normalHpkpPins = normalHpkpPins;
-    }
-
-    public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
-        return reportOnlyHpkpPins;
-    }
-
-    public synchronized void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
-        this.reportOnlyHpkpPins = reportOnlyHpkpPins;
-    }
-
-    public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
-        return usedCommonDhValueList;
-    }
-
-    public synchronized void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
-        this.usedCommonDhValueList = usedCommonDhValueList;
-    }
-
     public synchronized Integer getWeakestDhStrength() {
         return weakestDhStrength;
     }
@@ -464,122 +263,106 @@ public class ServerReport extends TlsScanReport {
         this.weakestDhStrength = weakestDhStrength;
     }
 
-    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>>
-            getBleichenbacherTestResultList() {
-        return bleichenbacherTestResultList;
+    public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
+        ListResult<InvalidCurveResponse> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT, InvalidCurveResponse.class);
+        return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized void setBleichenbacherTestResultList(
-            List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList) {
-        this.bleichenbacherTestResultList = bleichenbacherTestResultList;
-    }
-
-    public synchronized Boolean getCcaSupported() {
-        return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
-    }
-
-    public synchronized Boolean getCcaRequired() {
-        return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
-    }
-
-    public synchronized List<CcaTestResult> getCcaTestResultList() {
-        return ccaTestResultList;
-    }
-
-    public synchronized void setCcaTestResultList(List<CcaTestResult> ccaTestResultList) {
-        this.ccaTestResultList = ccaTestResultList;
-    }
-
-    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
-        return invalidCurveResultList;
-    }
-
-    public synchronized void setInvalidCurveResultList(
-            List<InvalidCurveResponse> invalidCurveResultList) {
-        this.invalidCurveResultList = invalidCurveResultList;
-    }
-
+    // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
-        return raccoonAttackProbabilities;
-    }
-
-    public synchronized void setRaccoonAttackProbabilities(
-            List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
-        this.raccoonAttackProbabilities = raccoonAttackProbabilities;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaPkGroupsStatic() {
-        return ecdsaPkGroupsStatic;
-    }
-
-    public synchronized void setEcdsaPkGroupsStatic(List<NamedGroup> ecdsaPkGroupsStatic) {
-        this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaPkGroupsEphemeral() {
-        return ecdsaPkGroupsEphemeral;
-    }
-
-    public synchronized void setEcdsaPkGroupsEphemeral(List<NamedGroup> ecdsaPkGroupsEphemeral) {
-        this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
-    }
-
-    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
-        return supportedNamedGroupsWitnesses;
-    }
-
-    public synchronized void setSupportedNamedGroupsWitnesses(
-            Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses) {
-        this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaSigGroupsStatic() {
-        return ecdsaSigGroupsStatic;
-    }
-
-    public synchronized void setEcdsaSigGroupsStatic(List<NamedGroup> ecdsaSigGroupsStatic) {
-        this.ecdsaSigGroupsStatic = ecdsaSigGroupsStatic;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaSigGroupsEphemeral() {
-        return ecdsaSigGroupsEphemeral;
-    }
-
-    public synchronized void setEcdsaSigGroupsEphemeral(List<NamedGroup> ecdsaSigGroupsEphemeral) {
-        this.ecdsaSigGroupsEphemeral = ecdsaSigGroupsEphemeral;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaPkGroupsTls13() {
-        return ecdsaPkGroupsTls13;
-    }
-
-    public synchronized void setEcdsaPkGroupsTls13(List<NamedGroup> ecdsaPkGroupsTls13) {
-        this.ecdsaPkGroupsTls13 = ecdsaPkGroupsTls13;
-    }
-
-    public synchronized List<NamedGroup> getEcdsaSigGroupsTls13() {
-        return ecdsaSigGroupsTls13;
-    }
-
-    public synchronized void setEcdsaSigGroupsTls13(List<NamedGroup> ecdsaSigGroupsTls13) {
-        this.ecdsaSigGroupsTls13 = ecdsaSigGroupsTls13;
-    }
-
-    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
-        return supportedNamedGroupsWitnessesTls13;
-    }
-
-    public synchronized void setSupportedNamedGroupsWitnessesTls13(
-            Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13) {
-        this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
+        if (getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
+                == TestResults.NOT_TESTED_YET) {
+            return null;
+        }
+        ListResult<RaccoonAttackProbabilities> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
+                        RaccoonAttackProbabilities.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<OcspCertificateResult> getOcspResults() {
-        return ocspResults;
+        ListResult<OcspCertificateResult> listResult =
+                getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
+        return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
-        this.ocspResults = ocspResults;
+    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>
+            getRaccoonTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>> listResult =
+                (ListResult<InformationLeakTest<DirectRaccoonOracleTestInfo>>)
+                        getListResult(TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>>
+            getBleichenbacherTestResultList() {
+        @SuppressWarnings("unchecked")
+        ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
+                (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>)
+                        getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<CcaTestResult> getCcaTestResultList() {
+        ListResult<CcaTestResult> listResult =
+                getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS, CcaTestResult.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<HpkpPin> getNormalHpkpPins() {
+        ListResult<HpkpPin> listResult =
+                getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS, HpkpPin.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
+        ListResult<HpkpPin> listResult =
+                getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, HpkpPin.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
+        ListResult<SimulatedClientResult> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS, SimulatedClientResult.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
+        ListResult<ApplicationProtocol> listResult =
+                (ListResult<ApplicationProtocol>)
+                        getListResult(
+                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                                ApplicationProtocol.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized Set<CommonDhValues> getCommonDhValues() {
+        SetResult<CommonDhValues> setResult =
+                getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES, CommonDhValues.class);
+        return setResult == null ? null : setResult.getSet();
+    }
+
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
+        MapResult<NamedGroup, NamedGroupWitness> mapResult =
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
+        return mapResult == null ? null : mapResult.getMap();
+    }
+
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
+        MapResult<NamedGroup, NamedGroupWitness> mapResult =
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
+        return mapResult == null ? null : mapResult.getMap();
     }
 
     public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
@@ -648,14 +431,6 @@ public class ServerReport extends TlsScanReport {
         this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
     }
 
-    public synchronized List<GuidelineReport> getGuidelineReports() {
-        return guidelineReports;
-    }
-
-    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
-        this.guidelineReports = guidelineReports;
-    }
-
     public synchronized String getConfigProfileIdentifier() {
         return configProfileIdentifier;
     }
@@ -672,22 +447,6 @@ public class ServerReport extends TlsScanReport {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
     }
 
-    public synchronized Long getClosedAfterFinishedDelta() {
-        return closedAfterFinishedDelta;
-    }
-
-    public synchronized void setClosedAfterFinishedDelta(long closedAfterFinishedDelta) {
-        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
-    }
-
-    public synchronized Long getClosedAfterAppDataDelta() {
-        return closedAfterAppDataDelta;
-    }
-
-    public synchronized void setClosedAfterAppDataDelta(long closedAfterAppDataDelta) {
-        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
-    }
-
     public Boolean getQuicRetryRequired() {
         return quicRetryRequired;
     }
@@ -701,7 +460,7 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized void setSupportedQuicVersions(
-            List<QuicVersionResult.Entry> supportedQuicVersions) {
+        List<QuicVersionResult.Entry> supportedQuicVersions) {
         this.supportedQuicVersions = supportedQuicVersions;
     }
 
@@ -710,7 +469,7 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized void setQuicTransportParameters(
-            QuicTransportParameters quicTransportParameters) {
+        QuicTransportParameters quicTransportParameters) {
         this.quicTransportParameters = quicTransportParameters;
     }
 
@@ -719,7 +478,7 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized void setQuicTls12HandshakeResult(
-            QuicTls12HandshakeResult quicTls12HandshakeResult) {
+        QuicTls12HandshakeResult quicTls12HandshakeResult) {
         this.quicTls12HandshakeResult = quicTls12HandshakeResult;
     }
 
@@ -728,7 +487,7 @@ public class ServerReport extends TlsScanReport {
     }
 
     public void setQuicConnectionMigrationResult(
-            QuicConnectionMigrationResult quicConnectionMigrationResult) {
+        QuicConnectionMigrationResult quicConnectionMigrationResult) {
         this.quicConnectionMigrationResult = quicConnectionMigrationResult;
     }
 }

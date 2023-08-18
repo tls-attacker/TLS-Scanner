@@ -1,26 +1,21 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.report.container.ReportContainer;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,73 +23,48 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsScanReport {
 
-    // Ciphers
-    private List<CipherSuite> clientAdvertisedCipherSuites;
-
-    // Compression
-    private List<CompressionMethod> clientAdvertisedCompressions;
-
     // DHE
     private Integer lowestPossibleDheModulusSize;
     private Integer highestPossibleDheModulusSize;
-
-    // Extensions
-    private Set<ExtensionType> clientAdvertisedExtensions;
-    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
-    private List<NamedGroup> clientAdvertisedNamedGroupsList;
-    private List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList;
-    private List<ECPointFormat> clientAdvertisedPointFormatsList;
-    private List<String> clientAdvertisedAlpns;
 
     public ClientReport() {
         super();
     }
 
     public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {
-        return clientAdvertisedCompressions;
-    }
-
-    public synchronized void setClientAdvertisedCompressions(
-            List<CompressionMethod> clientAdvertisedCompressions) {
-        this.clientAdvertisedCompressions = clientAdvertisedCompressions;
+        ListResult<CompressionMethod> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+                        CompressionMethod.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<SignatureAndHashAlgorithm>
             getClientAdvertisedSignatureAndHashAlgorithms() {
-        return clientAdvertisedSignatureAndHashAlgorithms;
-    }
-
-    public synchronized void setClientAdvertisedSignatureAndHashAlgorithms(
-            List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
-        this.clientAdvertisedSignatureAndHashAlgorithms =
-                clientAdvertisedSignatureAndHashAlgorithms;
+        ListResult<SignatureAndHashAlgorithm> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                        SignatureAndHashAlgorithm.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
-        return clientAdvertisedExtensions;
-    }
-
-    public synchronized void setClientAdvertisedExtensions(
-            Set<ExtensionType> clientAdvertisedExtensions) {
-        this.clientAdvertisedExtensions = clientAdvertisedExtensions;
+        SetResult<ExtensionType> setResult =
+                getSetResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, ExtensionType.class);
+        return setResult == null ? null : setResult.getSet();
     }
 
     public synchronized List<NamedGroup> getClientAdvertisedNamedGroupsList() {
-        return clientAdvertisedNamedGroupsList;
-    }
-
-    public synchronized void setClientAdvertisedNamedGroupsList(
-            List<NamedGroup> clientAdvertisedNamedGroupsList) {
-        this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
+        ListResult<NamedGroup> listResult =
+                getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, NamedGroup.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<ECPointFormat> getClientAdvertisedPointFormatsList() {
-        return clientAdvertisedPointFormatsList;
-    }
-
-    public synchronized void setClientAdvertisedPointFormatsList(
-            List<ECPointFormat> clientAdvertisedPointFormatsList) {
-        this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
+        ListResult<ECPointFormat> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, ECPointFormat.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized Integer getLowestPossibleDheModulusSize() {
@@ -114,51 +84,29 @@ public class ClientReport extends TlsScanReport {
     }
 
     public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {
-        return clientAdvertisedCipherSuites;
-    }
-
-    public synchronized void setClientAdvertisedCipherSuites(
-            List<CipherSuite> clientAdvertisedCipherSuites) {
-        this.clientAdvertisedCipherSuites = clientAdvertisedCipherSuites;
+        ListResult<CipherSuite> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, CipherSuite.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized void addClientAdvertisedCipherSuites(
             List<CipherSuite> clientAdvertisedCipherSuites) {
-        if (this.clientAdvertisedCipherSuites == null) {
-            this.clientAdvertisedCipherSuites = new LinkedList<>();
-        }
-        this.clientAdvertisedCipherSuites.addAll(clientAdvertisedCipherSuites);
+        getClientAdvertisedCipherSuites().addAll(clientAdvertisedCipherSuites);
     }
 
     public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
-        return clientAdvertisedKeyShareNamedGroupsList;
-    }
-
-    public synchronized void setClientAdvertisedKeyShareNamedGroupsList(
-            List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
-        this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
+        ListResult<NamedGroup> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                        NamedGroup.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<String> getClientAdvertisedAlpns() {
-        return clientAdvertisedAlpns;
-    }
-
-    public synchronized void setClientAdvertisedAlpns(List<String> clientAdvertisedAlpns) {
-        this.clientAdvertisedAlpns = clientAdvertisedAlpns;
-    }
-
-    @Override
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        // TODO: Implement ClientReportPrinter and use them.
-        ClientContainerReportCreator creator = new ClientContainerReportCreator(detail);
-        ReportContainer createReport = creator.createReport(this);
-        StringBuilder builder = new StringBuilder();
-        createReport.print(builder, 0, printColorful);
-        return builder.toString();
-    }
-
-    @Override
-    public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
+        @SuppressWarnings("unchecked")
+        ListResult<String> listResult =
+                (ListResult<String>) getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS);
+        return listResult == null ? null : listResult.getList();
     }
 }

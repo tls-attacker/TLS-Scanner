@@ -1,19 +1,18 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
+import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
 import java.util.LinkedList;
@@ -36,12 +35,16 @@ public class InvalidCurveResponse {
     private TestResult hadDistinctFps = TestResults.FALSE;
     private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
 
-    private InvalidCurveResponse() {
-    }
+    private InvalidCurveResponse() {}
 
-    public InvalidCurveResponse(InvalidCurveVector parameterSet, List<FingerprintSecretPair> fingerprintSecretPairs,
-        TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys, List<Point> receivedFinishedEcKeys,
-        TestResult dirtyKeysWarning, InvalidCurveScanType scanType) {
+    public InvalidCurveResponse(
+            InvalidCurveVector parameterSet,
+            List<FingerprintSecretPair> fingerprintSecretPairs,
+            TestResult showsPointsAreNotValidated,
+            List<Point> receivedEcPublicKeys,
+            List<Point> receivedFinishedEcKeys,
+            TestResult dirtyKeysWarning,
+            InvalidCurveScanType scanType) {
         this.vector = parameterSet;
         this.fingerprintSecretPairs = fingerprintSecretPairs;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -51,7 +54,8 @@ public class InvalidCurveResponse {
         this.scanType = scanType;
     }
 
-    public InvalidCurveResponse(InvalidCurveVector parameterSet, TestResult showsPointsAreNotValidated) {
+    public InvalidCurveResponse(
+            InvalidCurveVector parameterSet, TestResult showsPointsAreNotValidated) {
         this.vector = parameterSet;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.fingerprintSecretPairs = new LinkedList<>();
@@ -73,8 +77,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param showsPointsAreNotValidated
-     *                                   the showsPointsAreNotValidated to set
+     * @param showsPointsAreNotValidated the showsPointsAreNotValidated to set
      */
     public void setShowsPointsAreNotValuated(TestResult showsPointsAreNotValidated) {
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -88,8 +91,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param showsVulnerability
-     *                           the showsVulnerability to set
+     * @param showsVulnerability the showsVulnerability to set
      */
     public void setShowsVulnerability(TestResult showsVulnerability) {
         this.showsVulnerability = showsVulnerability;
@@ -103,8 +105,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param chosenGroupReusesKey
-     *                             the chosenGroupReusesKey to set
+     * @param chosenGroupReusesKey the chosenGroupReusesKey to set
      */
     public void setChosenGroupReusesKey(TestResult chosenGroupReusesKey) {
         this.chosenGroupReusesKey = chosenGroupReusesKey;
@@ -118,8 +119,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param receivedEcPublicKeys
-     *                             the receivedEcPublicKeys to set
+     * @param receivedEcPublicKeys the receivedEcPublicKeys to set
      */
     public void setReceivedEcPublicKeys(List<Point> receivedEcPublicKeys) {
         this.receivedEcPublicKeys = receivedEcPublicKeys;
@@ -133,8 +133,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param fingerprintSecretPairs
-     *                               the fingerprintSecretPairs to set
+     * @param fingerprintSecretPairs the fingerprintSecretPairs to set
      */
     public void setFingerprintSecretPairs(List<FingerprintSecretPair> fingerprintSecretPairs) {
         this.fingerprintSecretPairs = fingerprintSecretPairs;
@@ -148,8 +147,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param finishedHandshakeHadReusedKey
-     *                                      the finishedHandshakeHadReusedKey to set
+     * @param finishedHandshakeHadReusedKey the finishedHandshakeHadReusedKey to set
      */
     public void setFinishedHandshakeHadReusedKey(TestResult finishedHandshakeHadReusedKey) {
         this.finishedHandshakeHadReusedKey = finishedHandshakeHadReusedKey;
@@ -163,8 +161,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param receivedFinishedEcKeys
-     *                               the receivedFinishedEcKeys to set
+     * @param receivedFinishedEcKeys the receivedFinishedEcKeys to set
      */
     public void setReceivedFinishedEcKeys(List<Point> receivedFinishedEcKeys) {
         this.receivedFinishedEcKeys = receivedFinishedEcKeys;
@@ -178,8 +175,7 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param dirtyKeysWarning
-     *                         the dirtyKeysWarning to set
+     * @param dirtyKeysWarning the dirtyKeysWarning to set
      */
     public void setDirtyKeysWarning(TestResult dirtyKeysWarning) {
         this.dirtyKeysWarning = dirtyKeysWarning;
@@ -242,5 +238,4 @@ public class InvalidCurveResponse {
     public void setScanType(InvalidCurveScanType scanType) {
         this.scanType = scanType;
     }
-
 }

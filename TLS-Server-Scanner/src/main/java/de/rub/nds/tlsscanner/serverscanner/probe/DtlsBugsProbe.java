@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,8 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -26,21 +27,29 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.result.DtlsBugsResult;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
-public class DtlsBugsProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DtlsBugsResult<ServerReport>> {
+public class DtlsBugsProbe extends TlsServerProbe {
+
+    private TestResult isEarlyFinished = TestResults.COULD_NOT_TEST;
+    private TestResult isAcceptingUnencryptedFinished = TestResults.COULD_NOT_TEST;
 
     public DtlsBugsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_COMMON_BUGS, configSelector);
+        register(
+                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
 
     @Override
-    public DtlsBugsResult executeTest() {
-        return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isEarlyFinished());
+    protected void executeTest() {
+        isEarlyFinished = isAcceptingUnencryptedFinished();
+        isAcceptingUnencryptedFinished = isEarlyFinished();
     }
 
     private TestResult isAcceptingUnencryptedFinished() {
@@ -87,15 +96,16 @@ public class DtlsBugsProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return true;
-    }
-
-    @Override
-    public DtlsBugsResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResults.COULD_NOT_TEST, TestResults.COULD_NOT_TEST);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {}
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        put(TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+    }
 }

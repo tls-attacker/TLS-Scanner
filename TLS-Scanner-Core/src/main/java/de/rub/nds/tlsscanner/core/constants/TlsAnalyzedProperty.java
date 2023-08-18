@@ -1,22 +1,74 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.constants;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
+    SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
+    BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    DIRECT_RACCOON_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    INVALID_CURVE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
+    RACCOON_ATTACK_PROBABILITIES(TlsAnalyzedPropertyCategory.ATTACKS),
+    SUPPORTED_PROTOCOL_VERSIONS(TlsAnalyzedPropertyCategory.VERSIONS),
+    SUPPORTED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.EC),
+    SUPPORTED_NAMED_GROUPS_WITNESSES(TlsAnalyzedPropertyCategory.EC),
+    SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13(TlsAnalyzedPropertyCategory.EC),
+    SUPPORTED_TLS13_GROUPS(TlsAnalyzedPropertyCategory.EC),
+    SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTED_TOKENBINDING_VERSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTED_TOKENBINDING_KEY_PARAMETERS(TlsAnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTED_ALPN_CONSTANTS(TlsAnalyzedPropertyCategory.QUIRKS),
+    SUPPORTED_COMPRESSION_METHODS(TlsAnalyzedPropertyCategory.COMPRESSION),
+    CERTIFICATE_CHAINS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    STATIC_ECDSA_PK_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    EPHEMERAL_ECDSA_PK_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    TLS13_ECDSA_PK_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    STATIC_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    EPHEMERAL_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    TLS13_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    OCSP_RESULTS(TlsAnalyzedPropertyCategory.OCSP),
+    VERSION_SUITE_PAIRS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    HTTPS_HEADER(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    NORMAL_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    REPORT_ONLY_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    ENTROPY_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
+    MAP_RETRANSMISSION_COUNTERS(TlsAnalyzedPropertyCategory.QUIRKS),
+    COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
+    CLIENT_SIMULATION_RESULTS(TlsAnalyzedPropertyCategory.QUIRKS),
+    CCA_TEST_RESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
+
+    CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),
+    CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
+    CLIENT_ADVERTISED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_POINTFORMATS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_ALPNS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+
+    HSTS_INCLUDES_SUBDOMAINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    HPKP_INCLUDES_SUBDOMAINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    HSTS_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    HPKP_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(TlsAnalyzedPropertyCategory.VERSIONS),
@@ -67,6 +119,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_ARIA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_CHACHA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RSA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_RSA_SIG(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_DH(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_DHE(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDHE(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
@@ -217,6 +270,14 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     MISSES_VERIFY_DATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_GCM_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_RSA_SIG(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_RSA(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_DSS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_DH(TlsAnalyzedPropertyCategory.CERTIFICATE),
     MUST_STAPLE(TlsAnalyzedPropertyCategory.OCSP),
     INCLUDES_CERTIFICATE_STATUS_MESSAGE(TlsAnalyzedPropertyCategory.OCSP),
     STAPLED_RESPONSE_EXPIRED(TlsAnalyzedPropertyCategory.OCSP),

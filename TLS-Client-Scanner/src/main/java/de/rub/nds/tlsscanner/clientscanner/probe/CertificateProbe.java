@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,7 +9,8 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -25,7 +26,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceMutator;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.CertificateResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -37,17 +37,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class CertificateProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, CertificateResult> {
+public class CertificateProbe extends TlsClientProbe {
 
-    private Set<CertificateChain> clientCertificates;
+    private Set<CertificateChain> clientCertificates = null;
 
     public CertificateProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, scannerConfig);
+        register(TlsAnalyzedProperty.CERTIFICATE_CHAINS);
     }
 
     @Override
-    public CertificateResult executeTest() {
+    protected void executeTest() {
         clientCertificates = new HashSet<>();
         for (ClientCertificateType certType : getTestableCertTypes()) {
             Config config = getConfig(certType);
@@ -66,7 +66,6 @@ public class CertificateProbe
             }
             clientCertificates.add(clientCertChain);
         }
-        return new CertificateResult(clientCertificates);
     }
 
     private List<ClientCertificateType> getTestableCertTypes() {
@@ -155,15 +154,17 @@ public class CertificateProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return report.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
-    }
-
-    @Override
-    public CertificateResult getCouldNotExecuteResult() {
-        return new CertificateResult(null);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        if (clientCertificates != null) {
+            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>(clientCertificates));
+        }
+    }
+
+    @Override
+    public Requirement<ClientReport> getRequirements() {
+        return new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_CCA);
+    }
 }

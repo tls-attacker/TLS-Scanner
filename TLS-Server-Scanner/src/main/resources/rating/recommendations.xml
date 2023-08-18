@@ -1,6 +1,6 @@
 <recommendations>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SSL_2</tlsAnalyzedProperty>
+        <property>SUPPORTS_SSL_2</property>
         <shortName>SSL 2.0 support</shortName>
         <shortDescription>Evaluates whether the SSL 2.0 protocol is supported</shortDescription>
         <links>https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html</links>
@@ -13,7 +13,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SSL_3</tlsAnalyzedProperty>
+        <property>SUPPORTS_SSL_3</property>
         <shortName>SSL 3.0 support</shortName>
         <shortDescription>Evaluates whether the SSL 3.0 protocol is supported</shortDescription>
         <links>https://tools.ietf.org/html/rfc6101</links>
@@ -25,7 +25,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_1_0</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_1_0</property>
         <shortName>TLS 1.0 support</shortName>
         <shortDescription>Evaluates whether the TLS 1.0 protocol is supported</shortDescription>
         <links>https://www.ietf.org/rfc/rfc2246</links>
@@ -37,7 +37,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_1_1</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_1_1</property>
         <shortName>TLS 1.1 support</shortName>
         <shortDescription>Evaluates whether the TLS 1.1 protocol is supported</shortDescription>
         <links>https://www.ietf.org/rfc/rfc4346</links>
@@ -49,7 +49,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_1_2</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_1_2</property>
         <shortName>TLS 1.2 support</shortName>
         <shortDescription>Evaluates whether the TLS 1.2 protocol is supported</shortDescription>
         <links>https://www.ietf.org/rfc/rfc5246.txt</links>
@@ -60,7 +60,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_1_3</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_1_3</property>
         <shortName>TLS 1.3 support</shortName>
         <shortDescription>Evaluates whether the TLS 1.3 protocol is supported</shortDescription>
         <links>https://tools.ietf.org/html/rfc8446</links>
@@ -71,7 +71,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_1_3_DRAFT</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_1_3_DRAFT</property>
         <shortName>TLS 1.3 draft version support</shortName>
         <shortDescription>Evaluates whether a TLS 1.3 version draft is supported</shortDescription>
         <links>https://tools.ietf.org/html/rfc8446</links>
@@ -82,7 +82,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DTLS_1_0</tlsAnalyzedProperty>
+        <property>SUPPORTS_DTLS_1_0</property>
         <shortName>DTLS 1.0 support</shortName>
         <shortDescription>Evaluates whether the DTLS 1.0 protocol is supported</shortDescription>
         <links>https://tools.ietf.org/html/rfc4347</links>
@@ -93,7 +93,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DTLS_1_2</tlsAnalyzedProperty>
+        <property>SUPPORTS_DTLS_1_2</property>
         <shortName>DTLS 1.2 support</shortName>
         <shortDescription>Evaluates whether the DTLS 1.2 protocol is supported</shortDescription>
         <links>https://tools.ietf.org/html/rfc6347</links>
@@ -104,7 +104,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DTLS_1_3</tlsAnalyzedProperty>
+        <property>SUPPORTS_DTLS_1_3</property>
         <shortName>DTLS 1.3 support</shortName>
         <shortDescription>Evaluates whether the DTLS 1.3 protocol is supported</shortDescription>
         <links/>
@@ -115,7 +115,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_NULL_CIPHERS</tlsAnalyzedProperty>
+        <property>SUPPORTS_NULL_CIPHERS</property>
         <shortName>Null cipher support</shortName>
         <shortDescription>Evaluates whether the server supports null ciphers</shortDescription>
         <links/>
@@ -126,7 +126,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_FORTEZZA</tlsAnalyzedProperty>
+        <property>SUPPORTS_FORTEZZA</property>
         <shortName>Fortezza support</shortName>
         <shortDescription>Evaluates whether the server supports Fortezza ciphers</shortDescription>
         <links/>
@@ -138,7 +138,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_EXPORT</tlsAnalyzedProperty>
+        <property>SUPPORTS_EXPORT</property>
         <shortName>Export cipher support</shortName>
         <shortDescription>Evaluates whether the server supports export ciphers</shortDescription>
         <links/>
@@ -150,7 +150,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ANON</tlsAnalyzedProperty>
+        <property>SUPPORTS_ANON</property>
         <shortName>Anonymous cipher support</shortName>
         <shortDescription>Evaluates whether the server supports anonymous ciphers</shortDescription>
         <links/>
@@ -161,7 +161,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DES</tlsAnalyzedProperty>
+        <property>SUPPORTS_DES</property>
         <shortName>DES support</shortName>
         <shortDescription>Evaluates whether the server supports DES ciphers</shortDescription>
         <links/>
@@ -172,7 +172,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_3DES</tlsAnalyzedProperty>
+        <property>SUPPORTS_3DES</property>
         <shortName>3DES (Triple DES) support</shortName>
         <shortDescription>Evaluates whether the server supports 3DES (Triple DES) ciphers</shortDescription>
         <links/>
@@ -183,14 +183,14 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SEED</tlsAnalyzedProperty>
+        <property>SUPPORTS_SEED</property>
         <shortName>SEED cipher support</shortName>
         <shortDescription>Evaluates whether the server supports SEED ciphers</shortDescription>
         <detailedDescription>SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998</detailedDescription>
         <links>https://tools.ietf.org/html/rfc4162</links>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_IDEA</tlsAnalyzedProperty>
+        <property>SUPPORTS_IDEA</property>
         <shortName>IDEA cipher support</shortName>
         <shortDescription>Evaluates whether the server supports IDEA ciphers</shortDescription>
         <detailedDescription>IDEA (International Data Encryption Algorithm) is a block cipher. It uses a 128 bit key and operates on 64 bit blocks.</detailedDescription>
@@ -202,7 +202,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_RC2</tlsAnalyzedProperty>
+        <property>SUPPORTS_RC2</property>
         <shortName>RC2 cipher support</shortName>
         <shortDescription>Evaluates whether the server supports RC2 ciphers</shortDescription>
         <detailedDescription>RC2 is a 64 bit block cipher designed by Ron Rivest in 1987</detailedDescription>
@@ -214,7 +214,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_RC4</tlsAnalyzedProperty>
+        <property>SUPPORTS_RC4</property>
         <shortName>RC4 cipher support</shortName>
         <shortDescription>Evaluates whether the server supports RC4 ciphers</shortDescription>
         <detailedDescription>RC4 is a stream cipher designed by Ron Rivest in 1987</detailedDescription>
@@ -227,7 +227,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_AEAD</tlsAnalyzedProperty>
+        <property>SUPPORTS_AEAD</property>
         <shortName>AEAD cipher suites support</shortName>
         <shortDescription>Evaluates whether the server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM</shortDescription>
         <links/>
@@ -238,7 +238,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_PFS</tlsAnalyzedProperty>
+        <property>SUPPORTS_PFS</property>
         <shortName>Perfect Forward Secrecy (PFS) support</shortName>
         <shortDescription>Evaluates whether the server supports Perfect Forward Secrecy (PFS)</shortDescription>
         <links/>
@@ -249,7 +249,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ONLY_PFS</tlsAnalyzedProperty>
+        <property>SUPPORTS_ONLY_PFS</property>
         <shortName>Support for only PFS cipher suites</shortName>
         <shortDescription>Evaluates whether the server exclusively supports Perfect Forward Secrecy (PFS)</shortDescription>
         <links/>
@@ -260,7 +260,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>PREFERS_PFS</tlsAnalyzedProperty>
+        <property>PREFERS_PFS</property>
         <shortName>Perfect Forward Secrecy (PFS) preference</shortName>
         <shortDescription>Evaluates whether the server prefers Perfect Forward Secrecy (PFS) cipher suites</shortDescription>
         <links/>
@@ -271,7 +271,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>ENFORCES_PFS</tlsAnalyzedProperty>
+        <property>ENFORCES_PFS</property>
         <shortName>Perfect Forward Secrecy (PFS) enforcing</shortName>
         <shortDescription>Evaluates whether the server enforces Perfect Forward Secrecy (PFS) cipher suites</shortDescription>
         <links/>
@@ -282,7 +282,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_AES</tlsAnalyzedProperty>
+        <property>SUPPORTS_AES</property>
         <shortName>AES cipher support</shortName>
         <shortDescription>Evaluates whether the server supports AES cipher</shortDescription>
         <links/>
@@ -293,21 +293,21 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_CAMELLIA</tlsAnalyzedProperty>
+        <property>SUPPORTS_CAMELLIA</property>
         <shortName>Camellia cipher support</shortName>
         <shortDescription>Evaluates whether the server supports Camellia cipher</shortDescription>
         <detailedDescription>Camellia is a 128 bit block cipher designed by Mitsubishi and NTT in 2000</detailedDescription>
         <links/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ARIA</tlsAnalyzedProperty>
+        <property>SUPPORTS_ARIA</property>
         <shortName>ARIA cipher support</shortName>
         <shortDescription>Evaluates whether the server supports ARIA cipher</shortDescription>
         <detailedDescription>ARIA is a 128 bit block cipher designed in 2003</detailedDescription>
         <links>https://tools.ietf.org/html/rfc5794</links>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_CHACHA</tlsAnalyzedProperty>
+        <property>SUPPORTS_CHACHA</property>
         <shortName>ChaCha cipher support</shortName>
         <shortDescription>Evaluates whether the server supports ChaCha cipher</shortDescription>
         <links>https://tools.ietf.org/html/rfc7905</links>
@@ -318,7 +318,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_RSA</tlsAnalyzedProperty>
+        <property>SUPPORTS_RSA</property>
         <shortName>RSA key exchange support</shortName>
         <shortDescription>Evaluates whether the server supports RSA key exchange</shortDescription>
         <links/>
@@ -329,13 +329,13 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_STATIC_DH</tlsAnalyzedProperty>
+        <property>SUPPORTS_STATIC_DH</property>
         <shortName>Diffie-Hellman (DH) key exchange support</shortName>
         <shortDescription>Evaluates whether the server supports Diffie-Hellman (DH) key exchange</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_STATIC_ECDH</tlsAnalyzedProperty>
+        <property>SUPPORTS_STATIC_ECDH</property>
         <shortName>Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
         <shortDescription>Evaluates whether the server supports Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
         <links/>
@@ -346,7 +346,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_STATIC_ECDH</tlsAnalyzedProperty>
+        <property>SUPPORTS_STATIC_ECDH</property>
         <shortName>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
         <shortDescription>Evaluates whether the server supports static Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
         <detailedDescription/>
@@ -358,7 +358,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_GOST</tlsAnalyzedProperty>
+        <property>SUPPORTS_GOST</property>
         <shortName>GOST cipher support</shortName>
         <shortDescription>Evaluates whether the server supports GOST cipher</shortDescription>
         <detailedDescription>GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. </detailedDescription>
@@ -370,73 +370,73 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SRP</tlsAnalyzedProperty>
+        <property>SUPPORTS_SRP</property>
         <shortName>Secure Remote Password (SRP) support</shortName>
         <shortDescription>Evaluates whether the server supports Secure Remote Password (SRP) cipher suites</shortDescription>
         <detailedDescription>https://tools.ietf.org/html/rfc5054</detailedDescription>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_KERBEROS</tlsAnalyzedProperty>
+        <property>SUPPORTS_KERBEROS</property>
         <shortName>Kerberos cipher suites support</shortName>
         <shortDescription>Evaluates whether the server supports Kerberos cipher suites</shortDescription>
         <detailedDescription>https://tools.ietf.org/html/rfc2712</detailedDescription>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_PSK_PLAIN</tlsAnalyzedProperty>
+        <property>SUPPORTS_PSK_PLAIN</property>
         <shortName>Supports plain PSK</shortName>
         <shortDescription>For now we do not consider in our scoring</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_PSK_RSA</tlsAnalyzedProperty>
+        <property>SUPPORTS_PSK_RSA</property>
         <shortName>Supports RSA PSK</shortName>
         <shortDescription>For now we do not consider in our scoring</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_PSK_DHE</tlsAnalyzedProperty>
+        <property>SUPPORTS_PSK_DHE</property>
         <shortName>Supports DHE PSK</shortName>
         <shortDescription>For now we do not consider in our scoring</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_PSK_ECDHE</tlsAnalyzedProperty>
+        <property>SUPPORTS_PSK_ECDHE</property>
         <shortName>Supports ECDHE PSK</shortName>
         <shortDescription>For now we do not consider in our scoring</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_POST_QUANTUM</tlsAnalyzedProperty>
+        <property>SUPPORTS_POST_QUANTUM</property>
         <shortName>Post quantum algorithms support</shortName>
         <shortDescription>Evaluates whether the server supports post quantum algorithms</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_NEWHOPE</tlsAnalyzedProperty>
+        <property>SUPPORTS_NEWHOPE</property>
         <shortName>Post quantum new hope algorithm support</shortName>
         <shortDescription>Evaluates whether the server supports the new hope post quantum algorithm</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ECMQV</tlsAnalyzedProperty>
+        <property>SUPPORTS_ECMQV</property>
         <shortName>Post quantum ECMQV algorithm support</shortName>
         <shortDescription>Evaluates whether the server supports the ECMQV post quantum algorithm</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_STREAM_CIPHERS</tlsAnalyzedProperty>
+        <property>SUPPORTS_STREAM_CIPHERS</property>
         <shortName>Stream cipher support</shortName>
         <shortDescription>Evaluates whether the server supports stream ciphers</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_BLOCK_CIPHERS</tlsAnalyzedProperty>
+        <property>SUPPORTS_BLOCK_CIPHERS</property>
         <shortName>Block cipher support</shortName>
         <shortDescription>Evaluates whether the server supports block ciphers</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_EXTENDED_MASTER_SECRET</tlsAnalyzedProperty>
+        <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <shortName>Extended master secret support</shortName>
         <shortDescription>Evaluates whether the server supports extended master secret extension</shortDescription>
         <links>https://tools.ietf.org/html/rfc7627</links>
@@ -447,7 +447,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ENCRYPT_THEN_MAC</tlsAnalyzedProperty>
+        <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
         <shortName>Encrypt-then-MAC extension support</shortName>
         <shortDescription>Evaluates whether the server supports Encrypt-then-MAC extension</shortDescription>
         <links>https://tools.ietf.org/html/rfc7366</links>
@@ -458,19 +458,19 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TOKENBINDING</tlsAnalyzedProperty>
+        <property>SUPPORTS_TOKENBINDING</property>
         <shortName>Token binding support</shortName>
         <shortDescription>Evaluates whether the server supports token binding</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_MONTGOMERY_CURVES</tlsAnalyzedProperty>
+        <property>SUPPORTS_MONTGOMERY_CURVES</property>
         <shortName>Montgomery curve support</shortName>
         <shortDescription/>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SESSION_TICKET_RESUMPTION</tlsAnalyzedProperty>
+        <property>SUPPORTS_SESSION_TICKET_RESUMPTION</property>
         <shortName>Support for session resumption with session tickets</shortName>
         <shortDescription>Evaluates whether the server supports session resumption with session tickets</shortDescription>
         <links/>
@@ -481,13 +481,13 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SESSION_ID_RESUMPTION</tlsAnalyzedProperty>
+        <property>SUPPORTS_SESSION_ID_RESUMPTION</property>
         <shortName>Support for session resumption with session IDs</shortName>
         <shortDescription>Evaluates whether the server supports session resumption with session IDs</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SESSION_TICKET_ROTATION_HINT</tlsAnalyzedProperty>
+        <property>SUPPORTS_SESSION_TICKET_ROTATION_HINT</property>
         <shortName>Support for rotated session tickets</shortName>
         <shortDescription>Evaluates whether the server supports session resumption with session tickets whose keys are being rotated</shortDescription>
         <detailedDescription>Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.</detailedDescription>
@@ -499,7 +499,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</tlsAnalyzedProperty>
+        <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <shortName>Support for secure renegotiation extension</shortName>
         <shortDescription>Evaluates whether the server supports secure renegotiation extension.</shortDescription>
         <links>https://tools.ietf.org/html/rfc5746</links>
@@ -510,21 +510,21 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</tlsAnalyzedProperty>
+        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</property>
         <shortName>Support for client-side secure renegotiation</shortName>
         <shortDescription>Evaluates whether the server supports client-side secure renegotiation.</shortDescription>
         <detailedDescription>Secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
         <links>https://tools.ietf.org/html/rfc5746</links>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</tlsAnalyzedProperty>
+        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
         <shortName>Support for client-side secure renegotiation</shortName>
         <shortDescription>Evaluates whether the server supports client-side secure renegotiation.</shortDescription>
         <detailedDescription>Secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
         <links>https://tools.ietf.org/html/rfc5746</links>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
         <shortName>TLS Fallback Signaling Cipher Suite Value (SCSV) support</shortName>
         <shortDescription>Evaluates whether the server supports TLS Fallback Signaling Cipher Suite Value (SCSV)</shortDescription>
         <detailedDescription>In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highest version. If a TLS handshake with a particular version does not work, the TLS client attempts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 connection after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.</detailedDescription>
@@ -536,7 +536,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_TLS_COMPRESSION</tlsAnalyzedProperty>
+        <property>SUPPORTS_TLS_COMPRESSION</property>
         <shortName>TLS compression support</shortName>
         <shortDescription>Evaluates whether the server supports TLS compression</shortDescription>
         <links/>
@@ -547,7 +547,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ONLY_PRIME_MODULI</tlsAnalyzedProperty>
+        <property>SUPPORTS_ONLY_PRIME_MODULI</property>
         <shortName>Moduli provided in FFDHE ServerKeyExchange messages are prime</shortName>
         <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime</shortDescription>
         <links>https://eprint.iacr.org/2016/995.pdf</links>
@@ -558,14 +558,14 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_COMMON_DH_PRIMES</tlsAnalyzedProperty>
+        <property>SUPPORTS_COMMON_DH_PRIMES</property>
         <shortName>Moduli provided in FFDHE ServerKeyExchange messages are from common groups</shortName>
         <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs</shortDescription>
         <detailedDescription>https://github.com/cryptosense/diffie-hellman-groups</detailedDescription>
         <links>https://eprint.iacr.org/2016/995.pdf</links>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_ONLY_SAFEPRIME_MODULI</tlsAnalyzedProperty>
+        <property>SUPPORTS_ONLY_SAFEPRIME_MODULI</property>
         <shortName>Moduli provided in FFDHE ServerKeyExchange messages are safe primes</shortName>
         <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes</shortDescription>
         <links>https://eprint.iacr.org/2016/995.pdf</links>
@@ -576,13 +576,13 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HTTPS</tlsAnalyzedProperty>
+        <property>SUPPORTS_HTTPS</property>
         <shortName>HTTPS support</shortName>
         <shortDescription/>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HSTS</tlsAnalyzedProperty>
+        <property>SUPPORTS_HSTS</property>
         <shortName>Support for HTTP Strict Transport Security (HSTS)</shortName>
         <shortDescription>Evaluates whether the server supports HTTP Strict Transport Security (HSTS)</shortDescription>
         <links>https://tools.ietf.org/html/rfc6797</links>
@@ -593,7 +593,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HSTS_PRELOADING</tlsAnalyzedProperty>
+        <property>SUPPORTS_HSTS_PRELOADING</property>
         <shortName>Support for HTTP Strict Transport Security (HSTS) preloading</shortName>
         <shortDescription/>
         <links/>
@@ -604,19 +604,19 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HPKP</tlsAnalyzedProperty>
+        <property>SUPPORTS_HPKP</property>
         <shortName>HTTP Public Key Pinning (HPKP) support</shortName>
         <shortDescription>Evaluates whether the server supports Public Key Pinning Extension for HTTP</shortDescription>
         <detailedDescription>https://tools.ietf.org/html/rfc7469</detailedDescription>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HPKP_REPORTING</tlsAnalyzedProperty>
+        <property>SUPPORTS_HPKP_REPORTING</property>
         <shortName>HTTP Public Key Pinning (HPKP) report-only mode support</shortName>
         <shortDescription>Evaluates whether the server supports Public Key Pinning Extension for HTTP in a report-only mode</shortDescription>
         <detailedDescription>https://tools.ietf.org/html/rfc7469</detailedDescription>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_HTTP_COMPRESSION</tlsAnalyzedProperty>
+        <property>SUPPORTS_HTTP_COMPRESSION</property>
         <shortName>HTTP compression support</shortName>
         <shortDescription>Evaluates whether the server supports HTTP compression</shortDescription>
         <links/>
@@ -627,7 +627,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>ENFORCES_CS_ORDERING</tlsAnalyzedProperty>
+        <property>ENFORCES_CS_ORDERING</property>
         <shortName>Cipher suite ordering support</shortName>
         <shortDescription>Evaluates whether the server supports cipher suite ordering</shortDescription>
         <links/>
@@ -638,7 +638,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>ENFORCES_NAMED_GROUP_ORDERING</tlsAnalyzedProperty>
+        <property>ENFORCES_NAMED_GROUP_ORDERING</property>
         <shortName>Named group order</shortName>
         <shortDescription>Evaluates whether the server enforces the client's named group ordering</shortDescription>
         <propertyRecommendations>
@@ -648,7 +648,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING</tlsAnalyzedProperty>
+        <property>ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING</property>
         <shortName>Signature has algorithm ordering enforced</shortName>
         <shortDescription>Evaluates whether the server enforces signature hash algorithm ordering</shortDescription>
         <links/>
@@ -659,7 +659,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_VERSION_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_VERSION_INTOLERANCE</property>
         <shortName>TLS version intolerance</shortName>
         <shortDescription>Evaluates whether the server is TLS version intolerant</shortDescription>
         <links/>
@@ -670,7 +670,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_CIPHER_SUITE_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_CIPHER_SUITE_INTOLERANCE</property>
         <shortName>TLS cipher suite intolerance</shortName>
         <shortDescription>Evaluates whether the server is cipher suite intolerant</shortDescription>
         <links/>
@@ -681,7 +681,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_EXTENSION_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_EXTENSION_INTOLERANCE</property>
         <shortName>TLS extension intolerance</shortName>
         <shortDescription>Evaluates whether the server is TLS extension intolerant</shortDescription>
         <links/>
@@ -692,7 +692,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</property>
         <shortName>TLS cipher suite length intolerance</shortName>
         <shortDescription>Evaluates whether the server has TLS cipher suite length intolerance</shortDescription>
         <links/>
@@ -703,7 +703,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_COMPRESSION_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_COMPRESSION_INTOLERANCE</property>
         <shortName>TLS compression intolerance</shortName>
         <shortDescription>Evaluates whether the server is TLS compression intolerant</shortDescription>
         <links/>
@@ -714,7 +714,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_ALPN_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_ALPN_INTOLERANCE</property>
         <shortName>ALPN intolerance</shortName>
         <shortDescription>Evaluates whether the server has Application-Layer Protocol Negotiation (ALPN) intolerance</shortDescription>
         <links/>
@@ -725,7 +725,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</property>
         <shortName>ClientHello length intolerance</shortName>
         <shortDescription>Evaluates whether the server has ClientHello length intolerance</shortDescription>
         <links/>
@@ -736,7 +736,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</property>
         <shortName>ClientHello last extension intolerance</shortName>
         <shortDescription>Evaluates whether the server has ClientHello last extension intolerance</shortDescription>
         <links/>
@@ -747,7 +747,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</property>
         <shortName>Signature and hash algorithm intolerance</shortName>
         <shortDescription>Evaluates whether the server has TLS signature and hash algorithm intolerance</shortDescription>
         <links/>
@@ -758,7 +758,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_BIG_CLIENT_HELLO_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_BIG_CLIENT_HELLO_INTOLERANCE</property>
         <shortName>Big ClientHello intolerance</shortName>
         <shortDescription>Evaluates whether the server has big ClientHello intolerance</shortDescription>
         <links/>
@@ -769,7 +769,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_NAMED_GROUP_INTOLERANCE</tlsAnalyzedProperty>
+        <property>HAS_NAMED_GROUP_INTOLERANCE</property>
         <shortName>Elliptic curve named group intolerance</shortName>
         <shortDescription>Evaluates whether the server has elliptic curve named group intolerance</shortDescription>
         <links/>
@@ -780,7 +780,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</tlsAnalyzedProperty>
+        <property>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</property>
         <shortName>Second cipher suite bug</shortName>
         <shortDescription>Evaluates whether the server always evaluates only the second cipher suite byte</shortDescription>
         <links/>
@@ -791,7 +791,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>REFLECTS_OFFERED_CIPHER_SUITES</tlsAnalyzedProperty>
+        <property>REFLECTS_OFFERED_CIPHER_SUITES</property>
         <shortName>Cipher suite reflection</shortName>
         <shortDescription>Evaluates whether the server reflects offered cipher suites</shortDescription>
         <links/>
@@ -802,7 +802,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>IGNORES_OFFERED_CIPHER_SUITES</tlsAnalyzedProperty>
+        <property>IGNORES_OFFERED_CIPHER_SUITES</property>
         <shortName>Ignoring offered cipher suites</shortName>
         <shortDescription>Evaluates whether the server ignores offered cipher suites</shortDescription>
         <links/>
@@ -813,7 +813,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>IGNORES_OFFERED_NAMED_GROUPS</tlsAnalyzedProperty>
+        <property>IGNORES_OFFERED_NAMED_GROUPS</property>
         <shortName>Ignoring offered named groups</shortName>
         <shortDescription>Evaluates whether the server ignores offered named groups</shortDescription>
         <links/>
@@ -824,7 +824,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>IGNORES_OFFERED_SIG_HASH_ALGOS</tlsAnalyzedProperty>
+        <property>IGNORES_OFFERED_SIG_HASH_ALGOS</property>
         <shortName>Ignoring offered signature and hash algorithms</shortName>
         <shortDescription>Evaluates whether the server ignores offered signature and hash algorithms</shortDescription>
         <links/>
@@ -835,7 +835,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_BLEICHENBACHER</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_BLEICHENBACHER</property>
         <shortName>Vulnerable to a Bleichenbacher attack</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to a Bleichenbacher attack</shortDescription>
         <links>https://robotattack.org/</links>
@@ -846,7 +846,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_PADDING_ORACLE</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_PADDING_ORACLE</property>
         <shortName>Vulnerable to a CBC padding oracle attack vulnerability</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to a CBC padding oracle attack</shortDescription>
         <links/>
@@ -857,7 +857,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_INVALID_CURVE</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_INVALID_CURVE</property>
         <shortName>Vulnerable to an invalid curve attack</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to an invalid curve attack</shortDescription>
         <links/>
@@ -868,7 +868,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</property>
         <shortName>Vulnerable to an invalid curve attack on ephemeral cipher suites</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to an invalid curve attack on ephemeral cipher suites</shortDescription>
         <links/>
@@ -879,7 +879,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</property>
         <shortName>Vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
         <links/>
@@ -890,7 +890,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_POODLE</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_POODLE</property>
         <shortName>Vulnerable to POODLE</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to POODLE (Padding Oracle On Downgraded Legacy Encryption)</shortDescription>
         <links>https://www.openssl.org/~bodo/ssl-poodle.pdf</links>
@@ -901,7 +901,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_SWEET_32</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_SWEET_32</property>
         <shortName>Vulnerable to Sweet32</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to Sweet32</shortDescription>
         <links>https://sweet32.info</links>
@@ -912,7 +912,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_GENERAL_DROWN</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_GENERAL_DROWN</property>
         <shortName>Vulnerable to DROWN</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened encryption)</shortDescription>
         <links>https://drownattack.com</links>
@@ -923,7 +923,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_HEARTBLEED</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_HEARTBLEED</property>
         <shortName>Vulnerable to Heartbleed</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to Heartbleed</shortDescription>
         <links>http://heartbleed.com</links>
@@ -934,7 +934,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_TICKETBLEED</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_TICKETBLEED</property>
         <shortName>Vulnerable to Ticketbleed</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to Ticketbleed</shortDescription>
         <links>https://filippo.io/ticketbleed</links>
@@ -945,7 +945,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_EARLY_CCS</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_EARLY_CCS</property>
         <shortName>Vulnerable to CCS injection / Early CCS</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to CCS injection / Early CCS</shortDescription>
         <links>http://ccsinjection.lepidum.co.jp/blog/2014-06-05/CCS-Injection-en/index.html</links>
@@ -956,7 +956,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_CRIME</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_CRIME</property>
         <shortName>Vulnerable to CRIME</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to CRIME</shortDescription>
         <links>https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf</links>
@@ -968,7 +968,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_BREACH</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_BREACH</property>
         <shortName>Vulnerable to BREACH</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to BREACH</shortDescription>
         <links>http://breachattack.com</links>
@@ -979,7 +979,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_LOGJAM</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_LOGJAM</property>
         <shortName>Vulnerable to Logjam</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to Logjam</shortDescription>
         <links>https://weakdh.org</links>
@@ -990,7 +990,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_FREAK</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_FREAK</property>
         <shortName>Vulnerable to FREAK</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to FREAK</shortDescription>
         <links>https://www.smacktls.com/smack.pdf</links>
@@ -1001,7 +1001,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</property>
         <shortName>Vulnerable to the renegotiation attack (cs)</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (cs)</shortDescription>
         <links/>
@@ -1012,7 +1012,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</property>
         <shortName>Vulnerable to the renegotiation attack (cs)</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (cs)</shortDescription>
         <links/>
@@ -1023,7 +1023,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</property>
         <shortName>Vulnerable to the renegotiation attack (ext)</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (ext)</shortDescription>
         <links/>
@@ -1034,7 +1034,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</tlsAnalyzedProperty>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</property>
         <shortName>Vulnerable to the renegotiation attack (ext)</shortName>
         <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (ext)</shortDescription>
         <links/>
@@ -1045,7 +1045,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>MISSES_MAC_APPDATA_CHECKS</tlsAnalyzedProperty>
+        <property>MISSES_MAC_APPDATA_CHECKS</property>
         <shortName>Misses Application message MAC check</shortName>
         <shortDescription>Evaluates whether the server correctly validates the Application message MACs</shortDescription>
         <links/>
@@ -1056,7 +1056,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>MISSES_MAC_FINISHED_CHECKS</tlsAnalyzedProperty>
+        <property>MISSES_MAC_FINISHED_CHECKS</property>
         <shortName>Misses Finished message MAC check</shortName>
         <shortDescription>Evaluates whether the server correctly validates the Finished message MAC</shortDescription>
         <links/>
@@ -1067,7 +1067,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>MISSES_VERIFY_DATA_CHECKS</tlsAnalyzedProperty>
+        <property>MISSES_VERIFY_DATA_CHECKS</property>
         <shortName>Misses verify data verification in the Finished messages</shortName>
         <shortDescription>Evaluates whether the server correctly validates the verify data in the Finished messages</shortDescription>
         <links/>
@@ -1078,7 +1078,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>MISSES_GCM_CHECKS</tlsAnalyzedProperty>
+        <property>MISSES_GCM_CHECKS</property>
         <shortName>Misses GCM authentication tag check</shortName>
         <shortDescription>Evaluates whether the server correctly validates the AES-GCM authentication tags</shortDescription>
         <links/>
@@ -1089,7 +1089,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_WEAK_RANDOMNESS</tlsAnalyzedProperty>
+        <property>HAS_WEAK_RANDOMNESS</property>
         <shortName>Uses weak randomness</shortName>
         <shortDescription>Evaluates whether the server uses weak random values</shortDescription>
         <links/>
@@ -1100,7 +1100,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>REUSES_EC_PUBLICKEY</tlsAnalyzedProperty>
+        <property>REUSES_EC_PUBLICKEY</property>
         <shortName>Reuses ephemeral elliptic curve Diffie-Hellman keys</shortName>
         <shortDescription>Evaluates whether the server reuses ephemeral elliptic curve keys transported in the ServerKeyExchange message</shortDescription>
         <links/>
@@ -1111,7 +1111,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>REUSES_DH_PUBLICKEY</tlsAnalyzedProperty>
+        <property>REUSES_DH_PUBLICKEY</property>
         <shortName>Reuses ephemeral Diffie-Hellman keys</shortName>
         <shortDescription>Evaluates whether the server reuses ephemeral Diffie-Hellman keys transported in the ServerKeyExchange message</shortDescription>
         <links/>
@@ -1122,7 +1122,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>REUSES_GCM_NONCES</tlsAnalyzedProperty>
+        <property>REUSES_GCM_NONCES</property>
         <shortName>Reuses GCM nonces</shortName>
         <shortDescription>Evaluates whether the server reuses GCM nonces and is vulnerable to nonce-reuse attacks</shortDescription>
         <links>https://eprint.iacr.org/2016/475</links>
@@ -1133,13 +1133,13 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>REQUIRES_SNI</tlsAnalyzedProperty>
+        <property>REQUIRES_SNI</property>
         <shortName>SNI requirement</shortName>
         <shortDescription>Evaluates whether the server requires the client to send a Server Name Indication (SNI) extension</shortDescription>
         <detailedDescription/>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_CERTIFICATE_ISSUES</tlsAnalyzedProperty>
+        <property>HAS_CERTIFICATE_ISSUES</property>
         <shortName>Certificate issues</shortName>
         <shortDescription/>
         <links/>
@@ -1150,7 +1150,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>STRICT_ALPN</tlsAnalyzedProperty>
+        <property>STRICT_ALPN</property>
         <shortName>Strict ALPN</shortName>
         <shortDescription>Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks</shortDescription>
         <links/>
@@ -1161,7 +1161,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>STRICT_SNI</tlsAnalyzedProperty>
+        <property>STRICT_SNI</property>
         <shortName>Strict SNI</shortName>
         <shortDescription>Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks</shortDescription>
         <links/>
@@ -1172,7 +1172,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>ALPACA_MITIGATED</tlsAnalyzedProperty>
+        <property>ALPACA_MITIGATED</property>
         <shortName>ALPACA Mitigation</shortName>
         <shortDescription>Evaluated whether the server is vulnerable to ALPACA</shortDescription>
         <links/>
@@ -1183,7 +1183,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DTLS_FRAGMENTATION</tlsAnalyzedProperty>
+        <property>SUPPORTS_DTLS_FRAGMENTATION</property>
         <shortName>Supports DTLS fragmentation</shortName>
         <shortDescription>Evaluates whether the server support the handshake message fragmentation</shortDescription>
         <links/>
@@ -1194,7 +1194,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS</tlsAnalyzedProperty>
+        <property>SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS</property>
         <shortName>Supports DTLS fragmentation</shortName>
         <shortDescription>Evaluates whether the server support the handshake message fragmentation with individual transport packets</shortDescription>
         <links/>
@@ -1205,7 +1205,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>SUPPORTS_REORDERING</tlsAnalyzedProperty>
+        <property>SUPPORTS_REORDERING</property>
         <shortName>Supports DTLS Reordering</shortName>
         <shortDescription>Evaluates whether the server support message reordering</shortDescription>
         <links/>
@@ -1216,7 +1216,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>PROCESSES_RETRANSMISSIONS</tlsAnalyzedProperty>
+        <property>PROCESSES_RETRANSMISSIONS</property>
         <shortName>Processes DTLS retransmissions</shortName>
         <shortDescription>Evaluates whether the server processes retransmissions</shortDescription>
         <links/>
@@ -1227,7 +1227,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>HAS_COOKIE_CHECKS</tlsAnalyzedProperty>
+        <property>HAS_COOKIE_CHECKS</property>
         <shortName>Has cookie checks</shortName>
         <shortDescription>Evaluates whether the server verify the cookie values</shortDescription>
         <links/>
@@ -1238,7 +1238,7 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <tlsAnalyzedProperty>MISSES_MESSAGE_SEQUENCE_CHECKS</tlsAnalyzedProperty>
+        <property>MISSES_MESSAGE_SEQUENCE_CHECKS</property>
         <shortName>Misses message sequence number checks</shortName>
         <shortDescription>Evaluates whether the server verify the message sequence numbers</shortDescription>
         <links/>

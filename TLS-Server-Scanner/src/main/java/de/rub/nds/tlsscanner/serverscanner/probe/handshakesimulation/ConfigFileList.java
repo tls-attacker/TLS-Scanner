@@ -1,23 +1,25 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLStreamException;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -27,9 +29,11 @@ public class ConfigFileList implements Serializable {
 
     private List<String> files;
 
-    public static ConfigFileList loadConfigFileList(String resourcePath) {
-        InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath);
-        return ConfigFileListIO.read(stream);
+    public static ConfigFileList loadConfigFileList(String resourcePath)
+            throws JAXBException, IOException, XMLStreamException {
+        try (InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath)) {
+            return new ConfigFileListIO().read(stream);
+        }
     }
 
     public void createConfigFileList(String folder) {

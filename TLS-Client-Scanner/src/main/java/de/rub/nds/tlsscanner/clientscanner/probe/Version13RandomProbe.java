@@ -1,14 +1,18 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
@@ -24,15 +28,15 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.result.Version13RandomResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Version13RandomProbe
-        extends TlsClientProbe<ClientScannerConfig, ClientReport, Version13RandomResult> {
+public class Version13RandomProbe extends TlsClientProbe {
 
     private static final byte[] SERVER_RANDOM_12_POSTFIX = {
         0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x01
@@ -41,21 +45,25 @@ public class Version13RandomProbe
         0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00
     };
 
+    private TestResult hasDowngradeProtection = TestResults.COULD_NOT_TEST;
+
     private final Random random = new Random();
 
     public Version13RandomProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.VERSION_1_3_RANDOM_DOWNGRADE, scannerConfig);
+        register(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION);
     }
 
     @Override
-    public Version13RandomResult executeTest() {
+    protected void executeTest() {
         boolean tls10Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS10);
         boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
         boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
         if (tls10Rejected && tls11Rejected && tls12Rejected) {
-            return new Version13RandomResult(TestResults.TRUE);
+            hasDowngradeProtection = TestResults.TRUE;
+        } else {
+            hasDowngradeProtection = TestResults.FALSE;
         }
-        return new Version13RandomResult(TestResults.FALSE);
     }
 
     private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
@@ -99,27 +107,26 @@ public class Version13RandomProbe
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        if (report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
-            boolean supportsTls10 =
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE;
-            boolean supportsTls11 =
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE;
-            boolean supportsTls12 =
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE;
-            boolean supportsTls13 =
-                    report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
-            return supportsTls13 && (supportsTls10 || supportsTls11 || supportsTls12);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public Version13RandomResult getCouldNotExecuteResult() {
-        return new Version13RandomResult(TestResults.COULD_NOT_TEST);
-    }
-
-    @Override
     public void adjustConfig(ClientReport report) {}
+
+    @Override
+    public Requirement<ClientReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ClientReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_TLS_1_3))
+                .and(
+                        new PropertyTrueRequirement<ClientReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_TLS_1_0)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2)));
+    }
+
+    @Override
+    protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION, hasDowngradeProtection);
+    }
 }

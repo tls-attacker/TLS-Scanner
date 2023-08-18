@@ -1,14 +1,18 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -26,20 +30,17 @@ import de.rub.nds.tlsscanner.serverscanner.leak.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe
-        extends TlsServerProbe<ConfigSelector, ServerReport, DirectRaccoonResult> {
+public class DirectRaccoonProbe extends TlsServerProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -47,14 +48,21 @@ public class DirectRaccoonProbe
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList =
+            new LinkedList<>();
+
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
+                TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT);
     }
 
     @Override
-    public DirectRaccoonResult executeTest() {
-        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
+    protected void executeTest() {
+        testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -67,7 +75,13 @@ public class DirectRaccoonProbe
                 }
             }
         }
-        return new DirectRaccoonResult(testResultList);
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest :
+                testResultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
+            }
+        }
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
@@ -134,7 +148,7 @@ public class DirectRaccoonProbe
             initialClientDhSecret = initialClientDhSecret.add(new BigInteger("" + 20000));
             taskList.add(fingerPrintTask);
         }
-        this.getParallelExecutor().bulkExecuteTasks(taskList);
+        getParallelExecutor().bulkExecuteTasks(taskList);
         List<VectorResponse> responseList = new LinkedList<>();
         for (TlsTask task : taskList) {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
@@ -147,7 +161,6 @@ public class DirectRaccoonProbe
                 responseList.add(vectorResponse);
             }
         }
-        // Generate result
         return responseList;
     }
 
@@ -177,26 +190,27 @@ public class DirectRaccoonProbe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        if (!(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3), TestResults.TRUE))
-                && !(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0), TestResults.TRUE))
-                && !(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1), TestResults.TRUE))
-                && !(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2), TestResults.TRUE))
-                && !(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0), TestResults.TRUE))
-                && !(Objects.equals(
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2),
-                        TestResults.TRUE))) {
-            return false;
-        }
-        if (report.getCipherSuites() == null) {
-            return false;
-        }
-        return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE), TestResults.TRUE);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_DHE))
+                .and(
+                        new PropertyTrueRequirement<ServerReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_SSL_3)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_2)));
     }
 
     @Override
@@ -205,7 +219,8 @@ public class DirectRaccoonProbe
     }
 
     @Override
-    public DirectRaccoonResult getCouldNotExecuteResult() {
-        return new DirectRaccoonResult(TestResults.COULD_NOT_TEST);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT, testResultList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 }
