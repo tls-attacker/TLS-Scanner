@@ -22,6 +22,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
@@ -225,7 +226,7 @@ public class TrustAnchorManager {
                 org.bouncycastle.crypto.tls.Certificate cert =
                         PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));
-            } catch (IOException | CertificateException ex) {
+            } catch (IOException | CertificateException | NoSuchProviderException ex) {
                 //                LOGGER.error(
                 //                        "Could not load Certificate:"
                 //                                + entry.getSubjectName()
@@ -242,7 +243,7 @@ public class TrustAnchorManager {
         for (String filepath : customCAPaths) {
             try {
                 certX509List.add(PemUtil.readCertificate(new File(filepath)));
-            } catch (CertificateException | IOException ex) {
+            } catch (CertificateException | IOException | NoSuchProviderException ex) {
                 LOGGER.error("Could't load the CA: " + filepath, ex);
             }
         }

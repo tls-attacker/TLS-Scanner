@@ -88,17 +88,11 @@ public class ResumptionProbe extends TlsServerProbe {
                             supportsTls13Psk = supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
         } else if (configSelector.getScannerConfig().getQuicDelegate().isQuic()) {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
-            supportsDtlsCookieExchangeInTicketResumption = TestResults.NOT_TESTED_YET;
-            return new ResumptionResult(
-                    TestResults.NOT_TESTED_YET,
-                    TestResults.NOT_TESTED_YET,
-                    getIssuesTls13SessionTicket(),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
-                    getSupports0rtt(),
-                    supportsDtlsCookieExchangeInResumption,
-                    supportsDtlsCookieExchangeInTicketResumption,
-                    respectsPskModes);
+            supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
+            supportsTls13SessionTicket = getIssuesTls13SessionTicket();
+            supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
+            supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
+            supportsTls13ZeroRtt = getSupports0rtt();
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;

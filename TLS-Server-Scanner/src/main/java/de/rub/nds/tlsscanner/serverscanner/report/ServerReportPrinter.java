@@ -72,10 +72,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
@@ -315,7 +315,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private void appendQuicSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Supported QUIC Versions");
         if (report.getSupportedQuicVersions() != null) {
-            for (QuicVersionResult.Entry version : report.getSupportedQuicVersions()) {
+            for (QuicVersionProbe.Entry version : report.getSupportedQuicVersions()) {
                 prettyAppend(
                         builder,
                         version.getVersionName()
@@ -338,40 +338,25 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
         prettyAppendHeading(builder, "QUIC TLS 1.2 Handshake Probe");
-        if (report.getQuicTls12HandshakeResult() != null) {
-            prettyAppend(
-                    builder,
-                    "Handshake Successful",
-                    report.getQuicTls12HandshakeResult().isHandshakeCompleted());
-            if (!report.getQuicTls12HandshakeResult().isHandshakeCompleted()
-                    && report.getQuicTls12HandshakeResult().getConnectionCloseFrame() != null) {
-                prettyAppend(builder, "Server closed connection with:");
-                prettyAppend(
-                        builder,
-                        report.getQuicTls12HandshakeResult().getConnectionCloseFrame().toString());
-            }
+        prettyAppend(
+                builder, "Handshake Successful", TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_DONE);
+        if (report.getQuicTls12HandshakeDoneResult() == TestResults.FALSE
+                && report.getQuicTls12HandshakeConnectionCloseFrame() != null) {
+            prettyAppend(builder, "Server closed connection with:");
+            prettyAppend(builder, report.getQuicTls12HandshakeConnectionCloseFrame().toString());
         }
         prettyAppendHeading(builder, "QUIC Connection Migration Probe");
-        if (report.getQuicConnectionMigrationResult() != null) {
-            prettyAppend(
-                    builder,
-                    "Port Connection Migration Successful",
-                    report.getQuicConnectionMigrationResult()
-                            .isPortConnectionMigrationSuccessful());
-            prettyAppend(
-                    builder,
-                    "IPV6 Address",
-                    report.getQuicConnectionMigrationResult().getIpv6Address());
-            prettyAppend(
-                    builder,
-                    "IPV6 Handshake Successful",
-                    report.getQuicConnectionMigrationResult().isIpv6HandshakeSuccessful());
-            prettyAppend(
-                    builder,
-                    "IPV4 To IPV6 Connection Migration Successful",
-                    report.getQuicConnectionMigrationResult()
-                            .isIpv6ConnectionMigrationSuccessful());
-        }
+        prettyAppend(
+                builder,
+                "Port Connection Migration Successful",
+                TlsAnalyzedProperty.QUIC_PORT_CONNECTION_MIGRATION_SUCCESSFUL);
+        prettyAppend(builder, "IPV6 Address", report.getIpv6Address());
+        prettyAppend(
+                builder, "IPV6 Handshake Successful", TlsAnalyzedProperty.QUIC_IPV6_HANDSHAKE_DONE);
+        prettyAppend(
+                builder,
+                "IPV4 To IPV6 Connection Migration Successful",
+                TlsAnalyzedProperty.QUIC_IPV6_CONNECTION_MIGRATION_SUCCESSFUL);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {

@@ -11,11 +11,15 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
+import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -29,12 +33,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicConnectionMigrationResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicTls12HandshakeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.quic.QuicVersionResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
 import java.util.Map;
@@ -82,10 +84,6 @@ public class ServerReport extends TlsScanReport {
 
     // QUIC
     private Boolean quicRetryRequired = null;
-    private List<QuicVersionResult.Entry> supportedQuicVersions = null;
-    private QuicTransportParameters quicTransportParameters = null;
-    private QuicTls12HandshakeResult quicTls12HandshakeResult = null;
-    private QuicConnectionMigrationResult quicConnectionMigrationResult = null;
 
     // PublicKey Params
     private Integer weakestDhStrength = null;
@@ -447,47 +445,38 @@ public class ServerReport extends TlsScanReport {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
     }
 
-    public Boolean getQuicRetryRequired() {
-        return quicRetryRequired;
-    }
-
     public void setQuicRetryRequired(Boolean quicRetryRequired) {
         this.quicRetryRequired = quicRetryRequired;
     }
 
-    public synchronized List<QuicVersionResult.Entry> getSupportedQuicVersions() {
-        return supportedQuicVersions;
-    }
-
-    public synchronized void setSupportedQuicVersions(
-        List<QuicVersionResult.Entry> supportedQuicVersions) {
-        this.supportedQuicVersions = supportedQuicVersions;
+    public synchronized List<QuicVersionProbe.Entry> getSupportedQuicVersions() {
+        ListResult<QuicVersionProbe.Entry> listResult =
+                getListResult(TlsAnalyzedProperty.QUIC_VERSIONS, QuicVersionProbe.Entry.class);
+        return listResult == null ? null : listResult.getList();
     }
 
     public synchronized QuicTransportParameters getQuicTransportParameters() {
-        return quicTransportParameters;
+        ObjectResult<QuicTransportParameters> objectResult =
+                getObjectResult(
+                        TlsAnalyzedProperty.QUIC_TRANSPORT_PARAMETERS,
+                        QuicTransportParameters.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
-    public synchronized void setQuicTransportParameters(
-        QuicTransportParameters quicTransportParameters) {
-        this.quicTransportParameters = quicTransportParameters;
+    public synchronized TestResults getQuicTls12HandshakeDoneResult() {
+        return (TestResults) getResult(TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_DONE);
     }
 
-    public synchronized QuicTls12HandshakeResult getQuicTls12HandshakeResult() {
-        return quicTls12HandshakeResult;
+    public synchronized ConnectionCloseFrame getQuicTls12HandshakeConnectionCloseFrame() {
+        ObjectResult<ConnectionCloseFrame> objectResult =
+                getObjectResult(
+                        TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
+                        ConnectionCloseFrame.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
-    public synchronized void setQuicTls12HandshakeResult(
-        QuicTls12HandshakeResult quicTls12HandshakeResult) {
-        this.quicTls12HandshakeResult = quicTls12HandshakeResult;
-    }
-
-    public QuicConnectionMigrationResult getQuicConnectionMigrationResult() {
-        return quicConnectionMigrationResult;
-    }
-
-    public void setQuicConnectionMigrationResult(
-        QuicConnectionMigrationResult quicConnectionMigrationResult) {
-        this.quicConnectionMigrationResult = quicConnectionMigrationResult;
+    public synchronized String getIpv6Address() {
+        StringResult stringResult = getStringResult(TlsAnalyzedProperty.QUIC_IPV6_ADDRESS);
+        return stringResult == null ? null : stringResult.getValue();
     }
 }

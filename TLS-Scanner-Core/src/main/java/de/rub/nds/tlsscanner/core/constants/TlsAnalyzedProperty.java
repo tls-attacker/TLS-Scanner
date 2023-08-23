@@ -344,7 +344,17 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** Client Specific Properties */
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
     FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS),
-    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS);
+    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS),
+
+    /** QUIC Specific Properties. */
+    QUIC_VERSIONS(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_TRANSPORT_PARAMETERS(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_TLS12_HANDSHAKE_DONE(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_PORT_CONNECTION_MIGRATION_SUCCESSFUL(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_IPV6_ADDRESS(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_IPV6_HANDSHAKE_DONE(TlsAnalyzedPropertyCategory.QUIC),
+    QUIC_IPV6_CONNECTION_MIGRATION_SUCCESSFUL(TlsAnalyzedPropertyCategory.QUIC);
 
     private final TlsAnalyzedPropertyCategory category;
 

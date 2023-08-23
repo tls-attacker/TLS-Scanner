@@ -36,5 +36,6 @@ public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     DTLS,
     HELLO_VERIFY_REQUEST,
     APPLICATION_LAYER,
-    CLIENT_ADVERTISED
+    CLIENT_ADVERTISED,
+    QUIC
 }

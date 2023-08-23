@@ -12,6 +12,7 @@ import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.ALPN;
 import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.RESUMPTION;
 import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.SNI;
 
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -22,7 +23,7 @@ import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
 public class ClientOptionsRequirement
         extends OptionsRequirement<ClientReport, ClientScannerConfig> {
 
-    public ClientOptionsRequirement(ClientScannerConfig scannerConfig, TlsProbeType probeType) {
+    public ClientOptionsRequirement(ClientScannerConfig scannerConfig, ProbeType probeType) {
         super(scannerConfig, probeType);
     }
 
@@ -31,13 +32,16 @@ public class ClientOptionsRequirement
         if (scannerConfig == null || probeType == null) {
             return false;
         }
-        switch (probeType) {
-            case ALPN:
-                return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
-            case SNI:
-                return scannerConfig.getClientParameterDelegate().getSniOptions("") != null;
-            case RESUMPTION:
-                return scannerConfig.getClientParameterDelegate().getResumptionOptions() != null;
+        if (probeType instanceof TlsProbeType) {
+            switch ((TlsProbeType) probeType) {
+                case ALPN:
+                    return scannerConfig.getClientParameterDelegate().getAlpnOptions() != null;
+                case SNI:
+                    return scannerConfig.getClientParameterDelegate().getSniOptions("") != null;
+                case RESUMPTION:
+                    return scannerConfig.getClientParameterDelegate().getResumptionOptions()
+                            != null;
+            }
         }
         throw new IllegalArgumentException(
                 String.format("Invalid probe (%s) set for ClientOptionsRequirement", probeType));
