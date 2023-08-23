@@ -164,12 +164,12 @@ public class TrustAnchorManager {
                     keyStore.setCertificateEntry("" + i, ca);
 
                 } catch (CertificateException ex) {
-                    //                    LOGGER.error(
-                    //                            "Could not load Certificate:"
-                    //                                    + entry.getSubjectName()
-                    //                                    + "/"
-                    //                                    + entry.getFingerprint(),
-                    //                            ex);
+                    LOGGER.error(
+                            "Could not load Certificate:"
+                                    + entry.getSubjectName()
+                                    + "/"
+                                    + entry.getFingerprint(),
+                            ex);
                 }
                 i++;
             }
@@ -209,7 +209,7 @@ public class TrustAnchorManager {
                     return cert;
                 }
             } catch (CertificateParsingException ex) {
-                //                LOGGER.error("Could not parse Certificate", ex);
+                LOGGER.error("Could not parse Certificate", ex);
             }
         }
         return null;
@@ -227,12 +227,12 @@ public class TrustAnchorManager {
                         PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));
             } catch (IOException | CertificateException | NoSuchProviderException ex) {
-                //                LOGGER.error(
-                //                        "Could not load Certificate:"
-                //                                + entry.getSubjectName()
-                //                                + "/"
-                //                                + entry.getFingerprint(),
-                //                        ex);
+                LOGGER.error(
+                        "Could not load Certificate:"
+                                + entry.getSubjectName()
+                                + "/"
+                                + entry.getFingerprint(),
+                        ex);
             }
         }
         return certificateSet;
