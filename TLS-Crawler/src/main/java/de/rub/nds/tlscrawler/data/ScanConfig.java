@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlscrawler.data;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.scans.ScanType;
 import java.io.Serializable;
