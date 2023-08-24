@@ -144,10 +144,10 @@ pipeline {
             steps {
                 unstash 'jar'
                 unstash 'lib'
-                sh 'docker build -f ci.Dockerfile -t ${DOCKER_PUSH_URL}/tls-crawler-development:latest -t ${DOCKER_PUSH_URL}/tls-crawler-development:${BUILD_TIMESTAMP}_${BUILD_NUMBER} .'
+                sh 'docker build -f ci.Dockerfile -t ${DOCKER_PUSH_URL}/tls-crawler:latest -t ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER} .'
                 sh 'docker login -u $DOCKER_PUSH_USR -p $DOCKER_PUSH_PSW $DOCKER_PUSH_URL'
-                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler-development:latest'
-                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler-development:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:latest'
+                sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
             }
 
 
