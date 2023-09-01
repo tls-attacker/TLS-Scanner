@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,15 +10,8 @@ package de.rub.nds.tlsscanner.core.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x509.Certificate;
-import org.bouncycastle.jce.provider.X509CertificateObject;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,6 +22,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
@@ -41,8 +35,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.security.auth.x500.X500Principal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class TrustAnchorManager {
 
@@ -229,7 +226,7 @@ public class TrustAnchorManager {
                 org.bouncycastle.crypto.tls.Certificate cert =
                         PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));
-            } catch (IOException | CertificateException ex) {
+            } catch (IOException | CertificateException | NoSuchProviderException ex) {
                 LOGGER.error(
                         "Could not load Certificate:"
                                 + entry.getSubjectName()
@@ -246,7 +243,7 @@ public class TrustAnchorManager {
         for (String filepath : customCAPaths) {
             try {
                 certX509List.add(PemUtil.readCertificate(new File(filepath)));
-            } catch (CertificateException | IOException ex) {
+            } catch (CertificateException | IOException | NoSuchProviderException ex) {
                 LOGGER.error("Could't load the CA: " + filepath, ex);
             }
         }
@@ -324,7 +321,7 @@ public class TrustAnchorManager {
     }
 
     public boolean hasCustomTrustAnchros() {
-        return customTrustAnchors.size() > 0;
+        return customTrustAnchors != null && !customTrustAnchors.isEmpty();
     }
 
     public boolean isCustomTrustAnchor(CertificateReport report) {

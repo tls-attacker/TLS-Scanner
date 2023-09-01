@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -70,7 +70,8 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         CertificateReport report = chain.getCertificateReportList().get(0);
         List<X509ExtensionType> extensions = report.getSupportedExtensionTypes();
         if (extensions == null) {
-            return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
+            return new KeyUsageCertificateCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, null);
         }
         for (X509ExtensionType extension : extensions) {
             if (extension == X509ExtensionType.KEY_USAGE) {
@@ -80,7 +81,7 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         if (report.getKeyUsageSet() != null) {
             if (report.getKeyUsageSet().contains(KeyUsage.DIGITAL_SIGNATURE)) {
                 return new KeyUsageCertificateCheckResult(
-                        TestResults.FALSE, false, "digitalSignature");
+                        getName(), GuidelineAdherence.VIOLATED, false, "digitalSignature");
             }
         }
         if (report.getPublicKey() instanceof DhPublicKey) {
@@ -88,11 +89,12 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
                 return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, "keyAgreement");
             }
         }
-        return new KeyUsageCertificateCheckResult(TestResults.TRUE, true, null);
+        return new KeyUsageCertificateCheckResult(
+                getName(), GuidelineAdherence.ADHERED, true, null);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "KeyUsageCertificate_" + getRequirementLevel();
     }
 }

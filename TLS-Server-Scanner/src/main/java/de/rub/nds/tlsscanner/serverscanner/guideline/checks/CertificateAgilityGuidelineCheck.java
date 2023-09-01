@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import java.util.List;
 
 import de.rub.nds.asn1.oid.ObjectIdentifier;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -51,7 +52,8 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
         @SuppressWarnings("unchecked")
         List<CertificateChainReport> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+            return new CertificateAgilityGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         ObjectIdentifier firstAlg = firstReport.getSignatureAndHashAlgorithmOid();
@@ -61,17 +63,21 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
             CertificateChainReport chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithmOid())) {
-                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+                return new CertificateAgilityGuidelineCheckResult(
+                        getName(), GuidelineAdherence.ADHERED);
             }
             if (firstKey != certReport.getPublicKey().length()) {
-                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).keySize()) {
+                    return new CertificateAgilityGuidelineCheckResult(
+                            getName(), GuidelineAdherence.ADHERED);
+                }
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+        return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CertificateAgility_" + getRequirementLevel();
     }
 }

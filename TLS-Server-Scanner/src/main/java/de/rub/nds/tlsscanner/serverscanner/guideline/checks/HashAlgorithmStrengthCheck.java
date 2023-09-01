@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -73,14 +73,15 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             HashAlgorithm hashAlgorithm = report.getHashAlgorithm();
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                return new HashAlgorithmStrengthCheckResult(TestResults.FALSE, hashAlgorithm);
+                return new HashAlgorithmStrengthCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(TestResults.TRUE, null);
+        return new HashAlgorithmStrengthCheckResult(getName(), GuidelineAdherence.ADHERED, null);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "HashAlgorithmStrength_" + getRequirementLevel() + "_" + minimumStrength;
     }
 

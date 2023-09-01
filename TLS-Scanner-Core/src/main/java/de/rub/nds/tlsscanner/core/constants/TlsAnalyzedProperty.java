@@ -1,21 +1,20 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.constants;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
@@ -55,7 +54,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
     CLIENT_SIMULATION_RESULTS(TlsAnalyzedPropertyCategory.QUIRKS),
     CCA_TEST_RESULTS(TlsAnalyzedPropertyCategory.ATTACKS),
-    GUIDELINE_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
 
     CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),
@@ -121,6 +119,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_ARIA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_CHACHA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RSA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_RSA_SIG(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_DH(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_DHE(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDHE(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
@@ -271,6 +270,14 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     MISSES_VERIFY_DATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_GCM_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_RSA_SIG(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_RSA(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_DSS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SERVER_CERT_MIN_KEY_SIZE_DH(TlsAnalyzedPropertyCategory.CERTIFICATE),
     MUST_STAPLE(TlsAnalyzedPropertyCategory.OCSP),
     INCLUDES_CERTIFICATE_STATUS_MESSAGE(TlsAnalyzedPropertyCategory.OCSP),
     STAPLED_RESPONSE_EXPIRED(TlsAnalyzedPropertyCategory.OCSP),

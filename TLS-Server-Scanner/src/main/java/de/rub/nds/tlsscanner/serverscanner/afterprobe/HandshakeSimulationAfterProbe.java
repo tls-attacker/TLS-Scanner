@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -20,15 +20,13 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionI
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 

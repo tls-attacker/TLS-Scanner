@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -15,10 +15,6 @@ import java.util.Set;
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
@@ -64,11 +60,11 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
             }
         }
         return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-                TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAndHashAlgorithmsCert_"
                 + getRequirementLevel()
                 + "_"

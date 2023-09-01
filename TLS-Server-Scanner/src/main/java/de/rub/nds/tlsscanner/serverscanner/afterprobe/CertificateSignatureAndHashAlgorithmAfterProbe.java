@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -15,7 +15,6 @@ import java.util.Set;
 
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -44,8 +43,6 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
         }
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
-                new ListResult<>(
-                        new ArrayList<>(algorithms),
-                        TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS.name()));
+                new ArrayList<>(algorithms));
     }
 }

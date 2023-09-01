@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -49,7 +49,7 @@ public class BsiGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck> checks = new ArrayList<>();
+        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -319,11 +319,20 @@ public class BsiGuidelineSerializationIT {
                 new KeySizeCertGuidelineCheck(
                         "Schlüssellängen", RequirementLevel.SHOULD, 2000, 2000, 250, 2000));
 
-        Guideline guideline =
-                new Guideline(
+        Guideline<ServerReport> guideline =
+                new Guideline<>(
                         "BSI TR-02102-2",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
-        GuidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
+        GuidelineIO<ServerReport> guidelineIO =
+                new GuidelineIO<>(
+                        TlsAnalyzedProperty.class,
+                        checks.stream()
+                                .map(
+                                        check ->
+                                                (Class<? extends GuidelineCheck<ServerReport>>)
+                                                        check.getClass())
+                                .collect(Collectors.toSet()));
+        guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
     }
 }

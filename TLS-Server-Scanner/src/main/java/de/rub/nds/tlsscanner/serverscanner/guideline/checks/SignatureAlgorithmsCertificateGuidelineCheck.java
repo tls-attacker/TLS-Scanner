@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -73,11 +73,11 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
             nonRecommended.add(report.getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(
-                TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAlgorithmsCert_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -16,13 +16,14 @@ public class CertificateVersionGuidelineCheckResult extends GuidelineCheckResult
 
     private final X509Version version;
 
-    public CertificateVersionGuidelineCheckResult(TestResult result, X509Version version) {
-        super(result);
+    public CertificateVersionGuidelineCheckResult(
+            String checkName, GuidelineAdherence adherence, X509Version version) {
+        super(checkName, adherence);
         this.version = version;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return "Certificate has Version " + version;
     }
 

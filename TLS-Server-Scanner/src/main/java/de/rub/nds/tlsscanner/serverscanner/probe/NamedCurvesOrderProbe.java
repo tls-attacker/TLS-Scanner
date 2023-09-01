@@ -1,16 +1,19 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyComparatorRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -20,12 +23,8 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Probe that checks if server enforces the order of named groups sent by the client */
-public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class NamedCurvesOrderProbe extends TlsServerProbe {
 
     private Collection<NamedGroup> supportedGroups;
 
@@ -46,7 +45,7 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
         NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
         Collections.reverse(toTestList);
@@ -77,12 +76,13 @@ public class NamedCurvesOrderProbe extends TlsServerProbe<ConfigSelector, Server
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
-                .requires(new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE))
-                .requires(
-                        new PropertyComparatorRequirement(
-                                PropertyComparatorRequirement.GREATER,
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_ECDHE))
+                .and(
+                        new PropertyComparatorRequirement<>(
+                                PropertyComparatorRequirement.Operator.GREATER,
                                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
                                 0));
     }

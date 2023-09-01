@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,27 +10,24 @@ package de.rub.nds.tlsscanner.core.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class Sweet32AfterProbeTest {
 
-    private TlsScanReport report;
-    private Sweet32AfterProbe probe;
+    private TlsCoreTestReport report;
+    private Sweet32AfterProbe<TlsCoreTestReport> probe;
 
     public static Stream<CipherSuite> provideVulnerableCipherSuites() {
         return CipherSuite.getImplemented().stream()
@@ -45,7 +42,7 @@ public class Sweet32AfterProbeTest {
     @BeforeEach
     public void setup() {
         report = new TlsCoreTestReport();
-        probe = new Sweet32AfterProbe();
+        probe = new Sweet32AfterProbe<>();
     }
 
     @ParameterizedTest
@@ -54,9 +51,7 @@ public class Sweet32AfterProbeTest {
         // test reports that only use vulnerable ciphers
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-                new SetResult<>(
-                        Collections.singleton(providedCipherSuite),
-                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+                Collections.singleton(providedCipherSuite));
         probe.analyze(report);
         assertEquals(
                 TestResults.TRUE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
@@ -67,9 +62,7 @@ public class Sweet32AfterProbeTest {
         ciphers.addAll(provideSafeCipherSuites().collect(Collectors.toList()).subList(0, 5));
 
         // add a number of "random" safe cipher suites to the mix
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-                new SetResult<>(ciphers, TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, ciphers);
         probe.analyze(report);
 
         assertEquals(
@@ -81,9 +74,7 @@ public class Sweet32AfterProbeTest {
     public void testSafeCipherSuites(CipherSuite providedCipherSuite) {
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-                new SetResult<>(
-                        Collections.singleton(providedCipherSuite),
-                        TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+                Collections.singleton(providedCipherSuite));
         probe.analyze(report);
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));
@@ -91,10 +82,7 @@ public class Sweet32AfterProbeTest {
 
     @Test
     public void testNoCipherSuites() {
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
-                new SetResult<>(
-                        new HashSet<>(), TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES.name()));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new HashSet<>());
         probe.analyze(report);
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32));

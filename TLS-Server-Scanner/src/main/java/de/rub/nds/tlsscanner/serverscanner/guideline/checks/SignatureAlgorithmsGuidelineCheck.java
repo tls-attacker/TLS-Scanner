@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -15,10 +15,6 @@ import java.util.Set;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -64,14 +60,15 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
                 }
             }
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    TestResults.of(notRecommended.isEmpty()), notRecommended);
+                    getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
         } else {
-            return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
+            return new SignatureAlgorithmsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "SignatureAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

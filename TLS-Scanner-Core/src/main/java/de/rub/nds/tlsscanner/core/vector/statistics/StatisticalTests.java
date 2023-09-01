@@ -1,19 +1,20 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
+import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
-import static java.lang.Math.*;
-
-import de.rub.nds.scanner.core.constants.RandomnessConstants;
-
+import de.rub.nds.tlsscanner.core.constants.RandomnessConstants;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -21,10 +22,6 @@ import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jtransforms.fft.DoubleFFT_1D;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StatisticalTests {
 

@@ -1,16 +1,16 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -29,10 +29,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 
-public class DtlsMessageSequenceProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
+public class DtlsMessageSequenceProbe extends TlsClientProbe {
 
     private TestResult acceptsStartedWithInvalidMessageNumber = TestResults.COULD_NOT_TEST;
     private TestResult acceptsSkippedMessageNumbersOnce = TestResults.COULD_NOT_TEST;
@@ -50,7 +52,7 @@ public class DtlsMessageSequenceProbe extends TlsClientProbe<ClientScannerConfig
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber();
         acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce();
         acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple();
@@ -184,7 +186,7 @@ public class DtlsMessageSequenceProbe extends TlsClientProbe<ClientScannerConfig
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ClientReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
     }
 }

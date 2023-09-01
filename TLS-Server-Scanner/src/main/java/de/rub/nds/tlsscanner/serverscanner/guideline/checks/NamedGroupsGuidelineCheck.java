@@ -1,26 +1,24 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.NamedGroupsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +73,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         List<NamedGroup> supportedGroups =
                 tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
+            return new NamedGroupsGuidelineCheckResult(getName(), GuidelineAdherence.CHECK_FAILED);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
@@ -86,11 +84,13 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 }
             }
             if (!found) {
-                return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, requiredGroups);
+                return new NamedGroupsGuidelineCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, requiredGroups);
             }
         }
         if (supportedGroups.size() < minGroupCount) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, supportedGroups.size());
+            return new NamedGroupsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, supportedGroups.size());
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
@@ -99,14 +99,15 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
             }
         }
         if (nonRecommended.isEmpty()) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.TRUE);
+            return new NamedGroupsGuidelineCheckResult(getName(), GuidelineAdherence.ADHERED);
         } else {
-            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, nonRecommended);
+            return new NamedGroupsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, nonRecommended);
         }
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "NamedGroups_"
                 + getRequirementLevel()
                 + "_"

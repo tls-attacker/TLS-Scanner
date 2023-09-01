@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -16,10 +16,10 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -46,9 +46,6 @@ import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-import org.bouncycastle.crypto.tls.Certificate;
-
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,8 +53,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import org.bouncycastle.crypto.tls.Certificate;
 
-public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class OcspProbe extends TlsServerProbe {
 
     private List<CertificateChainReport> serverCertChains;
     private List<NamedGroup> tls13NamedGroups;
@@ -86,7 +84,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         certResults = new LinkedList<>();
         for (CertificateChainReport serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
@@ -231,11 +229,10 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.NAMED_GROUPS, TlsProbeType.CERTIFICATE);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void adjustConfig(ServerReport report) {
         serverCertChains = new LinkedList<>();
@@ -243,8 +240,7 @@ public class OcspProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
             serverCertChains.add(chain);
         }
         tls13NamedGroups =
-                ((ListResult<NamedGroup>)
-                                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS))
+                report.getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, NamedGroup.class)
                         .getList();
     }
 

@@ -1,17 +1,19 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
@@ -29,9 +31,6 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.OrRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.DistributionTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.InvalidCurveTestInfo;
@@ -44,7 +43,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurv
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class InvalidCurveProbe extends TlsServerProbe {
 
     private static final int CURVE_TWIST_MAX_ORDER = 23;
 
@@ -84,7 +82,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
 
     public InvalidCurveProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.INVALID_CURVE, configSelector);
-        scanDetail = configSelector.getScannerConfig().getScanDetail();
+        scanDetail = configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
         register(
                 TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
                 TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
@@ -93,7 +91,7 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         List<InvalidCurveVector> vectors = prepareVectors();
         responses = new LinkedList<>();
         for (InvalidCurveVector vector : vectors) {
@@ -118,21 +116,22 @@ public class InvalidCurveProbe extends TlsServerProbe<ConfigSelector, ServerRepo
     }
 
     @Override
-    protected Requirement getRequirements() {
-        PropertyRequirement requireTls13 =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
-        PropertyRequirement requireStaticEcdh =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        PropertyRequirement requireEcdhe =
-                new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_ECDHE);
-        return new OrRequirement(requireTls13, requireStaticEcdh, requireEcdhe)
-                .requires(
-                        new ProbeRequirement(
-                                TlsProbeType.PROTOCOL_VERSION,
-                                TlsProbeType.CIPHER_SUITE,
-                                TlsProbeType.NAMED_GROUPS,
-                                TlsProbeType.RESUMPTION,
-                                TlsProbeType.RENEGOTIATION));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.PROTOCOL_VERSION,
+                        TlsProbeType.CIPHER_SUITE,
+                        TlsProbeType.NAMED_GROUPS,
+                        TlsProbeType.RESUMPTION,
+                        TlsProbeType.RENEGOTIATION)
+                .and(
+                        new PropertyTrueRequirement<ServerReport>(
+                                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH))
+                                .or(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_ECDHE)));
     }
 
     @Override

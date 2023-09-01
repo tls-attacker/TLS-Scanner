@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -52,7 +52,7 @@ public class NistGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck> checks = new ArrayList<>();
+        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers shall support TLS 1.2.",
@@ -513,9 +513,18 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
 
-        Guideline guideline =
-                new Guideline(
+        Guideline<ServerReport> guideline =
+                new Guideline<>(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
-        GuidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
+        GuidelineIO<ServerReport> guidelineIO =
+                new GuidelineIO<>(
+                        TlsAnalyzedProperty.class,
+                        checks.stream()
+                                .map(
+                                        check ->
+                                                (Class<? extends GuidelineCheck<ServerReport>>)
+                                                        check.getClass())
+                                .collect(Collectors.toSet()));
+        guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
     }
 }

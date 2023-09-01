@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.clientscanner.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
@@ -20,15 +19,13 @@ import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
 import de.rub.nds.tlsattacker.transport.udp.ServerUdpTransportHandler;
 import de.rub.nds.tlsscanner.clientscanner.config.delegate.ClientParameterDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.function.Function;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.function.Function;
 
 public class ClientScannerConfig extends TlsScannerConfig {
 
@@ -63,6 +60,8 @@ public class ClientScannerConfig extends TlsScannerConfig {
                     "The directory the scanner should use to log the client output. Be wary: This creates a lot of files for a full scan")
     private String logDirectory = null;
 
+    private Function<State, Integer> externalRunCallback = null;
+
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
 
@@ -83,7 +82,9 @@ public class ClientScannerConfig extends TlsScannerConfig {
 
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(getTimeout());
-
+        config.setRespectClientProposedExtensions(true);
+        // will only be added if proposed by client
+        config.setAddRenegotiationInfoExtension(true);
         return config;
     }
 
@@ -131,8 +132,12 @@ public class ClientScannerConfig extends TlsScannerConfig {
         return new File(logDirectory);
     }
 
-    public Function<Context, Integer> getRunCommandExecutionCallback() {
-        return getRunCommandExecutionCallback(getRunCommand());
+    public Function<State, Integer> getRunCommandExecutionCallback() {
+        if (externalRunCallback != null) {
+            return externalRunCallback;
+        } else {
+            return getRunCommandExecutionCallback(getRunCommand());
+        }
     }
 
     /** Provides a callback that executes the client run command. */
@@ -184,5 +189,13 @@ public class ClientScannerConfig extends TlsScannerConfig {
         }
         throw new RuntimeException(
                 "Got unknown ServerTransportHandler when trying to extract server port.");
+    }
+
+    public Function<State, Integer> getExternalRunCallback() {
+        return externalRunCallback;
+    }
+
+    public void setExternalRunCallback(Function<State, Integer> externalRunCallback) {
+        this.externalRunCallback = externalRunCallback;
     }
 }

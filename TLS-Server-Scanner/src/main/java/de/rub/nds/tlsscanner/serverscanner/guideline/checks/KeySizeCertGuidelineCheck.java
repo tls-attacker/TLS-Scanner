@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -90,7 +90,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         boolean passFlag = false;
         boolean uncertainFlag = false;
         boolean failedFlag = false;
-        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult();
+        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
         for (CertificateReport report : chain.getCertificateReportList()) {
             
             PublicKeyContainer key = report.getPublicKey();
@@ -127,12 +127,73 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                             passFlag = true;
                         }
             }
-            if (failedFlag) {
-            result.setResult(TestResults.FALSE);
+            CustomPublicKey key = (CustomPublicKey) report.getPublicKey();
+            switch (report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH)) {
+                case "DSA":
+                    if (this.minimumDsaKeyLength != null) {
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumDsaKeyLength,
+                                        key.keySize()));
+                        if (key.keySize() < this.minimumDsaKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
+                    }
+                    break;
+                case "RSA":
+                    if (this.minimumRsaKeyLength != null) {
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumRsaKeyLength,
+                                        key.keySize()));
+                        if (key.keySize() < this.minimumRsaKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
+                    }
+
+                    break;
+                case "EC":
+                    if (this.minimumEcKeyLength != null) {
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumEcKeyLength,
+                                        key.keySize()));
+                        if (key.keySize() < this.minimumEcKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
+                    }
+                    break;
+                case "DH":
+                    if (this.minimumDhKeyLength != null) {
+                        result.addKeySize(
+                                new KeySizeData(
+                                        report.getPublicKey().getAlgorithm(),
+                                        this.minimumDhKeyLength,
+                                        key.keySize()));
+                        if (key.keySize() < this.minimumDhKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
+                    }
+                    break;
+            }
+        }
+        if (failedFlag) {
+            result.setAdherence(GuidelineAdherence.VIOLATED);
         } else if (uncertainFlag || !passFlag) {
-            result.setResult(TestResults.UNCERTAIN);
+            result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         } else {
-            result.setResult(TestResults.TRUE);
+            result.setAdherence(GuidelineAdherence.ADHERED);
         }
         }
         return result;
@@ -142,9 +203,9 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(TestResults.FALSE) {
+                return new GuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED) {
                     @Override
-                    public String display() {
+                    public String toString() {
                         return String.format(
                                 "Weakest DH size %d<%d",
                                 report.getWeakestDhStrength(), minimumDhKeyLength);
@@ -156,7 +217,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "KeySizeCert_"
                 + getRequirementLevel()
                 + "_"
