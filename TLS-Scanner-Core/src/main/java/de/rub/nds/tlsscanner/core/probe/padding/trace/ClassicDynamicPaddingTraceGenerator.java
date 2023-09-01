@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsscanner.core.probe.padding.vector.PaddingVector;
+
 import java.util.LinkedList;
 
 public class ClassicDynamicPaddingTraceGenerator extends PaddingTraceGenerator {

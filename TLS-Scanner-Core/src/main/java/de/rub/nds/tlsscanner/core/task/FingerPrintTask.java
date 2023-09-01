@@ -13,9 +13,11 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 public class FingerPrintTask extends TlsTask {
 

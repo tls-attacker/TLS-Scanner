@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

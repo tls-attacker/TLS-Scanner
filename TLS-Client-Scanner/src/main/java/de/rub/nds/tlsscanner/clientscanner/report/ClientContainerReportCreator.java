@@ -8,17 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
-
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -49,6 +38,17 @@ import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /** TODO: Need to be completed. */
 public class ClientContainerReportCreator extends TlsReportCreator {
@@ -134,9 +134,10 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         TableContainer table = new TableContainer();
         container.add(table);
         table.setHeadlineList(getCipherSuitesTableHeadlines());
-        for (CipherSuite suite : CollectionUtils.mergeCollectionsIntoSet(
-                getRealClientAdvertisedCipherSuites(report),
-                report.getSupportedCipherSuites())) {
+        for (CipherSuite suite :
+                CollectionUtils.mergeCollectionsIntoSet(
+                        getRealClientAdvertisedCipherSuites(report),
+                        report.getSupportedCipherSuites())) {
             List<TextContainer> currentTableRow = new LinkedList<>();
             currentTableRow.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
             if (report.getClientAdvertisedCipherSuites().contains(suite)) {
@@ -186,7 +187,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         if (report.getClientAdvertisedSignatureAndHashAlgorithms() != null) {
             container.add(new HeadlineContainer("Advertised Signature and Hash Algorithms"));
             ListContainer listContainer = new ListContainer();
-            for (SignatureAndHashAlgorithm algo : report.getClientAdvertisedSignatureAndHashAlgorithms()) {
+            for (SignatureAndHashAlgorithm algo :
+                    report.getClientAdvertisedSignatureAndHashAlgorithms()) {
                 listContainer.add(createDefaultTextContainer(algo.name()));
             }
             container.add(listContainer);
@@ -243,7 +245,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
             if (report.getProtocolType() == ProtocolType.DTLS) {
                 container.add(
                         createKeyValueContainer(
-                                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                                TlsAnalyzedProperty
+                                        .SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
                                 report));
             }
             container.add(
@@ -252,7 +255,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
             if (report.getProtocolType() == ProtocolType.DTLS) {
                 container.add(
                         createKeyValueContainer(
-                                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                                TlsAnalyzedProperty
+                                        .SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
                                 report));
             }
         }
@@ -359,8 +363,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
             container.add(new HeadlineContainer("Padding Oracle Response Map"));
             container.add(createDefaultTextContainer("No test results"));
         } else {
-            List<InformationLeakTest> informationLeakTestList = new LinkedList<>(
-                    report.getPaddingOracleTestResultList());
+            List<InformationLeakTest> informationLeakTestList =
+                    new LinkedList<>(report.getPaddingOracleTestResultList());
             appendInformationLeakTestList(
                     container, informationLeakTestList, "Padding Oracle Response Map");
         }
@@ -392,16 +396,18 @@ public class ClientContainerReportCreator extends TlsReportCreator {
                         AnsiColor.DEFAULT_COLOR,
                         knownVulnerability.getCve(),
                         AnsiColor.RED));
-        AnsiColor oracleStrengthColor = knownVulnerability.getStrength() != PaddingOracleStrength.WEAK
-                ? AnsiColor.RED
-                : AnsiColor.YELLOW;
+        AnsiColor oracleStrengthColor =
+                knownVulnerability.getStrength() != PaddingOracleStrength.WEAK
+                        ? AnsiColor.RED
+                        : AnsiColor.YELLOW;
         container.add(
                 new KeyValueContainer(
                         "Strength",
                         AnsiColor.DEFAULT_COLOR,
                         knownVulnerability.getStrength().name(),
                         oracleStrengthColor));
-        AnsiColor oracleObservableColor = knownVulnerability.isObservable() ? AnsiColor.RED : AnsiColor.YELLOW;
+        AnsiColor oracleObservableColor =
+                knownVulnerability.isObservable() ? AnsiColor.RED : AnsiColor.YELLOW;
         container.add(
                 new KeyValueContainer(
                         "Observable",
@@ -432,57 +438,64 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         TableContainer tableContainer = new TableContainer();
         container.add(tableContainer);
         // Table headlines
-        LinkedList<TextContainer> headline = informationLeakTestList.get(0).getTestInfo().getFieldNames().stream()
-                .map(this::createDefaultTextContainer)
-                .collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<TextContainer> headline =
+                informationLeakTestList.get(0).getTestInfo().getFieldNames().stream()
+                        .map(this::createDefaultTextContainer)
+                        .collect(Collectors.toCollection(LinkedList::new));
         headline.add(createDefaultTextContainer("Behavior"));
         headline.add(createDefaultTextContainer("Vulnerable"));
         headline.add(createDefaultTextContainer("P value"));
         tableContainer.setHeadlineList(headline);
 
         for (InformationLeakTest testResult : informationLeakTestList) {
-            String valueP = testResult.getValueP() >= 0.001
-                    ? String.format("%.3f", testResult.getValueP())
-                    : "<0.001";
-            List<String> resultStrings = Arrays.asList(testResult.getTestInfo().getTechnicalName().split(":"));
+            String valueP =
+                    testResult.getValueP() >= 0.001
+                            ? String.format("%.3f", testResult.getValueP())
+                            : "<0.001";
+            List<String> resultStrings =
+                    Arrays.asList(testResult.getTestInfo().getTechnicalName().split(":"));
             if (testResult.getValueP() < 0.01) {
-                List<TextContainer> tableLine = resultStrings.stream()
-                        .map(x -> new TextContainer(x, AnsiColor.RED))
-                        .collect(Collectors.toCollection(LinkedList::new));
+                List<TextContainer> tableLine =
+                        resultStrings.stream()
+                                .map(x -> new TextContainer(x, AnsiColor.RED))
+                                .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(
                         new TextContainer(testResult.getEqualityError().name(), AnsiColor.RED));
                 tableLine.add(new TextContainer("VULNERABLE", AnsiColor.RED));
                 tableLine.add(new TextContainer(valueP, AnsiColor.RED));
                 tableContainer.addLineToTable(tableLine);
             } else if (testResult.getValueP() < 0.05) {
-                List<TextContainer> tableLine = resultStrings.stream()
-                        .map(x -> new TextContainer(x, AnsiColor.YELLOW))
-                        .collect(Collectors.toCollection(LinkedList::new));
+                List<TextContainer> tableLine =
+                        resultStrings.stream()
+                                .map(x -> new TextContainer(x, AnsiColor.YELLOW))
+                                .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(
                         new TextContainer(testResult.getEqualityError().name(), AnsiColor.YELLOW));
                 tableLine.add(new TextContainer("PROBABLY VULNERABLE", AnsiColor.YELLOW));
                 tableLine.add(new TextContainer(valueP, AnsiColor.YELLOW));
                 tableContainer.addLineToTable(tableLine);
             } else if (testResult.getValueP() < 1) {
-                List<TextContainer> tableLine = resultStrings.stream()
-                        .map(x -> new TextContainer(x, AnsiColor.GREEN))
-                        .collect(Collectors.toCollection(LinkedList::new));
+                List<TextContainer> tableLine =
+                        resultStrings.stream()
+                                .map(x -> new TextContainer(x, AnsiColor.GREEN))
+                                .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(new TextContainer("No significant difference", AnsiColor.GREEN));
                 tableLine.add(new TextContainer("NOT VULNERABLE", AnsiColor.GREEN));
                 tableLine.add(new TextContainer(valueP, AnsiColor.GREEN));
                 tableContainer.addLineToTable(tableLine);
             } else {
-                List<TextContainer> tableLine = resultStrings.stream()
-                        .map(x -> new TextContainer(x, AnsiColor.GREEN))
-                        .collect(Collectors.toCollection(LinkedList::new));
+                List<TextContainer> tableLine =
+                        resultStrings.stream()
+                                .map(x -> new TextContainer(x, AnsiColor.GREEN))
+                                .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(new TextContainer("No behavior difference", AnsiColor.GREEN));
                 tableLine.add(new TextContainer("NOT VULNERABLE", AnsiColor.GREEN));
                 tableLine.add(new TextContainer(valueP, AnsiColor.GREEN));
                 tableContainer.addLineToTable(tableLine);
             }
             if ((detail == ScannerDetail.DETAILED
-                    && Objects.equals(
-                            testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
+                            && Objects.equals(
+                                    testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
                     || detail == ScannerDetail.ALL) {
                 if (testResult.getEqualityError() != EqualityError.NONE
                         || detail == ScannerDetail.ALL) {
@@ -497,7 +510,8 @@ public class ClientContainerReportCreator extends TlsReportCreator {
         ListContainer container = new ListContainer(1);
         container.add(new HeadlineContainer(informationLeakTest.getTestInfo().getPrintableName()));
         outerContainer.add(container);
-        ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
+        ResponseFingerprint defaultAnswer =
+                informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
         List<VectorContainer> vectorContainerList = informationLeakTest.getVectorContainerList();
         for (VectorContainer vectorContainer : vectorContainerList) {
             ListContainer vectorResult = new ListContainer(1);
@@ -511,9 +525,10 @@ public class ClientContainerReportCreator extends TlsReportCreator {
                             new TextContainer("Received (Total)", AnsiColor.DEFAULT_COLOR),
                             new TextContainer("Received (Percentage)", AnsiColor.DEFAULT_COLOR)));
             for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
-                AnsiColor color = counter.getFingerprint().equals(defaultAnswer)
-                        ? AnsiColor.GREEN
-                        : AnsiColor.RED;
+                AnsiColor color =
+                        counter.getFingerprint().equals(defaultAnswer)
+                                ? AnsiColor.GREEN
+                                : AnsiColor.RED;
                 List<TextContainer> tableLine = new LinkedList<>();
                 responseTable.addLineToTable(tableLine);
                 tableLine.add(new TextContainer(counter.getFingerprint().toHumanReadable(), color));

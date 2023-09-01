@@ -8,15 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import javax.swing.SortOrder;
-
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -41,6 +32,15 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import javax.swing.SortOrder;
 
 public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
@@ -110,10 +110,12 @@ public class DheParameterProbe extends TlsClientProbe<ClientScannerConfig, Clien
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
             switch (compositeType) {
                 case EVEN:
-                    config.setDefaultServerEphemeralDhModulus(createEvenModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createEvenModulus(lowestDheModulusLength));
                     break;
                 case MOD3:
-                    config.setDefaultServerEphemeralDhModulus(createModThreeModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createModThreeModulus(lowestDheModulusLength));
                     break;
                 default:
                     break;

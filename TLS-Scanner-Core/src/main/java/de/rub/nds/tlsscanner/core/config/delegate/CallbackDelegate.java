@@ -8,16 +8,15 @@
  */
 package de.rub.nds.tlsscanner.core.config.delegate;
 
-import java.io.IOException;
-import java.util.function.Function;
-
 import com.beust.jcommander.Parameter;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.state.Context;
-import de.rub.nds.tlsattacker.core.state.State;
+
+import java.io.IOException;
+import java.util.function.Function;
 
 public class CallbackDelegate extends Delegate {
 
@@ -101,7 +100,8 @@ public class CallbackDelegate extends Delegate {
         };
     }
 
-    public static Function<Context, Integer> mergeCallbacks(Function<Context, Integer>... callbacks) {
+    public static Function<Context, Integer> mergeCallbacks(
+            Function<Context, Integer>... callbacks) {
         return (Context context) -> {
             for (Function<Context, Integer> callback : callbacks) {
                 if (callback == null) {

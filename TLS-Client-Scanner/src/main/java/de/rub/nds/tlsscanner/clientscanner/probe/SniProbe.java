@@ -8,11 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.function.Function;
-
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -32,6 +27,11 @@ import de.rub.nds.tlsscanner.clientscanner.probe.requirements.OptionsRequirement
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.function.Function;
 
 public class SniProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 

@@ -8,12 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -36,6 +30,12 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {
 
@@ -80,9 +80,10 @@ public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, Client
     private Config getConfig(ClientCertificateType clientCertType) {
         Config config = scannerConfig.createConfig();
         config.setClientAuthentication(true);
-        List<CipherSuite> suitableCipherSuites = config.getDefaultServerSupportedCipherSuites().stream()
-                .filter(suite -> isCipherSuiteSuitableForCertType(suite, clientCertType))
-                .collect(Collectors.toList());
+        List<CipherSuite> suitableCipherSuites =
+                config.getDefaultServerSupportedCipherSuites().stream()
+                        .filter(suite -> isCipherSuiteSuitableForCertType(suite, clientCertType))
+                        .collect(Collectors.toList());
         if (suitableCipherSuites.isEmpty()) {
             return null;
         }
@@ -93,7 +94,8 @@ public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, Client
 
     private boolean isCipherSuiteSuitableForCertType(
             CipherSuite cipherSuite, ClientCertificateType clientCertType) {
-        KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
+        KeyExchangeAlgorithm keyExchangeAlgorithm =
+                AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
         switch (clientCertType) {
             case RSA_SIGN:
                 return keyExchangeAlgorithm == KeyExchangeAlgorithm.RSA
@@ -119,12 +121,14 @@ public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, Client
         }
     }
 
-    private X509CertificateChain getClientCertificateChain(Config config, ClientCertificateType certType) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
+    private X509CertificateChain getClientCertificateChain(
+            Config config, ClientCertificateType certType) {
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
         CertificateRequestMessage message = new CertificateRequestMessage(config);
         message.setClientCertificateTypesCount(Modifiable.explicit(1));
-        message.setClientCertificateTypes(Modifiable.explicit(new byte[] { certType.getValue() }));
+        message.setClientCertificateTypes(Modifiable.explicit(new byte[] {certType.getValue()}));
         WorkflowTraceMutator.replaceSendingMessage(
                 trace, HandshakeMessageType.CERTIFICATE_REQUEST, message);
 
@@ -141,13 +145,14 @@ public class CertificateProbe extends TlsClientProbe<ClientScannerConfig, Client
             Set<X509CertificateChain> recordedCertificates, X509CertificateChain certificate) {
         return recordedCertificates.stream()
                 .anyMatch(
-                        currCertChain -> currCertChain.getCertificateList()
-                                .containsAll(certificate.getCertificateList()));
+                        currCertChain ->
+                                currCertChain
+                                        .getCertificateList()
+                                        .containsAll(certificate.getCertificateList()));
     }
 
     @Override
-    public void adjustConfig(ClientReport report) {
-    }
+    public void adjustConfig(ClientReport report) {}
 
     @Override
     protected void mergeData(ClientReport report) {

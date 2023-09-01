@@ -8,10 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -42,6 +38,10 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+
+import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 // See https://www.ieee-security.org/TC/SP2015/papers-archived/6949a535.pdf section V-D.
 public class FreakProbe extends TlsClientProbe<ClientScannerConfig, ClientReport> {

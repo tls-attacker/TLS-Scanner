@@ -15,10 +15,12 @@ import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.Extension;
 import de.rub.nds.x509attacker.x509.model.Extensions;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class CertificateReportGenerator {
 

@@ -12,11 +12,13 @@ import de.rub.nds.tlsscanner.core.trust.TrustPlatform;
 import de.rub.nds.x509attacker.trust.TrustPath;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS

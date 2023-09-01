@@ -20,12 +20,14 @@ import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import de.rub.nds.x509attacker.constants.X509Version;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class CertificateReport {
 

@@ -9,8 +9,10 @@
 package de.rub.nds.tlsscanner.core.guideline;
 
 import de.rub.nds.scanner.core.report.ScanReport;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
