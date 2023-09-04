@@ -13,7 +13,7 @@ import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
-import de.rub.nds.tlsattacker.core.state.Context;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.transport.TransportHandler;
 import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
 import de.rub.nds.tlsattacker.transport.udp.ServerUdpTransportHandler;
@@ -141,12 +141,12 @@ public class ClientScannerConfig extends TlsScannerConfig {
     }
 
     /** Provides a callback that executes the client run command. */
-    public Function<Context, Integer> getRunCommandExecutionCallback(String baseCommand) {
-        return (Context context) -> {
+    public Function<State, Integer> getRunCommandExecutionCallback(String baseCommand) {
+        return (State state) -> {
             Integer serverPort = getServerDelegate().getPort();
             // port 0 = dynamic port allocation
             if (serverPort == 0) {
-                serverPort = getServerPort(context.getTlsContext().getTransportHandler());
+                serverPort = getServerPort(state.getTlsContext().getTransportHandler());
             }
             String command = baseCommand.replace(PORT_REPLACEMENT_MARKER, serverPort.toString());
             LOGGER.debug("Client run command: {}", command);
@@ -164,7 +164,7 @@ public class ClientScannerConfig extends TlsScannerConfig {
             }
             try {
                 Process runCommandProcess = runCommandBuilder.start();
-                context.getState().addSpawnedSubprocess(runCommandProcess);
+                state.addSpawnedSubprocess(runCommandProcess);
             } catch (IOException E) {
                 LOGGER.error("Error during client run command execution", E);
             }

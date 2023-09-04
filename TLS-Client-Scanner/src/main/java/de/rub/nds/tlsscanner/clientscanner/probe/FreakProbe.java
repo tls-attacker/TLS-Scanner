@@ -70,9 +70,9 @@ public class FreakProbe extends TlsClientProbe {
 
         Config config = scannerConfig.createConfig();
         config.setDefaultServerSupportedCipherSuites(supportedRsaCipherSuites);
-        config.setDefaultServerRsaModulus(modulus);
-        config.setDefaultServerRsaPublicKey(publicKey);
-        config.setDefaultServerRsaPrivateKey(privateKey);
+        config.setDefaultServerEphemeralRsaExportModulus(modulus);
+        config.setDefaultServerEphemeralRsaExportPublicKey(publicKey);
+        config.setDefaultServerEphemeralRsaExportPrivateKey(privateKey);
 
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)

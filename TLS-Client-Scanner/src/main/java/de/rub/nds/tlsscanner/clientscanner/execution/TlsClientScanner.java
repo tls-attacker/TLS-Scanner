@@ -11,14 +11,38 @@ package de.rub.nds.tlsscanner.clientscanner.execution;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.Scanner;
 import de.rub.nds.scanner.core.passive.StatsWriter;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.tlsattacker.core.state.Context;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.*;
+import de.rub.nds.tlsscanner.clientscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ApplicationMessageProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.CcaSupportProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.CompressionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ConnectionClosingProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsBugsProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsFragmentationProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsReorderingProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.DtlsRetransmissionsProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.NamedGroupsProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.RecordFragmentationProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.ServerCertificateKeySizeProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.TlsClientProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
@@ -179,8 +203,8 @@ public final class TlsClientScanner
      *
      * @return A callback that kills all spawned subprocesses
      */
-    private Function<Context, Integer> getKillAllSpawnedSubprocessesCallback() {
-        return (Context state) -> {
+    private Function<State, Integer> getKillAllSpawnedSubprocessesCallback() {
+        return (State state) -> {
             state.killAllSpawnedSubprocesses();
             return 0;
         };

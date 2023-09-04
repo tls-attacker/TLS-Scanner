@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -15,12 +21,12 @@ import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
+import de.rub.nds.tlsattacker.core.constants.ChooserType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
@@ -31,6 +37,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.SignatureAndHashAl
 import de.rub.nds.tlsattacker.core.protocol.message.extension.UnknownExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.preparator.ClientHelloPreparator;
 import de.rub.nds.tlsattacker.core.protocol.serializer.ClientHelloSerializer;
+import de.rub.nds.tlsattacker.core.state.Context;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -38,16 +45,13 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.chooser.Chooser;
+import de.rub.nds.tlsattacker.core.workflow.chooser.ChooserFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class CommonBugProbe extends TlsServerProbe {
 
@@ -146,8 +150,8 @@ public class CommonBugProbe extends TlsServerProbe {
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
-        TlsContext context = new TlsContext(config);
-        ClientHelloPreparator preparator = new ClientHelloPreparator(context.getChooser(), message);
+        Chooser chooser = ChooserFactory.getChooser(ChooserType.DEFAULT, new Context(new State(config), config.getDefaultClientConnection()), config)
+        ClientHelloPreparator preparator = new ClientHelloPreparator(chooser, message);
         preparator.prepare();
         ClientHelloSerializer serializer =
                 new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());

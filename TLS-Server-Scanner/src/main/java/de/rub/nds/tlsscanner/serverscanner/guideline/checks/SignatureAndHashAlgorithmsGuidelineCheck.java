@@ -73,8 +73,8 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
             ListResult<SignatureAndHashAlgorithm> samResultCert =
                     (ListResult<SignatureAndHashAlgorithm>)
                             report.getListResult(
-                                    TlsAnalyzedProperty
-                                            .SUPPORTED_CERT_SIGNATURE_ALGORITHMS, SignatureAndHashAlgorithm.class);
+                                    TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                                    SignatureAndHashAlgorithm.class);
             if (samResultCert != null) {
                 algorithms.addAll(samResultCert.getList());
             }

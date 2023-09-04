@@ -8,15 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import java.util.List;
-
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheck;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
@@ -24,10 +22,10 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
- * Checks if the server support the use of multiple server certificates with
- * their associated
+ * Checks if the server support the use of multiple server certificates with their associated
  * private keys to support algorithm and key size agility.
  */
 @XmlRootElement
@@ -67,7 +65,7 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
                         getName(), GuidelineAdherence.ADHERED);
             }
             if (firstKey != certReport.getPublicKey().length()) {
-                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).keySize()) {
+                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
                     return new CertificateAgilityGuidelineCheckResult(
                             getName(), GuidelineAdherence.ADHERED);
                 }

@@ -8,10 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
@@ -23,6 +19,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithms
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -68,8 +67,7 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
             return new SignatureAlgorithmsGuidelineCheckResult(TestResults.UNCERTAIN, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
-        if (!this.recommendedAlgorithms.contains(
-                report.getSignatureAlgorithm())) {
+        if (!this.recommendedAlgorithms.contains(report.getSignatureAlgorithm())) {
             nonRecommended.add(report.getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(

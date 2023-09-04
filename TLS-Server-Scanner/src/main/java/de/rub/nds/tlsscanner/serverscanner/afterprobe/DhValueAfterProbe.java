@@ -8,19 +8,20 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DhValueAfterProbe extends AfterProbe<ServerReport> {
 

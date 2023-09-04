@@ -8,15 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import java.util.Arrays;
-import java.util.List;
-
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeyUsageCertificateCheckResult;
@@ -25,24 +23,27 @@ import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Checks the key usage extension in the certificate.
  *
- * <p>
- * RSA signature certificates, ECDSA signature certificates, or DSA signature
- * certificates should
+ * <p>RSA signature certificates, ECDSA signature certificates, or DSA signature certificates should
  * have the digitalSignature key usage.
  *
- * <p>
- * ECDH certificates, DH certificates should have the keyAgreement key usage.
+ * <p>ECDH certificates, DH certificates should have the keyAgreement key usage.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
-    private static final List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST = Arrays.asList(SignatureAlgorithm.RSA_PKCS1,
-            SignatureAlgorithm.RSA_PSS, SignatureAlgorithm.ECDSA, SignatureAlgorithm.DSA);
+    private static final List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST =
+            Arrays.asList(
+                    SignatureAlgorithm.RSA_PKCS1,
+                    SignatureAlgorithm.RSA_PSS,
+                    SignatureAlgorithm.ECDSA,
+                    SignatureAlgorithm.DSA);
 
     private KeyUsageCertificateCheck() {
         super(null, null);

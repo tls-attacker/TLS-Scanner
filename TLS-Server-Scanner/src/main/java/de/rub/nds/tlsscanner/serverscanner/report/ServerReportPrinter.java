@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
@@ -32,7 +33,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -63,8 +63,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
@@ -72,7 +70,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
@@ -149,7 +146,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         // appendGcm(builder);
         // appendRfc(builder);
         appendCertificates(builder);
-        appendOcsp(builder);
+
         appendCertificateTransparency(builder);
         appendSession(builder);
         appendRenegotiation(builder);
@@ -176,7 +173,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
             for (ScannerProbe<?, ?> unexecutedProbe : report.getUnexecutedProbes())
-                //noinspection unchecked
+                // noinspection unchecked
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
@@ -574,7 +571,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
             prettyAppend(
                     builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
+            // prettyAppend(builder, "Alpn Protocols",
+            // simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -763,7 +761,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                     .getSignatureAlgorithm()
                                     .name());
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
+                if (certReport.getSignatureAlgorithm() != null) {
                     if (certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
                                     == HashAlgorithm.SHA1
                             || certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()

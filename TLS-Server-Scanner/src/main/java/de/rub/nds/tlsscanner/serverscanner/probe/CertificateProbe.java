@@ -8,13 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -30,7 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
@@ -392,9 +386,21 @@ public class CertificateProbe extends TlsServerProbe {
                             HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                     && state.getTlsContext().getServerCertificateChain() != null
-                    && state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() != null
-                    && groupsToTest.contains(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() )) {
-                groupsToTest.remove(state.getTlsContext().getServerCertificateChain().getLeaf().getEllipticCurve() );
+                    && state.getTlsContext()
+                                    .getServerCertificateChain()
+                                    .getLeaf()
+                                    .getEllipticCurve()
+                            != null
+                    && groupsToTest.contains(
+                            state.getTlsContext()
+                                    .getServerCertificateChain()
+                                    .getLeaf()
+                                    .getEllipticCurve())) {
+                groupsToTest.remove(
+                        state.getTlsContext()
+                                .getServerCertificateChain()
+                                .getLeaf()
+                                .getEllipticCurve());
                 certificateList.add(
                         new CertificateChainReport(
                                 state.getTlsContext().getServerCertificateChain(),
@@ -426,8 +432,16 @@ public class CertificateProbe extends TlsServerProbe {
                             HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                     && state.getTlsContext().getServerCertificateChain() != null
-                    && state.getTlsContext().getEcCertificateCurve() != null
-                    && groupsToTest.contains(state.getTlsContext().getEcCertificateCurve())) {
+                    && state.getTlsContext()
+                                    .getServerCertificateChain()
+                                    .getLeaf()
+                                    .getEllipticCurve()
+                            != null
+                    && groupsToTest.contains(
+                            state.getTlsContext()
+                                    .getServerCertificateChain()
+                                    .getLeaf()
+                                    .getEllipticCurve())) {
                 groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
                 certificateList.add(
                         new CertificateChainReport(

@@ -14,10 +14,10 @@ import de.rub.nds.protocol.crypto.key.DsaPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
 import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateSignatureCheckResult;
@@ -26,10 +26,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-/**
- * Checks if the certificate is signed with an algorithm consistent with the
- * public key.
- */
+/** Checks if the certificate is signed with an algorithm consistent with the public key. */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateSignatureCheck extends CertificateGuidelineCheck {
@@ -57,42 +54,40 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
 
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
-        CertificateReport report = chain.getCertificateReportList().get(0);
-        SignatureAlgorithm signatureAlgorithm =
-                report.getSignatureAlgorithm();
-        PublicKeyContainer publicKey =  report.getPublicKey();
-        if(publicKey instanceof EcdsaPublicKey)
-        {       return new CertificateSignatureCheckResult(
-                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA),
-                        X509PublicKeyType.ECDH_ECDSA,
-                        signatureAlgorithm);
+        CertificateReport report = chain.getLeafReport();
+        SignatureAlgorithm signatureAlgorithm = report.getSignatureAlgorithm();
+        PublicKeyContainer publicKey = report.getPublicKey();
+        X509PublicKeyType publicKeyType;
+        if (publicKey instanceof EcdsaPublicKey) {
+            return new CertificateSignatureCheckResult(
+                    getName(),
+                    GuidelineAdherence.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)),
+                    X509PublicKeyType.ECDH_ECDSA,
+                    signatureAlgorithm);
         }
-        if(publicKey instanceof DhPublicKey)
-        {
-                return new CertificateSignatureCheckResult(
-                        TestResults.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA),
-                        X509PublicKeyType.DH,
-                        signatureAlgorithm);
+        if (publicKey instanceof DhPublicKey) {
+            return new CertificateSignatureCheckResult(
+                    getName(),
+                    GuidelineAdherence.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)),
+                    X509PublicKeyType.DH,
+                    signatureAlgorithm);
         }
-        if(publicKey instanceof RsaPublicKey || publicKey instanceof DsaPublicKey)
-        {    
-                X509PublicKeyType publicKeyType;
-                if(publicKey instanceof RsaPublicKey)
-                {
-                    publicKeyType = X509PublicKeyType.RSA;
-                }else{
-                    publicKeyType = X509PublicKeyType.DSA;
-                }
-                return new CertificateSignatureCheckResult(
-                        getName(),
-                        GuidelineAdherence.of(
-                                signatureAlgorithm.equals(
-                                        SignatureAlgorithm.valueOf(publicKeyType))),
-                        publicKey,
-                        signatureAlgorithm);
+        if (publicKey instanceof RsaPublicKey || publicKey instanceof DsaPublicKey) {
+
+            if (publicKey instanceof RsaPublicKey) {
+                publicKeyType = X509PublicKeyType.RSA;
+            } else {
+                publicKeyType = X509PublicKeyType.DSA;
+            }
+            return new CertificateSignatureCheckResult(
+                    getName(),
+                    GuidelineAdherence.of(
+                            publicKeyType.canBeUsedWithSignatureAlgorithm(signatureAlgorithm)),
+                    publicKeyType,
+                    signatureAlgorithm);
         }
         return new CertificateSignatureCheckResult(
-                getName(), GuidelineAdherence.CHECK_FAILED, keyAlgorithm, signatureAlgorithm);
+                getName(), GuidelineAdherence.CHECK_FAILED, null, signatureAlgorithm);
     }
 
     @Override

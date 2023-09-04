@@ -36,7 +36,7 @@ public class CcaSupportProbe extends TlsServerProbe {
     protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setAutoSelectCertificate(false);
+        tlsConfig.setAutoAdjustCertificate(false);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(

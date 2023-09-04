@@ -20,7 +20,6 @@ package de.rub.nds.tlsscanner.core.probe.certificate.roca;
 
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
-
 import java.math.BigInteger;
 
 public class RocaBrokenKey {

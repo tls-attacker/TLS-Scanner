@@ -8,22 +8,20 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import java.util.List;
-
 import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateCurveGuidelineCheckResult;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -36,7 +34,8 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     public CertificateCurveGuidelineCheck(
-            String name, RequirementLevel requirementLevel,
+            String name,
+            RequirementLevel requirementLevel,
             List<NamedEllipticCurveParameters> recommendedNamedParameters) {
         super(name, requirementLevel);
         this.recommendedNamedParameters = recommendedNamedParameters;
@@ -62,26 +61,29 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
-        CertificateReport report = chain.getCertificateReportList().get(0);
-        if (!SignatureAlgorithm.ECDSA.equals(
-                report.getSignatureAlgorithm())) {
-            return new CertificateCurveGuidelineCheckResult(TestResults.TRUE);
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chainReport) {
+        if (!SignatureAlgorithm.ECDSA.equals(chainReport.getLeafReport().getSignatureAlgorithm())) {
+            return new CertificateCurveGuidelineCheckResult(getName(), GuidelineAdherence.ADHERED);
         }
-        if (!(report.getPublicKey() instanceof EcdsaPublicKey) && !(report.getPublicKey() instanceof EcdhPublicKey)) {
-            return new CertificateCurveGuidelineCheckResult(TestResults.UNCERTAIN);
+        if (!(chainReport.getLeafReport().getPublicKey() instanceof EcdsaPublicKey)
+                && !(chainReport.getLeafReport().getPublicKey() instanceof EcdhPublicKey)) {
+            return new CertificateCurveGuidelineCheckResult(
+                    getName(), GuidelineAdherence.CHECK_FAILED);
         }
         // TODO unsafe check for ecdh
-        NamedEllipticCurveParameters group = ((EcdsaPublicKey) report.getPublicKey()).getParameters();
-        if (!this.recommendedNamedParameters.contains(group)) {
-            return new CertificateCurveGuidelineCheckResult(TestResults.FALSE, false, group);
+
+        NamedEllipticCurveParameters namedParameters =
+                ((EcdsaPublicKey) chainReport.getLeafReport().getPublicKey()).getParameters();
+        if (!this.recommendedNamedParameters.contains(namedParameters)) {
+            return new CertificateCurveGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, namedParameters);
         }
         return new CertificateCurveGuidelineCheckResult(
-                getName(), GuidelineAdherence.ADHERED, true, group);
+                getName(), GuidelineAdherence.ADHERED, true, namedParameters);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CertificateCurve_" + getRequirementLevel() + "_" + recommendedNamedParameters;
     }
 

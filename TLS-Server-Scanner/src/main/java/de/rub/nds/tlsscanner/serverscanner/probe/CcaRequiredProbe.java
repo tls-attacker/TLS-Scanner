@@ -14,13 +14,15 @@ import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -37,14 +39,12 @@ public class CcaRequiredProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
-        tlsConfig.setAutoSelectCertificate(false);
-        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(
-                configSelector.getScannerConfig().getClientAuthenticationDelegate());
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(
-                tlsConfig,
-                ccaCertificateManager,
-                CcaWorkflowType.CRT_CKE_CCS_FIN,
-                CcaCertificateType.EMPTY);
+        tlsConfig.setAutoAdjustCertificate(false);
+
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(
@@ -62,8 +62,7 @@ public class CcaRequiredProbe extends TlsServerProbe {
     }
 
     @Override
-    public void adjustConfig(ServerReport report) {
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
     protected void mergeData(ServerReport report) {

@@ -12,8 +12,7 @@ import com.beust.jcommander.Parameter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.state.Context;
-
+import de.rub.nds.tlsattacker.core.state.State;
 import java.io.IOException;
 import java.util.function.Function;
 
@@ -67,31 +66,31 @@ public class CallbackDelegate extends Delegate {
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {}
 
-    public Function<Context, Integer> getBeforeTransportPreInitCallback() {
+    public Function<State, Integer> getBeforeTransportPreInitCallback() {
         return getCallback(beforeTransportPreInitCommand);
     }
 
-    public Function<Context, Integer> getBeforeTransportInitCallback() {
+    public Function<State, Integer> getBeforeTransportInitCallback() {
         return getCallback(beforeTransportInitCommand);
     }
 
-    public Function<Context, Integer> getAfterTransportInitCallback() {
+    public Function<State, Integer> getAfterTransportInitCallback() {
         return getCallback(afterTransportInitCommand);
     }
 
-    public Function<Context, Integer> getAfterExecutionCallback() {
+    public Function<State, Integer> getAfterExecutionCallback() {
         return getCallback(afterExecutionCommand);
     }
 
-    private Function<Context, Integer> getCallback(String command) {
+    private Function<State, Integer> getCallback(String command) {
         if (command == null) {
             return null;
         }
-        return (Context context) -> {
+        return (State state) -> {
             try {
                 Process spawnedProcess = Runtime.getRuntime().exec(command.split(" "));
                 LOGGER.debug("Running command: {}", command);
-                context.addSpawnedSubprocess(spawnedProcess);
+                state.addSpawnedSubprocess(spawnedProcess);
             } catch (IOException E) {
                 LOGGER.error("Error during command execution", E);
             }
@@ -99,14 +98,13 @@ public class CallbackDelegate extends Delegate {
         };
     }
 
-    public static Function<Context, Integer> mergeCallbacks(
-            Function<Context, Integer>... callbacks) {
-        return (Context context) -> {
-            for (Function<Context, Integer> callback : callbacks) {
+    public static Function<State, Integer> mergeCallbacks(Function<State, Integer>... callbacks) {
+        return (State state) -> {
+            for (Function<State, Integer> callback : callbacks) {
                 if (callback == null) {
                     continue;
                 }
-                callback.apply(context);
+                callback.apply(state);
             }
             return 0;
         };

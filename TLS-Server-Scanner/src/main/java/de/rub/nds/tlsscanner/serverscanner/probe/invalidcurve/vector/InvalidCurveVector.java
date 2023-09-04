@@ -8,14 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.vector.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
 /** */
 public class InvalidCurveVector implements Vector {
@@ -28,8 +27,7 @@ public class InvalidCurveVector implements Vector {
     private boolean attackInRenegotiation;
     private List<NamedGroup> ecdsaRequiredGroups;
 
-    private InvalidCurveVector() {
-    }
+    private InvalidCurveVector() {}
 
     public InvalidCurveVector(
             ProtocolVersion protocolVersion,
@@ -96,14 +94,15 @@ public class InvalidCurveVector implements Vector {
         String parameter = ">";
         parameter = parameter + cipherSuite.toString();
 
-        parameter = protocolVersion.toString()
-                + ">"
-                + namedGroup.toString()
-                + ">"
-                + (attackInRenegotiation ? "Renegotiation>" : "")
-                + pointFormat.toString()
-                + parameter
-                + (twistAttack ? ">CurveTwist" : "");
+        parameter =
+                protocolVersion.toString()
+                        + ">"
+                        + namedGroup.toString()
+                        + ">"
+                        + (attackInRenegotiation ? "Renegotiation>" : "")
+                        + pointFormat.toString()
+                        + parameter
+                        + (twistAttack ? ">CurveTwist" : "");
         return parameter;
     }
 

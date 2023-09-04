@@ -8,15 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import com.google.common.base.Joiner;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Joiner;
-
-import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
 
 public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 

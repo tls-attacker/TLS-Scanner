@@ -20,14 +20,13 @@ import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import de.rub.nds.x509attacker.constants.X509Version;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 public class CertificateReport {
 
@@ -39,6 +38,8 @@ public class CertificateReport {
     private List<String> alternativeNames;
     private DateTime notBefore;
     private DateTime notAfter;
+    private Duration remainingDuration;
+    private Duration originalFullDuration;
     private PublicKeyContainer publicKey;
     private Boolean weakDebianKey;
     private String issuer;
@@ -66,6 +67,22 @@ public class CertificateReport {
     private Set<KeyUsage> keyUsageSet;
 
     public CertificateReport() {}
+
+    public Duration getRemainingDuration() {
+        return remainingDuration;
+    }
+
+    public void setRemainingDuration(Duration remainingDuration) {
+        this.remainingDuration = remainingDuration;
+    }
+
+    public Duration getOriginalFullDuration() {
+        return originalFullDuration;
+    }
+
+    public void setOriginalFullDuration(Duration originalFullDuration) {
+        this.originalFullDuration = originalFullDuration;
+    }
 
     public Set<KeyUsage> getKeyUsageSet() {
         return keyUsageSet;

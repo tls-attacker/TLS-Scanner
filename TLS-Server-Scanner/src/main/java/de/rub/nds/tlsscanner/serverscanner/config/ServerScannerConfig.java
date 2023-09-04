@@ -8,25 +8,21 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.config;
 
-import java.util.List;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-
 import de.rub.nds.tlsattacker.core.config.delegate.ClientAuthenticationDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.delegate.ProxyDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
+import java.util.List;
 
 public class ServerScannerConfig extends TlsScannerConfig {
 
-    @ParametersDelegate
-    private ClientDelegate clientDelegate;
+    @ParametersDelegate private ClientDelegate clientDelegate;
 
-    @ParametersDelegate
-    private ClientAuthenticationDelegate clientAuthenticationDelegate;
+    @ParametersDelegate private ClientAuthenticationDelegate clientAuthenticationDelegate;
 
     @ParametersDelegate private ProxyDelegate proxyDelegate;
 
@@ -36,13 +32,26 @@ public class ServerScannerConfig extends TlsScannerConfig {
             description = "Which application data protocol the server is running.")
     private ApplicationProtocol applicationProtocol = ApplicationProtocol.HTTP;
 
-    @Parameter(names = "-additionalRandomCollection", required = false, description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
+    @Parameter(
+            names = "-additionalRandomCollection",
+            required = false,
+            description =
+                    "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
     private int additionalRandomnessHandshakes = 0;
 
-    @Parameter(names = "-ca", required = false, variableArity = true, description = "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
+    @Parameter(
+            names = "-ca",
+            required = false,
+            variableArity = true,
+            description =
+                    "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
     private List<String> customCAPathList = null;
 
-    @Parameter(names = "-configSearchCooldown", required = false, description = "Pause between config tests to ensure the server finished processing the previously rejected messages")
+    @Parameter(
+            names = "-configSearchCooldown",
+            required = false,
+            description =
+                    "Pause between config tests to ensure the server finished processing the previously rejected messages")
     private boolean configSearchCooldown = false;
 
     public ServerScannerConfig(GeneralDelegate delegate) {
@@ -51,7 +60,7 @@ public class ServerScannerConfig extends TlsScannerConfig {
         this.clientDelegate = new ClientDelegate();
         this.clientAuthenticationDelegate = new ClientAuthenticationDelegate();
         this.proxyDelegate = new ProxyDelegate();
-        
+
         addDelegate(clientDelegate);
         addDelegate(clientAuthenticationDelegate);
         addDelegate(proxyDelegate);

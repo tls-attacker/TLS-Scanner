@@ -9,18 +9,19 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 
 public class CertificateSignatureCheckResult extends GuidelineCheckResult {
 
-    private final String keyAlgorithm;
+    private final X509PublicKeyType keyAlgorithm;
     private final SignatureAlgorithm signatureAlgorithm;
 
     public CertificateSignatureCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            String keyAlgorithm,
+            X509PublicKeyType keyAlgorithm,
             SignatureAlgorithm signatureAlgorithm) {
         super(checkName, adherence);
         this.keyAlgorithm = keyAlgorithm;
@@ -32,7 +33,7 @@ public class CertificateSignatureCheckResult extends GuidelineCheckResult {
         return keyAlgorithm + " key is signed with " + signatureAlgorithm;
     }
 
-    public String getKeyAlgorithm() {
+    public X509PublicKeyType getKeyAlgorithm() {
         return keyAlgorithm;
     }
 

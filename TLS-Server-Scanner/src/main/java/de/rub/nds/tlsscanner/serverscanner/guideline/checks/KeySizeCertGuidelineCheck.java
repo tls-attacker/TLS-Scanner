@@ -8,16 +8,17 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
 import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
@@ -92,65 +93,52 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         boolean failedFlag = false;
         KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
         for (CertificateReport report : chain.getCertificateReportList()) {
-            
-            PublicKeyContainer key = report.getPublicKey();
-            int keySize = key.length();
+
+            PublicKeyContainer publicKey = report.getPublicKey();
+            int keySize = publicKey.length();
             Integer minimumKeySize = null;
-            String algoName = null;
-            if(key instanceof DsaPublicKey)
-            {
-                algoName = "DSA";
+            if (publicKey instanceof DsaPublicKey) {
                 minimumKeySize = this.minimumDsaKeyLength;
-            } else if(key instanceof RsaPublicKey)
-            {
-                algoName = "RSA";
-                minimumKeySize = this.minimumRsaKeyLength;    
-            } else if(key instanceof EcdhPublicKey || key instanceof EcdsaPublicKey)
-            {
-                algoName = "EC";
-                minimumKeySize = this.minimumEcKeyLength;    
-            }else if(key instanceof DhPublicKey)
-            {
-                algoName = "DH";
-                minimumKeySize = this.minimumDhKeyLength;    
-            } 
-            if(minimumKeySize != null)
-            {
-                result.addKeySize(
-                                new KeySizeData(
-                                        algoName,
-                                        minimumKeySize,
-                                        keySize));
-                        if (key.length() < minimumKeySize) {
-                            failedFlag = true;
-                        } else {
-                            passFlag = true;
-                        }
+            } else if (publicKey instanceof RsaPublicKey) {
+                minimumKeySize = this.minimumRsaKeyLength;
+            } else if (publicKey instanceof EcdhPublicKey || publicKey instanceof EcdsaPublicKey) {
+                minimumKeySize = this.minimumEcKeyLength;
+            } else if (publicKey instanceof DhPublicKey) {
+                minimumKeySize = this.minimumDhKeyLength;
             }
-            CustomPublicKey key = (CustomPublicKey) report.getPublicKey();
-            switch (report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH)) {
-                case "DSA":
+            if (minimumKeySize != null) {
+                result.addKeySize(
+                        new KeySizeData(publicKey.getAlgorithmType(), minimumKeySize, keySize));
+                if (publicKey.length() < minimumKeySize) {
+                    failedFlag = true;
+                } else {
+                    passFlag = true;
+                }
+            }
+            AsymmetricAlgorithmType algorithmType = report.getPublicKey().getAlgorithmType();
+            switch (algorithmType) {
+                case DSA:
                     if (this.minimumDsaKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumDsaKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumDsaKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumDsaKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
                     break;
-                case "RSA":
+                case RSA:
                     if (this.minimumRsaKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumRsaKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumRsaKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumRsaKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
@@ -158,33 +146,37 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                     }
 
                     break;
-                case "EC":
+                case ECDH: // Intentional fall through
+                case ECDSA:
                     if (this.minimumEcKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumEcKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumEcKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumEcKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
                     break;
-                case "DH":
+                case DH:
                     if (this.minimumDhKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumDhKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumDhKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumDhKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
+                    break;
+                case EDDSA:
+                    // TODO
                     break;
             }
         }
@@ -194,7 +186,6 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         } else {
             result.setAdherence(GuidelineAdherence.ADHERED);
-        }
         }
         return result;
     }

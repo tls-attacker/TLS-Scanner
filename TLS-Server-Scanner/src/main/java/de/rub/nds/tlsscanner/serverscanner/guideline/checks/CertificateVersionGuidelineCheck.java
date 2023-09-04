@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateVersionGuidelineCheckResult;
@@ -57,9 +57,10 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
 
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
-        CertificateReport report = chain.getCertificateReportList().get(0);
+        CertificateReport report = chain.getLeafReport();
         return new CertificateVersionGuidelineCheckResult(
-                TestResults.of(this.version == report.getVersion()),
+                getName(),
+                GuidelineAdherence.of(this.version == report.getVersion()),
                 report.getVersion());
     }
 

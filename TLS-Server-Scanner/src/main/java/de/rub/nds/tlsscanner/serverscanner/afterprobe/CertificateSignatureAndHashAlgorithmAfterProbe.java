@@ -8,17 +8,16 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<ServerReport> {
 

@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -12,13 +12,11 @@ import de.rub.nds.tlsscanner.core.trust.TrustPlatform;
 import de.rub.nds.x509attacker.trust.TrustPath;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS
@@ -60,6 +58,8 @@ public class CertificateChainReport {
 
     private CertificateReport trustAnchor;
 
+    private CertificateReport leafReport;
+
     private List<CertificateIssue> certificateIssues;
 
     private List<TrustPath> trustPaths;
@@ -95,9 +95,7 @@ public class CertificateChainReport {
 
         containsNotYetValid = certificateChain.containsNotYetValidCertificate();
         containsExpired = certificateChain.containsExpiredCertificate();
-        containsWeakSignedNonTrustStoresCertificates =
-                certificateChain.containsWeakSignedNonTrustStoresCertificates();
-
+        containsWeakSignedNonTrustStoresCertificates = null; // TODO
         for (CertificateReport report : certificateReportList) {
             if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
                     && Objects.equals(report.getSelfSigned(), Boolean.TRUE)
@@ -130,6 +128,14 @@ public class CertificateChainReport {
         // validates that there is a trust path
         // we also need to validate that the trust path is correctly signed and that extensions are
         // met.
+    }
+
+    public CertificateReport getLeafReport() {
+        return leafReport;
+    }
+
+    public void setLeafReport(CertificateReport leafReport) {
+        this.leafReport = leafReport;
     }
 
     public List<TrustPath> getTrustPaths() {

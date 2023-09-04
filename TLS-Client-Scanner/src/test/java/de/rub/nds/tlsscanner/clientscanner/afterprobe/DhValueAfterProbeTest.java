@@ -11,8 +11,8 @@ package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;

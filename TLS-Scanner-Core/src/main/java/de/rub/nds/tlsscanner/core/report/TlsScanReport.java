@@ -33,7 +33,8 @@ import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
-
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,7 +144,9 @@ public abstract class TlsScanReport extends ScanReport {
         @SuppressWarnings("unchecked")
         ListResult<CertificateChainReport> listResult =
                 (ListResult<CertificateChainReport>)
-                        getListResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, CertificateChainReport.class);
+                        getListResult(
+                                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                                CertificateChainReport.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -161,10 +164,10 @@ public abstract class TlsScanReport extends ScanReport {
     }
 
     public List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
-        @SuppressWarnings("unchecked")
         ListResult<X509SignatureAlgorithm> listResult =
-                (ListResult<X509SignatureAlgorithm>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS, SignatureAndHashAlgorithm.class);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                        X509SignatureAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 

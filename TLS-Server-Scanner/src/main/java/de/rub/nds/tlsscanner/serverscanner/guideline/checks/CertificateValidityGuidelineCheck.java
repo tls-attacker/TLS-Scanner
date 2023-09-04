@@ -8,18 +8,16 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.tlsscanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateValidityGuidelineCheckResult;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.time.Duration;
-import java.time.Instant;
+import org.joda.time.Duration;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -55,16 +53,12 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
 
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
-        CertificateReport report = chain.getCertificateReportList().get(0);
-        Duration validityPeriod =
-                Duration.between(
-                        Instant.ofEpochMilli(report.getNotBefore().toDate().getTime()),
-                        Instant.ofEpochMilli(report.getNotAfter().toDate().getTime()));
+        Duration validityPeriod = chain.getLeafReport().getOriginalFullDuration();
         return new CertificateValidityGuidelineCheckResult(
                 getName(),
-                GuidelineAdherence.of(validityPeriod.toDays() <= this.days),
+                GuidelineAdherence.of(validityPeriod.toStandardDays().getDays() <= this.days),
                 days,
-                validityPeriod.toDays());
+                validityPeriod.toStandardDays().getDays());
     }
 
     @Override
