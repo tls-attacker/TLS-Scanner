@@ -292,8 +292,7 @@
                                         <destFileName>${project.build.finalName}.${project.packaging}</destFileName>
                                     </artifactItem>
                                 </artifactItems>
-                                <!--suppress UnresolvedMavenProperty -->
-                                <outputDirectory>${maven.multiModuleProjectDirectory}/apps</outputDirectory>
+                                <outputDirectory>${main.basedir}/apps</outputDirectory>
                             </configuration>
                         </execution>
                         <execution>
@@ -303,8 +302,7 @@
                             </goals>
                             <phase>package</phase>
                             <configuration>
-                                <!--suppress UnresolvedMavenProperty -->
-                                <outputDirectory>${maven.multiModuleProjectDirectory}/apps/lib</outputDirectory>
+                                <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
                                 <!--Ensures only runnable dependencies are included-->
                                 <includeScope>compile</includeScope>
                             </configuration>
@@ -358,8 +356,7 @@
                         <configuration>
                             <filesets>
                                 <fileset>
-                                    <!--suppress UnresolvedMavenProperty -->
-                                    <directory>${maven.multiModuleProjectDirectory}/apps</directory>
+                                    <directory>${main.basedir}/apps</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
@@ -375,8 +372,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <!--suppress UnresolvedMavenProperty -->
-                                    <directory>${maven.multiModuleProjectDirectory}/apps</directory>
+                                    <directory>${main.basedir}/apps</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
