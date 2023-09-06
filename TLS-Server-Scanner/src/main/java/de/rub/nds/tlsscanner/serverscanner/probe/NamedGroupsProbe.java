@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -211,8 +212,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
 
         TlsContext context;
         NamedGroup selectedGroup = null;
-        NamedGroup certificateGroup = null;
-        NamedGroup certificateSigGroup = null;
+        X509NamedCurve certificateGroup = null;
+        X509NamedCurve certificateSigGroup = null;
         // place signing groups at the bottom of the list, the server should
         // choose
         // all other first
@@ -229,8 +230,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
             if (context != null) {
 
                 selectedGroup = context.getSelectedGroup();
-                certificateGroup = context.getEcCertificateCurve();
-                certificateSigGroup = context.getEcCertificateSignatureCurve();
+                certificateGroup = context.getServerX509Context().getSubjectNamedCurve();
+                certificateSigGroup = context.getServerX509Context().getIssuerNamedCurve();
 
                 // remove groups that are not required by the server even
                 // if they are used for the certificate or KEX signature

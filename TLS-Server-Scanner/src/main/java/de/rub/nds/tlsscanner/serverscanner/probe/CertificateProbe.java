@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,14 +43,14 @@ public class CertificateProbe extends TlsServerProbe {
     private boolean scanForTls13 = true;
 
     // curves used for ecdsa in key exchange
-    private List<NamedGroup> ecdsaPkGroupsStatic;
-    private List<NamedGroup> ecdsaPkGroupsEphemeral;
-    private List<NamedGroup> ecdsaPkGroupsTls13;
+    private List<X509NamedCurve> ecdsaPkGroupsStatic;
+    private List<X509NamedCurve> ecdsaPkGroupsEphemeral;
+    private List<X509NamedCurve> ecdsaPkGroupsTls13;
 
     // curves used for ecdsa certificate signatures
-    private List<NamedGroup> ecdsaCertSigGroupsStatic;
-    private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
-    private List<NamedGroup> ecdsaCertSigGroupsTls13;
+    private List<X509NamedCurve> ecdsaCertSigGroupsStatic;
+    private List<X509NamedCurve> ecdsaCertSigGroupsEphemeral;
+    private List<X509NamedCurve> ecdsaCertSigGroupsTls13;
 
     private Set<CertificateChainReport> certificates;
 
@@ -418,8 +419,8 @@ public class CertificateProbe extends TlsServerProbe {
             List<NamedGroup> groupsToTest,
             List<CipherSuite> cipherSuitesToTest,
             List<CertificateChainReport> certificateList,
-            List<NamedGroup> pkGroups,
-            List<NamedGroup> sigGroups) {
+            List<X509NamedCurve> pkGroups,
+            List<X509NamedCurve> sigGroups) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groupsToTest);
@@ -442,16 +443,20 @@ public class CertificateProbe extends TlsServerProbe {
                                     .getServerCertificateChain()
                                     .getLeaf()
                                     .getEllipticCurve())) {
-                groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
+                groupsToTest.remove(
+                        state.getTlsContext().getServerX509Context().getSubjectNamedCurve());
                 certificateList.add(
                         new CertificateChainReport(
-                                state.getTlsContext().getServerCertificate(),
+                                state.getTlsContext().getServerCertificateChain(),
                                 tlsConfig.getDefaultClientConnection().getHostname()));
-                pkGroups.add(state.getTlsContext().getEcCertificateCurve());
-                if (state.getTlsContext().getEcCertificateSignatureCurve() != null
+                pkGroups.add(state.getTlsContext().getServerX509Context().getSubjectNamedCurve());
+                if (state.getTlsContext().getServerX509Context().getIssuerNamedCurve() != null
                         && !sigGroups.contains(
-                                state.getTlsContext().getEcCertificateSignatureCurve())) {
-                    sigGroups.add(state.getTlsContext().getEcCertificateSignatureCurve());
+                                state.getTlsContext()
+                                        .getServerX509Context()
+                                        .getIssuerNamedCurve())) {
+                    sigGroups.add(
+                            state.getTlsContext().getServerX509Context().getIssuerNamedCurve());
                 }
             } else {
                 // selected cipher suite or certificate named group invalid

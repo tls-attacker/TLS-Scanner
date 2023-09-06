@@ -9,10 +9,10 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.namedgroup;
 
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
-import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -65,7 +65,7 @@ public class NamedGroupWitness implements Serializable {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
                     && AlgorithmResolver.getCertificateKeyType(cipherSuite)
-                            == CertificateKeyType.RSA) {
+                            == X509PublicKeyType.RSA) {
                 return true;
             }
         }

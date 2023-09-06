@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeyUsageCertificateCheckResult;
@@ -76,7 +75,8 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         }
         for (X509ExtensionType extension : extensions) {
             if (extension == X509ExtensionType.KEY_USAGE) {
-                return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, null);
+                return new KeyUsageCertificateCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, false, null);
             }
         }
         if (report.getKeyUsageSet() != null) {
@@ -87,7 +87,8 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         }
         if (report.getPublicKey() instanceof DhPublicKey) {
             if (!report.getKeyUsageSet().contains(KeyUsage.KEY_AGREEMENT)) {
-                return new KeyUsageCertificateCheckResult(TestResults.FALSE, false, "keyAgreement");
+                return new KeyUsageCertificateCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, false, "keyAgreement");
             }
         }
         return new KeyUsageCertificateCheckResult(

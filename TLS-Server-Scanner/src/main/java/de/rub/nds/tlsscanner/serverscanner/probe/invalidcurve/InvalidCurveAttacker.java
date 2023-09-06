@@ -8,18 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
-import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.util.BigIntegers;
-
 import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.EcCurveEquationType;
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.crypto.ec.EllipticCurve;
 import de.rub.nds.protocol.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.protocol.crypto.ec.FieldElementFp;
@@ -45,6 +39,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.InvalidCurve
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.TwistedCurvePoint;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.trace.InvalidCurveWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector.InvalidCurveVector;
+import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.BigIntegers;
 
 public class InvalidCurveAttacker {
 
@@ -71,16 +71,13 @@ public class InvalidCurveAttacker {
     private List<FingerprintSecretPair> responsePairs;
     private List<Point> receivedEcPublicKeys;
     /**
-     * All keys we received from a server in handshakes that lead to a
-     * ServerFinished - we can use
+     * All keys we received from a server in handshakes that lead to a ServerFinished - we can use
      * these to mitigate the impact of false positives in scans.
      */
     private List<Point> finishedKeys;
     /**
-     * Indicates if there is a higher chance that the keys we extracted might have
-     * been sent by a
-     * TLS accelerator and a TLS server behind it at the same time. (See
-     * evaluateExecutedTask)
+     * Indicates if there is a higher chance that the keys we extracted might have been sent by a
+     * TLS accelerator and a TLS server behind it at the same time. (See evaluateExecutedTask)
      */
     private boolean dirtyKeysWarning;
 
@@ -113,22 +110,33 @@ public class InvalidCurveAttacker {
             BigInteger transformedX;
             if (vector.getNamedGroup() == NamedGroup.ECDH_X25519
                     || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
-                RFC7748Curve rfcCurve = (RFC7748Curve) vector.getNamedGroup().;
+                RFC7748Curve rfcCurve = (RFC7748Curve) vector.getTargetedCurve();
                 Point montgPoint = rfcCurve.getPoint(publicPointBaseX, publicPointBaseY);
                 Point weierPoint = rfcCurve.toWeierstrass(montgPoint);
-                transformedX = weierPoint
-                        .getFieldX()
-                        .getData()
-                        .multiply(curveTwistD)
-                        .mod(curve.getModulus());
+                transformedX =
+                        weierPoint
+                                .getFieldX()
+                                .getData()
+                                .multiply(curveTwistD)
+                                .mod(curve.getModulus());
             } else {
                 transformedX = publicPointBaseX.multiply(curveTwistD).mod(curve.getModulus());
             }
 
-            point = Point.createPoint(transformedX, publicPointBaseY, vector.getNamedGroup());
+            point =
+                    Point.createPoint(
+                            transformedX,
+                            publicPointBaseY,
+                            (NamedEllipticCurveParameters)
+                                    vector.getNamedGroup().getGroupParameters());
         } else {
-            curve = CurveFactory.getCurve(vector.getNamedGroup());
-            point = Point.createPoint(publicPointBaseX, publicPointBaseY, vector.getNamedGroup());
+            curve = vector.getTargetedCurve();
+            point =
+                    Point.createPoint(
+                            publicPointBaseX,
+                            publicPointBaseY,
+                            (NamedEllipticCurveParameters)
+                                    vector.getNamedGroup().getGroupParameters());
         }
 
         if (premasterSecret != null) {
@@ -138,7 +146,8 @@ public class InvalidCurveAttacker {
         List<TlsTask> taskList = new LinkedList<>();
         for (int i = 1; i <= protocolFlows; i++) {
             setPremasterSecret(curve, i + keyOffset, point);
-            InvalidCurveTask taskToAdd = new InvalidCurveTask(buildState(), executor.getReexecutions(), i + keyOffset);
+            InvalidCurveTask taskToAdd =
+                    new InvalidCurveTask(buildState(), executor.getReexecutions(), i + keyOffset);
             taskList.add(taskToAdd);
         }
         executor.bulkExecuteTasks(taskList);
@@ -149,7 +158,7 @@ public class InvalidCurveAttacker {
         BigInteger secret = new BigInteger("" + i);
         if (vector.getNamedGroup() == NamedGroup.ECDH_X25519
                 || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
-            RFC7748Curve rfcCurve = (RFC7748Curve) CurveFactory.getCurve(vector.getNamedGroup());
+            RFC7748Curve rfcCurve = (RFC7748Curve) vector.getTargetedCurve();
             secret = rfcCurve.decodeScalar(secret);
         }
         Point sharedPoint = curve.mult(secret, point);
@@ -159,14 +168,16 @@ public class InvalidCurveAttacker {
             premasterSecret = sharedPoint.getFieldX().getData();
             if (vector.isTwistAttack()) {
                 // transform back from simulated x-only ladder
-                premasterSecret = premasterSecret
-                        .multiply(curveTwistD.modInverse(curve.getModulus()))
-                        .mod(curve.getModulus());
+                premasterSecret =
+                        premasterSecret
+                                .multiply(curveTwistD.modInverse(curve.getModulus()))
+                                .mod(curve.getModulus());
                 if (vector.getNamedGroup() == NamedGroup.ECDH_X25519
                         || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
                     // transform to Montgomery domain
-                    RFC7748Curve rfcCurve = (RFC7748Curve) CurveFactory.getCurve(vector.getNamedGroup());
-                    Point weierPoint = rfcCurve.getPoint(premasterSecret, sharedPoint.getFieldY().getData());
+                    RFC7748Curve rfcCurve = (RFC7748Curve) vector.getTargetedCurve();
+                    Point weierPoint =
+                            rfcCurve.getPoint(premasterSecret, sharedPoint.getFieldY().getData());
                     Point montPoint = rfcCurve.toMontgomery(weierPoint);
                     premasterSecret = montPoint.getFieldX().getData();
                 }
@@ -174,7 +185,7 @@ public class InvalidCurveAttacker {
             if (vector.getNamedGroup() == NamedGroup.ECDH_X25519
                     || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
                 // apply RFC7748 encoding
-                RFC7748Curve rfcCurve = (RFC7748Curve) CurveFactory.getCurve(vector.getNamedGroup());
+                RFC7748Curve rfcCurve = (RFC7748Curve) vector.getTargetedCurve();
                 premasterSecret = new BigInteger(1, rfcCurve.encodeCoordinate(premasterSecret));
             }
         }
@@ -186,23 +197,30 @@ public class InvalidCurveAttacker {
     }
 
     private State buildState() {
-        EllipticCurve curve = CurveFactory.getCurve(vector.getNamedGroup());
-        ModifiableByteArray serializedPublicKey = ModifiableVariableFactory.createByteArrayModifiableVariable();
-        Point basepoint = new Point(
-                new FieldElementFp(publicPointBaseX, curve.getModulus()),
-                new FieldElementFp(publicPointBaseY, curve.getModulus()));
+        EllipticCurve curve = vector.getTargetedCurve();
+        ModifiableByteArray serializedPublicKey =
+                ModifiableVariableFactory.createByteArrayModifiableVariable();
+        Point basepoint =
+                new Point(
+                        new FieldElementFp(publicPointBaseX, curve.getModulus()),
+                        new FieldElementFp(publicPointBaseY, curve.getModulus()));
         byte[] serialized;
         if (curve instanceof RFC7748Curve) {
             serialized = ((RFC7748Curve) curve).encodeCoordinate(basepoint.getFieldX().getData());
         } else {
-            serialized = PointFormatter.formatToByteArray(
-                    vector.getNamedGroup(), basepoint, pointCompressionFormat);
+            serialized =
+                    PointFormatter.formatToByteArray(
+                            (NamedEllipticCurveParameters)
+                                    vector.getNamedGroup().getGroupParameters(),
+                            basepoint,
+                            pointCompressionFormat.getFormat());
         }
         serializedPublicKey.setModification(ByteArrayModificationFactory.explicitValue(serialized));
         ModifiableByteArray pms = ModifiableVariableFactory.createByteArrayModifiableVariable();
-        byte[] explicitPMS = BigIntegers.asUnsignedByteArray(
-                ArrayConverter.bigIntegerToByteArray(curve.getModulus()).length,
-                premasterSecret);
+        byte[] explicitPMS =
+                BigIntegers.asUnsignedByteArray(
+                        ArrayConverter.bigIntegerToByteArray(curve.getModulus()).length,
+                        premasterSecret);
         pms.setModification(ByteArrayModificationFactory.explicitValue(explicitPMS));
 
         WorkflowTrace trace;
@@ -213,19 +231,21 @@ public class InvalidCurveAttacker {
         Config individualConfig = tlsConfig.createCopy();
 
         if (vector.isAttackInRenegotiation()) {
-            trace = InvalidCurveWorkflowGenerator.generateWorkflow(
-                    InvalidCurveWorkflowType.RENEGOTIATION,
-                    serializedPublicKey,
-                    pms,
-                    explicitPMS,
-                    individualConfig);
+            trace =
+                    InvalidCurveWorkflowGenerator.generateWorkflow(
+                            InvalidCurveWorkflowType.RENEGOTIATION,
+                            serializedPublicKey,
+                            pms,
+                            explicitPMS,
+                            individualConfig);
         } else {
-            trace = InvalidCurveWorkflowGenerator.generateWorkflow(
-                    InvalidCurveWorkflowType.REGULAR,
-                    serializedPublicKey,
-                    pms,
-                    explicitPMS,
-                    individualConfig);
+            trace =
+                    InvalidCurveWorkflowGenerator.generateWorkflow(
+                            InvalidCurveWorkflowType.REGULAR,
+                            serializedPublicKey,
+                            pms,
+                            explicitPMS,
+                            individualConfig);
         }
 
         State state = new State(individualConfig, trace);
@@ -234,24 +254,27 @@ public class InvalidCurveAttacker {
 
     private EllipticCurveOverFp buildTwistedCurve() {
         EllipticCurveOverFp intendedCurve;
-        if (vector.getNamedGroup() == NamedGroup.ECDH_X25519
-                || vector.getNamedGroup() == NamedGroup.ECDH_X448) {
-            intendedCurve = ((RFC7748Curve) CurveFactory.getCurve(vector.getNamedGroup()))
-                    .getWeierstrassEquivalent();
+        if (((NamedEllipticCurveParameters) (vector.getNamedGroup().getGroupParameters()))
+                        .getEquationType()
+                == EcCurveEquationType.MONTGOMERY) {
+            intendedCurve = ((RFC7748Curve) vector.getTargetedCurve()).getWeierstrassEquivalent();
         } else {
-            intendedCurve = (EllipticCurveOverFp) CurveFactory.getCurve(vector.getNamedGroup());
+            intendedCurve = (EllipticCurveOverFp) vector.getTargetedCurve();
         }
-        BigInteger modA = intendedCurve
-                .getFieldA()
-                .getData()
-                .multiply(curveTwistD.pow(2))
-                .mod(intendedCurve.getModulus());
-        BigInteger modB = intendedCurve
-                .getFieldB()
-                .getData()
-                .multiply(curveTwistD.pow(3))
-                .mod(intendedCurve.getModulus());
-        EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
+        BigInteger modA =
+                intendedCurve
+                        .getFieldA()
+                        .getData()
+                        .multiply(curveTwistD.pow(2))
+                        .mod(intendedCurve.getModulus());
+        BigInteger modB =
+                intendedCurve
+                        .getFieldB()
+                        .getData()
+                        .multiply(curveTwistD.pow(3))
+                        .mod(intendedCurve.getModulus());
+        EllipticCurveOverFp twistedCurve =
+                new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
         return twistedCurve;
     }
 
@@ -267,9 +290,11 @@ public class InvalidCurveAttacker {
             if (!task.isHasError()) {
                 foundExecutedAsPlanned = true;
                 if (!(WorkflowTraceUtil.getLastReceivedMessage(trace) != null
-                        && WorkflowTraceUtil.getLastReceivedMessage(trace) instanceof HandshakeMessage
+                        && WorkflowTraceUtil.getLastReceivedMessage(trace)
+                                instanceof HandshakeMessage
                         && ((HandshakeMessage) WorkflowTraceUtil.getLastReceivedMessage(trace))
-                                .getHandshakeMessageType() == HandshakeMessageType.FINISHED)) {
+                                        .getHandshakeMessageType()
+                                == HandshakeMessageType.FINISHED)) {
                     LOGGER.debug(
                             "Received no finished Message using secret" + task.getAppliedSecret());
                 } else {
@@ -374,28 +399,37 @@ public class InvalidCurveAttacker {
         if (scanType == InvalidCurveScanType.REGULAR || scanType == InvalidCurveScanType.EXTENDED) {
             if (vector.isTwistAttack()) {
                 curveTwistD = TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPointD();
-                publicPointBaseX = TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX();
-                publicPointBaseY = TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY();
+                publicPointBaseX =
+                        TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX();
+                publicPointBaseY =
+                        TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY();
                 pointCompressionFormat = vector.getPointFormat();
             } else {
-                publicPointBaseX = InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX();
-                publicPointBaseY = InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY();
+                publicPointBaseX =
+                        InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseX();
+                publicPointBaseY =
+                        InvalidCurvePoint.smallOrder(vector.getNamedGroup()).getPublicPointBaseY();
                 pointCompressionFormat = ECPointFormat.UNCOMPRESSED;
             }
         } else if (scanType == InvalidCurveScanType.REDUNDANT) {
             // use second point of different order
             if (vector.isTwistAttack()) {
-                curveTwistD = TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPointD();
-                publicPointBaseX = TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
-                        .getPublicPointBaseX();
-                publicPointBaseY = TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
-                        .getPublicPointBaseY();
+                curveTwistD =
+                        TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPointD();
+                publicPointBaseX =
+                        TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
+                                .getPublicPointBaseX();
+                publicPointBaseY =
+                        TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
+                                .getPublicPointBaseY();
                 pointCompressionFormat = vector.getPointFormat();
             } else {
-                publicPointBaseX = InvalidCurvePoint.alternativeOrder(vector.getNamedGroup())
-                        .getPublicPointBaseX();
-                publicPointBaseY = InvalidCurvePoint.alternativeOrder(vector.getNamedGroup())
-                        .getPublicPointBaseY();
+                publicPointBaseX =
+                        InvalidCurvePoint.alternativeOrder(vector.getNamedGroup())
+                                .getPublicPointBaseX();
+                publicPointBaseY =
+                        InvalidCurvePoint.alternativeOrder(vector.getNamedGroup())
+                                .getPublicPointBaseY();
 
                 pointCompressionFormat = ECPointFormat.UNCOMPRESSED;
             }
@@ -403,12 +437,16 @@ public class InvalidCurveAttacker {
             // point of large order
             if (vector.isTwistAttack()) {
                 curveTwistD = TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPointD();
-                publicPointBaseX = TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX();
-                publicPointBaseY = TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY();
+                publicPointBaseX =
+                        TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX();
+                publicPointBaseY =
+                        TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY();
                 pointCompressionFormat = vector.getPointFormat();
             } else {
-                publicPointBaseX = InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX();
-                publicPointBaseY = InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY();
+                publicPointBaseX =
+                        InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseX();
+                publicPointBaseY =
+                        InvalidCurvePoint.largeOrder(vector.getNamedGroup()).getPublicPointBaseY();
                 pointCompressionFormat = ECPointFormat.UNCOMPRESSED;
             }
         }

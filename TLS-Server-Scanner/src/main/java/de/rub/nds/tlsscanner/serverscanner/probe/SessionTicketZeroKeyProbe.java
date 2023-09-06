@@ -126,7 +126,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe {
         }
 
         byte[] ticket = null;
-        for (ProtocolMessage<?> msg :
+        for (ProtocolMessage msg :
                 WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
             if (msg instanceof NewSessionTicketMessage) {
                 NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;

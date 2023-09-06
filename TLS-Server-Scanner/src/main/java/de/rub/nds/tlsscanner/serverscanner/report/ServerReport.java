@@ -29,9 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
 import java.util.Map;
@@ -273,12 +271,6 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<OcspCertificateResult> getOcspResults() {
-        ListResult<OcspCertificateResult> listResult =
-                getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
-        return listResult == null ? null : listResult.getList();
-    }
-
     public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>
             getRaccoonTestResultList() {
         @SuppressWarnings("unchecked")
@@ -294,12 +286,6 @@ public class ServerReport extends TlsScanReport {
         ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>)
                         getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
-        return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized List<CcaTestResult> getCcaTestResultList() {
-        ListResult<CcaTestResult> listResult =
-                getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS, CcaTestResult.class);
         return listResult == null ? null : listResult.getList();
     }
 

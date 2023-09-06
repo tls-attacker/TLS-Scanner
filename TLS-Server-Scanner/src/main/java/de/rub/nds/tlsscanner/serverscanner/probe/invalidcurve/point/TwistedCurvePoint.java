@@ -196,7 +196,7 @@ public class TwistedCurvePoint {
                                 "5B8545C0F22DFADE38855A5CD1228352F134A9E655D637C03704BDE426506941",
                                 16),
                         new BigInteger("4"),
-                        NamedEllipticCurveParameters.ECDH_X25519,
+                        NamedEllipticCurveParameters.CURVE_X25519,
                         new BigInteger(
                                 "CA6648A697DC4F37B1BB5C5809E9F265332D9C6138371C0809B54D69C303AC7",
                                 16));
@@ -207,7 +207,7 @@ public class TwistedCurvePoint {
                                 "9A6A7C05A0FA5E28F5804F2A40D7E9D4411FAA289AD9C54ACEFA9D5EAD8C5E1A0041CFBCA155921E66D4BDEC85414FFE42C18EFFEF918CB5",
                                 16),
                         new BigInteger("4"),
-                        NamedEllipticCurveParameters.ECDH_X448,
+                        NamedEllipticCurveParameters.CURVE_X448,
                         new BigInteger(
                                 "F151DA48F37BACE95DEE7E0F6F2477C60C131264C2A5B900D214C76115C10CC86A22E33E6C07933F6369E8544580C6780F256EE77F8F3513",
                                 16));

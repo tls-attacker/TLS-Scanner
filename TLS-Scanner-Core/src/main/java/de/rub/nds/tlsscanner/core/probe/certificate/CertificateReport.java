@@ -19,6 +19,7 @@ import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +44,7 @@ public class CertificateReport {
     private PublicKeyContainer publicKey;
     private Boolean weakDebianKey;
     private String issuer;
+    private X509SignatureAlgorithm x509SignatureAlgorithm;
     private SignatureAlgorithm signatureAlgorithm;
     private HashAlgorithm hashAlgorithm;
     private Boolean extendedValidation;
@@ -67,6 +69,14 @@ public class CertificateReport {
     private Set<KeyUsage> keyUsageSet;
 
     public CertificateReport() {}
+
+    public X509SignatureAlgorithm getX509SignatureAlgorithm() {
+        return x509SignatureAlgorithm;
+    }
+
+    public void setX509SignatureAlgorithm(X509SignatureAlgorithm x509SignatureAlgorithm) {
+        this.x509SignatureAlgorithm = x509SignatureAlgorithm;
+    }
 
     public Duration getRemainingDuration() {
         return remainingDuration;

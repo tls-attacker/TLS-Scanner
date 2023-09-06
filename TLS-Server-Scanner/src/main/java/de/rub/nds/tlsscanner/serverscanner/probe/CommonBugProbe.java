@@ -8,12 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -52,6 +46,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonBugProbe extends TlsServerProbe {
 
@@ -150,7 +149,11 @@ public class CommonBugProbe extends TlsServerProbe {
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
-        Chooser chooser = ChooserFactory.getChooser(ChooserType.DEFAULT, new Context(new State(config), config.getDefaultClientConnection()), config)
+        Chooser chooser =
+                ChooserFactory.getChooser(
+                        ChooserType.DEFAULT,
+                        new Context(new State(config), config.getDefaultClientConnection()),
+                        config);
         ClientHelloPreparator preparator = new ClientHelloPreparator(chooser, message);
         preparator.prepare();
         ClientHelloSerializer serializer =

@@ -29,7 +29,6 @@ import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
@@ -39,13 +38,9 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -652,61 +647,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 createDefaultKeyValueContainer(
                         "Required", String.valueOf(report.getCcaRequired())));
 
-        if (report.getCcaTestResultList() != null) {
-            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
-            ccaTestResults.sort(
-                    (ccaTestResult, t1) -> {
-                        int c;
-                        c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
-                        return c;
-                    });
-            CcaWorkflowType lastCcaWorkflowType = null;
-            CcaCertificateType lastCcaCertificateType = null;
-            ProtocolVersion lastProtocolVersion = null;
-            ListContainer ccaTestResultsContainer = new ListContainer();
-            container.add(ccaTestResultsContainer);
-            for (CcaTestResult ccaTestResult : ccaTestResults) {
-                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
-                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
-                    ccaTestResultsContainer.add(new HeadlineContainer(lastCcaWorkflowType.name()));
-                }
-                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
-                    lastCcaCertificateType = ccaTestResult.getCertificateType();
-                    ccaTestResultsContainer.add(
-                            new HeadlineContainer(lastCcaCertificateType.name()));
-                }
-                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
-                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
-                    ccaTestResultsContainer.add(new HeadlineContainer(lastProtocolVersion.name()));
-                }
-                container.add(
-                        new KeyValueContainer(
-                                ccaTestResult
-                                        .getWorkflowType()
-                                        .name()
-                                        .concat("--")
-                                        .concat(ccaTestResult.getCertificateType().name())
-                                        .concat("--")
-                                        .concat(ccaTestResult.getProtocolVersion().name())
-                                        .concat("--")
-                                        .concat(ccaTestResult.getCipherSuite().name()),
-                                AnsiColor.DEFAULT_COLOR,
-                                String.valueOf(ccaTestResult.getSucceeded()),
-                                ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN));
-            }
-        }
         return container;
     }
 

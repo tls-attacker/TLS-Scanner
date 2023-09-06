@@ -8,7 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.X509SignatureAlgorithmGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -54,7 +59,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
                 nonRecommended.add(algorithm);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+        return new X509SignatureAlgorithmGuidelineCheckResult(
                 getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 

@@ -38,7 +38,7 @@ public abstract class TlsServerProbe extends TlsProbe<ServerReport> {
      * @param extensionClass The requested extension class
      * @return The requested extension or null if no such extension was received
      */
-    protected <T extends ExtensionMessage<T>> T getNegotiatedExtension(
+    protected <T extends ExtensionMessage> T getNegotiatedExtension(
             WorkflowTrace workflowTrace, Class<T> extensionClass) {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, workflowTrace)) {
             ServerHelloMessage serverHello =
