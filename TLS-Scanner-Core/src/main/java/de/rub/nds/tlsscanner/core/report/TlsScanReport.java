@@ -133,7 +133,6 @@ public abstract class TlsScanReport extends ScanReport {
 
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>>
             getPaddingOracleTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<PaddingOracleTestInfo>>)
                         getListResult(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
@@ -141,7 +140,6 @@ public abstract class TlsScanReport extends ScanReport {
     }
 
     public synchronized List<CertificateChainReport> getCertificateChainList() {
-        @SuppressWarnings("unchecked")
         ListResult<CertificateChainReport> listResult =
                 (ListResult<CertificateChainReport>)
                         getListResult(

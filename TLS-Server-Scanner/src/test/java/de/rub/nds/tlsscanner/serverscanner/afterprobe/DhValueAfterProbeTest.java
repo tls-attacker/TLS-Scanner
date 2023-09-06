@@ -47,7 +47,7 @@ public class DhValueAfterProbeTest {
                                 + "1013f71167cbf78aa65f3",
                         16);
 
-        publicKeyContainer.put(new DhPublicKey(modulus, generator, publicKey));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
         report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
