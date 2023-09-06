@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.protocol.crypto.ec.FieldElementFp;
 import de.rub.nds.protocol.crypto.ec.Point;
@@ -64,9 +65,9 @@ public class TwistedCurvePointTest {
     }
 
     private boolean isOrderCorrect(TwistedCurvePoint invP) {
-        if (invP.getIntendedGroup() == NamedGroup.ECDH_X25519
-                || invP.getIntendedGroup() == NamedGroup.ECDH_X448) {
-            RFC7748Curve rfcCurve = (RFC7748Curve) CurveFactory.getCurve(invP.getIntendedGroup());
+        if (invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X25519
+                || invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X448) {
+            RFC7748Curve rfcCurve = (RFC7748Curve) invP.getIntendedGroup().getCurve();
             Point montgPoint =
                     rfcCurve.getPoint(invP.getPublicPointBaseX(), invP.getPublicPointBaseY());
             Point weierPoint = rfcCurve.toWeierstrass(montgPoint);
@@ -78,8 +79,7 @@ public class TwistedCurvePointTest {
                             .mod(rfcCurve.getModulus());
 
             EllipticCurveOverFp intendedCurve =
-                    ((RFC7748Curve) CurveFactory.getCurve(invP.getIntendedGroup()))
-                            .getWeierstrassEquivalent();
+                    ((RFC7748Curve) invP.getIntendedGroup().getCurve()).getWeierstrassEquivalent();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()
@@ -106,7 +106,7 @@ public class TwistedCurvePointTest {
             }
         } else {
             EllipticCurveOverFp intendedCurve =
-                    (EllipticCurveOverFp) CurveFactory.getCurve(invP.getIntendedGroup());
+                    (EllipticCurveOverFp) invP.getIntendedGroup().getCurve();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()

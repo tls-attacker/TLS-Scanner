@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -21,25 +22,22 @@ public class NamedGroupWitness implements Serializable {
 
     private Set<CipherSuite> cipherSuites;
 
-    // the curves used to generate an ecdsa sig inside the key ex. message
-    private NamedGroup ecdsaPkGroupEphemeral;
+    // the curve used in the ephemeral key exchange
+    private NamedGroup ecdhPublicKeyGroup;
 
     // the curve used to sign the cert that bears the server's signing key
-    private NamedGroup ecdsaSigGroupStatic;
-    private NamedGroup ecdsaSigGroupEphemeral;
+    private X509NamedCurve certificateGroup;
 
     public NamedGroupWitness() {
         cipherSuites = new HashSet<>();
     }
 
     public NamedGroupWitness(
-            NamedGroup ecdsaPkGroupEphemeral,
-            NamedGroup ecdsaSigGroupStatic,
-            NamedGroup ecdsaSigGroupEphemeral,
+            NamedGroup ecdhPublicKeyGroup,
+            X509NamedCurve ecdsaCertificateGroup,
             CipherSuite cipherSuite) {
-        this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
-        this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
-        this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
+        this.ecdhPublicKeyGroup = ecdhPublicKeyGroup;
+        this.certificateGroup = ecdsaCertificateGroup;
         cipherSuites = new HashSet<>();
         cipherSuites.add(cipherSuite);
     }
@@ -49,16 +47,12 @@ public class NamedGroupWitness implements Serializable {
         cipherSuites.add(cipherSuite);
     }
 
-    public NamedGroup getEcdsaPkGroupEphemeral() {
-        return ecdsaPkGroupEphemeral;
+    public NamedGroup getEcdhPublicKeyGroup() {
+        return ecdhPublicKeyGroup;
     }
 
-    public NamedGroup getEcdsaSigGroupStatic() {
-        return ecdsaSigGroupStatic;
-    }
-
-    public NamedGroup getEcdsaSigGroupEphemeral() {
-        return ecdsaSigGroupEphemeral;
+    public X509NamedCurve getCertificateGroup() {
+        return certificateGroup;
     }
 
     public boolean isFoundUsingRsaCipher() {
@@ -94,16 +88,12 @@ public class NamedGroupWitness implements Serializable {
         return false;
     }
 
-    public void setEcdsaPkGroupEphemeral(NamedGroup ecdsaPkGroupEphemeral) {
-        this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
+    public void setEcdhPublicKeyGroup(NamedGroup ecdsaPkGroupEphemeral) {
+        this.ecdhPublicKeyGroup = ecdsaPkGroupEphemeral;
     }
 
-    public void setEcdsaSigGroupStatic(NamedGroup ecdsaSigGroupStatic) {
-        this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
-    }
-
-    public void setEcdsaSigGroupEphemeral(NamedGroup ecdsaSigGroupEphemeral) {
-        this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
+    public void setCertificateGroup(X509NamedCurve ecdsaSigGroupStatic) {
+        this.certificateGroup = certificateGroup;
     }
 
     public Set<CipherSuite> getCipherSuites() {

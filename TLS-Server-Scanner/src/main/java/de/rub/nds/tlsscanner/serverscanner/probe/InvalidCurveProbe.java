@@ -705,40 +705,35 @@ public class InvalidCurveProbe extends TlsServerProbe {
     private List<NamedGroup> getRequiredGroups(NamedGroup testGroup, CipherSuite testCipher) {
         Set<NamedGroup> requiredGroups = new HashSet<>();
         if (testCipher.isTLS13()) {
-            if (namedCurveWitnessesTls13.get(testGroup).getEcdsaPkGroupEphemeral() != null
-                    && namedCurveWitnessesTls13.get(testGroup).getEcdsaPkGroupEphemeral()
+            if (namedCurveWitnessesTls13.get(testGroup).getEcdhPublicKeyGroup() != null
+                    && namedCurveWitnessesTls13.get(testGroup).getEcdhPublicKeyGroup()
                             != testGroup) {
-                requiredGroups.add(
-                        namedCurveWitnessesTls13.get(testGroup).getEcdsaPkGroupEphemeral());
+                requiredGroups.add(namedCurveWitnessesTls13.get(testGroup).getEcdhPublicKeyGroup());
             }
-            if (namedCurveWitnessesTls13.get(testGroup).getEcdsaSigGroupEphemeral() != null
-                    && namedCurveWitnessesTls13.get(testGroup).getEcdsaSigGroupEphemeral()
+            NamedGroupWitness witness = namedCurveWitnessesTls13.get(testGroup);
+            if (witness.getCertificateGroup() != null
+                    && NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup()) != null
+                    && NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup())
                             != testGroup) {
                 requiredGroups.add(
-                        namedCurveWitnessesTls13.get(testGroup).getEcdsaSigGroupEphemeral());
+                        NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup()));
             }
         } else {
             // RSA cipher suites don't require any additional groups
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher)
-                    == KeyExchangeAlgorithm.ECDHE_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != null
-                        && namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral()
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher).isEC()) {
+                if (namedCurveWitnesses.get(testGroup).getEcdhPublicKeyGroup() != null
+                        && namedCurveWitnesses.get(testGroup).getEcdhPublicKeyGroup()
+                                != testGroup) {
+                    requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdhPublicKeyGroup());
+                }
+                NamedGroupWitness witness = namedCurveWitnesses.get(testGroup);
+                if (witness.getCertificateGroup() != null
+                        && NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup())
+                                != null
+                        && NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup())
                                 != testGroup) {
                     requiredGroups.add(
-                            namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral());
-                }
-                if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral() != null
-                        && namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral()
-                                != testGroup) {
-                    requiredGroups.add(
-                            namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral());
-                }
-            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher)
-                    == KeyExchangeAlgorithm.ECDH_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic() != null
-                        && namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic()
-                                != testGroup) {
-                    requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic());
+                            NamedGroup.convertFromX509NamedCurve(witness.getCertificateGroup()));
                 }
             }
         }

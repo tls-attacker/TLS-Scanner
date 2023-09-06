@@ -25,7 +25,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
+                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         SignatureAndHashAlgorithmsGuidelineCheck check =
                 new SignatureAndHashAlgorithmsGuidelineCheck(
@@ -41,7 +41,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
+                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
         SignatureAndHashAlgorithmsGuidelineCheck check =
                 new SignatureAndHashAlgorithmsGuidelineCheck(

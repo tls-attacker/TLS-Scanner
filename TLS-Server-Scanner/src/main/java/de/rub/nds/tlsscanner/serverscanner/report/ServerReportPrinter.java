@@ -1887,7 +1887,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
         appendTls13Groups(builder);
-        appendCurves(builder);
+        appendGroups(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
     }
@@ -2280,40 +2280,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
     }
 
-    public StringBuilder appendCurves(StringBuilder builder) {
+    public StringBuilder appendGroups(StringBuilder builder) {
         List<NamedGroup> namedGroups = report.getSupportedNamedGroups();
         if (namedGroups != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (namedGroups.size() > 0) {
                 for (NamedGroup group : namedGroups) {
                     builder.append(group.name());
-                    if (detail == ScannerDetail.ALL) {
-                        builder.append("\n  Found using:");
-                        NamedGroupWitness witness =
-                                report.getSupportedNamedGroupsWitnesses().get(group);
-                        for (CipherSuite cipher : witness.getCipherSuites()) {
-                            builder.append("\n    ").append(cipher.toString());
-                        }
-                        builder.append("\n  ECDSA Required Groups:");
-                        if (witness.getEcdsaPkGroupEphemeral() != null
-                                && witness.getEcdsaPkGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaPkGroupEphemeral())
-                                    .append(" (Certificate Public Key - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupEphemeral() != null
-                                && witness.getEcdsaSigGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupEphemeral())
-                                    .append(" (Certificate Signature  - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupStatic() != null
-                                && witness.getEcdsaSigGroupStatic() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupStatic())
-                                    .append(" (Certificate Signature  - Static Cipher Suite)");
-                        }
-                    }
                     builder.append("\n");
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
@@ -2326,6 +2299,20 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             builder,
                             "Groups required for ECDSA validation are not enforced",
                             AnsiColor.YELLOW);
+                }
+                if (detail == ScannerDetail.ALL) {
+                    prettyAppendHeading(builder, "Witnesses");
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
+                        builder.append(
+                                "SKE: "
+                                        + witness.getEcdhPublicKeyGroup()
+                                        + " Cert:"
+                                        + witness.getCertificateGroup()
+                                        + " CS:"
+                                        + witness.getCipherSuites()
+                                        + "\n");
+                    }
                 }
                 prettyAppendHeading(builder, "NamedGroups General");
                 prettyAppend(

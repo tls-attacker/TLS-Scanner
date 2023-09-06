@@ -35,8 +35,10 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengt
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsTypeCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
+import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -94,18 +96,19 @@ public class NistGuidelineSerializationIT {
                         "Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility",
                         RequirementLevel.SHOULD));
         checks.add(
-                new SignatureAlgorithmsCertificateGuidelineCheck(
+                new SignatureAlgorithmsTypeCertificateGuidelineCheck(
                         "Shall be configured with an RSA signature certificate or an ECDSA signature certificate",
                         RequirementLevel.MUST,
                         true,
                         Arrays.asList(
                                 SignatureAlgorithm.RSA_PKCS1,
-                                SignatureAlgorithm.ECDSA))); // TODO check if correct (pkcs#1)
+                                SignatureAlgorithm.RSA_PSS,
+                                SignatureAlgorithm.ECDSA)));
         checks.add(
                 new CertificateCurveGuidelineCheck(
                         "For ECDSA: Curve P-256 or curve P-384 should be used in the public key",
                         RequirementLevel.SHOULD,
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1)));
+                        Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Certificates shall be issued by CA that publishes revocation information in OCSP responses",
@@ -116,7 +119,7 @@ public class NistGuidelineSerializationIT {
                 new CertificateVersionGuidelineCheck(
                         "Server certificate shall be an X.509 version 3 certificate",
                         RequirementLevel.MUST,
-                        3));
+                        X509Version.V3));
         checks.add(
                 new KeySizeCertGuidelineCheck(
                         "All server and client certificates shall contain public keys that offer at least 112 bits of security.",

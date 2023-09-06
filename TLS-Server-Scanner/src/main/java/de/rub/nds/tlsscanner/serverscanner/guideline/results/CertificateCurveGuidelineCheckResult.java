@@ -8,23 +8,23 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     private boolean supported;
-    private NamedEllipticCurveParameters namedEllipticCurveParameters;
+    private X509NamedCurve namedCurve;
 
     public CertificateCurveGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
             boolean supported,
-            NamedEllipticCurveParameters namedEllipticCurveParameters) {
+            X509NamedCurve namedEllipticCurveParameters) {
         super(checkName, adherence);
         this.supported = supported;
-        this.namedEllipticCurveParameters = namedEllipticCurveParameters;
+        this.namedCurve = namedEllipticCurveParameters;
     }
 
     public CertificateCurveGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
@@ -33,13 +33,11 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String toString() {
-        return supported
-                ? namedEllipticCurveParameters + " is recommended."
-                : namedEllipticCurveParameters + " is not recommended.";
+        return supported ? namedCurve + " is recommended." : namedCurve + " is not recommended.";
     }
 
-    public NamedEllipticCurveParameters getNamedEllipticCurveParameters() {
-        return namedEllipticCurveParameters;
+    public X509NamedCurve getNamedCurve() {
+        return namedCurve;
     }
 
     public boolean isSupported() {

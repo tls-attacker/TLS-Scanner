@@ -26,7 +26,6 @@ import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -222,38 +221,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             if (!report.getSupportedNamedGroups().isEmpty()) {
                 for (NamedGroup group : report.getSupportedNamedGroups()) {
                     container.add(new TextContainer(group.name(), AnsiColor.DEFAULT_COLOR));
-                    if (detail == ScannerDetail.ALL) {
-                        ListContainer curveDetails = new ListContainer(1);
-                        container.add(curveDetails);
-                        curveDetails.add(new HeadlineContainer("Found using"));
-                        NamedGroupWitness witness =
-                                report.getSupportedNamedGroupsWitnesses().get(group);
-                        for (CipherSuite cipher : witness.getCipherSuites()) {
-                            curveDetails.add(createDefaultTextContainer(cipher.toString()));
-                        }
-                        curveDetails.add(new HeadlineContainer("ECDSA Required Groups"));
-                        if (witness.getEcdsaPkGroupEphemeral() != null
-                                && witness.getEcdsaPkGroupEphemeral() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaPkGroupEphemeral()
-                                                    + " (Certificate Public Key - Ephemeral Cipher Suite)"));
-                        }
-                        if (witness.getEcdsaSigGroupEphemeral() != null
-                                && witness.getEcdsaSigGroupEphemeral() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaSigGroupEphemeral()
-                                                    + " (Certificate Signature  - Ephemeral Cipher Suite)"));
-                        }
-                        if (witness.getEcdsaSigGroupStatic() != null
-                                && witness.getEcdsaSigGroupStatic() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaSigGroupStatic()
-                                                    + " (Certificate Signature  - Static Cipher Suite)"));
-                        }
-                    }
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
                         == TestResults.TRUE) {
@@ -268,6 +235,22 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                             new TextContainer(
                                     "Groups required for ECDSA validation are not enforced",
                                     AnsiColor.YELLOW));
+                }
+                if (detail == ScannerDetail.ALL) {
+                    ListContainer curveDetails = new ListContainer(1);
+                    container.add(curveDetails);
+                    curveDetails.add(new HeadlineContainer("Witnesses"));
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
+                        curveDetails.add(
+                                createDefaultTextContainer(
+                                        "SKE: "
+                                                + witness.getEcdhPublicKeyGroup()
+                                                + " Cert:"
+                                                + witness.getCertificateGroup()
+                                                + " CS:"
+                                                + witness.getCipherSuites()));
+                    }
                 }
             } else {
                 container.add(new TextContainer("none", AnsiColor.DEFAULT_COLOR));

@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsG
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -291,17 +292,14 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Arrays.asList(
-                                SignatureAndHashAlgorithm.RSA_SHA256,
-                                SignatureAndHashAlgorithm.RSA_SHA384,
-                                SignatureAndHashAlgorithm.RSA_SHA512,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,
-                                SignatureAndHashAlgorithm.ECDSA_SHA256,
-                                SignatureAndHashAlgorithm.ECDSA_SHA384
+                                X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.RSASSA_PSS,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA256,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA384,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA512
+
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512

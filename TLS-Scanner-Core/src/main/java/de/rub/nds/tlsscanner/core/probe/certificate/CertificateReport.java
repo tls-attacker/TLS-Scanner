@@ -19,6 +19,7 @@ import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CertificateReport {
     private String issuer;
     private X509SignatureAlgorithm x509SignatureAlgorithm;
     private SignatureAlgorithm signatureAlgorithm;
+    private X509NamedCurve namedCurve;
     private HashAlgorithm hashAlgorithm;
     private Boolean extendedValidation;
     private Boolean certificateTransparency;
@@ -69,6 +71,14 @@ public class CertificateReport {
     private Set<KeyUsage> keyUsageSet;
 
     public CertificateReport() {}
+
+    public X509NamedCurve getNamedCurve() {
+        return namedCurve;
+    }
+
+    public void setNamedCurve(X509NamedCurve namedCurve) {
+        this.namedCurve = namedCurve;
+    }
 
     public X509SignatureAlgorithm getX509SignatureAlgorithm() {
         return x509SignatureAlgorithm;

@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
@@ -18,6 +17,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateCurveGuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -27,7 +27,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
 
-    private List<NamedEllipticCurveParameters> recommendedNamedParameters;
+    private List<X509NamedCurve> recommendedNamedParameters;
 
     private CertificateCurveGuidelineCheck() {
         super(null, null);
@@ -36,7 +36,7 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     public CertificateCurveGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
+            List<X509NamedCurve> recommendedNamedParameters) {
         super(name, requirementLevel);
         this.recommendedNamedParameters = recommendedNamedParameters;
     }
@@ -45,7 +45,7 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
             String name,
             RequirementLevel requirementLevel,
             boolean onlyOneCertificate,
-            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
+            List<X509NamedCurve> recommendedNamedParameters) {
         super(name, requirementLevel, onlyOneCertificate);
         this.recommendedNamedParameters = recommendedNamedParameters;
     }
@@ -55,7 +55,7 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             boolean onlyOneCertificate,
-            List<NamedEllipticCurveParameters> recommendedNamedParameters) {
+            List<X509NamedCurve> recommendedNamedParameters) {
         super(name, requirementLevel, condition, onlyOneCertificate);
         this.recommendedNamedParameters = recommendedNamedParameters;
     }
@@ -72,14 +72,13 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
         }
         // TODO unsafe check for ecdh
 
-        NamedEllipticCurveParameters namedParameters =
-                ((EcdsaPublicKey) chainReport.getLeafReport().getPublicKey()).getParameters();
-        if (!this.recommendedNamedParameters.contains(namedParameters)) {
+        X509NamedCurve namedCurve = chainReport.getLeafReport().getNamedCurve();
+        if (!this.recommendedNamedParameters.contains(namedCurve)) {
             return new CertificateCurveGuidelineCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, false, namedParameters);
+                    getName(), GuidelineAdherence.VIOLATED, false, namedCurve);
         }
         return new CertificateCurveGuidelineCheckResult(
-                getName(), GuidelineAdherence.ADHERED, true, namedParameters);
+                getName(), GuidelineAdherence.ADHERED, true, namedCurve);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
         return "CertificateCurve_" + getRequirementLevel() + "_" + recommendedNamedParameters;
     }
 
-    public List<NamedEllipticCurveParameters> getRecommendedNamedParameters() {
+    public List<X509NamedCurve> getRecommendedNamedParameters() {
         return recommendedNamedParameters;
     }
 }
