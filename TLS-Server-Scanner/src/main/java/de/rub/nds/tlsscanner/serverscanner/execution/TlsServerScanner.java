@@ -41,24 +41,6 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
@@ -116,7 +98,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -338,28 +319,7 @@ public final class TlsServerScanner
         List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
         GuidelineIO<ServerReport> guidelineIO;
         try {
-            guidelineIO =
-                    new GuidelineIO<>(
-                            TlsAnalyzedProperty.class,
-                            Set.of(
-                                    AnalyzedPropertyGuidelineCheck.class,
-                                    CertificateAgilityGuidelineCheck.class,
-                                    CertificateCurveGuidelineCheck.class,
-                                    CertificateSignatureCheck.class,
-                                    CertificateValidityGuidelineCheck.class,
-                                    CertificateVersionGuidelineCheck.class,
-                                    CipherSuiteGuidelineCheck.class,
-                                    ExtendedKeyUsageCertificateCheck.class,
-                                    ExtensionGuidelineCheck.class,
-                                    HashAlgorithmsGuidelineCheck.class,
-                                    HashAlgorithmStrengthCheck.class,
-                                    KeySizeCertGuidelineCheck.class,
-                                    KeyUsageCertificateCheck.class,
-                                    NamedGroupsGuidelineCheck.class,
-                                    SignatureAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAlgorithmsGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsGuidelineCheck.class));
+            guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -52,9 +51,7 @@ public class GuidelineIOIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         this.original = new Guideline<>(testName, testLink, checks);
-        this.guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class, Set.of(AnalyzedPropertyGuidelineCheck.class));
+        this.guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
     }
 
     @Test

@@ -45,7 +45,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -521,15 +520,7 @@ public class NistGuidelineSerializationIT {
         Guideline<ServerReport> guideline =
                 new Guideline<>(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
-        GuidelineIO<ServerReport> guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class,
-                        checks.stream()
-                                .map(
-                                        check ->
-                                                (Class<? extends GuidelineCheck<ServerReport>>)
-                                                        check.getClass())
-                                .collect(Collectors.toSet()));
+        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
         guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
     }
 }
