@@ -2118,6 +2118,9 @@
         <property>SUPPORTED_CERT_SIGNATURE_ALGORITHMS</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>SUPPORTED_CERT_SIGNATURE_ALGORITHM_OIDS</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE</property>
     </ratingInfluencer>
     <ratingInfluencer>

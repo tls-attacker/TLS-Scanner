@@ -47,6 +47,8 @@ public class CertificateReportGenerator {
         setIssuer(report, cert);
         setSignatureAlgorithm(report, cert);
         setHashAlgorithm(report, cert);
+        setX509SignatureAlgorithm(cert, report);
+        setSignatureAlgorithmOid(cert, report);
         setExtendedValidation(report, cert);
         setCertificateTransparency(report, cert);
         setOcspMustStaple(report, cert);
@@ -57,6 +59,7 @@ public class CertificateReportGenerator {
         setSha256Hash(report, cert);
         setExtendedKeyUsage(report, cert);
         setVulnerableRoca(report, cert);
+
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
             report.setTrustAnchor(anchorManger.isTrustAnchor(report));
@@ -70,6 +73,14 @@ public class CertificateReportGenerator {
             report.setSelfSigned(false);
         }
         return report;
+    }
+
+    private static void setSignatureAlgorithmOid(X509Certificate cert, CertificateReport report) {
+        report.setSignatureAndHashAlgorithmOid(cert.getX509SignatureAlgorithmObjectIdentifier());
+    }
+
+    private static void setX509SignatureAlgorithm(X509Certificate cert, CertificateReport report) {
+        report.setX509SignatureAlgorithm(cert.getX509SignatureAlgorithm());
     }
 
     private static void setHashAlgorithm(CertificateReport report, X509Certificate cert) {
