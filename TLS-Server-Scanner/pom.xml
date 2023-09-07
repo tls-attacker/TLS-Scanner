@@ -27,6 +27,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>tls-scanner-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -81,19 +85,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <!-- Execute integration tests -->
             <plugin>
