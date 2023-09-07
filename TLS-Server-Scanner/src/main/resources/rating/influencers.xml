@@ -2115,7 +2115,7 @@
         <property>SUPPORTED_TLS13_GROUPS</property>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT</property>
+        <property>SUPPORTED_CERT_SIGNATURE_ALGORITHMS</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE</property>

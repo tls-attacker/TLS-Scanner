@@ -22,7 +22,9 @@ import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.Security;
 import java.util.List;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +37,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
 
     @BeforeEach
     public void setup() {
+        Security.addProvider(new BouncyCastleProvider());
         report = new ServerReport();
         probe = new CertificateSignatureAndHashAlgorithmAfterProbe();
     }
@@ -64,7 +67,8 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
                                     .getResource(PATH_TO_CERTIFICATE)
                                     .toURI());
             X509CertificateChain chain = CertificateIo.readPemChain(certificateFile);
-            report.putResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(chain));
+            CertificateChainReport chainReport = new CertificateChainReport(chain, "a.com");
+            report.putResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(chainReport));
             probe.analyze(report);
         } catch (IOException | URISyntaxException e) {
             fail("Could not load certificate from resources");
