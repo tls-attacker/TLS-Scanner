@@ -52,9 +52,9 @@ public class Pkcs1VectorGenerator {
         for (Pkcs1Vector vector : encryptedVectors) {
             BigInteger plaintext = new BigInteger(1, vector.getPlainValue());
             byte[] encrypted =
-                    plaintext
-                            .modPow(publicKey.getPublicExponent(), publicKey.getModulus())
-                            .toByteArray();
+                    ArrayConverter.bigIntegerToNullPaddedByteArray(
+                            plaintext.modPow(publicKey.getPublicExponent(), publicKey.getModulus()),
+                            publicKey.getModulus().bitLength() / Bits.IN_A_BYTE);
             vector.setEncryptedValue(encrypted);
         }
         return encryptedVectors;
