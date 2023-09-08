@@ -304,6 +304,10 @@ public class CertificateProbe extends TlsServerProbe {
         if (rsaSigHashCert != null) {
             tls13Certs.add(rsaSigHashCert);
         }
+        List<CertificateChain> sm2SigHashCerts = getTls13CertsSm2SigHash();
+        if (sm2SigHashCerts != null) {
+            tls13Certs.addAll(sm2SigHashCerts);
+        }
         tls13Certs.addAll(getTls13CertsEcdsaSigHash());
         return tls13Certs;
     }
@@ -328,6 +332,21 @@ public class CertificateProbe extends TlsServerProbe {
                 ecdsaPkGroupsTls13,
                 ecdsaCertSigGroupsTls13);
         return tls13ecdsaCerts;
+    }
+
+    private List<CertificateChain> getTls13CertsSm2SigHash() {
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+                SignatureAndHashAlgorithm.SM2_SM3);
+        List<CertificateChain> tls13Sm2Certs = new LinkedList<>();
+        performEcCertScanEcdsa(
+                tlsConfig,
+                getTls13Curves(),
+                CipherSuite.getImplementedTls13CipherSuites(),
+                tls13Sm2Certs,
+                ecdsaPkGroupsTls13,
+                ecdsaCertSigGroupsTls13);
+        return tls13Sm2Certs;
     }
 
     private List<NamedGroup> getAllCurves() {

@@ -23,6 +23,7 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
@@ -39,6 +40,7 @@ import javax.security.auth.x500.X500Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class TrustAnchorManager {
@@ -223,6 +225,7 @@ public class TrustAnchorManager {
                             .getClassLoader()
                             .getResourceAsStream("trust/" + entry.getFingerprint() + ".pem");
             try {
+                Security.addProvider(new BouncyCastleProvider());
                 org.bouncycastle.crypto.tls.Certificate cert =
                         PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));
