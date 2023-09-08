@@ -629,22 +629,22 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder,
                 "Chain ordered",
-                chain.getChainIsOrdered(),
+                Objects.equals(chain.getChainIsOrdered(), Boolean.TRUE),
                 chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
         prettyAppend(
                 builder,
                 "Contains Trust Anchor",
-                chain.getContainsTrustAnchor(),
+                Objects.equals(chain.getContainsTrustAnchor(), Boolean.TRUE),
                 chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
         prettyAppend(
                 builder,
                 "Generally Trusted",
-                chain.getGenerallyTrusted(),
+                Objects.equals(chain.getGenerallyTrusted(), Boolean.TRUE),
                 chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
         prettyAppend(
                 builder,
                 "Custom Trusted",
-                chain.getContainsCustomTrustAnchor(),
+                Objects.equals(chain.getContainsCustomTrustAnchor(), Boolean.TRUE),
                 chain.getContainsCustomTrustAnchor() ? AnsiColor.GREEN : AnsiColor.RED);
 
         if (chain.getCertificateIssues().size() > 0) {
