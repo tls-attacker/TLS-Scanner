@@ -1,15 +1,14 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.core.constants;
 
-import de.rub.nds.scanner.core.constants.ProbeType;
-
+import de.rub.nds.scanner.core.probe.ProbeType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -72,7 +71,8 @@ public enum TlsProbeType implements ProbeType {
     VERSION_1_3_RANDOM_DOWNGRADE("TLS 1.3 DOWNGRADE Prevention"),
     DHE_PARAMETERS("DHE parameters"),
     BASIC("Basic"),
-    APPLICATION_MESSAGE("Application message");
+    APPLICATION_MESSAGE("Application message"),
+    SERVER_CERTIFICATE_MINIMUM_KEY_SIZE("Server Certificate Minimum Key Size");
 
     @Override
     public String getName() {

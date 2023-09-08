@@ -1,17 +1,19 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -22,10 +24,10 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
 import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
@@ -37,11 +39,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import de.rub.nds.tlsscanner.serverscanner.task.CcaTask;
-
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CcaProbe extends TlsServerProbe {
 
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
@@ -64,7 +65,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = configSelector.getScannerConfig().getCcaDelegate();
@@ -161,10 +162,11 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.REQUIRES_CCA)
-                .requires(new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION))
-                .requires(new WorkingConfigRequirement(configSelector));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.REQUIRES_CCA))
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
@@ -226,6 +228,7 @@ public class CcaProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         if (configSelector
                 .getScannerConfig()
+                .getExecutorConfig()
                 .getScanDetail()
                 .isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {

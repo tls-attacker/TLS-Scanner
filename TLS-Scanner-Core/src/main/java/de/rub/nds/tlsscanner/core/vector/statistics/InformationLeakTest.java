@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,17 +10,16 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest<T> {
+public class InformationLeakTest<TestInfoT extends TestInfo>
+        extends VectorStatisticTest<TestInfoT> {
 
-    public InformationLeakTest(T testInfo, List<VectorResponse> responseList) {
+    public InformationLeakTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         super(testInfo, responseList);
         updateInternals();
     }

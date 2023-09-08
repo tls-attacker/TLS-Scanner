@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -13,18 +13,16 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x509.Certificate;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.jce.provider.X509CertificateObject;
-
 import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class CertificateReport {
 

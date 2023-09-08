@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -12,42 +12,30 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-
+import java.util.List;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
 
 public class ProtocolRequirementTest {
     @Test
     public void testProtocolRequirement() {
-        TestReport report = new TestReport();
+        TlsCoreTestReport report = new TlsCoreTestReport();
         ProtocolVersion[] protocolVersion = new ProtocolVersion[] {ProtocolVersion.TLS10};
 
-        ProtocolRequirement requirement = new ProtocolRequirement();
+        ProtocolVersionRequirement<TlsCoreTestReport> requirement =
+                new ProtocolVersionRequirement<>();
         assertTrue(requirement.evaluate(report));
 
-        requirement = new ProtocolRequirement(new ProtocolVersion[0]);
+        requirement = new ProtocolVersionRequirement<>(new ProtocolVersion[0]);
         assertTrue(requirement.evaluate(report));
 
-        requirement = new ProtocolRequirement(protocolVersion);
-        assertArrayEquals(requirement.getRequirement(), protocolVersion);
+        requirement = new ProtocolVersionRequirement<>(protocolVersion);
+        assertArrayEquals(requirement.getParameters().toArray(), protocolVersion);
         assertFalse(requirement.evaluate(report));
 
-        Requirement requirementMissing = requirement.getMissingRequirements(report);
-        assertFalse(requirement.evaluate(report));
-        assertArrayEquals(
-                ((ProtocolRequirement) requirementMissing).getRequirement(),
-                requirement.getRequirement());
-
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
-                new ListResult<>(
-                        Arrays.asList(protocolVersion),
-                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name()));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, List.of(protocolVersion));
         assertTrue(requirement.evaluate(report));
     }
 }

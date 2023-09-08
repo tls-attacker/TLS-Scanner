@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,28 +10,25 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.LinkedList;
-import java.util.List;
 
 public class RecommendationsSerializationIT {
 

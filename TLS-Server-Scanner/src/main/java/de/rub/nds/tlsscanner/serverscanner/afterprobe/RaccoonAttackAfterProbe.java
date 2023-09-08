@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,10 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -21,7 +20,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAtt
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackVulnerabilityPosition;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -70,11 +68,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
             BigInteger modulo = smallestByteSizeModuloMap.get(i);
             attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
         }
-        report.putResult(
-                TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
-                new ListResult<>(
-                        attackProbabilityList,
-                        TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES.name()));
+        report.putResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES, attackProbabilityList);
 
         TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
         if (reusesDhPublicKey == TestResults.TRUE) {

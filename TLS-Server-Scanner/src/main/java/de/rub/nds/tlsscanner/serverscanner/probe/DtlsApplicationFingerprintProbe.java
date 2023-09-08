@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,12 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import com.google.common.primitives.Bytes;
-
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -28,19 +27,20 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
 
     private List<ApplicationProtocol> supportedApplications;
     private TestResult isAcceptingUnencryptedAppData = TestResults.COULD_NOT_TEST;
@@ -54,7 +54,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         supportedApplications = new ArrayList<>();
         isAcceptingUnencryptedAppData = TestResults.NOT_TESTED_YET;
         if (!isEchoServer()) {
@@ -217,7 +217,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe<ConfigSelect
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
     }
 }

@@ -1,15 +1,16 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -24,17 +25,15 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class CertificateProbe extends TlsServerProbe {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -67,7 +66,7 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         ecdsaPkGroupsStatic = new LinkedList<>();
         ecdsaPkGroupsEphemeral = new LinkedList<>();
         ecdsaPkGroupsTls13 = new LinkedList<>();
@@ -101,8 +100,8 @@ public class CertificateProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override

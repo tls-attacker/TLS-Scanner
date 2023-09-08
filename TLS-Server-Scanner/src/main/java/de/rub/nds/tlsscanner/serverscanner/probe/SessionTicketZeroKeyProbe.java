@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -9,9 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -31,20 +33,14 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -52,6 +48,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * The Probe checks for CVE-2020-13777.
@@ -65,7 +62,7 @@ import javax.crypto.spec.SecretKeySpec;
  * <p>Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777 Reference [2]:
  * https://www.gnutls.org/security-new.html
  */
-public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class SessionTicketZeroKeyProbe extends TlsServerProbe {
 
     /** Magic Bytes the plaintext state in GnuTls starts with */
     public static final byte[] GNU_TLS_MAGIC_BYTES =
@@ -104,7 +101,7 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         State state;
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.setAddSessionTicketTLSExtension(true);
@@ -184,9 +181,9 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe<ConfigSelector, Se
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new PropertyRequirement(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS)
-                .requires(new ProbeRequirement(TlsProbeType.EXTENSIONS));
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(TlsProbeType.EXTENSIONS)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS));
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {

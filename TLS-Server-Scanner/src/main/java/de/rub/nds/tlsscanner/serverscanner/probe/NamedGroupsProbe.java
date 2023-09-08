@@ -1,16 +1,17 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -28,11 +29,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class NamedGroupsProbe extends TlsServerProbe {
 
     private Set<CipherSuite> supportedCipherSuites;
 
@@ -78,7 +77,7 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         namedGroupsMap = new HashMap<>();
         ignoresEcdsaGroupDisparity = TestResults.FALSE;
         addGroupsFound(
@@ -319,8 +318,8 @@ public class NamedGroupsProbe extends TlsServerProbe<ConfigSelector, ServerRepor
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return new ProbeRequirement(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CERTIFICATE);
     }
 
     @Override

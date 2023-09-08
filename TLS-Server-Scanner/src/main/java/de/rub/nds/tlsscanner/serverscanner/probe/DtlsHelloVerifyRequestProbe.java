@@ -1,7 +1,7 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -10,9 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -33,14 +33,15 @@ import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-
 import java.util.Arrays;
 
-public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, ServerReport> {
+public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
 
     public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
 
@@ -70,7 +71,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         try {
             hasHvrRetransmissions = hasHvrRetransmissions();
             checksCookie = checksCookie();
@@ -266,8 +267,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe<ConfigSelector, 
     }
 
     @Override
-    protected Requirement getRequirements() {
-        return Requirement.NO_REQUIREMENT;
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeTrueRequirement<>(ProtocolType.DTLS);
     }
 
     @Override

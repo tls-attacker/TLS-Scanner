@@ -1,16 +1,16 @@
 /*
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -44,18 +44,16 @@ import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
-
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /** TODO: Need to be completed. */
-public class ServerContainerReportCreator extends TlsReportCreator {
+public class ServerContainerReportCreator extends TlsReportCreator<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -444,7 +442,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
 
     private ReportContainer createAlpnContainer(ServerReport report) {
         ListContainer container = new ListContainer();
-        if (report.getSupportedAlpns() == null) {
+        if (report.getSupportedAlpnConstans() == null) {
             return container;
         }
         container.add(new HeadlineContainer("ALPN"));
@@ -452,7 +450,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
             if (alpnProtocol.isGrease()) {
                 continue;
             }
-            if (report.getSupportedAlpns().contains(alpnProtocol.getConstant())) {
+            if (report.getSupportedAlpnConstans().contains(alpnProtocol.getConstant())) {
                 container.add(
                         new KeyValueContainer(
                                 alpnProtocol.getPrintableName(),
@@ -779,7 +777,8 @@ public class ServerContainerReportCreator extends TlsReportCreator {
             rater = DefaultRatingLoader.getServerReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
-                    scoreReport.getInfluencers();
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(
@@ -826,7 +825,7 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                 new KeyValueContainer(
                         recommendation.getShortName(),
                         AnsiColor.DEFAULT_COLOR,
-                        influencer.getResult().name(),
+                        influencer.getResult().getName(),
                         color));
         int scoreInfluence = 0;
         String additionalInfo = "";
@@ -890,11 +889,11 @@ public class ServerContainerReportCreator extends TlsReportCreator {
                 container.add(
                         createDefaultKeyValueContainer(
                                 "TCP connections",
-                                String.valueOf(report.getPerformedTcpConnections())));
+                                String.valueOf(report.getPerformedConnections())));
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(
