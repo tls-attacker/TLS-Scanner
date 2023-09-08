@@ -629,23 +629,31 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder,
                 "Chain ordered",
-                Objects.equals(chain.getChainIsOrdered(), Boolean.TRUE),
-                chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+                chain.getChainIsOrdered(),
+                Objects.equals(chain.getChainIsOrdered(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.YELLOW);
         prettyAppend(
                 builder,
                 "Contains Trust Anchor",
-                Objects.equals(chain.getContainsTrustAnchor(), Boolean.TRUE),
-                chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
+                chain.getContainsTrustAnchor(),
+                Objects.equals(chain.getContainsTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.RED
+                        : AnsiColor.GREEN);
         prettyAppend(
                 builder,
                 "Generally Trusted",
-                Objects.equals(chain.getGenerallyTrusted(), Boolean.TRUE),
-                chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
+                chain.getGenerallyTrusted(),
+                Objects.equals(chain.getGenerallyTrusted(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
         prettyAppend(
                 builder,
                 "Custom Trusted",
-                Objects.equals(chain.getContainsCustomTrustAnchor(), Boolean.TRUE),
-                chain.getContainsCustomTrustAnchor() ? AnsiColor.GREEN : AnsiColor.RED);
+                chain.getContainsCustomTrustAnchor(),
+                Objects.equals(chain.getContainsCustomTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
 
         if (chain.getCertificateIssues().size() > 0) {
             prettyAppendSubheading(builder, "Certificate Issues");
