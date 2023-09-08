@@ -348,16 +348,7 @@ public class CertificateProbe extends TlsServerProbe {
                 ecdsaCertSigGroupsTls13);
         return tls13Sm2Certs;
     }
-    /*
-        private List<CertificateChain> getTls13CertsSm2SigHash() {
-            Config tlsConfig = configSelector.getTls13BaseConfig();
-            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SM2_SM3);
-            List<CertificateChain> tls13sm2Certs = new LinkedList<>();
-            performEcCertScanSm2(
-                    tlsConfig, CipherSuite.getImplementedTls13CipherSuites(), tls13sm2Certs);
-            return tls13sm2Certs;
-        }
-    */
+
     private List<NamedGroup> getAllCurves() {
         LinkedList<NamedGroup> curves = new LinkedList<>();
 
@@ -468,33 +459,6 @@ public class CertificateProbe extends TlsServerProbe {
             }
         } while (!groupsToTest.isEmpty() && !cipherSuitesToTest.isEmpty());
     }
-    /*
-    private void performEcCertScanSm2(
-            Config tlsConfig,
-            List<CipherSuite> cipherSuitesToTest,
-            List<CertificateChain> certificateList) {
-        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.CURVE_SM2);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.CURVE_SM2);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        configSelector.repairConfig(tlsConfig);
-        State state = new State(tlsConfig);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
-                && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
-                && state.getTlsContext().getServerCertificate() != null
-                && state.getTlsContext().getEcCertificateCurve() != null
-                && state.getTlsContext().getEcCertificateCurve().equals(NamedGroup.CURVE_SM2)) {
-            certificateList.add(
-                    new CertificateChain(
-                            state.getTlsContext().getServerCertificate(),
-                            tlsConfig.getDefaultClientConnection().getHostname()));
-        } else {
-            // selected cipher suite or certificate named group invalid
-            cipherSuitesToTest.clear();
-        }
-    }*/
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
