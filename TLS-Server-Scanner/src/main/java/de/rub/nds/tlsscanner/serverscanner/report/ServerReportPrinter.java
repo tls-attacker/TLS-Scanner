@@ -706,7 +706,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 if (certReport.getNotBefore() != null
                         && certReport.getNotAfter() != null
                         && certReport.getNotAfter().isAfterNow()) {
-                    int days = Days.daysBetween(certReport.getNotAfter(), DateTime.now()).getDays();
+                    int days = Days.daysBetween(DateTime.now(), certReport.getNotAfter()).getDays();
                     if (days < 1) {
                         prettyAppend(
                                 builder,
