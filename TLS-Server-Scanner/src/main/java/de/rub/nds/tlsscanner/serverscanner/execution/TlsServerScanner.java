@@ -275,7 +275,7 @@ public final class TlsServerScanner
     @Override
     protected List<Guideline<ServerReport>> getGuidelines() {
         if (getProtocolType() == ProtocolType.DTLS) {
-            return null;
+            return List.of();
         }
 
         LOGGER.debug("Loading guidelines from files...");
