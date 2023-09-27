@@ -16,6 +16,7 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -29,10 +30,15 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketManipulationProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketPaddingOracleProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,6 +91,13 @@ public class ServerReport extends TlsScanReport {
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
+
+    // SessionTicket
+    private SessionTicketProbeResult sessionTicketProbeResult = null;
+    private SessionTicketManipulationProbeResult sessionTicketManipulationResult = null;
+    private SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult = null;
+    private Map<ProtocolVersion, SessionTicketAfterProbeResult> sessionTicketAfterProbeResult =
+            new EnumMap<>(ProtocolVersion.class);
 
     // Rating
     private int score;
@@ -378,6 +391,43 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
+    }
+
+    public synchronized SessionTicketProbeResult getSessionTicketProbeResult() {
+        return sessionTicketProbeResult;
+    }
+
+    public synchronized void setSessionTicketProbeResult(
+            SessionTicketProbeResult sessionTicketProbeResult) {
+        this.sessionTicketProbeResult = sessionTicketProbeResult;
+    }
+
+    public SessionTicketManipulationProbeResult getSessionTicketManipulationResult() {
+        return sessionTicketManipulationResult;
+    }
+
+    public void setSessionTicketManipulationResult(
+            SessionTicketManipulationProbeResult sessionTicketManipulationResult) {
+        this.sessionTicketManipulationResult = sessionTicketManipulationResult;
+    }
+
+    public SessionTicketPaddingOracleProbeResult getSessionTicketPaddingOracleResult() {
+        return sessionTicketPaddingOracleResult;
+    }
+
+    public void setSessionTicketPaddingOracleResult(
+            SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult) {
+        this.sessionTicketPaddingOracleResult = sessionTicketPaddingOracleResult;
+    }
+
+    public void putSessionTicketAfterProbeResult(
+            ProtocolVersion version, SessionTicketAfterProbeResult sessionTicketAfterProbeResult) {
+        this.sessionTicketAfterProbeResult.put(version, sessionTicketAfterProbeResult);
+    }
+
+    public Map<ProtocolVersion, SessionTicketAfterProbeResult>
+            getSessionTicketAfterProbeResultMap() {
+        return sessionTicketAfterProbeResult;
     }
 
     public synchronized int getScore() {

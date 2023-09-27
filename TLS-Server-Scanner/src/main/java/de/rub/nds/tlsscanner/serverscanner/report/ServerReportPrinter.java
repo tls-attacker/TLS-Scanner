@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
@@ -70,16 +71,21 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketManipulationProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketPaddingOracleProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,6 +149,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
         // appendSessionTicketZeroKeyDetails(builder);
+        appendSessionTicketEval(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
@@ -1173,6 +1180,315 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         // report.getSessionTicketGetsRotated());
         // prettyAppendRedOnFailure(builder, "Ticketbleed",
         // report.getVulnerableTicketBleed());
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval(StringBuilder builder) {
+        prettyAppendHeading(builder, "SessionTicketEval");
+
+        prettyAppendSubheading(builder, "Summary");
+
+        prettyAppend(builder, "Supports Session Tickets", TlsAnalyzedProperty.ISSUES_TICKET);
+        prettyAppend(
+                builder, "Supports Session Resumption", TlsAnalyzedProperty.RESUMES_WITH_TICKET);
+        prettyAppend(
+                builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK",
+                TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(builder, "No (full) MAC check", TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+        prettyAppend(
+                builder, "Vulnerable to Padding Oracle", TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
+        prettyAppend(
+                builder, "Tickets can be replayed", TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
+        prettyAppend(
+                builder, "Supports 0-RTT Data", TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
+        prettyAppend(
+                builder,
+                "Vulnerable to 0-RTT replay",
+                TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
+
+        prettyAppend(
+                builder,
+                "Allows ciphersuite change",
+                TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        prettyAppend(
+                builder,
+                "Tickets resumable in different version",
+                TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
+
+        prettyAppendSubheading(builder, "Details");
+        // TODO use tables
+        // once we have support for tables, most of the data below can be put into tables
+        // the columns would be the protocol version
+
+        SessionTicketProbeResult mainProbeResult = report.getSessionTicketProbeResult();
+        SessionTicketManipulationProbeResult mainManipulationResult =
+                report.getSessionTicketManipulationResult();
+        SessionTicketPaddingOracleProbeResult mainPaddingOracleResult =
+                report.getSessionTicketPaddingOracleResult();
+        Map<ProtocolVersion, SessionTicketAfterProbeResult> afterProbeResults =
+                report.getSessionTicketAfterProbeResultMap();
+
+        if (mainProbeResult != null) {
+            for (TicketResult versionResults : mainProbeResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        "Issues Tickets [" + versionResults.getProtocolVersion() + "]",
+                        versionResults.getIssuesTickets().toString());
+            }
+            for (TicketResult versionResults : mainProbeResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        "Resumes Tickets [" + versionResults.getProtocolVersion() + "]",
+                        versionResults.getResumesWithTicket().toString());
+            }
+
+            for (TicketResult versionResults : mainProbeResult.getResultMap().values()) {
+                if (!versionResults.getVersionChangeResults().isEmpty()) {
+                    prettyAppend(
+                            builder,
+                            "Resuming " + versionResults.getProtocolVersion() + " Ticket in");
+                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                            versionResults.getVersionChangeResults().entrySet()) {
+                        prettyAppend(
+                                builder,
+                                "\t" + changeResult.getKey() + ": ",
+                                changeResult.getValue().toString());
+                    }
+                }
+            }
+
+            for (TicketResult versionResults : mainProbeResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        "Allows ciphersuite change [" + versionResults.getProtocolVersion() + "]",
+                        versionResults.getAllowsCiphersuiteChange().toString());
+            }
+
+            for (TicketResult versionResults : mainProbeResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        "Tickets can be replayed [" + versionResults.getProtocolVersion() + "]",
+                        versionResults.getReplayVulnerable().toString());
+            }
+        }
+
+        if (mainManipulationResult != null) {
+            // have one map, such that the classes stay the same
+            Map<ResponseFingerprint, Integer> manipulationClassifications = new HashMap<>();
+
+            prettyAppendSubheading(builder, "Manipulation");
+            // print brief overview
+            for (TicketManipulationResult manipulationResult :
+                    mainManipulationResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        "Manipulation Overview "
+                                + manipulationResult.getProtocolVersion()
+                                + ": "
+                                + manipulationResult.getResultsAsShortString(
+                                        manipulationClassifications, true));
+            }
+
+            if (detail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
+                for (TicketManipulationResult manipulationResult :
+                        mainManipulationResult.getResultMap().values()) {
+                    prettyAppend(
+                            builder,
+                            "Manipulation Details "
+                                    + manipulationResult.getProtocolVersion()
+                                    + ": "
+                                    + manipulationResult.getResultsAsShortString(
+                                            manipulationClassifications, false));
+                }
+            }
+
+            // print legend
+            for (TicketManipulationResult manipulationResult :
+                    mainManipulationResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT
+                                                + " ["
+                                                + manipulationResult.getProtocolVersion()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getAcceptFingerprint());
+            }
+            for (TicketManipulationResult manipulationResult :
+                    mainManipulationResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT_DIFFERENT_SECRET
+                                                + " ["
+                                                + manipulationResult.getProtocolVersion()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getAcceptDifferentSecretFingerprint());
+            }
+            for (TicketManipulationResult manipulationResult :
+                    mainManipulationResult.getResultMap().values()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_REJECT
+                                                + " ["
+                                                + manipulationResult.getProtocolVersion()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getRejectFingerprint());
+            }
+
+            for (Entry<ResponseFingerprint, Integer> entry :
+                    manipulationClassifications.entrySet().stream()
+                            .sorted((a, b) -> Integer.compare(a.getValue(), b.getValue()))
+                            .toArray(Entry[]::new)) {
+                String key;
+                if (entry.getValue() < TicketManipulationResult.CHR_CLASSIFICATIONS.length()) {
+                    key =
+                            ""
+                                    + TicketManipulationResult.CHR_CLASSIFICATIONS.charAt(
+                                            entry.getValue());
+                } else {
+                    key = "" + entry.getValue();
+                }
+                prettyAppend(builder, padToLength(key, 10) + "\t: " + entry.getKey());
+            }
+
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_NO_RESULT + "", 10)
+                            + "\t: *not tested/no result*");
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_UNKNOWN + "", 10)
+                            + "\t: *multiple classifications/no more chars left to classify*");
+        }
+
+        if (mainPaddingOracleResult != null) {
+            prettyAppendSubSubheading(builder, "Padding Oracle");
+            for (TicketPaddingOracleResult paddingResult :
+                    mainPaddingOracleResult.getResultMap().values()) {
+                prettyAppendSubSubSubheading(
+                        builder, paddingResult.getProtocolVersion().toString());
+                prettyAppend(
+                        builder, "Overall Result", paddingResult.getOverallResult().toString());
+                for (TicketPaddingOracleVectorSecond vector :
+                        paddingResult.getSecondVectorsWithRareResponses()) {
+                    prettyAppend(
+                            builder,
+                            "Possible Plaintext:",
+                            String.format(
+                                    "%02x%02x (XOR %02x%02x@%d)",
+                                    vector.secondAssumedPlaintext,
+                                    vector.lastAssumedPlaintext,
+                                    vector.secondXorValue,
+                                    vector.lastXorValue,
+                                    vector.offset));
+                }
+
+                appendInformationLeakTestList(
+                        builder,
+                        paddingResult.getPositionResults().stream()
+                                .map(TicketPaddingOracleOffsetResult::getLastByteLeakTest)
+                                .collect(Collectors.toList()),
+                        "Padding Oracle Details");
+            }
+        }
+
+        if (afterProbeResults != null) {
+            prettyAppendSubSubheading(builder, "Analysis");
+            for (SessionTicketAfterProbeResult afterResult : afterProbeResults.values()) {
+                prettyAppendSubSubSubheading(builder, afterResult.getProtocolVersion().toString());
+                prettyAppend(builder, "Ticket length", afterResult.getTicketLengths());
+                prettyAppend(
+                        builder,
+                        "Keyname/Prefix length",
+                        String.valueOf(afterResult.getKeyNameLength()));
+                prettyAppend(builder, "Found ASCII Strings", "");
+                for (String found : afterResult.getAsciiStringsFound()) {
+                    prettyAppend(builder, "", "[" + found.length() + " Bytes] \"" + found + "\"");
+                }
+
+                if (afterResult.getContainsPlainSecret() != null) {
+                    prettyAppend(
+                            builder,
+                            "Found Plain Secret",
+                            afterResult.getContainsPlainSecret().secretType.toString());
+                } else {
+                    prettyAppend(builder, "No Plain Secret", "-");
+                }
+
+                if (afterResult.getDiscoveredReusedKeystream() != null) {
+                    prettyAppend(
+                            builder,
+                            "Found Reused Keystream - Found Secret",
+                            afterResult.getDiscoveredReusedKeystream().secretType.toString());
+                } else {
+                    prettyAppend(builder, "No Reused Keystream", "-");
+                }
+            }
+
+            if (afterProbeResults.values().stream()
+                    .anyMatch(res -> res.getFoundDefaultStek() != null)) {
+                prettyAppendSubSubheading(builder, "Default STEK");
+                for (SessionTicketAfterProbeResult afterResult : afterProbeResults.values()) {
+                    FoundDefaultStek foundDefaultStek = afterResult.getFoundDefaultStek();
+                    if (foundDefaultStek != null) {
+                        prettyAppendSubSubSubheading(
+                                builder, afterResult.getProtocolVersion().toString());
+                        prettyAppend(builder, "Found Format", foundDefaultStek.format.toString());
+                        prettyAppend(
+                                builder, "Found Algorithm", foundDefaultStek.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultStek.key, false, false));
+                        prettyAppend(
+                                builder,
+                                "Found Secret",
+                                foundDefaultStek.secret.secretType.toString());
+                    }
+                }
+            } else {
+                prettyAppend(builder, "No Default STEK", "-");
+            }
+
+            if (afterProbeResults.values().stream()
+                    .anyMatch(res -> res.getFoundDefaultHmacKey() != null)) {
+                prettyAppendSubSubheading(builder, "Default HMAC Key");
+                for (SessionTicketAfterProbeResult afterResult : afterProbeResults.values()) {
+                    FoundDefaultHmacKey foundDefaultHmacKey = afterResult.getFoundDefaultHmacKey();
+                    if (foundDefaultHmacKey != null) {
+                        prettyAppendSubSubSubheading(
+                                builder, afterResult.getProtocolVersion().toString());
+                        prettyAppend(
+                                builder, "Found Format", foundDefaultHmacKey.format.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Algorithm",
+                                foundDefaultHmacKey.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultHmacKey.key, false, false));
+                    }
+                }
+            } else {
+                prettyAppend(builder, "No Default HMAC Key", "-");
+            }
+        }
+
         return builder;
     }
 

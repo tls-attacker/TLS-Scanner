@@ -39,6 +39,7 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
@@ -215,6 +216,12 @@ public final class TlsServerScanner
         registerProbeForExecution(
                 new ConnectionClosingProbe(configSelector, parallelExecutor), false);
         registerProbeForExecution(new PoodleAfterProbe());
+        registerProbeForExecution(new SessionTicketProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketManipulationProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketPaddingOracleProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new SessionTicketAfterProbe(configSelector));
     }
 
     @Override
