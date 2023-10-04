@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -24,8 +25,8 @@ import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketManipulationProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
@@ -34,6 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.NoTicket;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketBitFlipVector;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,33 +53,36 @@ import org.apache.logging.log4j.Logger;
  * <p>This test retrieves a ticket, then induces bitflips and tries to resume with this ticket. The
  * responses of the server are fingerprinted and evaluated.
  */
-public class SessionTicketManipulationProbe
-        extends SessionTicketBaseProbe<SessionTicketManipulationProbeResult> {
+public class SessionTicketManipulationProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    VersionDependentResult<TicketManipulationResult> overallResult = new VersionDependentResult<>();
+
     public SessionTicketManipulationProbe(
-            ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.SESSION_TICKET_MANIPULATION, scannerConfig);
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, configSelector, TlsProbeType.SESSION_TICKET_MANIPULATION);
     }
 
     @Override
-    public SessionTicketManipulationProbeResult executeTest() {
-        SessionTicketManipulationProbeResult overallResult =
-                new SessionTicketManipulationProbeResult();
+    public void executeTest() {
         for (ProtocolVersion version : versionsToTest) {
             try {
-                overallResult.putResult(checkManipulation(version));
+                overallResult.putResult(version, checkManipulation(version));
             } catch (Exception E) {
                 LOGGER.error("Could not scan SessionTicketManipulation for version {}", version, E);
                 overallResult.putResult(
-                        new TicketManipulationResult(version, TestResults.ERROR_DURING_TEST));
+                        version, new TicketManipulationResult(TestResults.ERROR_DURING_TEST));
                 if (E.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on {}", getProbeName());
                     throw E;
                 }
             }
         }
-        return overallResult;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET, overallResult);
     }
 
     /**
@@ -167,7 +172,7 @@ public class SessionTicketManipulationProbe
         executeState(ticketState);
         if (!initialHandshakeSuccessful(ticketState)) {
             LOGGER.warn("Initial Handshake failed {}", version);
-            return new TicketManipulationResult(version, TestResults.ERROR_DURING_TEST);
+            return new TicketManipulationResult(TestResults.ERROR_DURING_TEST);
         }
         Ticket ticketToModify = SessionTicketUtil.getSessionTickets(ticketState).get(0);
 
@@ -181,14 +186,14 @@ public class SessionTicketManipulationProbe
                 || acceptFingerprint == null
                 || acceptDifferentSecretFingerprint == null) {
             LOGGER.warn("Initial Handshake for Fingerprinting failed {}", version);
-            return new TicketManipulationResult(version, TestResults.ERROR_DURING_TEST);
+            return new TicketManipulationResult(TestResults.ERROR_DURING_TEST);
         }
 
         List<FingerprintTaskVectorPair<TicketBitFlipVector>> taskList = new ArrayList<>();
         for (TicketBitFlipVector vector :
                 createVectors(
                         ticketToModify.getTicketBytesOriginal().length * 8,
-                        scannerConfig.getScanDetail())) {
+                        configSelector.getScannerConfig().getExecutorConfig().getScanDetail())) {
             ModifiedTicket ticket = vector.createTicket(ticketToModify);
             FingerPrintTask task =
                     prepareResumptionFingerprintTask(
@@ -221,7 +226,6 @@ public class SessionTicketManipulationProbe
                             || fingerprint.equals(acceptDifferentSecretFingerprint);
         }
         return new TicketManipulationResult(
-                version,
                 TestResults.of(acceptedModifiedTicket),
                 responses,
                 acceptFingerprint,
@@ -249,24 +253,19 @@ public class SessionTicketManipulationProbe
     }
 
     @Override
-    public SessionTicketManipulationProbeResult getCouldNotExecuteResult() {
-        return new SessionTicketManipulationProbeResult();
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        if (!super.canBeExecuted(report)) {
-            return false;
-        }
-        return report.getResult(TlsAnalyzedProperty.RESUMES_WITH_TICKET) == TestResults.TRUE;
+    public Requirement<ServerReport> getRequirements() {
+        return super.getRequirements()
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.RESUMES_WITH_TICKET));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
         super.adjustConfig(report);
-        SessionTicketProbeResult probeResult = report.getSessionTicketProbeResult();
+
+        VersionDependentTestResult issuesTickets =
+                (VersionDependentTestResult) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
         for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
-            if (probeResult.getResult(version).getResumesWithTicket() != TestResults.TRUE) {
+            if (issuesTickets.getResult(version) != TestResults.TRUE) {
                 versionsToTest.remove(version);
             }
         }

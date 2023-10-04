@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

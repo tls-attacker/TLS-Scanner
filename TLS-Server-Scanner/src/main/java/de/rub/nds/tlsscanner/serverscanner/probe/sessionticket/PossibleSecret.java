@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
-import de.rub.nds.scanner.core.util.ArrayUtil;
+import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import java.io.Serializable;
 
 public class PossibleSecret implements Serializable {

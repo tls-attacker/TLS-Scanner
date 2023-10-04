@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -35,21 +35,21 @@ import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.ModifiedTicket;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class SessionTicketBaseProbe<Result extends ProbeResult<ServerReport>>
-        extends TlsProbe<ServerReport, Result> {
+public abstract class SessionTicketBaseProbe extends TlsServerProbe {
     protected List<ProtocolVersion> versionsToTest;
 
     /**
@@ -58,12 +58,9 @@ public abstract class SessionTicketBaseProbe<Result extends ProbeResult<ServerRe
      */
     protected List<CipherSuite> supportedSuites;
 
-    protected ScannerConfig scannerConfig;
-
     protected SessionTicketBaseProbe(
-            ParallelExecutor parallelExecutor, TlsProbeType type, ScannerConfig scannerConfig) {
-        super(parallelExecutor, type);
-        this.scannerConfig = scannerConfig;
+            ParallelExecutor parallelExecutor, ConfigSelector configSelector, TlsProbeType type) {
+        super(parallelExecutor, type, configSelector);
         versionsToTest =
                 Arrays.asList(
                         ProtocolVersion.TLS10,
@@ -73,19 +70,16 @@ public abstract class SessionTicketBaseProbe<Result extends ProbeResult<ServerRe
     }
 
     @Override
-    public boolean canBeExecuted(ServerReport report) {
-        return report.getCipherSuites() != null
-                && !report.getCipherSuites().isEmpty()
-                && report.getVersions() != null
-                && !report.getVersions().isEmpty();
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedSuites = new ArrayList<>(report.getCipherSuites());
+        supportedSuites = new ArrayList<>(report.getSupportedCipherSuites());
         versionsToTest =
                 versionsToTest.stream()
-                        .filter(version -> report.getVersions().contains(version))
+                        .filter(version -> report.getSupportedProtocolVersions().contains(version))
                         .collect(Collectors.toList());
     }
 
@@ -95,7 +89,7 @@ public abstract class SessionTicketBaseProbe<Result extends ProbeResult<ServerRe
     }
 
     protected Config configureInitialHandshake(ProtocolVersion version) {
-        Config tlsConfig = scannerConfig.createConfig();
+        Config tlsConfig = configSelector.getBaseConfig();
 
         List<CipherSuite> ciphersuites =
                 supportedSuites.stream()

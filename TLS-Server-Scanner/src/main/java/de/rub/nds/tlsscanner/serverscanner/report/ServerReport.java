@@ -30,15 +30,13 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketManipulationProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketPaddingOracleProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
-import java.util.EnumMap;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,11 +91,9 @@ public class ServerReport extends TlsScanReport {
     private Integer connectionInsecureCounter = null;
 
     // SessionTicket
-    private SessionTicketProbeResult sessionTicketProbeResult = null;
-    private SessionTicketManipulationProbeResult sessionTicketManipulationResult = null;
-    private SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult = null;
-    private Map<ProtocolVersion, SessionTicketAfterProbeResult> sessionTicketAfterProbeResult =
-            new EnumMap<>(ProtocolVersion.class);
+    private VersionDependentResult<List<Ticket>> observedTickets;
+    private VersionDependentResult<SessionTicketAfterProbeResult> sessionTicketAfterProbeResult =
+            new VersionDependentResult<>();
 
     // Rating
     private int score;
@@ -393,39 +389,20 @@ public class ServerReport extends TlsScanReport {
         this.ocspSctList = ocspSctList;
     }
 
-    public synchronized SessionTicketProbeResult getSessionTicketProbeResult() {
-        return sessionTicketProbeResult;
+    public void setObservedTickets(VersionDependentResult<List<Ticket>> observedTickets) {
+        this.observedTickets = observedTickets;
     }
 
-    public synchronized void setSessionTicketProbeResult(
-            SessionTicketProbeResult sessionTicketProbeResult) {
-        this.sessionTicketProbeResult = sessionTicketProbeResult;
-    }
-
-    public SessionTicketManipulationProbeResult getSessionTicketManipulationResult() {
-        return sessionTicketManipulationResult;
-    }
-
-    public void setSessionTicketManipulationResult(
-            SessionTicketManipulationProbeResult sessionTicketManipulationResult) {
-        this.sessionTicketManipulationResult = sessionTicketManipulationResult;
-    }
-
-    public SessionTicketPaddingOracleProbeResult getSessionTicketPaddingOracleResult() {
-        return sessionTicketPaddingOracleResult;
-    }
-
-    public void setSessionTicketPaddingOracleResult(
-            SessionTicketPaddingOracleProbeResult sessionTicketPaddingOracleResult) {
-        this.sessionTicketPaddingOracleResult = sessionTicketPaddingOracleResult;
+    public VersionDependentResult<List<Ticket>> getObservedTickets() {
+        return observedTickets;
     }
 
     public void putSessionTicketAfterProbeResult(
             ProtocolVersion version, SessionTicketAfterProbeResult sessionTicketAfterProbeResult) {
-        this.sessionTicketAfterProbeResult.put(version, sessionTicketAfterProbeResult);
+        this.sessionTicketAfterProbeResult.putResult(version, sessionTicketAfterProbeResult);
     }
 
-    public Map<ProtocolVersion, SessionTicketAfterProbeResult>
+    public VersionDependentResult<SessionTicketAfterProbeResult>
             getSessionTicketAfterProbeResultMap() {
         return sessionTicketAfterProbeResult;
     }

@@ -9,18 +9,20 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.util.ArrayUtil;
-import de.rub.nds.scanner.core.util.PrefixStatsUtil;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.CryptoException;
 import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.util.ArrayUtil;
+import de.rub.nds.tlsscanner.core.util.PrefixStatsUtil;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult.MergeStrategy;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.DefaultKeys;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketEncryptionFormat;
@@ -29,6 +31,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.TicketEncryptionA
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketTls12;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,24 +56,40 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
             TicketEncryptionAlgorithm.values();
     private static final int MIN_ASCII_LENGTH = 8;
 
-    private ServerScannerConfig scannerConfig;
+    private ConfigSelector configSelector;
 
-    public SessionTicketAfterProbe(ServerScannerConfig scannerConfig) {
-        this.scannerConfig = scannerConfig;
+    public SessionTicketAfterProbe(ConfigSelector configSelector) {
+        this.configSelector = configSelector;
     }
 
     @Override
     public void analyze(ServerReport report) {
-        for (Entry<ProtocolVersion, TicketResult> entry :
-                report.getSessionTicketProbeResult().getResultMap().entrySet()) {
-            analyze(entry.getKey(), entry.getValue().getTicketList(), scannerConfig.getScanDetail())
-                    .writeToServerReport(report);
+        VersionDependentResult<List<Ticket>> tickets = report.getObservedTickets();
+        ScannerDetail detail =
+                configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
+
+        VersionDependentTestResult unencryptedTicket =
+                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        VersionDependentTestResult defaultEncStek =
+                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        VersionDependentTestResult defaultMacStek =
+                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        for (Entry<ProtocolVersion, List<Ticket>> entry : tickets.getResultMap().entrySet()) {
+            ProtocolVersion version = entry.getKey();
+            SessionTicketAfterProbeResult result = analyze(entry.getValue(), detail);
+            report.putSessionTicketAfterProbeResult(version, result);
+            unencryptedTicket.putResult(version, result.getContainsPlainSecret() != null);
+            defaultEncStek.putResult(version, result.getFoundDefaultStek() != null);
+            defaultMacStek.putResult(version, result.getFoundDefaultHmacKey() != null);
         }
+        report.putResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET, unencryptedTicket);
+        report.putResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET, defaultEncStek);
+        report.putResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET, defaultMacStek);
     }
 
     public static SessionTicketAfterProbeResult analyze(
-            ProtocolVersion version, List<Ticket> tickets, ScannerDetail detail) {
-        SessionTicketAfterProbeResult result = new SessionTicketAfterProbeResult(version);
+            List<Ticket> tickets, ScannerDetail detail) {
+        SessionTicketAfterProbeResult result = new SessionTicketAfterProbeResult();
 
         result.setTicketLengthOccurences(analyzeTicketLength(tickets));
         result.setKeyNameLength(analyzeKeyNameLength(tickets));

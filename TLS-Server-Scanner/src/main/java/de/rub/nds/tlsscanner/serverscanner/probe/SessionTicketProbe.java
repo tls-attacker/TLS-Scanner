@@ -8,21 +8,24 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.DigestAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketResultTls13;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult.MergeStrategy;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -35,138 +38,160 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProbeResult> {
+public class SessionTicketProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int TICKETS_TO_GATHER = 10;
 
-    public SessionTicketProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.SESSION_TICKET, scannerConfig);
+    // results
+    private VersionDependentTestResult issuesTickets =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentTestResult resumesTickets =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentResult<TestResult> allowsVersionChange = new VersionDependentResult<>();
+    private VersionDependentTestResult allowsCipherSuiteChange =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentTestResult allowsReplayingTickets =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentTestResult supportsEarlyData =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentTestResult vulnerableToEarlyDataReplay =
+            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentResult<List<Ticket>> observedTickets = new VersionDependentResult<>();
+
+    public SessionTicketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, configSelector, TlsProbeType.SESSION_TICKET);
+        register(TlsAnalyzedProperty.ISSUES_TICKET);
+        register(TlsAnalyzedProperty.RESUMES_WITH_TICKET);
+        register(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        register(TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
+        register(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
+        register(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
+        register(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
     }
 
     @Override
-    public SessionTicketProbeResult getCouldNotExecuteResult() {
-        return new SessionTicketProbeResult();
-    }
-
-    @Override
-    public SessionTicketProbeResult executeTest() {
-        SessionTicketProbeResult overallResult = new SessionTicketProbeResult();
+    public void executeTest() {
         for (ProtocolVersion version : versionsToTest) {
-            TicketResult result = TicketResult.create(version);
-
             try {
-                checkIssuesTickets(result);
-                checkIssuesTicketsConsistently(result);
+                checkIssuesTickets(version);
+                checkIssuesTicketsConsistently(version);
 
-                checkResumesWithTicket(result);
-                checkVersionChange(result);
-                checkAllowsCiphersuiteChange(result);
+                checkResumesWithTicket(version);
+                checkVersionChange(version);
+                checkAllowsCiphersuiteChange(version);
 
-                checkReplayAttack(result);
+                checkReplayAttack(version);
 
                 if (version.isTLS13()) {
-                    TicketResultTls13 result13 = (TicketResultTls13) result;
-                    check0RTT(result13);
+                    check0RTT(version);
                     // TODO check replay attack for 0-RTT data
                 }
 
-                overallResult.putResult(result);
             } catch (Exception E) {
                 LOGGER.warn("Could not scan SessionTickets for version {}", version, E);
-                overallResult.putResult(
-                        TicketResult.create(version, TestResults.ERROR_DURING_TEST));
                 if (E.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on {}", getProbeName());
                     throw E;
                 }
             }
         }
-        return overallResult;
     }
 
-    private void checkIssuesTickets(TicketResult resultToFill) {
+    @Override
+    protected void mergeData(ServerReport report) {
+        report.setObservedTickets(observedTickets);
+        put(TlsAnalyzedProperty.ISSUES_TICKET, issuesTickets);
+        put(TlsAnalyzedProperty.RESUMES_WITH_TICKET, resumesTickets);
+        put(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET, allowsCipherSuiteChange);
+        put(TlsAnalyzedProperty.VERSION_CHANGE_TICKET, allowsVersionChange);
+        put(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET, allowsReplayingTickets);
+        put(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET, supportsEarlyData);
+        put(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET, vulnerableToEarlyDataReplay);
+    }
+
+    private void checkIssuesTickets(ProtocolVersion version) {
         // check whether server issues one ticket
-        State firstConnection = prepareInitialHandshake(resultToFill.getProtocolVersion());
+        State firstConnection = prepareInitialHandshake(version);
         executeState(firstConnection);
 
         boolean issuesTickets = initialHandshakeSuccessful(firstConnection);
-        resultToFill.setIssuesTickets(TestResults.of(issuesTickets));
+        this.issuesTickets.putResult(version, issuesTickets);
         if (!issuesTickets) {
             return;
         }
 
-        resultToFill.getTicketList().addAll(SessionTicketUtil.getSessionTickets(firstConnection));
+        List<Ticket> tickets =
+                new ArrayList<>(SessionTicketUtil.getSessionTickets(firstConnection));
+        observedTickets.putResult(version, tickets);
     }
 
-    private void checkIssuesTicketsConsistently(TicketResult resultToFill) {
-        if (resultToFill.getIssuesTickets() != TestResults.TRUE) {
+    private void checkIssuesTicketsConsistently(ProtocolVersion version) {
+        if (issuesTickets.getResult(version) != TestResults.TRUE) {
             return;
         }
 
         List<State> statesToExecute = new LinkedList<>();
         for (int i = 0; i < TICKETS_TO_GATHER - 1; i++) {
-            statesToExecute.add(prepareInitialHandshake(resultToFill.getProtocolVersion()));
+            statesToExecute.add(prepareInitialHandshake(version));
         }
         executeState(statesToExecute);
         for (State state : statesToExecute) {
             if (!initialHandshakeSuccessful(state)) {
-                resultToFill.setIssuesTickets(TestResults.PARTIALLY);
+                this.issuesTickets.putResult(version, TestResults.PARTIALLY);
             } else {
-                resultToFill.getTicketList().addAll(SessionTicketUtil.getSessionTickets(state));
+                observedTickets
+                        .getResult(version)
+                        .addAll(SessionTicketUtil.getSessionTickets(state));
             }
         }
     }
 
-    private void checkResumesWithTicket(TicketResult resultToFill) {
-        if (resultToFill.getIssuesTickets() != TestResults.TRUE) {
-            resultToFill.setResumesWithTicket(TestResults.COULD_NOT_TEST);
+    private void checkResumesWithTicket(ProtocolVersion version) {
+        if (issuesTickets.getResult(version) != TestResults.TRUE) {
+            resumesTickets.putResult(version, TestResults.COULD_NOT_TEST);
             return;
         }
 
-        State initialState = prepareInitialHandshake(resultToFill.getProtocolVersion());
+        State initialState = prepareInitialHandshake(version);
         executeState(initialState);
         if (!initialHandshakeSuccessful(initialState)) {
             LOGGER.warn(
                     "Could not get a ticket to resume; even though tickets were issued earlier");
-            resultToFill.setResumesWithTicket(TestResults.ERROR_DURING_TEST);
+            resumesTickets.putResult(version, TestResults.ERROR_DURING_TEST);
             return;
         }
         State resumptionState =
                 prepareResumptionHandshake(
-                        resultToFill.getProtocolVersion(),
-                        SessionTicketUtil.getSessionTickets(initialState).get(0),
-                        false);
+                        version, SessionTicketUtil.getSessionTickets(initialState).get(0), false);
         executeState(resumptionState);
         boolean acceptedTicket = resumptionHandshakeSuccessful(resumptionState, false);
-        resultToFill.setResumesWithTicket(TestResults.of(acceptedTicket));
+        resumesTickets.putResult(version, acceptedTicket);
     }
 
-    private void check0RTT(TicketResultTls13 resultToFill) {
-        if (resultToFill.getIssuesTickets() != TestResults.TRUE) {
-            resultToFill.setEarlyDataSupport(TestResults.COULD_NOT_TEST);
+    private void check0RTT(ProtocolVersion version) {
+        if (issuesTickets.getResult(version) != TestResults.TRUE) {
+            supportsEarlyData.putResult(version, TestResults.COULD_NOT_TEST);
             return;
         }
 
-        State initialState = prepareInitialHandshake(resultToFill.getProtocolVersion());
+        State initialState = prepareInitialHandshake(version);
         executeState(initialState);
         if (!initialHandshakeSuccessful(initialState)) {
             LOGGER.warn(
                     "Could not get a ticket to resume; even though tickets were issued earlier");
-            resultToFill.setEarlyDataSupport(TestResults.ERROR_DURING_TEST);
+            supportsEarlyData.putResult(version, TestResults.ERROR_DURING_TEST);
             return;
         }
         State resumptionState =
                 prepareResumptionHandshake(
-                        resultToFill.getProtocolVersion(),
-                        SessionTicketUtil.getSessionTickets(initialState).get(0),
-                        true);
+                        version, SessionTicketUtil.getSessionTickets(initialState).get(0), true);
 
         // TODO figure out how to properly prepare the state/context/config
         resumptionState.replaceContext(initialState.getContext());
 
         executeState(resumptionState);
         boolean accepted0RTT = resumptionHandshakeSuccessful(resumptionState, true);
-        resultToFill.setEarlyDataSupport(TestResults.of(accepted0RTT));
+        supportsEarlyData.putResult(version, accepted0RTT);
     }
 
     private List<State> performInitialConnections(Integer number, ProtocolVersion version) {
@@ -197,13 +222,15 @@ public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProb
         return resumedConnections;
     }
 
-    private void checkVersionChange(TicketResult resultToFill) {
-        if (resultToFill.getIssuesTickets() != TestResults.TRUE) {
-            // could not test
+    private void checkVersionChange(ProtocolVersion fromVersion) {
+        if (issuesTickets.getResult(fromVersion) != TestResults.TRUE) {
+            allowsVersionChange.putResult(fromVersion, TestResults.COULD_NOT_TEST);
             return;
         }
+        VersionDependentTestResult result =
+                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        allowsVersionChange.putResult(fromVersion, result);
 
-        ProtocolVersion fromVersion = resultToFill.getProtocolVersion();
         Set<ProtocolVersion> targetVersions = new HashSet<>();
         targetVersions.add(ProtocolVersion.TLS10);
         targetVersions.add(ProtocolVersion.TLS11);
@@ -223,11 +250,11 @@ public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProb
 
         for (ProtocolVersion target : targetVersions) {
             if (!resumedConnections.containsKey(target)) {
-                resultToFill.setVersionChangeResult(target, TestResults.ERROR_DURING_TEST);
+                result.putResult(target, TestResults.ERROR_DURING_TEST);
             } else {
                 State state = resumedConnections.get(target);
-                boolean result = resumptionHandshakeSuccessful(state, false);
-                resultToFill.setVersionChangeResult(target, TestResults.of(result));
+                boolean boolResult = resumptionHandshakeSuccessful(state, false);
+                result.putResult(target, boolResult);
             }
         }
     }
@@ -264,14 +291,14 @@ public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProb
         return ret;
     }
 
-    private void checkAllowsCiphersuiteChange(TicketResult resultToFill) {
-        if (resultToFill.getIssuesTickets() != TestResults.TRUE) {
-            resultToFill.setAllowsCiphersuiteChange(TestResults.COULD_NOT_TEST);
+    private void checkAllowsCiphersuiteChange(ProtocolVersion version) {
+        if (issuesTickets.getResult(version) != TestResults.TRUE) {
+            allowsCipherSuiteChange.putResult(version, TestResults.COULD_NOT_TEST);
             return;
         }
 
-        State initialState = prepareInitialHandshake(resultToFill.getProtocolVersion());
-        if (resultToFill.getProtocolVersion().isTLS13()) {
+        State initialState = prepareInitialHandshake(version);
+        if (version.isTLS13()) {
             List<CipherSuite> suitesToTest =
                     findCiphersuitesForCiphersuiteChange(ProtocolVersion.TLS13);
             initialState.getConfig().setDefaultClientSupportedCipherSuites(suitesToTest);
@@ -279,29 +306,26 @@ public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProb
         executeState(initialState);
         if (!initialHandshakeSuccessful(initialState)) {
             LOGGER.warn("Initial Handshake failed; Could not test CipherSuite change");
-            resultToFill.setAllowsCiphersuiteChange(TestResults.ERROR_DURING_TEST);
+            allowsCipherSuiteChange.putResult(version, TestResults.ERROR_DURING_TEST);
             return;
         }
 
         CipherSuite initialSuite = initialState.getTlsContext().getSelectedCipherSuite();
         Ticket ticket = SessionTicketUtil.getSessionTickets(initialState).get(0);
 
-        State resumptionState =
-                prepareResumptionHandshake(resultToFill.getProtocolVersion(), ticket, false);
+        State resumptionState = prepareResumptionHandshake(version, ticket, false);
         resumptionState.getConfig().getDefaultClientSupportedCipherSuites().remove(initialSuite);
-        if (resultToFill.getProtocolVersion().isTLS13()) {
+        if (version.isTLS13()) {
             // in TLS 1.3 resumption with different cipher suites only works with if MAC algorithm
             // of session cipher is used since the binder calculation uses the MAC algorithm
             DigestAlgorithm initialDigestAlgorithm =
-                    AlgorithmResolver.getDigestAlgorithm(
-                            resultToFill.getProtocolVersion(), initialSuite);
+                    AlgorithmResolver.getDigestAlgorithm(version, initialSuite);
             resumptionState
                     .getConfig()
                     .getDefaultClientSupportedCipherSuites()
                     .removeIf(
                             suite ->
-                                    AlgorithmResolver.getDigestAlgorithm(
-                                                    resultToFill.getProtocolVersion(), suite)
+                                    AlgorithmResolver.getDigestAlgorithm(version, suite)
                                             != initialDigestAlgorithm);
         }
         executeState(resumptionState);
@@ -309,43 +333,39 @@ public class SessionTicketProbe extends SessionTicketBaseProbe<SessionTicketProb
         boolean allowsChange =
                 resumptionHandshakeSuccessful(resumptionState, false)
                         && resumptionState.getTlsContext().getSelectedCipherSuite() != initialSuite;
-        resultToFill.setAllowsCiphersuiteChange(TestResults.of(allowsChange));
+        allowsCipherSuiteChange.putResult(version, allowsChange);
     }
 
-    private void checkReplayAttack(TicketResult resultToFill) {
-        if (resultToFill.getResumesWithTicket() != TestResults.TRUE) {
-            resultToFill.setReplayVulnerable(TestResults.COULD_NOT_TEST);
+    private void checkReplayAttack(ProtocolVersion version) {
+        if (resumesTickets.getResult(version) != TestResults.TRUE) {
+            allowsReplayingTickets.putResult(version, TestResults.COULD_NOT_TEST);
             return;
         }
 
-        State initialState = prepareInitialHandshake(resultToFill.getProtocolVersion());
+        State initialState = prepareInitialHandshake(version);
         executeState(initialState);
         if (!initialHandshakeSuccessful(initialState)) {
             LOGGER.warn(
                     "Could not get a ticket to resume; even though tickets were issued earlier");
-            resultToFill.setReplayVulnerable(TestResults.ERROR_DURING_TEST);
+            allowsReplayingTickets.putResult(version, TestResults.ERROR_DURING_TEST);
             return;
         }
 
         State resumptionState =
                 prepareResumptionHandshake(
-                        resultToFill.getProtocolVersion(),
-                        SessionTicketUtil.getSessionTickets(initialState).get(0),
-                        false);
+                        version, SessionTicketUtil.getSessionTickets(initialState).get(0), false);
         executeState(resumptionState);
         if (!resumptionHandshakeSuccessful(resumptionState, false)) {
             LOGGER.warn("Could not resume ticket; even though tickets were resumed earlier");
-            resultToFill.setReplayVulnerable(TestResults.ERROR_DURING_TEST);
+            allowsReplayingTickets.putResult(version, TestResults.ERROR_DURING_TEST);
             return;
         }
 
         State replayState =
                 prepareResumptionHandshake(
-                        resultToFill.getProtocolVersion(),
-                        SessionTicketUtil.getSessionTickets(initialState).get(0),
-                        false);
+                        version, SessionTicketUtil.getSessionTickets(initialState).get(0), false);
         executeState(replayState);
         boolean acceptedTicket = resumptionHandshakeSuccessful(replayState, false);
-        resultToFill.setReplayVulnerable(TestResults.of(acceptedTicket));
+        allowsReplayingTickets.putResult(version, acceptedTicket);
     }
 }

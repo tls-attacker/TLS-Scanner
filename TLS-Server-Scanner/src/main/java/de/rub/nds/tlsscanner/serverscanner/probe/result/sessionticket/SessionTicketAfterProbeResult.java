@@ -8,18 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SessionTicketAfterProbeResult extends VersionDependentResult {
+public class SessionTicketAfterProbeResult {
     private Map<Integer, Integer> ticketLengthOccurences;
     private Integer keyNameLength = null;
     private List<String> asciiStringsFound;
@@ -28,11 +23,6 @@ public class SessionTicketAfterProbeResult extends VersionDependentResult {
 
     private FoundDefaultStek foundDefaultStek = null;
     private FoundDefaultHmacKey foundDefaultHmacKey = null;
-
-    public SessionTicketAfterProbeResult(
-            @JsonProperty("protocolVersion") ProtocolVersion protocolVersion) {
-        super(protocolVersion);
-    }
 
     public Map<Integer, Integer> getTicketLengthOccurences() {
         return ticketLengthOccurences;
@@ -129,22 +119,5 @@ public class SessionTicketAfterProbeResult extends VersionDependentResult {
 
     public void setDiscoveredReusedKeystream(PossibleSecret discoveredReusedKeystream) {
         this.discoveredReusedKeystream = discoveredReusedKeystream;
-    }
-
-    @Override
-    public void writeToServerReport(ServerReport report) {
-        report.putSessionTicketAfterProbeResult(protocolVersion, this);
-        putResult(
-                report, TlsAnalyzedProperty.UNENCRYPTED_TICKET, containsPlainSecret != null, true);
-        putResult(
-                report,
-                TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
-                foundDefaultStek != null,
-                true);
-        putResult(
-                report,
-                TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
-                foundDefaultHmacKey != null,
-                true);
     }
 }

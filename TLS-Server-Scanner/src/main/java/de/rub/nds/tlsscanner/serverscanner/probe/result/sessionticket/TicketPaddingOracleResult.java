@@ -8,23 +8,19 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketVector;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketPaddingOracleResult extends VersionDependentResult {
+public class TicketPaddingOracleResult {
     private final TestResults overallResult;
 
     private final List<TicketPaddingOracleOffsetResult> positionResults;
@@ -32,10 +28,7 @@ public class TicketPaddingOracleResult extends VersionDependentResult {
     private final List<TicketPaddingOracleVectorLast> lastVectorsWithRareResponses;
     private final List<TicketPaddingOracleVectorSecond> secondVectorsWithRareResponses;
 
-    public TicketPaddingOracleResult(
-            ProtocolVersion protocolVersion,
-            List<TicketPaddingOracleOffsetResult> positionResults) {
-        super(protocolVersion);
+    public TicketPaddingOracleResult(List<TicketPaddingOracleOffsetResult> positionResults) {
         this.positionResults = positionResults;
 
         boolean last = false;
@@ -72,8 +65,7 @@ public class TicketPaddingOracleResult extends VersionDependentResult {
         }
     }
 
-    public TicketPaddingOracleResult(ProtocolVersion protocolVersion, TestResults overallResult) {
-        super(protocolVersion);
+    public TicketPaddingOracleResult(TestResults overallResult) {
         this.overallResult = overallResult;
         this.positionResults = null;
         this.lastVectorsWithRareResponses = null;
@@ -88,11 +80,6 @@ public class TicketPaddingOracleResult extends VersionDependentResult {
             ret.add(vectorClass.cast(response.getVector()));
         }
         return ret;
-    }
-
-    @Override
-    public void writeToServerReport(ServerReport report) {
-        putResult(report, TlsAnalyzedProperty.PADDING_ORACLE_TICKET, overallResult, true);
     }
 
     public TestResults getOverallResult() {

@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -28,8 +29,8 @@ import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketPaddingOracleProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
@@ -40,6 +41,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPadd
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,10 +52,10 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SessionTicketPaddingOracleProbe
-        extends SessionTicketBaseProbe<SessionTicketPaddingOracleProbeResult> {
+public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    // region static init
     private static final int MINIMUM_PADDING_LENGTH = 1;
     /**
      * minimum secret size is 32 byte. The ticket should at least be large enough to contain this
@@ -133,31 +135,38 @@ public class SessionTicketPaddingOracleProbe
         ALL_BYTES = initAllBytes();
         PADDING_IV_OFFSETS = initPaddingIvOffsets();
     }
+    // endregion
+
+    private VersionDependentResult<TicketPaddingOracleResult> overallResult;
 
     public SessionTicketPaddingOracleProbe(
-            ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, TlsProbeType.SESSION_TICKET_PADDING_ORACLE, scannerConfig);
+            ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, configSelector, TlsProbeType.SESSION_TICKET_PADDING_ORACLE);
+        register(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
     }
 
     @Override
-    public SessionTicketPaddingOracleProbeResult executeTest() {
-        SessionTicketPaddingOracleProbeResult overallResult =
-                new SessionTicketPaddingOracleProbeResult();
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.PADDING_ORACLE_TICKET, overallResult);
+    }
+
+    @Override
+    public void executeTest() {
+        overallResult = new VersionDependentResult<>();
         for (ProtocolVersion version : versionsToTest) {
             try {
-                overallResult.putResult(checkPaddingOracle(version));
+                overallResult.putResult(version, checkPaddingOracle(version));
             } catch (Exception E) {
                 LOGGER.error(
                         "Could not scan SessionTickets Padding Oracle for version {}", version, E);
                 overallResult.putResult(
-                        new TicketPaddingOracleResult(version, TestResults.ERROR_DURING_TEST));
+                        version, new TicketPaddingOracleResult(TestResults.ERROR_DURING_TEST));
                 if (E.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on {}", getProbeName());
                     throw E;
                 }
             }
         }
-        return overallResult;
     }
 
     private boolean shouldCheckOffset(int offset, int ticketLength) {
@@ -183,7 +192,7 @@ public class SessionTicketPaddingOracleProbe
         executeState(ticketState);
         if (!initialHandshakeSuccessful(ticketState)) {
             LOGGER.warn("Initial Handshake failed {}", version);
-            return new TicketPaddingOracleResult(version, TestResults.ERROR_DURING_TEST);
+            return new TicketPaddingOracleResult(TestResults.ERROR_DURING_TEST);
         }
         Ticket originalTicket = SessionTicketUtil.getSessionTickets(ticketState).get(0);
 
@@ -229,7 +238,11 @@ public class SessionTicketPaddingOracleProbe
                                     ADDITIONAL_ITERATIONS_SECOND_BYTE);
 
                     secondByteLeakTests.add(secondByteLeakTest);
-                    if (!scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.ALL)
+                    if (!configSelector
+                                    .getScannerConfig()
+                                    .getExecutorConfig()
+                                    .getScanDetail()
+                                    .isGreaterEqualTo(ScannerDetail.ALL)
                             && foundDefinitiveResult(secondByteLeakTest)) {
                         // we do not break early if the scanner is set to detail ALL
                         breakEarly = true;
@@ -245,7 +258,7 @@ public class SessionTicketPaddingOracleProbe
             }
         }
 
-        return new TicketPaddingOracleResult(version, offsetResults);
+        return new TicketPaddingOracleResult(offsetResults);
     }
 
     public static <T extends TestInfo> List<VectorResponse> getRareResponses(
@@ -359,24 +372,19 @@ public class SessionTicketPaddingOracleProbe
     }
 
     @Override
-    public SessionTicketPaddingOracleProbeResult getCouldNotExecuteResult() {
-        return new SessionTicketPaddingOracleProbeResult();
-    }
-
-    @Override
-    public boolean canBeExecuted(ServerReport report) {
-        if (!super.canBeExecuted(report)) {
-            return false;
-        }
-        return report.getResult(TlsAnalyzedProperty.ISSUES_TICKET) == TestResults.TRUE;
+    public Requirement<ServerReport> getRequirements() {
+        return super.getRequirements()
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.RESUMES_WITH_TICKET));
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
         super.adjustConfig(report);
-        SessionTicketProbeResult probeResult = report.getSessionTicketProbeResult();
+
+        VersionDependentTestResult issuesTickets =
+                (VersionDependentTestResult) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
         for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
-            if (probeResult.getResult(version).getIssuesTickets() != TestResults.TRUE) {
+            if (issuesTickets.getResult(version) != TestResults.TRUE) {
                 versionsToTest.remove(version);
             }
         }

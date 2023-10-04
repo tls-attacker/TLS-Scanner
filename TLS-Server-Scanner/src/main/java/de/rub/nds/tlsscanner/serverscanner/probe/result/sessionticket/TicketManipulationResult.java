@@ -8,19 +8,15 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketBitFlipVector;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TicketManipulationResult extends VersionDependentResult {
+public class TicketManipulationResult {
     public static final char CHR_ACCEPT = 'A';
     public static final char CHR_ACCEPT_DIFFERENT_SECRET = '#';
     public static final char CHR_REJECT = '_';
@@ -36,13 +32,11 @@ public class TicketManipulationResult extends VersionDependentResult {
     private final ResponseFingerprint rejectFingerprint;
 
     public TicketManipulationResult(
-            ProtocolVersion protocolVersion,
             TestResults overallResult,
             Map<Integer, VectorResponse> responses,
             ResponseFingerprint acceptFingerprint,
             ResponseFingerprint acceptDifferentSecretFingerprint,
             ResponseFingerprint rejectFingerprint) {
-        super(protocolVersion);
         this.overallResult = overallResult;
         this.responses = responses;
         this.acceptFingerprint = acceptFingerprint;
@@ -50,13 +44,8 @@ public class TicketManipulationResult extends VersionDependentResult {
         this.rejectFingerprint = rejectFingerprint;
     }
 
-    public TicketManipulationResult(ProtocolVersion protocolVersion, TestResults overallResult) {
-        this(protocolVersion, overallResult, null, null, null, null);
-    }
-
-    @Override
-    public void writeToServerReport(ServerReport report) {
-        putResult(report, TlsAnalyzedProperty.NO_MAC_CHECK_TICKET, overallResult, true);
+    public TicketManipulationResult(TestResults overallResult) {
+        this(overallResult, null, null, null, null);
     }
 
     public String getResultsAsShortString() {
