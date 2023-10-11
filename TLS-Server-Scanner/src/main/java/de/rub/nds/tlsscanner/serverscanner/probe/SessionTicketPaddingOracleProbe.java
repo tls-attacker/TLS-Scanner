@@ -29,8 +29,9 @@ import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
@@ -56,7 +57,6 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // region static init
-    private static final int MINIMUM_PADDING_LENGTH = 1;
     /**
      * minimum secret size is 32 byte. The ticket should at least be large enough to contain this
      */
@@ -137,7 +137,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     }
     // endregion
 
-    private VersionDependentResult<TicketPaddingOracleResult> overallResult;
+    private VersionDependentSummarizableResult<TicketPaddingOracleResult> overallResult;
 
     public SessionTicketPaddingOracleProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -152,7 +152,9 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
 
     @Override
     public void executeTest() {
-        overallResult = new VersionDependentResult<>();
+        overallResult =
+                new VersionDependentSummarizableResult<>(
+                        PriorityBasedTestResultsMerger.TRUE_PRIORITY);
         for (ProtocolVersion version : versionsToTest) {
             try {
                 overallResult.putResult(version, checkPaddingOracle(version));
@@ -170,7 +172,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     }
 
     private boolean shouldCheckOffset(int offset, int ticketLength) {
-        return offset + MINIMUM_PADDING_LENGTH + MINIMUM_TICKET_CONTENT_LENGTH <= ticketLength;
+        return offset + MINIMUM_TICKET_CONTENT_LENGTH <= ticketLength;
     }
 
     /**
@@ -381,8 +383,8 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     public void adjustConfig(ServerReport report) {
         super.adjustConfig(report);
 
-        VersionDependentTestResult issuesTickets =
-                (VersionDependentTestResult) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
+        VersionDependentTestResults issuesTickets =
+                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
         for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
             if (issuesTickets.getResult(version) != TestResults.TRUE) {
                 versionsToTest.remove(version);

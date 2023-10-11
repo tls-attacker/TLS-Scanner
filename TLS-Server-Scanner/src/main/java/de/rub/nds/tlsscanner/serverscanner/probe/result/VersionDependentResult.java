@@ -14,7 +14,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class VersionDependentResult<T> implements TestResult {
-    protected Map<ProtocolVersion, T> results = new EnumMap(ProtocolVersion.class);
+    protected Map<ProtocolVersion, T> results = new EnumMap<>(ProtocolVersion.class);
 
     public T getResult(ProtocolVersion version) {
         return results.get(version);
@@ -30,7 +30,6 @@ public class VersionDependentResult<T> implements TestResult {
 
     @Override
     public String getName() {
-        // tbh I am not sure where this function is needed/used
-        return "<Unknown>";
+        return "<Complex Result>";
     }
 }

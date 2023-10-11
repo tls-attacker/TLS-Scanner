@@ -25,8 +25,9 @@ import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
@@ -56,15 +57,19 @@ import org.apache.logging.log4j.Logger;
 public class SessionTicketManipulationProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    VersionDependentResult<TicketManipulationResult> overallResult = new VersionDependentResult<>();
+    VersionDependentSummarizableResult<TicketManipulationResult> overallResult;
 
     public SessionTicketManipulationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, configSelector, TlsProbeType.SESSION_TICKET_MANIPULATION);
+        register(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
     }
 
     @Override
     public void executeTest() {
+        overallResult =
+                new VersionDependentSummarizableResult<>(
+                        PriorityBasedTestResultsMerger.TRUE_PRIORITY);
         for (ProtocolVersion version : versionsToTest) {
             try {
                 overallResult.putResult(version, checkManipulation(version));
@@ -262,8 +267,8 @@ public class SessionTicketManipulationProbe extends SessionTicketBaseProbe {
     public void adjustConfig(ServerReport report) {
         super.adjustConfig(report);
 
-        VersionDependentTestResult issuesTickets =
-                (VersionDependentTestResult) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
+        VersionDependentTestResults issuesTickets =
+                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
         for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
             if (issuesTickets.getResult(version) != TestResults.TRUE) {
                 versionsToTest.remove(version);

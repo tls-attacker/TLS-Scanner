@@ -1195,25 +1195,25 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         prettyAppendSubheading(builder, "Summary");
 
-        VersionDependentTestResult issuesTickets =
-                (VersionDependentTestResult) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
-        VersionDependentTestResult resumesTickets =
-                (VersionDependentTestResult)
+        VersionDependentTestResults issuesTickets =
+                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
+        VersionDependentTestResults resumesTickets =
+                (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.RESUMES_WITH_TICKET);
-        VersionDependentTestResult allowsCipherSuiteChange =
-                (VersionDependentTestResult)
+        VersionDependentTestResults allowsCipherSuiteChange =
+                (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
         VersionDependentResult<TestResult> allowsVersionChange =
                 (VersionDependentResult<TestResult>)
                         report.getResult(TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
-        VersionDependentTestResult allowsReplayingTickets =
-                (VersionDependentTestResult)
+        VersionDependentTestResults allowsReplayingTickets =
+                (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
-        VersionDependentTestResult supportsEarlyData =
-                (VersionDependentTestResult)
+        VersionDependentTestResults supportsEarlyData =
+                (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
-        VersionDependentTestResult vulnerableToEarlyDataReplay =
-                (VersionDependentTestResult)
+        VersionDependentTestResults vulnerableToEarlyDataReplay =
+                (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
         prettyAppend(builder, "Supports Session Tickets", TlsAnalyzedProperty.ISSUES_TICKET);
         prettyAppend(
@@ -1222,8 +1222,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
         prettyAppend(
                 builder,
-                "Ticket use default STEK",
+                "Ticket use default STEK (enc)",
                 TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK (MAC)",
+                TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
         prettyAppend(builder, "No (full) MAC check", TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
         prettyAppend(
                 builder, "Vulnerable to Padding Oracle", TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
@@ -1251,11 +1255,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         // once we have support for tables, most of the data below can be put into tables
         // the columns would be the protocol version
 
-        VersionDependentResult<TicketManipulationResult> mainManipulationResult =
-                (VersionDependentResult<TicketManipulationResult>)
+        TestResult mainManipulationResult =
                         report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
-        VersionDependentResult<TicketPaddingOracleResult> mainPaddingOracleResult =
-                (VersionDependentResult<TicketPaddingOracleResult>)
+        TestResult mainPaddingOracleResult =
                         report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
 
         VersionDependentResult<SessionTicketAfterProbeResult> afterProbeResults =
@@ -1282,19 +1284,23 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     allowsVersionChange.getResultMap().entrySet()) {
                 TestResult versionResult = versionResults.getValue();
                 prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
-                if (versionResult instanceof VersionDependentTestResult) {
-
+                if (versionResult instanceof VersionDependentTestResults) {
+                    VersionDependentTestResults versionResult_ =
+                            (VersionDependentTestResults) versionResult;
+                    if (versionResult_.isExplicitSummary()) {
+                        prettyAppend(
+                                builder, "\t" + versionResult_.getSummarizedResult().toString());
+                    } else {
                     for (Entry<ProtocolVersion, TestResults> changeResult :
-                            ((VersionDependentTestResult) versionResults)
-                                    .getResultMap()
-                                    .entrySet()) {
+                                versionResult_.getResultMap().entrySet()) {
                         prettyAppend(
                                 builder,
                                 "\t" + changeResult.getKey() + ": ",
                                 changeResult.getValue().toString());
                     }
+                    }
                 } else {
-                    prettyAppend(builder, "\t" + versionResult.toString());
+                    prettyAppend(builder, "\t [internal error]" + versionResult.toString());
                 }
             }
 
@@ -1315,14 +1321,16 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
 
-        if (mainManipulationResult != null) {
+        if (mainManipulationResult instanceof VersionDependentResult) {
+            VersionDependentResult<TicketManipulationResult> mainManipulationResult_ =
+                    (VersionDependentResult<TicketManipulationResult>) mainManipulationResult;
             // have one map, such that the classes stay the same
             Map<ResponseFingerprint, Integer> manipulationClassifications = new HashMap<>();
 
             prettyAppendSubheading(builder, "Manipulation");
             // print brief overview
             for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
-                    mainManipulationResult.getResultMap().entrySet()) {
+                    mainManipulationResult_.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         "Manipulation Overview "
@@ -1336,7 +1344,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
             if (detail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
                 for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
-                        mainManipulationResult.getResultMap().entrySet()) {
+                        mainManipulationResult_.getResultMap().entrySet()) {
                     prettyAppend(
                             builder,
                             "Manipulation Details "
@@ -1351,7 +1359,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
             // print legend
             for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
-                    mainManipulationResult.getResultMap().entrySet()) {
+                    mainManipulationResult_.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
@@ -1364,7 +1372,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                 + manipulationResult.getValue().getAcceptFingerprint());
             }
             for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
-                    mainManipulationResult.getResultMap().entrySet()) {
+                    mainManipulationResult_.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
@@ -1379,7 +1387,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                         .getAcceptDifferentSecretFingerprint());
             }
             for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
-                    mainManipulationResult.getResultMap().entrySet()) {
+                    mainManipulationResult_.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
@@ -1418,10 +1426,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             + "\t: *multiple classifications/no more chars left to classify*");
         }
 
-        if (mainPaddingOracleResult != null) {
+        if (mainPaddingOracleResult instanceof VersionDependentResult) {
             prettyAppendSubSubheading(builder, "Padding Oracle");
+            VersionDependentResult<TicketPaddingOracleResult> mainPaddingOracleResult_ =
+                    (VersionDependentResult<TicketPaddingOracleResult>) mainPaddingOracleResult;
+
             for (Entry<ProtocolVersion, TicketPaddingOracleResult> paddingResult :
-                    mainPaddingOracleResult.getResultMap().entrySet()) {
+                    mainPaddingOracleResult_.getResultMap().entrySet()) {
                 prettyAppendSubSubSubheading(builder, paddingResult.getKey().toString());
                 prettyAppend(
                         builder,

@@ -17,9 +17,9 @@ import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import de.rub.nds.tlsscanner.core.util.PrefixStatsUtil;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult.MergeStrategy;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
@@ -68,12 +68,12 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         ScannerDetail detail =
                 configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
 
-        VersionDependentTestResult unencryptedTicket =
-                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-        VersionDependentTestResult defaultEncStek =
-                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-        VersionDependentTestResult defaultMacStek =
-                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        VersionDependentTestResults unencryptedTicket =
+                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        VersionDependentTestResults defaultEncStek =
+                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        VersionDependentTestResults defaultMacStek =
+                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
         for (Entry<ProtocolVersion, List<Ticket>> entry : tickets.getResultMap().entrySet()) {
             ProtocolVersion version = entry.getKey();
             SessionTicketAfterProbeResult result = analyze(entry.getValue(), detail);

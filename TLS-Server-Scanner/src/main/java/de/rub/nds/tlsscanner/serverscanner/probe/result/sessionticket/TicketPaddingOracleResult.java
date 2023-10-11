@@ -14,13 +14,14 @@ import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SummarizableTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketVector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketPaddingOracleResult {
+public class TicketPaddingOracleResult implements SummarizableTestResult {
     private final TestResults overallResult;
 
     private final List<TicketPaddingOracleOffsetResult> positionResults;
@@ -96,5 +97,15 @@ public class TicketPaddingOracleResult {
 
     public List<TicketPaddingOracleVectorSecond> getSecondVectorsWithRareResponses() {
         return this.secondVectorsWithRareResponses;
+    }
+
+    @Override
+    public TestResults getSummarizedResult() {
+        return overallResult;
+    }
+
+    @Override
+    public boolean isExplicitSummary() {
+        return true;
     }
 }

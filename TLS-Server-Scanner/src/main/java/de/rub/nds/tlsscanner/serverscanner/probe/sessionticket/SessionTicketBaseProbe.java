@@ -13,15 +13,11 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.EarlyDataExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.PreSharedKeyExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -29,8 +25,6 @@ import de.rub.nds.tlsattacker.core.state.session.TicketSession;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -45,7 +39,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +60,7 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
                         ProtocolVersion.TLS11,
                         ProtocolVersion.TLS12,
                         ProtocolVersion.TLS13);
+        versionsToTest = Arrays.asList(ProtocolVersion.TLS12, ProtocolVersion.TLS13);
     }
 
     @Override
@@ -89,78 +83,34 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
     }
 
     protected Config configureInitialHandshake(ProtocolVersion version) {
-        Config tlsConfig = configSelector.getBaseConfig();
-
-        List<CipherSuite> ciphersuites =
-                supportedSuites.stream()
-                        .filter(suite -> suite.isSupportedInProtocol(version))
-                        .collect(Collectors.toList());
-        boolean haveEcSuite =
-                version.isTLS13()
-                        || ciphersuites.stream().anyMatch(cs -> cs.name().contains("_EC"));
-
-        List<NamedGroup> groups;
-        if (version == ProtocolVersion.TLS13) {
-            groups = new LinkedList<>();
-            for (NamedGroup group : NamedGroup.getImplemented()) {
-                if (group.isTls13()) {
-                    groups.add(group);
-                }
-            }
+        Config tlsConfig;
+        if (version.isTLS13()) {
+            tlsConfig = configSelector.getTls13BaseConfig();
         } else {
-            groups = NamedGroup.getImplemented();
+            tlsConfig = configSelector.getBaseConfig();
         }
 
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-        // versions, groups, suites
         tlsConfig.setHighestProtocolVersion(version);
         tlsConfig.setSupportedVersions(version);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
-        tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
-        tlsConfig.setDefaultSelectedCipherSuite(
-                tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
-
-        // extensions
-        tlsConfig.setAddEllipticCurveExtension(haveEcSuite);
-        tlsConfig.setAddSessionTicketTLSExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(false);
-        tlsConfig.setAddExtendedMasterSecretExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         if (version.isTLS13()) {
+            // in TLS 1.3 we also want to send application data as tickets might be issued later
+            // (e.g. BoringSSL does this)
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
+            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         } else {
-            tlsConfig.setAddECPointFormatExtension(haveEcSuite);
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.TLS);
         }
+        tlsConfig.setAddSessionTicketTLSExtension(true);
 
+        configSelector.repairConfig(tlsConfig);
         return tlsConfig;
     }
 
     protected State prepareInitialHandshake(ProtocolVersion version) {
         Config config = configureInitialHandshake(version);
         State state = new State(config);
-        WorkflowTrace trace = state.getWorkflowTrace();
-
-        if (!version.isTLS13()) {
-            ReceiveAction ticketAction = new ReceiveAction("client", new NewSessionTicketMessage());
-            ticketAction.addActionOption(ActionOption.MAY_FAIL);
-            trace.addTlsAction(trace.getTlsActions().size() - 1, ticketAction);
-        }
-        // after Handshake is finished, we sent an application message to the server
-        // since some servers (for example server using BoringSSL) only immediately issue session
-        // tickets after an
-        // application message is sent
-        ((MessageAction) trace.getLastSendingAction())
-                .getHttpMessages()
-                .add(new HttpRequestMessage());
-        if (!(trace.getLastAction() instanceof ReceiveAction)) {
-            trace.addTlsAction(new ReceiveAction("client"));
-        }
-        ApplicationMessage app = new ApplicationMessage();
-        app.setRequired(false);
-        ((ReceiveAction) trace.getLastAction()).getExpectedMessages().add(app);
-
         return state;
     }
 
@@ -186,14 +136,6 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
         ticketToUse.applyTo(tlsConfig);
 
         State state = new State(tlsConfig);
-
-        // patch trace to allow new tickets
-        ReceiveAction action = (ReceiveAction) state.getWorkflowTrace().getFirstReceivingAction();
-        List<ProtocolMessage> messages = action.getExpectedMessages();
-        ProtocolMessage newTicket = new NewSessionTicketMessage();
-        newTicket.setRequired(false);
-        messages.add(newTicket);
-        action.setExpectedMessages(messages);
 
         return state;
     }

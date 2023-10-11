@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -18,9 +17,10 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResult.MergeStrategy;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
@@ -43,19 +43,20 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
     private static final int TICKETS_TO_GATHER = 10;
 
     // results
-    private VersionDependentTestResult issuesTickets =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-    private VersionDependentTestResult resumesTickets =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-    private VersionDependentResult<TestResult> allowsVersionChange = new VersionDependentResult<>();
-    private VersionDependentTestResult allowsCipherSuiteChange =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-    private VersionDependentTestResult allowsReplayingTickets =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-    private VersionDependentTestResult supportsEarlyData =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
-    private VersionDependentTestResult vulnerableToEarlyDataReplay =
-            new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+    private VersionDependentTestResults issuesTickets =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults resumesTickets =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentSummarizableResult<VersionDependentTestResults> allowsVersionChange =
+            new VersionDependentSummarizableResult<>(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults allowsCipherSuiteChange =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults allowsReplayingTickets =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults supportsEarlyData =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults vulnerableToEarlyDataReplay =
+            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
     private VersionDependentResult<List<Ticket>> observedTickets = new VersionDependentResult<>();
 
     public SessionTicketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -114,9 +115,9 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
         State firstConnection = prepareInitialHandshake(version);
         executeState(firstConnection);
 
-        boolean issuesTickets = initialHandshakeSuccessful(firstConnection);
-        this.issuesTickets.putResult(version, issuesTickets);
-        if (!issuesTickets) {
+        boolean issuedTicket = initialHandshakeSuccessful(firstConnection);
+        issuesTickets.putResult(version, issuedTicket);
+        if (!issuedTicket) {
             return;
         }
 
@@ -224,11 +225,12 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
 
     private void checkVersionChange(ProtocolVersion fromVersion) {
         if (issuesTickets.getResult(fromVersion) != TestResults.TRUE) {
-            allowsVersionChange.putResult(fromVersion, TestResults.COULD_NOT_TEST);
+            allowsVersionChange.putResult(
+                    fromVersion, new VersionDependentTestResults(TestResults.COULD_NOT_TEST));
             return;
         }
-        VersionDependentTestResult result =
-                new VersionDependentTestResult(MergeStrategy.TRUE_PARTIAL_FALSE_OTHER);
+        VersionDependentTestResults result =
+                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
         allowsVersionChange.putResult(fromVersion, result);
 
         Set<ProtocolVersion> targetVersions = new HashSet<>();
