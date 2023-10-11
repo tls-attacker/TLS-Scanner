@@ -1205,7 +1205,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
         VersionDependentResult<TestResult> allowsVersionChange =
                 (VersionDependentResult<TestResult>)
-                        report.getResult(TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
+                        report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
         VersionDependentTestResults allowsReplayingTickets =
                 (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
@@ -1248,7 +1248,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder,
                 "Tickets resumable in different version",
-                TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
+                TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
 
         prettyAppendSubheading(builder, "Details");
         // TODO use tables

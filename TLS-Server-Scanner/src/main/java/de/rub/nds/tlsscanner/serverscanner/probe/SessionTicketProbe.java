@@ -64,7 +64,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
         register(TlsAnalyzedProperty.ISSUES_TICKET);
         register(TlsAnalyzedProperty.RESUMES_WITH_TICKET);
         register(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
-        register(TlsAnalyzedProperty.VERSION_CHANGE_TICKET);
+        register(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
         register(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
         register(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
         register(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
@@ -104,7 +104,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
         put(TlsAnalyzedProperty.ISSUES_TICKET, issuesTickets);
         put(TlsAnalyzedProperty.RESUMES_WITH_TICKET, resumesTickets);
         put(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET, allowsCipherSuiteChange);
-        put(TlsAnalyzedProperty.VERSION_CHANGE_TICKET, allowsVersionChange);
+        put(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET, allowsVersionChange);
         put(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET, allowsReplayingTickets);
         put(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET, supportsEarlyData);
         put(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET, vulnerableToEarlyDataReplay);
