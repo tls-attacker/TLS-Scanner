@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import java.io.Serializable;
+import java.util.Optional;
 
 public class PossibleSecret implements Serializable {
     public enum Secret {
@@ -28,7 +29,7 @@ public class PossibleSecret implements Serializable {
         this.value = value;
     }
 
-    public boolean isContainedIn(byte[] haystack) {
-        return ArrayUtil.findSubarray(haystack, value) != -1;
+    public Optional<Integer> findIn(byte[] haystack) {
+        return ArrayUtil.findSubarray(haystack, value);
     }
 }

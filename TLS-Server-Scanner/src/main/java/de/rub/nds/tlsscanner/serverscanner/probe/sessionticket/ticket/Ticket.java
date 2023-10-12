@@ -9,8 +9,10 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
 import java.util.List;
+import java.util.Optional;
 
 public interface Ticket {
     /**
@@ -56,13 +58,14 @@ public interface Ticket {
      * @param haystack Bytestring to search for a secret.
      * @return The found secret.
      */
-    default PossibleSecret checkContainsSecrets(byte[] haystack) {
+    default FoundSecret checkContainsSecrets(byte[] haystack) {
         if (haystack == null || haystack.length == 0) {
             return null;
         }
         for (PossibleSecret possibleSecret : getPossibleSecrets()) {
-            if (possibleSecret.isContainedIn(haystack)) {
-                return possibleSecret;
+            Optional<Integer> offset = possibleSecret.findIn(haystack);
+            if (offset.isPresent()) {
+                return new FoundSecret(possibleSecret, offset.get());
             }
         }
         return null;

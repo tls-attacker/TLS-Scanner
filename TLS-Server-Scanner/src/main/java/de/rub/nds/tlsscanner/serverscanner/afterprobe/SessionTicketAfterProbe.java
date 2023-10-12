@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.DefaultKeys;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
@@ -200,10 +201,9 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         return strings;
     }
 
-    private static PossibleSecret analyzeUnencryptedTicket(List<Ticket> tickets) {
+    private static FoundSecret analyzeUnencryptedTicket(List<Ticket> tickets) {
         for (Ticket ticket : tickets) {
-            PossibleSecret foundSecret =
-                    ticket.checkContainsSecrets(ticket.getTicketBytesOriginal());
+            FoundSecret foundSecret = ticket.checkContainsSecrets(ticket.getTicketBytesOriginal());
             if (foundSecret != null) {
                 return foundSecret;
             }
@@ -234,7 +234,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
                     for (byte[] key : DefaultKeys.getKeys(algo.keySize, detail)) {
                         byte[] decState = algo.decryptIgnoringIntegrity(key, iv, ciphertext);
-                        PossibleSecret foundSecret = ticket.checkContainsSecrets(decState);
+                        FoundSecret foundSecret = ticket.checkContainsSecrets(decState);
                         if (foundSecret != null) {
                             return new FoundDefaultStek(algo, format, key, foundSecret);
                         }
@@ -269,8 +269,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
                             try {
                                 byte[] tag = StaticTicketCrypto.generateHMAC(algo, plaintext, key);
-                                if (ArrayUtil.findSubarray(prefix, tag) != -1
-                                        || ArrayUtil.findSubarray(suffix, tag) != -1) {
+                                if (ArrayUtil.findSubarray(prefix, tag).isPresent()
+                                        || ArrayUtil.findSubarray(suffix, tag).isPresent()) {
 
                                     return new FoundDefaultHmacKey(algo, format, key);
                                 }
@@ -311,7 +311,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
      *
      * @param tickets Tickets to analyze
      */
-    private static PossibleSecret analyzeReusedKeyStream(List<Ticket> tickets) {
+    private static FoundSecret analyzeReusedKeyStream(List<Ticket> tickets) {
         for (int i = 0; i < tickets.size(); i++) {
             Ticket ticketA = tickets.get(i);
             for (int j = i + 1; j < tickets.size(); j++) {
@@ -322,7 +322,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
                 Ticket combinedSecrets =
                         new TicketTls12(null, null, xorSecrets(ticketA, ticketB, true));
 
-                PossibleSecret foundSecret = combinedSecrets.checkContainsSecrets(xoredTickets);
+                FoundSecret foundSecret = combinedSecrets.checkContainsSecrets(xoredTickets);
                 if (foundSecret != null) {
                     return foundSecret;
                 }

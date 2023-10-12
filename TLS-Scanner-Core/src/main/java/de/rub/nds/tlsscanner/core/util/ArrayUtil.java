@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.util;
 
+import java.util.Optional;
+
 public class ArrayUtil {
     private ArrayUtil() {}
 
@@ -16,9 +18,9 @@ public class ArrayUtil {
      *
      * @param haystack Array to search through
      * @param needle Array to search for
-     * @return Index at which needle starts in haystack. Or -1 if not found.
+     * @return Index at which needle starts in haystack. Empty Optional if not found.
      */
-    public static int findSubarray(byte[] haystack, byte[] needle) {
+    public static Optional<Integer> findSubarray(byte[] haystack, byte[] needle) {
         for (int offset = 0; offset <= haystack.length - needle.length; offset++) {
             if (haystack[offset] == needle[0]) {
 
@@ -31,11 +33,11 @@ public class ArrayUtil {
                     }
                 }
                 if (!difference) {
-                    return offset;
+                    return Optional.of(offset);
                 }
             }
         }
-        return -1;
+        return Optional.empty();
     }
 
     /**

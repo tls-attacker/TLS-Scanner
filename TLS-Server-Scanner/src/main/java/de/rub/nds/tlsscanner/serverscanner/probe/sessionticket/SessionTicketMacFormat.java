@@ -94,6 +94,16 @@ public class SessionTicketMacFormat {
         this.inputSuffixLength = inputSuffixLength;
     }
 
+    @Override
+    public String toString() {
+        return "SessionTicketMacFormat{"
+                + "inputOffset="
+                + inputOffset
+                + ", inputSuffixLength="
+                + inputSuffixLength
+                + '}';
+    }
+
     public byte[] getMacInput(byte[] ticketBytes) {
         return Arrays.copyOfRange(ticketBytes, inputOffset, ticketBytes.length - inputSuffixLength);
     }

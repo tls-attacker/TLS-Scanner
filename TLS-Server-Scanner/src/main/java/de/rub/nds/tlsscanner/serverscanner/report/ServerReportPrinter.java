@@ -142,43 +142,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             + " on the scanned port");
             return builder.toString();
         }
-        appendProtocolVersions(builder);
-        appendCipherSuites(builder);
-        appendExtensions(builder);
-        appendCompressions(builder);
-        appendEcPointFormats(builder);
-        appendRecordFragmentation(builder);
-        appendAlpn(builder);
-        appendIntolerances(builder);
-        appendHelloRetry(builder);
-        appendAttackVulnerabilities(builder);
-        appendAlpacaAttack(builder);
-        appendBleichenbacherResults(builder);
-        appendPaddingOracleResults(builder);
+        // appendProtocolVersions(builder);
+        // appendCipherSuites(builder);
+        // appendExtensions(builder);
+        // appendCompressions(builder);
+        // appendEcPointFormats(builder);
+        // appendRecordFragmentation(builder);
+        // appendAlpn(builder);
+        // appendIntolerances(builder);
+        // appendHelloRetry(builder);
+        // appendAttackVulnerabilities(builder);
+        // appendAlpacaAttack(builder);
+        // appendBleichenbacherResults(builder);
+        // appendPaddingOracleResults(builder);
         // appendSessionTicketZeroKeyDetails(builder);
         appendSessionTicketEval(builder);
-        appendDirectRaccoonResults(builder);
-        appendInvalidCurveResults(builder);
-        appendRaccoonAttackDetails(builder);
+        // appendDirectRaccoonResults(builder);
+        // appendInvalidCurveResults(builder);
+        // appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         // appendRfc(builder);
-        appendCertificates(builder);
-        appendOcsp(builder);
-        appendCertificateTransparency(builder);
-        appendSession(builder);
-        appendRenegotiation(builder);
-        appendHttps(builder);
-        appendRandomness(builder);
-        appendPublicKeyIssues(builder);
-        appendClientAuthentication(builder);
-        if (report.getProtocolType() == ProtocolType.DTLS) {
-            appendDtlsSpecificResults(builder);
-        }
-        appendScoringResults(builder);
-        appendRecommendations(builder);
-        if (report.getProtocolType() != ProtocolType.DTLS) {
-            appendGuidelines(builder);
-        }
+        // appendCertificates(builder);
+        // appendOcsp(builder);
+        // appendCertificateTransparency(builder);
+        // appendSession(builder);
+        // appendRenegotiation(builder);
+        // appendHttps(builder);
+        // appendRandomness(builder);
+        // appendPublicKeyIssues(builder);
+        // appendClientAuthentication(builder);
+        // if (report.getProtocolType() == ProtocolType.DTLS) {
+        //     appendDtlsSpecificResults(builder);
+        // }
+        // appendScoringResults(builder);
+        // appendRecommendations(builder);
+        // if (report.getProtocolType() != ProtocolType.DTLS) {
+        //     appendGuidelines(builder);
+        // }
         appendPerformanceData(builder);
         appendMissingProbesRequirements(builder);
 
@@ -1256,9 +1256,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         // the columns would be the protocol version
 
         TestResult mainManipulationResult =
-                        report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+                report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
         TestResult mainPaddingOracleResult =
-                        report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+                report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
 
         VersionDependentResult<SessionTicketAfterProbeResult> afterProbeResults =
                 report.getSessionTicketAfterProbeResultMap();
@@ -1291,13 +1291,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder, "\t" + versionResult_.getSummarizedResult().toString());
                     } else {
-                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                        for (Entry<ProtocolVersion, TestResults> changeResult :
                                 versionResult_.getResultMap().entrySet()) {
-                        prettyAppend(
-                                builder,
-                                "\t" + changeResult.getKey() + ": ",
-                                changeResult.getValue().toString());
-                    }
+                            prettyAppend(
+                                    builder,
+                                    "\t" + changeResult.getKey() + ": ",
+                                    changeResult.getValue().toString());
+                        }
                     }
                 } else {
                     prettyAppend(builder, "\t [internal error]" + versionResult.toString());
@@ -1481,7 +1481,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(
                             builder,
                             "Found Plain Secret",
-                            afterResult.getContainsPlainSecret().secretType.toString());
+                            afterResult.getContainsPlainSecret().toReportString());
                 } else {
                     prettyAppend(builder, "No Plain Secret", "-");
                 }
@@ -1490,7 +1490,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(
                             builder,
                             "Found Reused Keystream - Found Secret",
-                            afterResult.getDiscoveredReusedKeystream().secretType.toString());
+                            afterResult.getDiscoveredReusedKeystream().toReportString());
                 } else {
                     prettyAppend(builder, "No Reused Keystream", "-");
                 }
@@ -1513,9 +1513,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                 ArrayConverter.bytesToHexString(
                                         foundDefaultStek.key, false, false));
                         prettyAppend(
-                                builder,
-                                "Found Secret",
-                                foundDefaultStek.secret.secretType.toString());
+                                builder, "Found Secret", foundDefaultStek.secret.toReportString());
                     }
                 }
             } else {

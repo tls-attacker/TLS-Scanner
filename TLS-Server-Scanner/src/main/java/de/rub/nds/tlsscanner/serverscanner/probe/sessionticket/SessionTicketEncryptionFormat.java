@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import com.beust.jcommander.ParameterException;
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SessionTicketEncryptionFormat {
+public class SessionTicketEncryptionFormat implements Serializable {
     /**
      * Standard offsets of the IV. Most likely due to the key name being the first field of a ticket
      */

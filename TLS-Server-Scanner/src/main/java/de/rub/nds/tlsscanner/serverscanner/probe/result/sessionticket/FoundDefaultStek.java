@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketEncryptionFormat;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.TicketEncryptionAlgorithm;
 import java.io.Serializable;
@@ -17,13 +16,13 @@ public class FoundDefaultStek implements Serializable {
     public final TicketEncryptionAlgorithm algorithm;
     public final SessionTicketEncryptionFormat format;
     public final byte[] key;
-    public final PossibleSecret secret;
+    public final FoundSecret secret;
 
     public FoundDefaultStek(
             TicketEncryptionAlgorithm algorithm,
             SessionTicketEncryptionFormat format,
             byte[] key,
-            PossibleSecret secret) {
+            FoundSecret secret) {
         this.algorithm = algorithm;
         this.format = format;
         this.key = key;

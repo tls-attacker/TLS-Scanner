@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +17,8 @@ public class SessionTicketAfterProbeResult {
     private Map<Integer, Integer> ticketLengthOccurences;
     private Integer keyNameLength = null;
     private List<String> asciiStringsFound;
-    private PossibleSecret containsPlainSecret;
-    private PossibleSecret discoveredReusedKeystream;
+    private FoundSecret containsPlainSecret;
+    private FoundSecret discoveredReusedKeystream;
 
     private FoundDefaultStek foundDefaultStek = null;
     private FoundDefaultHmacKey foundDefaultHmacKey = null;
@@ -89,11 +88,11 @@ public class SessionTicketAfterProbeResult {
         return ret.toString();
     }
 
-    public PossibleSecret getContainsPlainSecret() {
+    public FoundSecret getContainsPlainSecret() {
         return this.containsPlainSecret;
     }
 
-    public void setContainsPlainSecret(PossibleSecret containsPlainSecret) {
+    public void setContainsPlainSecret(FoundSecret containsPlainSecret) {
         this.containsPlainSecret = containsPlainSecret;
     }
 
@@ -113,11 +112,11 @@ public class SessionTicketAfterProbeResult {
         this.foundDefaultHmacKey = foundDefaultHmacKey;
     }
 
-    public PossibleSecret getDiscoveredReusedKeystream() {
+    public FoundSecret getDiscoveredReusedKeystream() {
         return this.discoveredReusedKeystream;
     }
 
-    public void setDiscoveredReusedKeystream(PossibleSecret discoveredReusedKeystream) {
+    public void setDiscoveredReusedKeystream(FoundSecret discoveredReusedKeystream) {
         this.discoveredReusedKeystream = discoveredReusedKeystream;
     }
 }

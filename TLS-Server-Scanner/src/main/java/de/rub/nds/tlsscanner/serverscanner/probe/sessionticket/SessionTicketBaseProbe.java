@@ -94,7 +94,7 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
         tlsConfig.setSupportedVersions(version);
         if (version.isTLS13()) {
             // in TLS 1.3 we also want to send application data as tickets might be issued later
-            // (e.g. BoringSSL does this)
+            // (e.g. BoringSSL sends the ticket just before sending the first application data)
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
             tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
