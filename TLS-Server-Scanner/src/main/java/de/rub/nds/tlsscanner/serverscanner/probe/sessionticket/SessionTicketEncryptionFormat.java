@@ -20,12 +20,8 @@ import java.util.stream.Collectors;
 
 public class SessionTicketEncryptionFormat implements Serializable {
     /**
-     * Standard offsets of the IV. Most likely due to the key name being the first field of a ticket
-     */
-    private static final Integer[] STANDARD_IV_OFFSETS = {0, 4, 8, 12, 16, 28};
-    /**
      * Standard offsets of ciphertext after IV/Nonce. RFC 5077 recommends 2 bytes for a length
-     * field. But many implementations ignore this
+     * field. But many implementations ignore this.
      */
     private static final Integer[] STANDARD_CIPHERTEXT_OFFSETS = {0, 2};
     /**
@@ -44,7 +40,10 @@ public class SessionTicketEncryptionFormat implements Serializable {
         ciphertextOffsets.addAll(Arrays.asList(STANDARD_CIPHERTEXT_OFFSETS));
 
         if (scannerDetail.getLevelValue() >= ScannerDetail.QUICK.getLevelValue()) {
-            ivOffsets.addAll(Arrays.asList(STANDARD_IV_OFFSETS));
+            ivOffsets.add(0); // was applicable in the wild to CBC
+            ivOffsets.add(4); // mbedTLS
+            ivOffsets.add(16); // RFC 5077, OpenSSL, BoringSSL
+            ivOffsets.add(28); // Botan
             ivOffsets.add(keynameLengthHint);
             ivOffsets.add(keynameLengthHint - ivLength);
         }

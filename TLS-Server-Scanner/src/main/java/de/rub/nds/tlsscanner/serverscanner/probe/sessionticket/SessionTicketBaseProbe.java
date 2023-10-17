@@ -110,8 +110,7 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
 
     protected State prepareInitialHandshake(ProtocolVersion version) {
         Config config = configureInitialHandshake(version);
-        State state = new State(config);
-        return state;
+        return new State(config);
     }
 
     protected State prepareResumptionHandshake(
@@ -135,9 +134,7 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
 
         ticketToUse.applyTo(tlsConfig);
 
-        State state = new State(tlsConfig);
-
-        return state;
+        return new State(tlsConfig);
     }
 
     protected void patchTraceMightFailAfterMessage(

@@ -38,7 +38,8 @@ public class SessionTicketMacFormat {
 
     public static List<SessionTicketMacFormat> generateFormats(
             ScannerDetail scannerDetail, int ticketLength, int outputLength) {
-        Set<Integer> prefixLengths = generatePrefixLengths(scannerDetail, ticketLength);
+        Set<Integer> prefixLengths =
+                generatePrefixLengths(scannerDetail, ticketLength, outputLength);
         Set<Integer> suffixLengths = prefixLengths;
 
         List<SessionTicketMacFormat> ret =
@@ -60,15 +61,18 @@ public class SessionTicketMacFormat {
     }
 
     private static Set<Integer> generatePrefixLengths(
-            ScannerDetail scannerDetail, int ticketLength) {
+            ScannerDetail scannerDetail, int ticketLength, int outputLength) {
         Set<Integer> ret = new HashSet<>();
         if (scannerDetail.getLevelValue() >= ScannerDetail.QUICK.getLevelValue()) {
+            // observed in the wild
+            // actually we only observed 0 prefix, outputLength suffix, but checking it this way and
+            // the other way around isn't that expensive.
             ret.add(0);
-            ret.add(1);
-            ret.add(8);
-            ret.add(16);
+            ret.add(outputLength);
         }
         if (scannerDetail.getLevelValue() >= ScannerDetail.NORMAL.getLevelValue()) {
+            ret.add(1);
+            ret.add(outputLength + 1);
             int stepSize = 16;
             if (scannerDetail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
                 stepSize = 8;

@@ -36,25 +36,18 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final MacAlgorithm[] HMAC_ALGORITHMS = {
-        MacAlgorithm.HMAC_MD5,
-        MacAlgorithm.HMAC_SHA1,
-        MacAlgorithm.HMAC_SHA256,
-        MacAlgorithm.HMAC_SHA384,
-        MacAlgorithm.HMAC_SHA512,
-    };
-    private static final TicketEncryptionAlgorithm[] ENCRYPTION_ALGORITHMS =
-            TicketEncryptionAlgorithm.values();
     private static final int MIN_ASCII_LENGTH = 8;
 
     private ConfigSelector configSelector;
@@ -86,6 +79,46 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         report.putResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET, unencryptedTicket);
         report.putResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET, defaultEncStek);
         report.putResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET, defaultMacStek);
+    }
+
+    private static Iterable<MacAlgorithm> getMacAlgorithms(ScannerDetail detail) {
+        Set<MacAlgorithm> algorithms = new HashSet<>();
+        if (detail.isGreaterEqualTo(ScannerDetail.QUICK)) {
+            // observed during scan
+            algorithms.add(MacAlgorithm.HMAC_SHA256);
+            algorithms.add(MacAlgorithm.HMAC_SHA384);
+        }
+        if (detail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            // observed in implementations
+            algorithms.add(MacAlgorithm.HMAC_SHA1);
+        }
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            algorithms.add(MacAlgorithm.HMAC_SHA512);
+            algorithms.add(MacAlgorithm.HMAC_MD5);
+        }
+        return algorithms;
+    }
+
+    private static Iterable<TicketEncryptionAlgorithm> getEncAlgorithms(ScannerDetail detail) {
+        Set<TicketEncryptionAlgorithm> algorithms = new HashSet<>();
+        if (detail.isGreaterEqualTo(ScannerDetail.QUICK)) {
+            // observed during scan
+            algorithms.add(TicketEncryptionAlgorithm.AES_128_CBC);
+            algorithms.add(TicketEncryptionAlgorithm.AES_256_CBC);
+        }
+        if (detail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            // observed in implementations
+            algorithms.add(TicketEncryptionAlgorithm.AES_128_GCM);
+            algorithms.add(TicketEncryptionAlgorithm.AES_256_GCM);
+            algorithms.add(TicketEncryptionAlgorithm.AES_128_CTR);
+            algorithms.add(TicketEncryptionAlgorithm.AES_128_CCM);
+            algorithms.add(TicketEncryptionAlgorithm.AES_256_CCM);
+            algorithms.add(TicketEncryptionAlgorithm.CHACHA20_POLY1305);
+        }
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            return Arrays.asList(TicketEncryptionAlgorithm.values());
+        }
+        return algorithms;
     }
 
     public static SessionTicketAfterProbeResult analyze(
@@ -219,12 +252,12 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         // for key
         // try decrypt and find secret
 
-        // TODO optimize to reduce "duplicate" decryptions
+        // minor todo: optimize to reduce "duplicate" decryptions
         // e.g. ECB and CBC modes only care about offsets of 0-15. 16 Is again equivalent to 0 (with
         // first block missing)
         for (Ticket ticket : tickets) {
             byte[] ticketBytes = ticket.getTicketBytesOriginal();
-            for (TicketEncryptionAlgorithm algo : ENCRYPTION_ALGORITHMS) {
+            for (TicketEncryptionAlgorithm algo : getEncAlgorithms(detail)) {
                 for (SessionTicketEncryptionFormat format :
                         SessionTicketEncryptionFormat.generateFormats(
                                 detail, ticketBytes.length, algo.ivNonceSize, keyNameLength)) {
@@ -256,7 +289,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         for (Ticket ticket : tickets) {
             byte[] ticketBytes = ticket.getTicketBytesOriginal();
 
-            for (MacAlgorithm algo : HMAC_ALGORITHMS) {
+            for (MacAlgorithm algo : getMacAlgorithms(detail)) {
                 for (SessionTicketMacFormat format :
                         SessionTicketMacFormat.generateFormats(
                                 detail, ticketBytes.length, algo.getSize())) {

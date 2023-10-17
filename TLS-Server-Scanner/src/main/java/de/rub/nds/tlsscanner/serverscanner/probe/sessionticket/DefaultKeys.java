@@ -87,14 +87,6 @@ public class DefaultKeys {
         Set<ComparableByteArray> keys = new HashSet<>();
 
         if (scannerDetail.getLevelValue() >= ScannerDetail.QUICK.getLevelValue()) {
-            keys.add(computeConstantKey(length, (byte) 0x00));
-            keys.add(computeConstantKey(length, (byte) 0xff));
-            keys.add(computeCountingKey(length, (byte) 0x00));
-            keys.add(computeCountingKey(length, (byte) 0x01));
-            keys.add(computeCountingKey(length, (byte) 0x00, 0x11));
-            keys.add(computeCountingKey(length, (byte) 0x01, 0x11));
-        }
-        if (scannerDetail.getLevelValue() >= ScannerDetail.NORMAL.getLevelValue()) {
 
             // discovered during scan
             keys.add(fixedKey(length, "31313131313131310000000000000000"));
@@ -103,6 +95,15 @@ public class DefaultKeys {
                             length,
                             "3131313131313131313131313131313100000000000000000000000000000000"));
 
+            keys.add(computeConstantKey(length, (byte) 0x00));
+            keys.add(computeCountingKey(length, (byte) 0x00));
+        }
+        if (scannerDetail.getLevelValue() >= ScannerDetail.NORMAL.getLevelValue()) {
+            // keys deemed simple
+            keys.add(computeConstantKey(length, (byte) 0xff));
+            keys.add(computeCountingKey(length, (byte) 0x01));
+            keys.add(computeCountingKey(length, (byte) 0x00, 0x11));
+            keys.add(computeCountingKey(length, (byte) 0x01, 0x11));
             // common offsets of counting keys (e.g. counting key for mac+enc)
             keys.add(computeCountingKey(length, (byte) 0x10));
             keys.add(computeCountingKey(length, (byte) 0x11));
