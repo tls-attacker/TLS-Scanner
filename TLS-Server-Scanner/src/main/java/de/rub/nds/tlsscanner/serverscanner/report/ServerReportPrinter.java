@@ -142,43 +142,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             + " on the scanned port");
             return builder.toString();
         }
-        // appendProtocolVersions(builder);
-        // appendCipherSuites(builder);
-        // appendExtensions(builder);
-        // appendCompressions(builder);
-        // appendEcPointFormats(builder);
-        // appendRecordFragmentation(builder);
-        // appendAlpn(builder);
-        // appendIntolerances(builder);
-        // appendHelloRetry(builder);
-        // appendAttackVulnerabilities(builder);
-        // appendAlpacaAttack(builder);
-        // appendBleichenbacherResults(builder);
-        // appendPaddingOracleResults(builder);
+        appendProtocolVersions(builder);
+        appendCipherSuites(builder);
+        appendExtensions(builder);
+        appendCompressions(builder);
+        appendEcPointFormats(builder);
+        appendRecordFragmentation(builder);
+        appendAlpn(builder);
+        appendIntolerances(builder);
+        appendHelloRetry(builder);
+        appendAttackVulnerabilities(builder);
+        appendAlpacaAttack(builder);
+        appendBleichenbacherResults(builder);
+        appendPaddingOracleResults(builder);
         // appendSessionTicketZeroKeyDetails(builder);
         appendSessionTicketEval(builder);
-        // appendDirectRaccoonResults(builder);
-        // appendInvalidCurveResults(builder);
-        // appendRaccoonAttackDetails(builder);
+        appendDirectRaccoonResults(builder);
+        appendInvalidCurveResults(builder);
+        appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         // appendRfc(builder);
-        // appendCertificates(builder);
-        // appendOcsp(builder);
-        // appendCertificateTransparency(builder);
-        // appendSession(builder);
-        // appendRenegotiation(builder);
-        // appendHttps(builder);
-        // appendRandomness(builder);
-        // appendPublicKeyIssues(builder);
-        // appendClientAuthentication(builder);
-        // if (report.getProtocolType() == ProtocolType.DTLS) {
-        //     appendDtlsSpecificResults(builder);
-        // }
-        // appendScoringResults(builder);
-        // appendRecommendations(builder);
-        // if (report.getProtocolType() != ProtocolType.DTLS) {
-        //     appendGuidelines(builder);
-        // }
+        appendCertificates(builder);
+        appendOcsp(builder);
+        appendCertificateTransparency(builder);
+        appendSession(builder);
+        appendRenegotiation(builder);
+        appendHttps(builder);
+        appendRandomness(builder);
+        appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            appendDtlsSpecificResults(builder);
+        }
+        appendScoringResults(builder);
+        appendRecommendations(builder);
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            appendGuidelines(builder);
+        }
         appendPerformanceData(builder);
         appendMissingProbesRequirements(builder);
 
