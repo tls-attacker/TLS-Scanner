@@ -387,15 +387,5 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
                 versionsToTest.remove(version);
             }
         }
-        // only keep 1.3 and highest pre 1.3 version
-        // we sort the versions descending (without 1.3)
-        // and remove all but the first from the versions to test
-        List<ProtocolVersion> sortedVersions = new ArrayList<>(versionsToTest);
-        sortedVersions.remove(ProtocolVersion.TLS13);
-        if (!sortedVersions.isEmpty()) {
-            ProtocolVersion.sort(sortedVersions, false);
-            sortedVersions.remove(0);
-            versionsToTest.removeAll(sortedVersions);
-        }
     }
 }

@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -60,7 +61,6 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
                         ProtocolVersion.TLS11,
                         ProtocolVersion.TLS12,
                         ProtocolVersion.TLS13);
-        versionsToTest = Arrays.asList(ProtocolVersion.TLS12, ProtocolVersion.TLS13);
     }
 
     @Override
@@ -75,6 +75,23 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
                 versionsToTest.stream()
                         .filter(version -> report.getSupportedProtocolVersions().contains(version))
                         .collect(Collectors.toList());
+
+        if (!configSelector
+                .getScannerConfig()
+                .getExecutorConfig()
+                .getScanDetail()
+                .isGreaterEqualTo(ScannerDetail.ALL)) {
+            // only keep 1.3 and highest pre 1.3 version
+            // we sort the versions descending (without 1.3)
+            // and remove all but the first from the versions to test
+            List<ProtocolVersion> sortedVersions = new ArrayList<>(versionsToTest);
+            sortedVersions.remove(ProtocolVersion.TLS13);
+            if (!sortedVersions.isEmpty()) {
+                ProtocolVersion.sort(sortedVersions, false);
+                sortedVersions.remove(0);
+                versionsToTest.removeAll(sortedVersions);
+            }
+        }
     }
 
     protected ResponseFingerprint extractFingerprint(State state) {
