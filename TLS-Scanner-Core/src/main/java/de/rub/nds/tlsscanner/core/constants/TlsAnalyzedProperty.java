@@ -239,7 +239,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     USES_UNIX_TIMESTAMPS_IN_RANDOM(TlsAnalyzedPropertyCategory.QUIRKS),
     SENDS_HELLO_RETRY_REQUEST(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ISSUES_COOKIE_IN_HELLO_RETRY(TlsAnalyzedPropertyCategory.EXTENSIONS),
-    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -292,7 +291,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     REUSES_DH_PUBLICKEY(TlsAnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(TlsAnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(TlsAnalyzedPropertyCategory.SNI),
-    HAS_GNU_TLS_MAGIC_BYTES(TlsAnalyzedPropertyCategory.SESSION_TICKET),
     /** CCA Properties */
     SUPPORTS_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),

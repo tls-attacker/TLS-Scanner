@@ -814,8 +814,18 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+                        TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -1000, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.PADDING_ORACLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
@@ -1097,7 +1107,6 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH,
-                                TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES,
                                 TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS,
                                 TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
                                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,

@@ -165,7 +165,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new ECPointFormatProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RenegotiationProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new SessionTicketZeroKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HeartbleedProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));

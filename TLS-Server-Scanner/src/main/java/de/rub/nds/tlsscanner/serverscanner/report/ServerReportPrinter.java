@@ -155,7 +155,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
-        // appendSessionTicketZeroKeyDetails(builder);
         appendSessionTicketEval(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
@@ -1707,10 +1706,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(
-                builder,
-                "CVE-2020-13777 (Zero key)",
-                TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
@@ -3129,17 +3124,5 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
             }
         }
-    }
-
-    private StringBuilder appendSessionTicketZeroKeyDetails(StringBuilder builder) {
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY)
-                == TestResults.TRUE) {
-            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
-            prettyAppend(
-                    builder,
-                    "Has GnuTls magic bytes:",
-                    TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
-        }
-        return builder;
     }
 }
