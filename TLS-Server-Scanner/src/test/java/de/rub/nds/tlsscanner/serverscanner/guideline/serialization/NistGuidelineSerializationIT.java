@@ -486,7 +486,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(

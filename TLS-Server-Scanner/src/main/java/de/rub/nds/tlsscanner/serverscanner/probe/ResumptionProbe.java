@@ -66,7 +66,7 @@ public class ResumptionProbe extends TlsServerProbe {
         register(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
@@ -399,7 +399,9 @@ public class ResumptionProbe extends TlsServerProbe {
         put(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
                 supportsSessionTicketResumption);
-        put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        put(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                supportsTls13SessionTicket);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);

@@ -1176,7 +1176,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder,
                 "Issues TLS 1.3 Session Tickets",
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);

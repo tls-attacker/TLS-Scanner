@@ -769,7 +769,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
