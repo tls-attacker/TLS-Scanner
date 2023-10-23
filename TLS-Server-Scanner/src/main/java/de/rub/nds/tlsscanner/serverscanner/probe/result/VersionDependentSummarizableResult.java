@@ -9,16 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.TestResults;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class VersionDependentSummarizableResult<T extends SummarizableTestResult>
         extends VersionDependentResult<T> implements SummarizableTestResult {
-
-    protected final TestResultsMerger merger;
-
-    public VersionDependentSummarizableResult(TestResultsMerger merger) {
-        this.merger = merger;
-    }
 
     @Override
     public boolean isExplicitSummary() {
@@ -27,10 +22,23 @@ public class VersionDependentSummarizableResult<T extends SummarizableTestResult
 
     @Override
     public TestResults getSummarizedResult() {
-        return this.merger.merge(
+        Collection<TestResults> actualResults =
                 results.values().stream()
                         .map(SummarizableTestResult::getSummarizedResult)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList());
+        if (actualResults.isEmpty()) {
+            return TestResults.NOT_TESTED_YET;
+        }
+        if (actualResults.contains(TestResults.TRUE)) {
+            return TestResults.TRUE;
+        }
+        if (actualResults.contains(TestResults.PARTIALLY)) {
+            return TestResults.PARTIALLY;
+        }
+        if (actualResults.contains(TestResults.FALSE)) {
+            return TestResults.FALSE;
+        }
+        return actualResults.iterator().next();
     }
 
     @Override

@@ -202,7 +202,6 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
     }
 
     protected boolean initialHandshakeSuccessful(State state) {
-        // TODO reduce complexity - optimally should just be trace.executedAsPlanned
         boolean ticketIssued;
         TlsContext context = state.getTlsContext();
         if (state.getTlsContext() == null
@@ -234,7 +233,6 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
     }
 
     protected boolean resumptionHandshakeSuccessful(State state, boolean checkAcceptedEarlyData) {
-        // TODO reduce complexity - optimally should just be trace.executedAsPlanned
         WorkflowTrace trace = state.getWorkflowTrace();
         HandshakeMessage serverHello =
                 WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);

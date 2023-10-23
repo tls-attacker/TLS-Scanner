@@ -25,7 +25,6 @@ import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
@@ -67,9 +66,7 @@ public class SessionTicketManipulationProbe extends SessionTicketBaseProbe {
 
     @Override
     public void executeTest() {
-        overallResult =
-                new VersionDependentSummarizableResult<>(
-                        PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        overallResult = new VersionDependentSummarizableResult<>();
         for (ProtocolVersion version : versionsToTest) {
             try {
                 overallResult.putResult(version, checkManipulation(version));

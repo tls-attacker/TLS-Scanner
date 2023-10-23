@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
@@ -43,20 +42,15 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
     private static final int TICKETS_TO_GATHER = 10;
 
     // results
-    private VersionDependentTestResults issuesTickets =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-    private VersionDependentTestResults resumesTickets =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+    private VersionDependentTestResults issuesTickets = new VersionDependentTestResults();
+    private VersionDependentTestResults resumesTickets = new VersionDependentTestResults();
     private VersionDependentSummarizableResult<VersionDependentTestResults> allowsVersionChange =
-            new VersionDependentSummarizableResult<>(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-    private VersionDependentTestResults allowsCipherSuiteChange =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-    private VersionDependentTestResults allowsReplayingTickets =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-    private VersionDependentTestResults supportsEarlyData =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+            new VersionDependentSummarizableResult<>();
+    private VersionDependentTestResults allowsCipherSuiteChange = new VersionDependentTestResults();
+    private VersionDependentTestResults allowsReplayingTickets = new VersionDependentTestResults();
+    private VersionDependentTestResults supportsEarlyData = new VersionDependentTestResults();
     private VersionDependentTestResults vulnerableToEarlyDataReplay =
-            new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+            new VersionDependentTestResults();
     private VersionDependentResult<List<Ticket>> observedTickets = new VersionDependentResult<>();
 
     public SessionTicketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -229,8 +223,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
                     fromVersion, new VersionDependentTestResults(TestResults.COULD_NOT_TEST));
             return;
         }
-        VersionDependentTestResults result =
-                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        VersionDependentTestResults result = new VersionDependentTestResults();
         allowsVersionChange.putResult(fromVersion, result);
 
         Set<ProtocolVersion> targetVersions = new HashSet<>();

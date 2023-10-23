@@ -10,23 +10,18 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import java.util.Collection;
 
 public class VersionDependentTestResults extends VersionDependentResult<TestResults>
         implements SummarizableTestResult {
-    protected final TestResultsMerger merger;
     protected final TestResults explicitSummary;
 
-    private VersionDependentTestResults(TestResultsMerger merger, TestResults explicitSummary) {
-        this.merger = merger;
+    public VersionDependentTestResults(TestResults explicitSummary) {
         this.explicitSummary = explicitSummary;
     }
 
-    public VersionDependentTestResults(TestResultsMerger merger) {
-        this(merger, null);
-    }
-
-    public VersionDependentTestResults(TestResults summary) {
-        this(null, summary);
+    public VersionDependentTestResults() {
+        this(null);
     }
 
     // helper function
@@ -55,7 +50,20 @@ public class VersionDependentTestResults extends VersionDependentResult<TestResu
         if (isExplicitSummary()) {
             return explicitSummary;
         }
-        return this.merger.merge(results.values());
+        Collection<TestResults> actualResults = results.values();
+        if (actualResults.isEmpty()) {
+            return TestResults.NOT_TESTED_YET;
+        }
+        if (actualResults.contains(TestResults.TRUE)) {
+            return TestResults.TRUE;
+        }
+        if (actualResults.contains(TestResults.PARTIALLY)) {
+            return TestResults.PARTIALLY;
+        }
+        if (actualResults.contains(TestResults.FALSE)) {
+            return TestResults.FALSE;
+        }
+        return actualResults.iterator().next();
     }
 
     @Override

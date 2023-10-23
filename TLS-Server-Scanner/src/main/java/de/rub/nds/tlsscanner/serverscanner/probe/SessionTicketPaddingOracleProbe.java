@@ -29,7 +29,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
@@ -152,9 +151,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
 
     @Override
     public void executeTest() {
-        overallResult =
-                new VersionDependentSummarizableResult<>(
-                        PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        overallResult = new VersionDependentSummarizableResult<>();
         for (ProtocolVersion version : versionsToTest) {
             try {
                 overallResult.putResult(version, checkPaddingOracle(version));

@@ -38,7 +38,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
@@ -212,8 +211,7 @@ public class SessionTicketPaddingOracleProbeTest {
                 new ListResult<>(
                         TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, Arrays.asList(version)));
         report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new HashSet<>(suites));
-        VersionDependentTestResults issuesTickets =
-                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        VersionDependentTestResults issuesTickets = new VersionDependentTestResults();
         issuesTickets.putResult(version, TestResults.TRUE);
         report.putResult(TlsAnalyzedProperty.ISSUES_TICKET, issuesTickets);
 

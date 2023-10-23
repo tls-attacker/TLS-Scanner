@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import de.rub.nds.tlsscanner.core.util.PrefixStatsUtil;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.PriorityBasedTestResultsMerger;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
@@ -62,12 +61,9 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         ScannerDetail detail =
                 configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
 
-        VersionDependentTestResults unencryptedTicket =
-                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-        VersionDependentTestResults defaultEncStek =
-                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
-        VersionDependentTestResults defaultMacStek =
-                new VersionDependentTestResults(PriorityBasedTestResultsMerger.TRUE_PRIORITY);
+        VersionDependentTestResults unencryptedTicket = new VersionDependentTestResults();
+        VersionDependentTestResults defaultEncStek = new VersionDependentTestResults();
+        VersionDependentTestResults defaultMacStek = new VersionDependentTestResults();
         for (Entry<ProtocolVersion, List<Ticket>> entry : tickets.getResultMap().entrySet()) {
             ProtocolVersion version = entry.getKey();
             SessionTicketAfterProbeResult result = analyze(entry.getValue(), detail);
