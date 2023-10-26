@@ -1081,7 +1081,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_RSA_SIG,
                                 TlsAnalyzedProperty.SUPPORTS_KERBEROS,
                                 TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
-                                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,

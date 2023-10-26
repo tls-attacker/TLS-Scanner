@@ -54,7 +54,7 @@ public class ExtensionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                 TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                 TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
@@ -187,7 +187,7 @@ public class ExtensionProbe extends TlsServerProbe {
             put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
             put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
             put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
-            put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
+            put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, sessionTickets);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
         } else {

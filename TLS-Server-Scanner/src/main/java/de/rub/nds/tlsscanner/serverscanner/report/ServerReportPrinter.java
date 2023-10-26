@@ -1161,7 +1161,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
         }
         prettyAppend(
-                builder, "Issues Session Tickets", TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+                builder,
+                "Issues Session Tickets",
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION);
         prettyAppend(
                 builder,
                 "Supports Session Ticket Resumption",
