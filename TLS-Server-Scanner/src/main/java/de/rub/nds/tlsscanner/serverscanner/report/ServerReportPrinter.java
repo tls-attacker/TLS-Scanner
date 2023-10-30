@@ -1180,8 +1180,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
         prettyAppend(
                 builder,
-                "Issues TLS 1.3 Session Tickets with HTTPS",
-                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS);
+                "Issues TLS 1.3 Session Tickets with Application Data",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA);
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);

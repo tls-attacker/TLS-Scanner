@@ -53,7 +53,8 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
                             TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE)
                     .or(
                             new PropertyTrueRequirement<>(
-                                    TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS));
+                                    TlsAnalyzedProperty
+                                            .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA));
 
     protected static final Requirement<ServerReport> REQ_SUPPORTS_RESUMPTION_TICKET_EXT =
             new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
