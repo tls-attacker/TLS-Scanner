@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -94,9 +95,10 @@ public class ResumptionProbe extends TlsServerProbe {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
             issuesTls13SessionTicketAfterHandshake =
-                    getIssuesTls13SessionTicket(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+                    getIssuesTls13SessionTicket(
+                            WorkflowTraceType.DYNAMIC_HANDSHAKE, LayerConfiguration.TLS);
             issuesTls13SessionTicketWithHttps =
-                    getIssuesTls13SessionTicket(WorkflowTraceType.HTTPS);
+                    getIssuesTls13SessionTicket(WorkflowTraceType.HTTPS, LayerConfiguration.HTTPS);
             supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
             supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
             supportsTls13ZeroRtt = getSupports0rtt();
@@ -347,7 +349,8 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
-    private TestResult getIssuesTls13SessionTicket(WorkflowTraceType traceType) {
+    private TestResult getIssuesTls13SessionTicket(
+            WorkflowTraceType traceType, LayerConfiguration layerConfiguration) {
         try {
             if (configSelector.foundWorkingTls13Config()) {
                 Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -357,6 +360,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 tlsConfig.setPSKKeyExchangeModes(pskKex);
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setWorkflowTraceType(traceType);
+                tlsConfig.setDefaultLayerConfiguration(layerConfiguration);
                 State state = new State(tlsConfig);
                 state.getWorkflowTrace()
                         .addTlsAction(
