@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,6 +30,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseExtractor;
@@ -44,6 +46,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class SessionTicketBaseProbe extends TlsServerProbe {
+    private static final Requirement<ServerReport> REQ_SUPPORTS_SESSION_TICKET_EXTENSION =
+            new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION);
+    private static final Requirement<ServerReport> REQ_ISSUES_TLS_13_TICKETS =
+            new PropertyTrueRequirement<ServerReport>(
+                            TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE)
+                    .or(
+                            new PropertyTrueRequirement<>(
+                                    TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS));
+
+    protected static final Requirement<ServerReport> REQ_SUPPORTS_RESUMPTION_TICKET_EXT =
+            new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+    protected static final Requirement<ServerReport> REQ_SUPPORTS_RESUMPTION_TLS_13 =
+            new PropertyTrueRequirement<ServerReport>(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE)
+                    .or(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK));
+    protected static final Requirement<ServerReport> REQ_SUPPORTS_RESUMPTION =
+            REQ_SUPPORTS_RESUMPTION_TICKET_EXT.or(REQ_SUPPORTS_RESUMPTION_TLS_13);
+
     protected List<ProtocolVersion> versionsToTest;
 
     /**
@@ -51,6 +70,12 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
      * handshake (in {@link #configureInitialHandshake(ProtocolVersion)})
      */
     protected List<CipherSuite> supportedSuites;
+
+    private boolean issuesTickets12;
+    private boolean issuesTickets13;
+
+    private boolean resumesTickets12;
+    private boolean resumesTickets13;
 
     protected SessionTicketBaseProbe(
             ParallelExecutor parallelExecutor, ConfigSelector configSelector, TlsProbeType type) {
@@ -65,7 +90,27 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION);
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.CIPHER_SUITE,
+                        TlsProbeType.PROTOCOL_VERSION,
+                        TlsProbeType.RESUMPTION)
+                .and(REQ_SUPPORTS_SESSION_TICKET_EXTENSION.or(REQ_ISSUES_TLS_13_TICKETS));
+    }
+
+    protected boolean issuesTickets(ProtocolVersion version) {
+        if (version.isTLS13()) {
+            return issuesTickets13;
+        } else {
+            return issuesTickets12;
+        }
+    }
+
+    protected boolean resumesTickets(ProtocolVersion version) {
+        if (version.isTLS13()) {
+            return resumesTickets13;
+        } else {
+            return resumesTickets12;
+        }
     }
 
     @Override
@@ -92,6 +137,12 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
                 versionsToTest.removeAll(sortedVersions);
             }
         }
+
+        // use properties as approximation
+        issuesTickets12 = REQ_SUPPORTS_SESSION_TICKET_EXTENSION.evaluate(report);
+        issuesTickets13 = REQ_ISSUES_TLS_13_TICKETS.evaluate(report);
+        resumesTickets12 = REQ_SUPPORTS_RESUMPTION_TICKET_EXT.evaluate(report);
+        resumesTickets13 = REQ_SUPPORTS_RESUMPTION_TLS_13.evaluate(report);
     }
 
     protected ResponseFingerprint extractFingerprint(State state) {

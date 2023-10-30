@@ -155,7 +155,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
-        appendSessionTicketEval(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
@@ -165,6 +164,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendOcsp(builder);
         appendCertificateTransparency(builder);
         appendSession(builder);
+        appendSessionTicketEval(builder);
         appendRenegotiation(builder);
         appendHttps(builder);
         appendRandomness(builder);
@@ -1176,8 +1176,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         prettyAppend(
                 builder,
-                "Issues TLS 1.3 Session Tickets",
+                "Issues TLS 1.3 Session Tickets directly after handshake",
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
+        prettyAppend(
+                builder,
+                "Issues TLS 1.3 Session Tickets with HTTPS",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS);
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
@@ -1196,11 +1200,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         prettyAppendSubheading(builder, "Summary");
 
-        VersionDependentTestResults issuesTickets =
-                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
-        VersionDependentTestResults resumesTickets =
-                (VersionDependentTestResults)
-                        report.getResult(TlsAnalyzedProperty.RESUMES_WITH_TICKET);
         VersionDependentTestResults allowsCipherSuiteChange =
                 (VersionDependentTestResults)
                         report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
@@ -1208,17 +1207,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 (VersionDependentResult<TestResult>)
                         report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
         VersionDependentTestResults allowsReplayingTickets =
-                (VersionDependentTestResults)
-                        report.getResult(TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
-        VersionDependentTestResults supportsEarlyData =
-                (VersionDependentTestResults)
-                        report.getResult(TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
-        VersionDependentTestResults vulnerableToEarlyDataReplay =
-                (VersionDependentTestResults)
-                        report.getResult(TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
-        prettyAppend(builder, "Supports Session Tickets", TlsAnalyzedProperty.ISSUES_TICKET);
-        prettyAppend(
-                builder, "Supports Session Resumption", TlsAnalyzedProperty.RESUMES_WITH_TICKET);
+                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.REUSABLE_TICKET);
         prettyAppend(
                 builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
         prettyAppend(
@@ -1233,14 +1222,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder, "Vulnerable to Padding Oracle", TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
 
-        prettyAppend(
-                builder, "Tickets can be replayed", TlsAnalyzedProperty.REPLAY_VULNERABLE_TICKET);
-        prettyAppend(
-                builder, "Supports 0-RTT Data", TlsAnalyzedProperty.SUPPORTS_EARLY_DATA_TICKET);
-        prettyAppend(
-                builder,
-                "Vulnerable to 0-RTT replay",
-                TlsAnalyzedProperty.REPLAY_VULNERABLE_EARLY_DATA_TICKET);
+        prettyAppend(builder, "Tickets can be reused", TlsAnalyzedProperty.REUSABLE_TICKET);
 
         prettyAppend(
                 builder,
@@ -1264,62 +1246,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         VersionDependentResult<SessionTicketAfterProbeResult> afterProbeResults =
                 report.getSessionTicketAfterProbeResultMap();
 
-        if (issuesTickets != null
-                && issuesTickets.getSummarizedResult() != TestResults.NOT_TESTED_YET) {
-            for (Entry<ProtocolVersion, TestResults> versionResults :
-                    issuesTickets.getResultMap().entrySet()) {
-                prettyAppend(
-                        builder,
-                        "Issues Tickets [" + versionResults.getKey() + "]",
-                        versionResults.getValue().toString());
-            }
-            for (Entry<ProtocolVersion, TestResults> versionResults :
-                    resumesTickets.getResultMap().entrySet()) {
-                prettyAppend(
-                        builder,
-                        "Resumes Tickets [" + versionResults.getKey() + "]",
-                        versionResults.getValue().toString());
-            }
-
-            for (Entry<ProtocolVersion, TestResult> versionResults :
-                    allowsVersionChange.getResultMap().entrySet()) {
-                TestResult versionResult = versionResults.getValue();
-                prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
-                if (versionResult instanceof VersionDependentTestResults) {
-                    VersionDependentTestResults versionResult_ =
-                            (VersionDependentTestResults) versionResult;
-                    if (versionResult_.isExplicitSummary()) {
-                        prettyAppend(
-                                builder, "\t" + versionResult_.getSummarizedResult().toString());
-                    } else {
-                        for (Entry<ProtocolVersion, TestResults> changeResult :
-                                versionResult_.getResultMap().entrySet()) {
-                            prettyAppend(
-                                    builder,
-                                    "\t" + changeResult.getKey() + ": ",
-                                    changeResult.getValue().toString());
-                        }
-                    }
+        for (Entry<ProtocolVersion, TestResult> versionResults :
+                allowsVersionChange.getResultMap().entrySet()) {
+            TestResult versionResult = versionResults.getValue();
+            prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
+            if (versionResult instanceof VersionDependentTestResults) {
+                VersionDependentTestResults versionResult_ =
+                        (VersionDependentTestResults) versionResult;
+                if (versionResult_.isExplicitSummary()) {
+                    prettyAppend(builder, "\t" + versionResult_.getSummarizedResult().toString());
                 } else {
-                    prettyAppend(builder, "\t [internal error]" + versionResult.toString());
+                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                            versionResult_.getResultMap().entrySet()) {
+                        prettyAppend(
+                                builder,
+                                "\t" + changeResult.getKey() + ": ",
+                                changeResult.getValue().toString());
+                    }
                 }
+            } else {
+                prettyAppend(builder, "\t [internal error]" + versionResult.toString());
             }
+        }
 
-            for (Entry<ProtocolVersion, TestResults> versionResults :
-                    allowsCipherSuiteChange.getResultMap().entrySet()) {
-                prettyAppend(
-                        builder,
-                        "Allows ciphersuite change [" + versionResults.getKey() + "]",
-                        versionResults.getValue().toString());
-            }
+        for (Entry<ProtocolVersion, TestResults> versionResults :
+                allowsCipherSuiteChange.getResultMap().entrySet()) {
+            prettyAppend(
+                    builder,
+                    "Allows ciphersuite change [" + versionResults.getKey() + "]",
+                    versionResults.getValue().toString());
+        }
 
-            for (Entry<ProtocolVersion, TestResults> versionResults :
-                    allowsReplayingTickets.getResultMap().entrySet()) {
-                prettyAppend(
-                        builder,
-                        "Tickets can be replayed [" + versionResults.getKey() + "]",
-                        versionResults.getValue().toString());
-            }
+        for (Entry<ProtocolVersion, TestResults> versionResults :
+                allowsReplayingTickets.getResultMap().entrySet()) {
+            prettyAppend(
+                    builder,
+                    "Tickets can be reused [" + versionResults.getKey() + "]",
+                    versionResults.getValue().toString());
         }
 
         if (mainManipulationResult instanceof VersionDependentResult) {

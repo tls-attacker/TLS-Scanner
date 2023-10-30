@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -30,7 +29,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
@@ -372,20 +370,6 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return super.getRequirements()
-                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.RESUMES_WITH_TICKET));
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {
-        super.adjustConfig(report);
-
-        VersionDependentTestResults issuesTickets =
-                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
-        for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
-            if (issuesTickets.getResult(version) != TestResults.TRUE) {
-                versionsToTest.remove(version);
-            }
-        }
+        return super.getRequirements().and(REQ_SUPPORTS_RESUMPTION);
     }
 }

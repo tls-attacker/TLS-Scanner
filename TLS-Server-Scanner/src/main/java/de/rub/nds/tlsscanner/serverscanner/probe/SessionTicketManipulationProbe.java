@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -26,7 +25,6 @@ import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
@@ -256,30 +254,6 @@ public class SessionTicketManipulationProbe extends SessionTicketBaseProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return super.getRequirements()
-                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.RESUMES_WITH_TICKET));
-    }
-
-    @Override
-    public void adjustConfig(ServerReport report) {
-        super.adjustConfig(report);
-
-        VersionDependentTestResults issuesTickets =
-                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.ISSUES_TICKET);
-        for (ProtocolVersion version : versionsToTest.toArray(new ProtocolVersion[0])) {
-            if (issuesTickets.getResult(version) != TestResults.TRUE) {
-                versionsToTest.remove(version);
-            }
-        }
-        // only keep 1.3 and highest pre 1.3 version
-        // we sort the versions descending (without 1.3)
-        // and remove all but the first from the versions to test
-        List<ProtocolVersion> sortedVersions = new ArrayList<>(versionsToTest);
-        sortedVersions.remove(ProtocolVersion.TLS13);
-        if (!sortedVersions.isEmpty()) {
-            ProtocolVersion.sort(sortedVersions, false);
-            sortedVersions.remove(0);
-            versionsToTest.removeAll(sortedVersions);
-        }
+        return super.getRequirements().and(REQ_SUPPORTS_RESUMPTION);
     }
 }

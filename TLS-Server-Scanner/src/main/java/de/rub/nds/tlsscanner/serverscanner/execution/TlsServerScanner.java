@@ -220,6 +220,8 @@ public final class TlsServerScanner
                 new SessionTicketManipulationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(
                 new SessionTicketPaddingOracleProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketCollectingProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new SessionTicketAfterProbe(configSelector));
     }
 

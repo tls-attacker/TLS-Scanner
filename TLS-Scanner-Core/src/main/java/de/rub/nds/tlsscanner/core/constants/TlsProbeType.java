@@ -43,6 +43,7 @@ public enum TlsProbeType implements ProbeType {
     RENEGOTIATION("Renegotiation"),
     SESSION_TICKET_ZERO_KEY("Session ticket zero key"),
     SESSION_TICKET("Session ticket"),
+    SESSION_TICKET_COLLECTOR("Session ticket collector for afterprobe"),
     SESSION_TICKET_MANIPULATION("Session ticket manipulation"),
     SESSION_TICKET_PADDING_ORACLE("Session ticket padding oracle"),
     SNI("Server name indication (SNI)"),

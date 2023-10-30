@@ -54,7 +54,8 @@ public class ResumptionProbe extends TlsServerProbe {
     private TestResult respectsPskModes = TestResults.COULD_NOT_TEST;
     private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
     private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
-    private TestResult supportsTls13SessionTicket = TestResults.COULD_NOT_TEST;
+    private TestResult issuesTls13SessionTicketAfterHandshake = TestResults.COULD_NOT_TEST;
+    private TestResult issuesTls13SessionTicketWithHttps = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13ZeroRtt = TestResults.COULD_NOT_TEST;
@@ -67,6 +68,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
@@ -83,13 +85,18 @@ public class ResumptionProbe extends TlsServerProbe {
 
             supportsDtlsCookieExchangeInSessionTicketResumption =
                     getSupportsDtlsCookieExchangeInSessionTicketResumption();
-            supportsTls13SessionTicket =
-                    supportsTls13PskDhe =
-                            supportsTls13Psk = supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
+            issuesTls13SessionTicketAfterHandshake =
+                    issuesTls13SessionTicketWithHttps =
+                            supportsTls13PskDhe =
+                                    supportsTls13Psk =
+                                            supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
-            supportsTls13SessionTicket = getIssuesTls13SessionTicket();
+            issuesTls13SessionTicketAfterHandshake =
+                    getIssuesTls13SessionTicket(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+            issuesTls13SessionTicketWithHttps =
+                    getIssuesTls13SessionTicket(WorkflowTraceType.HTTPS);
             supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
             supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
             supportsTls13ZeroRtt = getSupports0rtt();
@@ -340,7 +347,7 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
-    private TestResult getIssuesTls13SessionTicket() {
+    private TestResult getIssuesTls13SessionTicket(WorkflowTraceType traceType) {
         try {
             if (configSelector.foundWorkingTls13Config()) {
                 Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -349,7 +356,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 pskKex.add(PskKeyExchangeMode.PSK_KE);
                 tlsConfig.setPSKKeyExchangeModes(pskKex);
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
-                tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+                tlsConfig.setWorkflowTraceType(traceType);
                 State state = new State(tlsConfig);
                 state.getWorkflowTrace()
                         .addTlsAction(
@@ -401,7 +408,10 @@ public class ResumptionProbe extends TlsServerProbe {
                 supportsSessionTicketResumption);
         put(
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
-                supportsTls13SessionTicket);
+                issuesTls13SessionTicketAfterHandshake);
+        put(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_HTTPS,
+                issuesTls13SessionTicketWithHttps);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);

@@ -213,7 +213,7 @@ public class SessionTicketPaddingOracleProbeTest {
         report.putResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, new HashSet<>(suites));
         VersionDependentTestResults issuesTickets = new VersionDependentTestResults();
         issuesTickets.putResult(version, TestResults.TRUE);
-        report.putResult(TlsAnalyzedProperty.ISSUES_TICKET, issuesTickets);
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, issuesTickets);
 
         // prepare probe
         executor.reset();
