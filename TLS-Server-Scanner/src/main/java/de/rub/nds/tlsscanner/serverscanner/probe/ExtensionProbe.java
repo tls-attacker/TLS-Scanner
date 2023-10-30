@@ -70,7 +70,7 @@ public class ExtensionProbe extends TlsServerProbe {
         List<ExtensionType> commonExtensions = new LinkedList<>();
 
         if (this.supportsPreTls13) {
-            getCommonExtension(ProtocolVersion.TLS12, suite -> true);
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS12, suite -> true);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }
