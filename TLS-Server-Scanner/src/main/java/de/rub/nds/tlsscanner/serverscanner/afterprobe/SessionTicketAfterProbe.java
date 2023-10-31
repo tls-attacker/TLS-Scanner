@@ -59,7 +59,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
     public void analyze(ServerReport report) {
         VersionDependentResult<List<Ticket>> tickets = report.getObservedTickets();
         ScannerDetail detail =
-                configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
+                configSelector.getScannerConfig().getExecutorConfig().getPostAnalysisDetail();
 
         VersionDependentTestResults unencryptedTicket = new VersionDependentTestResults();
         VersionDependentTestResults defaultEncStek = new VersionDependentTestResults();
