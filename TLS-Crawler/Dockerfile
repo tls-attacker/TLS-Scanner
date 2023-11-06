@@ -1,6 +1,5 @@
-FROM maven:3.6.0-jdk-11-slim AS build
-ARG GIT_USR
-ARG GIT_PWD
+FROM maven:3.8.6-openjdk-11-slim AS build
+
 ARG MODVAR_BRANCH=master
 ARG ASN1_BRANCH=master
 ARG X509_BRANCH=master
@@ -9,58 +8,25 @@ ARG SCANNER_BRANCH=master
 
 WORKDIR /
 
-RUN apt-get update
-RUN apt-get install git -y
+RUN apt-get update && apt-get install git -y
+COPY docker/install-dependencies.sh /install-dependencies.sh
+RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
+    --mount=type=secret,id=credentials_provider,dst=/credentials_provider.sh \
+    bash /credentials_provider.sh run-with-credentials /install-dependencies.sh
 
-# ModifiableVariable
-RUN git clone https://$GIT_USR:$GIT_PWD@github.com/tls-attacker/ModifiableVariable.git
-WORKDIR /ModifiableVariable
-RUN git checkout $MODVAR_BRANCH
-RUN mvn clean install -DskipTests
-WORKDIR /
-
-# ASN1-Tool
-RUN git clone https://$GIT_USR:$GIT_PWD@github.com/tls-attacker/ASN.1-Tool-Development.git
-WORKDIR /ASN.1-Tool-Development
-RUN git checkout $ASN1_BRANCH
-RUN mvn clean install -DskipTests
-WORKDIR /
-
-# X509-Attacker
-RUN git clone https://$GIT_USR:$GIT_PWD@github.com/tls-attacker/X509-Attacker-Development.git
-WORKDIR /X509-Attacker-Development
-RUN git checkout $X509_BRANCH
-RUN mvn clean install -DskipTests
-WORKDIR /
-
-# TLS-Attacker
-RUN git clone https://$GIT_USR:$GIT_PWD@github.com/tls-attacker/TLS-Attacker-Development.git
-WORKDIR /TLS-Attacker-Development
-RUN git checkout $ATTACKER_BRANCH
-RUN mvn clean install -DskipTests
-WORKDIR /
-
-# TLS-Scanner
-RUN git clone https://$GIT_USR:$GIT_PWD@github.com/tls-attacker/TLS-Scanner-Development.git
-WORKDIR /TLS-Scanner-Development
-RUN git checkout $SCANNER_BRANCH
-RUN mvn clean install -DskipTests
-WORKDIR /
-
-# TLS-Crawler built from this repository
-COPY ./ /TLS-Crawler/
-RUN ls TLS-Crawler
+# TLS-Crawler built from current state of the repository
+COPY . /TLS-Crawler/
 WORKDIR /TLS-Crawler
-RUN git checkout upb-crawler-updated
-RUN mvn clean install -DskipTests
+RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
+    mvn clean install -DskipTests -Dspotless.apply.skip
 
 FROM openjdk:11-jre-slim
 COPY --from=build /root/.m2/repository/ /root/.m2/repository/
 # dirty copying of dependencies into /lib folder
-RUN for i in `find /root/.m2/repository/ -iname '*.jar'`; do cp $i /lib; done
+RUN for f in `find /root/.m2/repository/ -iname '*.jar'`; do cp "$f" /lib; done
 
 # copy dependencies
-COPY --from=build /TLS-Crawler/target/lib /lib
+COPY --from=build /TLS-Crawler/apps/lib /lib
 COPY --from=build /TLS-Crawler/target/*.jar TLS-Crawler.jar
 
 ENTRYPOINT ["java", "-jar", "TLS-Crawler.jar"]

@@ -1,4 +1,4 @@
-version: '2.1'
+version: "2.1"
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -25,17 +25,18 @@ services:
     networks:
       - crawler_overlay
   controller:
-    build:
+    build: &local-dockerfile
       context: .
       dockerfile: Dockerfile
       args:
-        GIT_USR: ${GIT_USR}
-        GIT_PWD: ${GIT_PWD}
         MODVAR_BRANCH: ${MODVAR_BRANCH}
         ASN1_BRANCH: ${ASN1_BRANCH}
         X509_BRANCH: ${X509_BRANCH}
         ATTACKER_BRANCH: ${ATTACKER_BRANCH}
         SCANNER_BRANCH: ${SCANNER_BRANCH}
+      secrets:
+        - m2settings
+        - credentials_provider
     restart: "no"
     command: controller
       -hostFile resources/text.txt
@@ -54,17 +55,7 @@ services:
       rabbitmq:
         condition: service_healthy
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        GIT_USR: ${GIT_USR}
-        GIT_PWD: ${GIT_PWD}
-        MODVAR_BRANCH: ${MODVAR_BRANCH}
-        ASN1_BRANCH: ${ASN1_BRANCH}
-        X509_BRANCH: ${X509_BRANCH}
-        ATTACKER_BRANCH: ${ATTACKER_BRANCH}
-        SCANNER_BRANCH: ${SCANNER_BRANCH}
+    build: *local-dockerfile
     command: worker
       -mongoDbHost mongo -mongoDbPort 27017
       -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin
@@ -81,3 +72,9 @@ volumes:
 
 networks:
   crawler_overlay:
+
+secrets:
+  m2settings:
+    file: $HOME/.m2/settings.xml
+  credentials_provider:
+    file: build-docker-image.sh
