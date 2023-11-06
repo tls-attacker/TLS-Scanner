@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.constant.Status;
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
@@ -32,11 +32,10 @@ public class TlsScan extends Scan {
 
     public TlsScan(
             ScanJob scanJob,
-            long rabbitMqAckTag,
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider,
             int parallelExecutorThreads) {
-        super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
+        super(scanJob, orchestrationProvider, persistenceProvider);
         this.parallelExecutor =
                 new ParallelExecutor(
                         parallelExecutorThreads, scanJob.getScanConfig().getReexecutions());
@@ -100,10 +99,7 @@ public class TlsScan extends Scan {
             if (timeout) {
                 scanJob.setStatus(Status.Timeout);
             }
-            if (scanJob.isMonitored()) {
-                orchestrationProvider.notifyOfDoneScanJob(scanJob);
-            }
-            orchestrationProvider.sendAck(rabbitMqAckTag);
+            orchestrationProvider.notifyOfDoneScanJob(scanJob);
             this.parallelExecutor.shutdown();
         }
     }

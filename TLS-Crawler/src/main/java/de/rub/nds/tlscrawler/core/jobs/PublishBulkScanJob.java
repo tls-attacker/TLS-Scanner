@@ -16,7 +16,7 @@ import de.rub.nds.tlscrawler.data.ScanConfig;
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.denylist.IDenylistProvider;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.targetlist.ITargetListProvider;
 import java.util.List;
@@ -37,8 +37,8 @@ public class PublishBulkScanJob implements Job {
             JobDataMap data = context.getMergedJobDataMap();
 
             ControllerCommandConfig controllerConfig = (ControllerCommandConfig) data.get("config");
-            RabbitMqOrchestrationProvider orchestrationProvider =
-                    (RabbitMqOrchestrationProvider) data.get("orchestrationProvider");
+            IOrchestrationProvider orchestrationProvider =
+                    (IOrchestrationProvider) data.get("orchestrationProvider");
             IPersistenceProvider persistenceProvider =
                     (IPersistenceProvider) data.get("persistenceProvider");
             ITargetListProvider targetListProvider =

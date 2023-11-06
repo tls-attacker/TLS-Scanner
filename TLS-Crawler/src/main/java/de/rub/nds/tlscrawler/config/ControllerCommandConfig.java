@@ -184,6 +184,10 @@ public class ControllerCommandConfig {
         return hostFile;
     }
 
+    public void setHostFile(String hostFile) {
+        this.hostFile = hostFile;
+    }
+
     public String getDenylistFile() {
         return denylistFile;
     }

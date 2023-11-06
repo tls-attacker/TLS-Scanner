@@ -9,7 +9,7 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.ScanJob;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 
 /** Interface to be implemented by scans. */
@@ -17,19 +17,15 @@ public abstract class Scan implements Runnable {
 
     protected ScanJob scanJob;
 
-    protected RabbitMqOrchestrationProvider orchestrationProvider;
+    protected IOrchestrationProvider orchestrationProvider;
 
     protected IPersistenceProvider persistenceProvider;
 
-    protected long rabbitMqAckTag;
-
     public Scan(
             ScanJob scanJob,
-            long rabbitMqAckTag,
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider) {
         this.scanJob = scanJob;
-        this.rabbitMqAckTag = rabbitMqAckTag;
         this.orchestrationProvider = orchestrationProvider;
         this.persistenceProvider = persistenceProvider;
     }

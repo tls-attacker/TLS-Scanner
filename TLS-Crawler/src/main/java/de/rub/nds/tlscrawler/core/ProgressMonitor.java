@@ -11,7 +11,7 @@ package de.rub.nds.tlscrawler.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.rub.nds.tlscrawler.data.BulkScan;
 import de.rub.nds.tlscrawler.data.BulkScanJobDetails;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import java.io.IOException;
 import java.net.URI;
@@ -37,7 +37,7 @@ public class ProgressMonitor {
 
     private final Map<String, BulkScanJobDetails> scanJobDetailsById;
 
-    private final RabbitMqOrchestrationProvider orchestrationProvider;
+    private final IOrchestrationProvider orchestrationProvider;
 
     private final IPersistenceProvider persistenceProvider;
 
@@ -46,7 +46,7 @@ public class ProgressMonitor {
     private boolean listenerRegistered;
 
     public ProgressMonitor(
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider,
             Scheduler scheduler) {
         this.scanJobDetailsById = new HashMap<>();

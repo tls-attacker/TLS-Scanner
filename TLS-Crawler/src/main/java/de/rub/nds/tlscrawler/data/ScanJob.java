@@ -9,9 +9,13 @@
 package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.tlscrawler.constant.Status;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Optional;
 
 public class ScanJob implements Serializable {
+
+    private transient Optional<Long> deliveryTag = Optional.empty();
 
     private ScanTarget scanTarget;
 
@@ -44,6 +48,13 @@ public class ScanJob implements Serializable {
         this.status = status;
     }
 
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        // handle deserialization, cf. https://stackoverflow.com/a/3960558
+        in.defaultReadObject();
+        deliveryTag = Optional.empty();
+    }
+
     public ScanTarget getScanTarget() {
         return scanTarget;
     }
@@ -74,5 +85,16 @@ public class ScanJob implements Serializable {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public long getDeliveryTag() {
+        return deliveryTag.get();
+    }
+
+    public void setDeliveryTag(Long deliveryTag) {
+        if (this.deliveryTag.isPresent()) {
+            throw new IllegalStateException("Delivery tag already set");
+        }
+        this.deliveryTag = Optional.of(deliveryTag);
     }
 }

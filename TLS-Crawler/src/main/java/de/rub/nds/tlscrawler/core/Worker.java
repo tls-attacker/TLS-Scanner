@@ -9,7 +9,8 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.PingScan;
 import de.rub.nds.tlscrawler.scans.Scan;
@@ -42,7 +43,7 @@ public class Worker extends TlsCrawler {
      */
     public Worker(
             WorkerCommandConfig commandConfig,
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider) {
         super(orchestrationProvider, persistenceProvider);
         this.maxThreadCount = commandConfig.getNumberOfThreads();
@@ -67,28 +68,31 @@ public class Worker extends TlsCrawler {
 
     public void start() {
         this.orchestrationProvider.registerScanJobConsumer(
-                ((scanJob, deliveryTag) -> {
-                    switch (scanJob.getScanConfig().getScanType()) {
-                        case TLS:
-                            this.submitWithTimeout(
-                                    new TlsScan(
-                                            scanJob,
-                                            deliveryTag,
-                                            orchestrationProvider,
-                                            persistenceProvider,
-                                            parallelProbeThreads));
-                            break;
-                        case PING:
-                            this.submitWithTimeout(
-                                    new PingScan(
-                                            scanJob,
-                                            deliveryTag,
-                                            orchestrationProvider,
-                                            persistenceProvider));
-                            break;
-                    }
-                }),
-                this.maxThreadCount);
+                this::handleScanJob, this.maxThreadCount);
+    }
+
+    private void handleScanJob(ScanJob scanJob, long deliveryTag) {
+        scanJob.setDeliveryTag(deliveryTag);
+        Scan toSubmit = null;
+        switch (scanJob.getScanConfig().getScanType()) {
+            case TLS:
+                toSubmit =
+                        new TlsScan(
+                                scanJob,
+                                orchestrationProvider,
+                                persistenceProvider,
+                                parallelProbeThreads);
+                break;
+            case PING:
+                toSubmit = new PingScan(scanJob, orchestrationProvider, persistenceProvider);
+                break;
+            default:
+                LOGGER.error("Unknown scan type: {}", scanJob.getScanConfig().getScanType());
+                break;
+        }
+        if (toSubmit != null) {
+            submitWithTimeout(toSubmit);
+        }
     }
 
     private void submitWithTimeout(Scan scan) {

@@ -1,5 +1,7 @@
 heapdumps
 apps/
+resources/*
+!resources/.gitkeep
 
 target/
 pom.xml.tag
