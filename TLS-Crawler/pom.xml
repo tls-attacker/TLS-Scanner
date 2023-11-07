@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.8-SNAPSHOT</version>
     </parent>
 
     <groupId>de.rub.nds.tls.crawler</groupId>
@@ -91,83 +91,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
+            <groupId>de.rub.nds</groupId>
+            <artifactId>crawler-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <!-- scope: compile -->
         <dependency>
-            <groupId>de.rub.nds.tls.attacker</groupId>
-            <artifactId>tls-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.rub.nds.tls.scanner</groupId>
-            <artifactId>tls-scanner-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>de.rub.nds.tls.scanner</groupId>
             <artifactId>tls-server-scanner</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongojack</groupId>
-            <artifactId>mongojack</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-        <!-- scope: test -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -8,56 +8,30 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.beust.jcommander.JCommander;
-import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
-import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
-import de.rub.nds.tlscrawler.core.Controller;
-import de.rub.nds.tlscrawler.core.Worker;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
-import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
+import de.rub.nds.crawler.CommonMain;
+import de.rub.nds.crawler.config.ControllerCommandConfig;
+import de.rub.nds.crawler.persistence.MongoPersistenceProvider;
+import de.rub.nds.tlscrawler.config.TlsControllerCommandConfig;
+import de.rub.nds.tlsscanner.core.converter.*;
 
 /** TLS-Crawler's main class. */
 public class Main {
 
     public static void main(String[] args) {
-        JCommander jc = new JCommander();
-
-        ControllerCommandConfig controllerCommandConfig = new ControllerCommandConfig();
-        jc.addCommand("controller", controllerCommandConfig);
-
-        WorkerCommandConfig workerCommandConfig = new WorkerCommandConfig();
-        jc.addCommand("worker", workerCommandConfig);
-
-        jc.parse(args);
-        if (jc.getParsedCommand() == null) {
-            jc.usage();
-            return;
-        }
-
-        switch (jc.getParsedCommand().toLowerCase()) {
-            case "worker":
-                Worker worker =
-                        new Worker(
-                                workerCommandConfig,
-                                new RabbitMqOrchestrationProvider(
-                                        workerCommandConfig.getRabbitMqDelegate()),
-                                new MongoPersistenceProvider(
-                                        workerCommandConfig.getMongoDbDelegate()));
-                worker.start();
-                break;
-            case "controller":
-                controllerCommandConfig.validate();
-                Controller controller =
-                        new Controller(
-                                controllerCommandConfig,
-                                new RabbitMqOrchestrationProvider(
-                                        controllerCommandConfig.getRabbitMqDelegate()),
-                                new MongoPersistenceProvider(
-                                        controllerCommandConfig.getMongoDbDelegate()));
-                controller.start();
-                break;
-            default:
-                jc.usage();
-        }
+        MongoPersistenceProvider.registerSerializer(
+                new ByteArraySerializer(),
+                new ResponseFingerprintSerializer(),
+                new CertificateSerializer(),
+                new Asn1CertificateSerializer(),
+                new CustomDhPublicKeySerializer(),
+                new CustomEcPublicKeySerializer(),
+                new CustomRsaPublicKeySerializer(),
+                new CustomDsaPublicKeySerializer(),
+                new VectorSerializer(),
+                new PointSerializer(),
+                new HttpsHeaderSerializer(),
+                new Asn1EncodableSerializer());
+        ControllerCommandConfig controllerCommandConfig = new TlsControllerCommandConfig();
+        CommonMain.main(args, controllerCommandConfig);
     }
 }

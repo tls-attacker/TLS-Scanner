@@ -8,13 +8,14 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.crawler.data.ScanJob;
+import de.rub.nds.crawler.data.ScanResult;
+import de.rub.nds.crawler.orchestration.IOrchestrationProvider;
+import de.rub.nds.crawler.persistence.IPersistenceProvider;
+import de.rub.nds.crawler.scans.Scan;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlscrawler.constant.Status;
-import de.rub.nds.tlscrawler.data.ScanJob;
-import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
-import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -42,66 +43,44 @@ public class TlsScan extends Scan {
     }
 
     @Override
-    public void run() {
-        try {
-            GeneralDelegate generalDelegate = new GeneralDelegate();
-            generalDelegate.setQuiet(true);
+    public ScanResult executeScan() {
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setQuiet(true);
 
-            ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
-            config.getExecutorConfig().setScanDetail(scanJob.getScanConfig().getScannerDetail());
-            config.setTimeout(scanJob.getScanConfig().getTimeout());
-            config.getClientDelegate()
-                    .setHost(
-                            scanJob.getScanTarget().getIp()
-                                    + ":"
-                                    + scanJob.getScanTarget().getPort());
-            config.getClientDelegate().setSniHostname(scanJob.getScanTarget().getHostname());
-            config.getStartTlsDelegate().setStarttlsType(scanJob.getScanConfig().getStarttlsType());
+        ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
+        config.getExecutorConfig().setScanDetail(scanJob.getScanConfig().getScannerDetail());
+        config.setTimeout(scanJob.getScanConfig().getTimeout());
+        config.getClientDelegate()
+                .setHost(scanJob.getScanTarget().getIp() + ":" + scanJob.getScanTarget().getPort());
+        config.getClientDelegate().setSniHostname(scanJob.getScanTarget().getHostname());
+        config.getStartTlsDelegate()
+                .setStarttlsType(((TlsScanConfig) scanJob.getScanConfig()).getStarttlsType());
 
-            TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor);
+        TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor);
 
-            LOGGER.info(
-                    "Started scanning '{}' ({})",
+        LOGGER.info(
+                "Started scanning '{}' ({})",
+                scanJob.getScanTarget(),
+                scanJob.getScanConfig().getScannerDetail());
+        ServerReport report = scanner.scan();
+        LOGGER.info(
+                "Finished scanning '{}' ({}) in {} s",
+                scanJob.getScanTarget(),
+                scanJob.getScanConfig().getScannerDetail(),
+                (report.getScanEndTime() - report.getScanStartTime()) / 1000);
+        if (!cancelled.get() && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
+            return new ScanResult(
+                    scanJob.getBulkScanId(),
                     scanJob.getScanTarget(),
-                    scanJob.getScanConfig().getScannerDetail());
-            ServerReport report = scanner.scan();
-            LOGGER.info(
-                    "Finished scanning '{}' ({}) in {} s",
-                    scanJob.getScanTarget(),
-                    scanJob.getScanConfig().getScannerDetail(),
-                    (report.getScanEndTime() - report.getScanStartTime()) / 1000);
-            if (!cancelled.get()
-                    && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
-                persistenceProvider.insertScanResult(
-                        new ScanResult(
-                                scanJob.getBulkScanId(),
-                                scanJob.getScanTarget(),
-                                this.createDocumentFromSiteReport(report)),
-                        scanJob.getDbName(),
-                        scanJob.getCollectionName());
-                scanJob.setStatus(Status.DoneResultWritten);
-            } else {
-                scanJob.setStatus(Status.DoneNoResult);
-            }
-        } catch (Throwable e) {
-            LOGGER.error(
-                    "Scanning of {} had to be aborted because of an exception: ",
-                    scanJob.getScanTarget(),
-                    e);
-        } finally {
-            this.cancel(false);
+                    this.createDocumentFromSiteReport(report));
+        } else {
+            return null;
         }
     }
 
     @Override
-    public void cancel(boolean timeout) {
-        if (!cancelled.getAndSet(true)) {
-            if (timeout) {
-                scanJob.setStatus(Status.Timeout);
-            }
-            orchestrationProvider.notifyOfDoneScanJob(scanJob);
-            this.parallelExecutor.shutdown();
-        }
+    protected void onJobDone(boolean timeout) {
+        this.parallelExecutor.shutdown();
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {
