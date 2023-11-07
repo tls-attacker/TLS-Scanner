@@ -25,6 +25,7 @@ export ASN1_BRANCH='master'
 export X509_BRANCH='master'
 export ATTACKER_BRANCH='master'
 export SCANNER_BRANCH='master'
+export CRAWLER_CORE_BRANCH='main'
 
 docker_args=()
 if [ "$1" != "use-cache" ]; then
