@@ -10,7 +10,7 @@ package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -29,10 +29,9 @@ public class PingScan extends Scan {
 
     public PingScan(
             ScanJob scanJob,
-            long rabbitMqAckTag,
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider) {
-        super(scanJob, rabbitMqAckTag, orchestrationProvider, persistenceProvider);
+        super(scanJob, orchestrationProvider, persistenceProvider);
     }
 
     // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with
@@ -75,8 +74,6 @@ public class PingScan extends Scan {
                 scanJob.getDbName(),
                 scanJob.getCollectionName());
 
-        if (scanJob.isMonitored()) {
-            orchestrationProvider.notifyOfDoneScanJob(scanJob);
-        }
+        orchestrationProvider.notifyOfDoneScanJob(scanJob);
     }
 }

@@ -8,17 +8,17 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 
 /** Base class for the crawler modules. */
 abstract class TlsCrawler {
 
-    protected final RabbitMqOrchestrationProvider orchestrationProvider;
+    protected final IOrchestrationProvider orchestrationProvider;
     protected final IPersistenceProvider persistenceProvider;
 
     public TlsCrawler(
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider) {
         this.orchestrationProvider = orchestrationProvider;
         this.persistenceProvider = persistenceProvider;

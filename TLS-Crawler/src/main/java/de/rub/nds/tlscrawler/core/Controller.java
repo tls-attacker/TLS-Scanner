@@ -12,7 +12,7 @@ import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.core.jobs.PublishBulkScanJob;
 import de.rub.nds.tlscrawler.denylist.DenylistFileProvider;
 import de.rub.nds.tlscrawler.denylist.IDenylistProvider;
-import de.rub.nds.tlscrawler.orchestration.RabbitMqOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.targetlist.*;
 import java.util.TimeZone;
@@ -28,14 +28,14 @@ public class Controller {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final RabbitMqOrchestrationProvider orchestrationProvider;
+    private final IOrchestrationProvider orchestrationProvider;
     private final IPersistenceProvider persistenceProvider;
     private final ControllerCommandConfig config;
     private IDenylistProvider denylistProvider;
 
     public Controller(
             ControllerCommandConfig config,
-            RabbitMqOrchestrationProvider orchestrationProvider,
+            IOrchestrationProvider orchestrationProvider,
             IPersistenceProvider persistenceProvider) {
         this.orchestrationProvider = orchestrationProvider;
         this.persistenceProvider = persistenceProvider;

@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * Provides all methods required for the communication with RabbitMQ for the controller and the
  * worker.
  */
-public class RabbitMqOrchestrationProvider {
+public class RabbitMqOrchestrationProvider implements IOrchestrationProvider {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -75,6 +75,7 @@ public class RabbitMqOrchestrationProvider {
         }
     }
 
+    @Override
     public void submitScanJob(ScanJob scanJob) {
         try {
             this.channel.basicPublish(
@@ -84,6 +85,7 @@ public class RabbitMqOrchestrationProvider {
         }
     }
 
+    @Override
     public void registerScanJobConsumer(ScanJobConsumer scanJobConsumer, int prefetchCount) {
         DeliverCallback deliverCallback =
                 (consumerTag, delivery) ->
@@ -98,7 +100,7 @@ public class RabbitMqOrchestrationProvider {
         }
     }
 
-    public void sendAck(long deliveryTag) {
+    private void sendAck(long deliveryTag) {
         try {
             channel.basicAck(deliveryTag, false);
         } catch (IOException e) {
@@ -106,6 +108,7 @@ public class RabbitMqOrchestrationProvider {
         }
     }
 
+    @Override
     public void registerDoneNotificationConsumer(
             DoneNotificationConsumer doneNotificationConsumer) {
         DeliverCallback deliverCallback =
@@ -120,15 +123,20 @@ public class RabbitMqOrchestrationProvider {
         }
     }
 
+    @Override
     public void notifyOfDoneScanJob(ScanJob scanJob) {
-        try {
-            this.channel.basicPublish(
-                    "", DONE_NOTIFY_QUEUE, null, SerializationUtils.serialize(scanJob));
-        } catch (IOException e) {
-            LOGGER.error("Failed to send notification for done ScanJob: ", e);
+        sendAck(scanJob.getDeliveryTag());
+        if (scanJob.isMonitored()) {
+            try {
+                this.channel.basicPublish(
+                        "", DONE_NOTIFY_QUEUE, null, SerializationUtils.serialize(scanJob));
+            } catch (IOException e) {
+                LOGGER.error("Failed to send notification for done ScanJob: ", e);
+            }
         }
     }
 
+    @Override
     public void closeConnection() {
         try {
             this.channel.close();
