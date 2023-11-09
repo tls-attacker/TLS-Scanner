@@ -8,10 +8,15 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.converter.*;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -22,6 +27,16 @@ import java.util.Set;
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsScanReport {
+    public static Module[] getSerializerModules() {
+        return new Module[] {
+            new SimpleModule()
+                    .addSerializer(new ByteArraySerializer())
+                    .addSerializer(new ResponseFingerprintSerializer())
+                    .addSerializer(new VectorSerializer())
+                    .addSerializer(new PointSerializer()),
+            new JodaModule()
+        };
+    }
 
     // DHE
     private Integer lowestPossibleDheModulusSize;

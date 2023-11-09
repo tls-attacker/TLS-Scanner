@@ -8,6 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.MapResult;
@@ -16,6 +20,7 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.converter.*;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -35,6 +40,17 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerReport extends TlsScanReport {
+    public static Module[] getSerializerModules() {
+        return new Module[] {
+            new SimpleModule()
+                    .addSerializer(new ByteArraySerializer())
+                    .addSerializer(new ResponseFingerprintSerializer())
+                    .addSerializer(new VectorSerializer())
+                    .addSerializer(new PointSerializer())
+                    .addSerializer(new HttpsHeaderSerializer()),
+            new JodaModule()
+        };
+    }
 
     private final String host;
     private final Integer port;
