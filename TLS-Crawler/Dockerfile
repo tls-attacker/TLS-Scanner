@@ -9,7 +9,9 @@ ARG CRAWLER_CORE_BRANCH=main
 
 WORKDIR /
 
-RUN apt-get update && apt-get install git -y
+RUN apt-get update \
+    && apt-get install git -y \
+    && apt clean
 COPY docker/install-dependencies.sh /install-dependencies.sh
 RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
     --mount=type=secret,id=credentials_provider,dst=/credentials_provider.sh \

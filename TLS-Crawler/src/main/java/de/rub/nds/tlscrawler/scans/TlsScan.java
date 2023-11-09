@@ -9,13 +9,13 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.crawler.data.ScanJob;
-import de.rub.nds.crawler.data.ScanResult;
 import de.rub.nds.crawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.crawler.scans.Scan;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.TlsScanConfig;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -29,7 +29,6 @@ public class TlsScan extends Scan {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final ParallelExecutor parallelExecutor;
-    private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
     public TlsScan(
             ScanJob scanJob,
@@ -37,13 +36,14 @@ public class TlsScan extends Scan {
             IPersistenceProvider persistenceProvider,
             int parallelExecutorThreads) {
         super(scanJob, orchestrationProvider, persistenceProvider);
+        // TODO share this parallel executor between scanners
         this.parallelExecutor =
                 new ParallelExecutor(
                         parallelExecutorThreads, scanJob.getScanConfig().getReexecutions());
     }
 
     @Override
-    public ScanResult executeScan() {
+    public Document executeScan() {
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
 
@@ -68,18 +68,15 @@ public class TlsScan extends Scan {
                 scanJob.getScanTarget(),
                 scanJob.getScanConfig().getScannerDetail(),
                 (report.getScanEndTime() - report.getScanStartTime()) / 1000);
-        if (!cancelled.get() && (report.getServerIsAlive() == null || report.getServerIsAlive())) {
-            return new ScanResult(
-                    scanJob.getBulkScanId(),
-                    scanJob.getScanTarget(),
-                    this.createDocumentFromSiteReport(report));
+        if (report.getServerIsAlive() == null || report.getServerIsAlive()) {
+            return this.createDocumentFromSiteReport(report);
         } else {
             return null;
         }
     }
 
     @Override
-    protected void onJobDone(boolean timeout) {
+    protected void onCleanup(boolean cancelled) {
         this.parallelExecutor.shutdown();
     }
 

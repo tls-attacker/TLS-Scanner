@@ -12,25 +12,13 @@ import de.rub.nds.crawler.CommonMain;
 import de.rub.nds.crawler.config.ControllerCommandConfig;
 import de.rub.nds.crawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.config.TlsControllerCommandConfig;
-import de.rub.nds.tlsscanner.core.converter.*;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /** TLS-Crawler's main class. */
 public class Main {
 
     public static void main(String[] args) {
-        MongoPersistenceProvider.registerSerializer(
-                new ByteArraySerializer(),
-                new ResponseFingerprintSerializer(),
-                new CertificateSerializer(),
-                new Asn1CertificateSerializer(),
-                new CustomDhPublicKeySerializer(),
-                new CustomEcPublicKeySerializer(),
-                new CustomRsaPublicKeySerializer(),
-                new CustomDsaPublicKeySerializer(),
-                new VectorSerializer(),
-                new PointSerializer(),
-                new HttpsHeaderSerializer(),
-                new Asn1EncodableSerializer());
+        MongoPersistenceProvider.registerSerializer(ServerReport.getSerializers());
         ControllerCommandConfig controllerCommandConfig = new TlsControllerCommandConfig();
         CommonMain.main(args, controllerCommandConfig);
     }

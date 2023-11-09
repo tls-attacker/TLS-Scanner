@@ -16,15 +16,15 @@ if [ "$1" = "run-with-credentials" ]; then
     exec "$@"
 fi
 
-# we default to the standard branches, change to branch our commit number you need
+# we default to relying on maven for most dependencies, change to the branch or commit hash you need
 # export ATTACKER_BRANCH='my_very_cool_feature_branch'
-# You can also set 'N/A' to skip the dependency and rely on maven
+# NB: The version of the dependency must match the version in the pom.xml, otherwise maven will again use a remote
 
 export MODVAR_BRANCH='N/A'
-export ASN1_BRANCH='master'
-export X509_BRANCH='master'
-export ATTACKER_BRANCH='master'
-export SCANNER_BRANCH='master'
+export ASN1_BRANCH='N/A'
+export X509_BRANCH='N/A'
+export ATTACKER_BRANCH='N/A'
+export SCANNER_BRANCH='N/A'
 export CRAWLER_CORE_BRANCH='main'
 
 docker_args=()
