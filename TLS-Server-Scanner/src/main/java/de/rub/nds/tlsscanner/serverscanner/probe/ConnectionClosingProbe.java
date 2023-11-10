@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -24,9 +25,10 @@ import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
-import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.List;
 
 /**
  * Determines when the server closes the connection. It's meant for tests in the lab so we limit the
@@ -80,7 +82,10 @@ public class ConnectionClosingProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+        return new OrRequirement<ServerReport>(
+                        List.of(
+                                new ProtocolTypeTrueRequirement<>(ProtocolType.TLS),
+                                new ProtocolTypeTrueRequirement<>(ProtocolType.STARTTLS)))
                 .and(new ProbeRequirement<>(TlsProbeType.HTTP_HEADER));
     }
 }
