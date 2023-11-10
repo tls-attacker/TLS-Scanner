@@ -8,14 +8,11 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.crawler.core.BulkScanWorker;
 import de.rub.nds.crawler.data.ScanConfig;
-import de.rub.nds.crawler.data.ScanJob;
-import de.rub.nds.crawler.orchestration.IOrchestrationProvider;
-import de.rub.nds.crawler.persistence.IPersistenceProvider;
-import de.rub.nds.crawler.scans.Scan;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
-import de.rub.nds.tlscrawler.scans.TlsScan;
+import de.rub.nds.tlscrawler.core.TlsScanWorker;
 
 public class TlsScanConfig extends ScanConfig {
     private StarttlsType starttlsType;
@@ -27,13 +24,9 @@ public class TlsScanConfig extends ScanConfig {
     }
 
     @Override
-    public Scan createRunnable(
-            ScanJob scanJob,
-            IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider,
-            int parallelProbeThreads) {
-        return new TlsScan(
-                scanJob, orchestrationProvider, persistenceProvider, parallelProbeThreads);
+    public BulkScanWorker<TlsScanConfig> createWorker(
+            String bulkScanID, int parallelConnectionThreads, int parallelScanThreads) {
+        return new TlsScanWorker(bulkScanID, parallelConnectionThreads, this, parallelScanThreads);
     }
 
     public StarttlsType getStarttlsType() {
