@@ -76,15 +76,16 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             report = scanner.scan();
         }
         LOGGER.info(
-                "Finished scanning '{}' ({}) in {} s",
+                "Finished scanning '{}' ({}) in {} s (server alive: {})",
                 scanTarget,
                 scanConfig.getScannerDetail(),
-                (report.getScanEndTime() - report.getScanStartTime()) / 1000);
+                (report.getScanEndTime() - report.getScanStartTime()) / 1000,
+                report.getServerIsAlive());
         return createDocumentFromSiteReport(report);
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {
-        if (report.getServerIsAlive() == null || report.getServerIsAlive()) {
+        if (report.getServerIsAlive() != null && !report.getServerIsAlive()) {
             return null;
         }
         Document document = new Document();
