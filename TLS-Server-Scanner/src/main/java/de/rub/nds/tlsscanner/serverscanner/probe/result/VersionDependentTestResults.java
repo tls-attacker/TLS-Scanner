@@ -10,10 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import java.util.Collection;
 
-public class VersionDependentTestResults extends VersionDependentResult<TestResults>
-        implements SummarizableTestResult {
+public class VersionDependentTestResults extends VersionDependentSummarizableResult<TestResults> {
     protected final TestResults explicitSummary;
 
     public VersionDependentTestResults(TestResults explicitSummary) {
@@ -50,24 +48,6 @@ public class VersionDependentTestResults extends VersionDependentResult<TestResu
         if (isExplicitSummary()) {
             return explicitSummary;
         }
-        Collection<TestResults> actualResults = results.values();
-        if (actualResults.isEmpty()) {
-            return TestResults.NOT_TESTED_YET;
-        }
-        if (actualResults.contains(TestResults.TRUE)) {
-            return TestResults.TRUE;
-        }
-        if (actualResults.contains(TestResults.PARTIALLY)) {
-            return TestResults.PARTIALLY;
-        }
-        if (actualResults.contains(TestResults.FALSE)) {
-            return TestResults.FALSE;
-        }
-        return actualResults.iterator().next();
-    }
-
-    @Override
-    public String getName() {
-        return SummarizableTestResult.super.getName();
+        return super.getSummarizedResult();
     }
 }

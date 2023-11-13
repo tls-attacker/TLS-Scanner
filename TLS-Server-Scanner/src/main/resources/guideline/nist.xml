@@ -514,7 +514,7 @@
             <property>SUPPORTS_TLS13_0_RTT</property>
             <result>TRUE</result>
         </condition>
-        <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
+        <property>REUSABLE_TICKET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>

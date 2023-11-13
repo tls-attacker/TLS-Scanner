@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import de.rub.nds.scanner.core.probe.result.SummarizableTestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import java.util.Collection;
 import java.util.stream.Collectors;

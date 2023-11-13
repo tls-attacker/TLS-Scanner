@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
+import de.rub.nds.scanner.core.probe.result.SummarizableTestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SummarizableTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketBitFlipVector;
 import java.util.Comparator;
 import java.util.HashMap;

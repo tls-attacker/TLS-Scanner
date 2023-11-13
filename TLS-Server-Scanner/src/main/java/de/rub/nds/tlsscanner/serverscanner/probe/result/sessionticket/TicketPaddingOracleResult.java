@@ -8,13 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
+import de.rub.nds.scanner.core.probe.result.SummarizableTestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.SummarizableTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketVector;
