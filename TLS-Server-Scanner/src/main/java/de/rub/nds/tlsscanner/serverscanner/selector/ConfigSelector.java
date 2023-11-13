@@ -134,7 +134,9 @@ public class ConfigSelector {
     private void pauseSearch() {
         try {
             Thread.sleep(COOLDOWN_TIMEOUT_MULTIPLIER * scannerConfig.getTimeout());
-        } catch (InterruptedException ignored) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Was interrupted - aborting", e);
         }
     }
 

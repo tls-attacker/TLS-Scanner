@@ -58,7 +58,9 @@ public abstract class ConnectionClosingUtils {
                 }
                 Thread.sleep(10);
                 delta += 10;
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Was interrupted - aborting", e);
             }
         } while (delta < LIMIT);
         closeSocket(runningState);
