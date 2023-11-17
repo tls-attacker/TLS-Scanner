@@ -12,13 +12,9 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketBaseProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketUtil;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 public class SessionTicketCollectingProbe extends SessionTicketBaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int TICKETS_TO_GATHER = 10;
-    private VersionDependentResult<List<Ticket>> observedTickets = new VersionDependentResult<>();
 
     public SessionTicketCollectingProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -41,7 +36,7 @@ public class SessionTicketCollectingProbe extends SessionTicketBaseProbe {
                 collectTickets(version);
 
             } catch (Exception E) {
-                LOGGER.warn("Could not scan SessionTickets for version {}", version, E);
+                LOGGER.warn("Could not collect SessionTickets for version {}", version, E);
                 if (E.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on {}", getProbeName());
                     throw E;
@@ -52,7 +47,7 @@ public class SessionTicketCollectingProbe extends SessionTicketBaseProbe {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setObservedTickets(observedTickets);
+        // Nothing to do here - all data analysis is done in the after probe
     }
 
     private void collectTickets(ProtocolVersion version) {
@@ -65,13 +60,5 @@ public class SessionTicketCollectingProbe extends SessionTicketBaseProbe {
             statesToExecute.add(prepareInitialHandshake(version));
         }
         executeState(statesToExecute);
-        observedTickets.putResult(version, new ArrayList<>(TICKETS_TO_GATHER));
-        for (State state : statesToExecute) {
-            if (initialHandshakeSuccessful(state)) {
-                observedTickets
-                        .getResult(version)
-                        .addAll(SessionTicketUtil.getSessionTickets(state));
-            }
-        }
     }
 }

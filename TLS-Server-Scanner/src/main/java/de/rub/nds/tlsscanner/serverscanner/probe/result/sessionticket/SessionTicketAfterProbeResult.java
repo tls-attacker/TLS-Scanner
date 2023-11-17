@@ -17,11 +17,6 @@ public class SessionTicketAfterProbeResult {
     private Map<Integer, Integer> ticketLengthOccurences;
     private Integer keyNameLength = null;
     private List<String> asciiStringsFound;
-    private FoundSecret containsPlainSecret;
-    private FoundSecret discoveredReusedKeystream;
-
-    private FoundDefaultStek foundDefaultStek = null;
-    private FoundDefaultHmacKey foundDefaultHmacKey = null;
 
     public Map<Integer, Integer> getTicketLengthOccurences() {
         return ticketLengthOccurences;
@@ -86,37 +81,5 @@ public class SessionTicketAfterProbeResult {
             ret.delete(ret.length() - 2, ret.length() - 1);
         }
         return ret.toString();
-    }
-
-    public FoundSecret getContainsPlainSecret() {
-        return this.containsPlainSecret;
-    }
-
-    public void setContainsPlainSecret(FoundSecret containsPlainSecret) {
-        this.containsPlainSecret = containsPlainSecret;
-    }
-
-    public FoundDefaultStek getFoundDefaultStek() {
-        return this.foundDefaultStek;
-    }
-
-    public void setFoundDefaultStek(FoundDefaultStek foundDefaultStek) {
-        this.foundDefaultStek = foundDefaultStek;
-    }
-
-    public FoundDefaultHmacKey getFoundDefaultHmacKey() {
-        return this.foundDefaultHmacKey;
-    }
-
-    public void setFoundDefaultHmacKey(FoundDefaultHmacKey foundDefaultHmacKey) {
-        this.foundDefaultHmacKey = foundDefaultHmacKey;
-    }
-
-    public FoundSecret getDiscoveredReusedKeystream() {
-        return this.discoveredReusedKeystream;
-    }
-
-    public void setDiscoveredReusedKeystream(FoundSecret discoveredReusedKeystream) {
-        this.discoveredReusedKeystream = discoveredReusedKeystream;
     }
 }

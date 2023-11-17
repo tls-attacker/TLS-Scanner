@@ -8,15 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret.Secret;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketHolder;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketTls12;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketTls13;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,22 +57,27 @@ public class SessionTicketUtil {
         return secretList;
     }
 
-    public static List<Ticket> getSessionTickets(State state) {
+    public static TicketHolder getSessionTickets(State state) {
         if (state.getTlsContext() == null
                 || state.getTlsContext().getSelectedProtocolVersion() == null) {
-            return Collections.emptyList();
+            return new TicketHolder(null);
         }
         List<PossibleSecret> possibleSecrets = generateSecretList(state);
         TlsContext context = state.getTlsContext();
-        if (context.getSelectedProtocolVersion().isTLS13()) {
+        ProtocolVersion protocolVersion = context.getSelectedProtocolVersion();
+        if (protocolVersion.isTLS13()) {
+            if (context.getPskSets() == null){
+                return new TicketHolder(protocolVersion);
+            }
             return context.getPskSets().stream()
                     .map(pskset -> new TicketTls13(pskset, possibleSecrets))
-                    .collect(Collectors.toList());
+                    .collect(TicketHolder.collector(protocolVersion));
         } else {
             if (context.getLatestSessionTicket() == null) {
-                return new ArrayList<>();
+                return new TicketHolder(protocolVersion);
             }
-            return Arrays.asList(
+            return new TicketHolder(
+                    protocolVersion,
                     new TicketTls12(
                             context.getLatestSessionTicket(),
                             context.getMasterSecret(),

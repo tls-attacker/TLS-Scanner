@@ -16,7 +16,6 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -30,13 +29,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,11 +85,6 @@ public class ServerReport extends TlsScanReport {
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
-
-    // SessionTicket
-    private VersionDependentResult<List<Ticket>> observedTickets;
-    private VersionDependentResult<SessionTicketAfterProbeResult> sessionTicketAfterProbeResult =
-            new VersionDependentResult<>();
 
     // Rating
     private int score;
@@ -387,24 +378,6 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
-    }
-
-    public void setObservedTickets(VersionDependentResult<List<Ticket>> observedTickets) {
-        this.observedTickets = observedTickets;
-    }
-
-    public VersionDependentResult<List<Ticket>> getObservedTickets() {
-        return observedTickets;
-    }
-
-    public void putSessionTicketAfterProbeResult(
-            ProtocolVersion version, SessionTicketAfterProbeResult sessionTicketAfterProbeResult) {
-        this.sessionTicketAfterProbeResult.putResult(version, sessionTicketAfterProbeResult);
-    }
-
-    public VersionDependentResult<SessionTicketAfterProbeResult>
-            getSessionTicketAfterProbeResultMap() {
-        return sessionTicketAfterProbeResult;
     }
 
     public synchronized int getScore() {

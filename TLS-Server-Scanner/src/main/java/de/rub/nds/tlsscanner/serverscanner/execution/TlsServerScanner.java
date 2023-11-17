@@ -46,6 +46,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
+import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
@@ -138,6 +139,7 @@ public final class TlsServerScanner
         statsWriter.addExtractor(new EcPublicKeyExtractor());
         statsWriter.addExtractor(new CbcIvExtractor());
         statsWriter.addExtractor(new SessionIdExtractor());
+        statsWriter.addExtractor(new SessionTicketExtractor());
         statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
         statsWriter.addExtractor(new DestinationPortExtractor());
         return statsWriter;

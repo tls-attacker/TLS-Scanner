@@ -14,6 +14,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
+import de.rub.nds.scanner.core.probe.result.DetailedResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -73,18 +74,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.*;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
@@ -1199,15 +1196,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "SessionTicketEval");
 
         prettyAppendSubheading(builder, "Summary");
-
-        VersionDependentTestResults allowsCipherSuiteChange =
-                (VersionDependentTestResults)
-                        report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
-        VersionDependentResult<TestResult> allowsVersionChange =
-                (VersionDependentResult<TestResult>)
-                        report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
-        VersionDependentTestResults allowsReplayingTickets =
-                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.REUSABLE_TICKET);
         prettyAppend(
                 builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
         prettyAppend(
@@ -1238,37 +1226,29 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         // once we have support for tables, most of the data below can be put into tables
         // the columns would be the protocol version
 
-        TestResult mainManipulationResult =
-                report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
-        TestResult mainPaddingOracleResult =
-                report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
-
-        VersionDependentResult<SessionTicketAfterProbeResult> afterProbeResults =
-                report.getSessionTicketAfterProbeResultMap();
-
-        for (Entry<ProtocolVersion, TestResult> versionResults :
+        VersionDependentSummarizableResult<VersionDependentTestResults> allowsVersionChange =
+                (VersionDependentSummarizableResult<VersionDependentTestResults>)
+                        report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+        for (Entry<ProtocolVersion, VersionDependentTestResults> versionResults :
                 allowsVersionChange.getResultMap().entrySet()) {
-            TestResult versionResult = versionResults.getValue();
+            VersionDependentTestResults versionResult = versionResults.getValue();
             prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
-            if (versionResult instanceof VersionDependentTestResults) {
-                VersionDependentTestResults versionResult_ =
-                        (VersionDependentTestResults) versionResult;
-                if (versionResult_.isExplicitSummary()) {
-                    prettyAppend(builder, "\t" + versionResult_.getSummarizedResult().toString());
-                } else {
-                    for (Entry<ProtocolVersion, TestResults> changeResult :
-                            versionResult_.getResultMap().entrySet()) {
-                        prettyAppend(
-                                builder,
-                                "\t" + changeResult.getKey() + ": ",
-                                changeResult.getValue().toString());
-                    }
-                }
+            if (versionResult.isExplicitSummary()) {
+                prettyAppend(builder, "\t" + versionResult.getSummarizedResult().toString());
             } else {
-                prettyAppend(builder, "\t [internal error]" + versionResult.toString());
+                for (Entry<ProtocolVersion, TestResults> changeResult :
+                        versionResult.getResultMap().entrySet()) {
+                    prettyAppend(
+                            builder,
+                            "\t" + changeResult.getKey() + ": ",
+                            changeResult.getValue().toString());
+                }
             }
         }
 
+        VersionDependentTestResults allowsCipherSuiteChange =
+                (VersionDependentTestResults)
+                        report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
         for (Entry<ProtocolVersion, TestResults> versionResults :
                 allowsCipherSuiteChange.getResultMap().entrySet()) {
             prettyAppend(
@@ -1277,6 +1257,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     versionResults.getValue().toString());
         }
 
+        VersionDependentTestResults allowsReplayingTickets =
+                (VersionDependentTestResults) report.getResult(TlsAnalyzedProperty.REUSABLE_TICKET);
+
         for (Entry<ProtocolVersion, TestResults> versionResults :
                 allowsReplayingTickets.getResultMap().entrySet()) {
             prettyAppend(
@@ -1284,6 +1267,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     "Tickets can be reused [" + versionResults.getKey() + "]",
                     versionResults.getValue().toString());
         }
+
+        TestResult mainManipulationResult =
+                report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
 
         if (mainManipulationResult instanceof VersionDependentResult) {
             VersionDependentResult<TicketManipulationResult> mainManipulationResult_ =
@@ -1390,6 +1376,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             + "\t: *multiple classifications/no more chars left to classify*");
         }
 
+        TestResult mainPaddingOracleResult =
+                report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
         if (mainPaddingOracleResult instanceof VersionDependentResult) {
             prettyAppendSubSubheading(builder, "Padding Oracle");
             VersionDependentResult<TicketPaddingOracleResult> mainPaddingOracleResult_ =
@@ -1425,12 +1414,28 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
 
-        if (afterProbeResults != null) {
+        var statistics =
+                (VersionDependentResult<SessionTicketAfterProbeResult>)
+                        report.getResult(TlsAnalyzedProperty.STATISTICS_TICKET);
+        var unencrypted =
+                (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>)
+                        report.getResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        var reusedKeystream =
+                (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>)
+                        report.getResult(TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET);
+        var defaultStek =
+                (VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>>)
+                        report.getResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        var defaultMacStek =
+                (VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>>)
+                        report.getResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
+        if (statistics != null) {
             prettyAppendSubSubheading(builder, "Analysis");
             for (Entry<ProtocolVersion, SessionTicketAfterProbeResult> afterResultEntry :
-                    afterProbeResults.getResultMap().entrySet()) {
+                    statistics.getResultMap().entrySet()) {
+                ProtocolVersion version = afterResultEntry.getKey();
                 SessionTicketAfterProbeResult afterResult = afterResultEntry.getValue();
-                prettyAppendSubSubSubheading(builder, afterResultEntry.getKey().toString());
+                prettyAppendSubSubSubheading(builder, version.toString());
                 prettyAppend(builder, "Ticket length", afterResult.getTicketLengths());
                 prettyAppend(
                         builder,
@@ -1441,31 +1446,29 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "", "[" + found.length() + " Bytes] \"" + found + "\"");
                 }
 
-                if (afterResult.getContainsPlainSecret() != null) {
+                if (unencrypted.getResult(version).getDetails() != null) {
                     prettyAppend(
                             builder,
                             "Found Plain Secret",
-                            afterResult.getContainsPlainSecret().toReportString());
+                            unencrypted.getResult(version).getDetails().toReportString());
                 } else {
                     prettyAppend(builder, "No Plain Secret", "-");
                 }
 
-                if (afterResult.getDiscoveredReusedKeystream() != null) {
+                if (reusedKeystream.getResult(version).getDetails() != null) {
                     prettyAppend(
                             builder,
                             "Found Reused Keystream - Found Secret",
-                            afterResult.getDiscoveredReusedKeystream().toReportString());
+                            reusedKeystream.getResult(version).getDetails().toReportString());
                 } else {
                     prettyAppend(builder, "No Reused Keystream", "-");
                 }
             }
 
-            if (afterProbeResults.getResultMap().values().stream()
-                    .anyMatch(res -> res.getFoundDefaultStek() != null)) {
+            if (defaultStek.getSummarizedResult() == TestResults.TRUE) {
                 prettyAppendSubSubheading(builder, "Default STEK");
-                for (var afterResult : afterProbeResults.getResultMap().entrySet()) {
-                    FoundDefaultStek foundDefaultStek =
-                            afterResult.getValue().getFoundDefaultStek();
+                for (var afterResult : defaultStek.getResultMap().entrySet()) {
+                    FoundDefaultStek foundDefaultStek = afterResult.getValue().getDetails();
                     if (foundDefaultStek != null) {
                         prettyAppendSubSubSubheading(builder, afterResult.getKey().toString());
                         prettyAppend(builder, "Found Format", foundDefaultStek.format.toString());
@@ -1484,12 +1487,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppend(builder, "No Default STEK", "-");
             }
 
-            if (afterProbeResults.getResultMap().values().stream()
-                    .anyMatch(res -> res.getFoundDefaultHmacKey() != null)) {
+            if (defaultMacStek.getSummarizedResult() == TestResults.TRUE) {
                 prettyAppendSubSubheading(builder, "Default HMAC Key");
-                for (var afterResult : afterProbeResults.getResultMap().entrySet()) {
-                    FoundDefaultHmacKey foundDefaultHmacKey =
-                            afterResult.getValue().getFoundDefaultHmacKey();
+                for (var afterResult : defaultMacStek.getResultMap().entrySet()) {
+                    FoundDefaultHmacKey foundDefaultHmacKey = afterResult.getValue().getDetails();
                     if (foundDefaultHmacKey != null) {
                         prettyAppendSubSubSubheading(builder, afterResult.getKey().toString());
                         prettyAppend(

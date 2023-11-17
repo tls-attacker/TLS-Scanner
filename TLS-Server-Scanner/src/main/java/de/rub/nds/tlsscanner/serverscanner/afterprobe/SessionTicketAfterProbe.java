@@ -10,15 +10,18 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.DetailedResult;
 import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.CryptoException;
 import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import de.rub.nds.tlsscanner.core.util.PrefixStatsUtil;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
@@ -29,18 +32,12 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketEncr
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketMacFormat;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.TicketEncryptionAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketHolder;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketTls12;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +46,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int MIN_ASCII_LENGTH = 8;
 
-    private ConfigSelector configSelector;
+    private final ConfigSelector configSelector;
 
     public SessionTicketAfterProbe(ConfigSelector configSelector) {
         this.configSelector = configSelector;
@@ -57,24 +54,66 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        VersionDependentResult<List<Ticket>> tickets = report.getObservedTickets();
+        ExtractedValueContainer<TicketHolder> allTickets =
+                report.getExtractedValueContainer(
+                        TrackableValueType.SESSION_TICKET, TicketHolder.class);
+        Map<ProtocolVersion, List<Ticket>> ticketMap = new EnumMap<>(ProtocolVersion.class);
+        for (TicketHolder ticketHolder : allTickets.getExtractedValueList()) {
+            ProtocolVersion protocolVersion = ticketHolder.getProtocolVersion();
+            ticketMap
+                    .computeIfAbsent(protocolVersion, k -> new LinkedList<>())
+                    .addAll(ticketHolder);
+        }
+
         ScannerDetail detail =
                 configSelector.getScannerConfig().getExecutorConfig().getPostAnalysisDetail();
 
-        VersionDependentTestResults unencryptedTicket = new VersionDependentTestResults();
-        VersionDependentTestResults defaultEncStek = new VersionDependentTestResults();
-        VersionDependentTestResults defaultMacStek = new VersionDependentTestResults();
-        for (Entry<ProtocolVersion, List<Ticket>> entry : tickets.getResultMap().entrySet()) {
-            ProtocolVersion version = entry.getKey();
-            SessionTicketAfterProbeResult result = analyze(entry.getValue(), detail);
-            report.putSessionTicketAfterProbeResult(version, result);
-            unencryptedTicket.putResult(version, result.getContainsPlainSecret() != null);
-            defaultEncStek.putResult(version, result.getFoundDefaultStek() != null);
-            defaultMacStek.putResult(version, result.getFoundDefaultHmacKey() != null);
-        }
+        VersionDependentResult<SessionTicketAfterProbeResult> statistics =
+                new VersionDependentResult<>();
+
+        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> unencryptedTicket =
+                new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> reusedKeystream =
+                new VersionDependentSummarizableResult<>();
+
+        VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>> defaultEncStek =
+                new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>> defaultMacStek =
+                new VersionDependentSummarizableResult<>();
+
+        report.putResult(TlsAnalyzedProperty.STATISTICS_TICKET, statistics);
+
         report.putResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET, unencryptedTicket);
+        report.putResult(TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET, reusedKeystream);
+
         report.putResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET, defaultEncStek);
         report.putResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET, defaultMacStek);
+
+        for (Entry<ProtocolVersion, List<Ticket>> entry : ticketMap.entrySet()) {
+            ProtocolVersion version = entry.getKey();
+            SessionTicketAfterProbeResult versionStats = analyzeStatistics(entry.getValue());
+            statistics.putResult(version, versionStats);
+            List<Ticket> tickets = entry.getValue();
+
+            unencryptedTicket.putResult(version, analyzeUnencryptedTicket(tickets));
+            reusedKeystream.putResult(version, analyzeReusedKeyStream(tickets));
+
+            defaultEncStek.putResult(
+                    version, analyzeDefaultStek(tickets, versionStats.getKeyNameLength(), detail));
+            defaultMacStek.putResult(version, analyzeDefaultHmacKey(tickets, detail));
+        }
+    }
+
+    public static SessionTicketAfterProbeResult analyzeStatistics(List<Ticket> tickets) {
+        SessionTicketAfterProbeResult result = new SessionTicketAfterProbeResult();
+
+        result.setTicketLengthOccurences(analyzeTicketLength(tickets));
+        result.setKeyNameLength(analyzeKeyNameLength(tickets));
+        // TODO: Analyze IV repetition/common bytes
+
+        result.setAsciiStringsFound(analyzeAscii(tickets));
+
+        return result;
     }
 
     private static Iterable<MacAlgorithm> getMacAlgorithms(ScannerDetail detail) {
@@ -115,25 +154,6 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
             return Arrays.asList(TicketEncryptionAlgorithm.values());
         }
         return algorithms;
-    }
-
-    public static SessionTicketAfterProbeResult analyze(
-            List<Ticket> tickets, ScannerDetail detail) {
-        SessionTicketAfterProbeResult result = new SessionTicketAfterProbeResult();
-
-        result.setTicketLengthOccurences(analyzeTicketLength(tickets));
-        result.setKeyNameLength(analyzeKeyNameLength(tickets));
-        // TODO: Analyze IV repetition/common bytes
-
-        result.setAsciiStringsFound(analyzeAscii(tickets));
-
-        result.setContainsPlainSecret(analyzeUnencryptedTicket(tickets));
-        result.setFoundDefaultStek(analyzeDefaultStek(tickets, result.getKeyNameLength(), detail));
-        result.setFoundDefaultHmacKey(analyzeDefaultHmacKey(tickets, detail));
-
-        result.setDiscoveredReusedKeystream(analyzeReusedKeyStream(tickets));
-
-        return result;
     }
 
     /**
@@ -230,17 +250,17 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         return strings;
     }
 
-    private static FoundSecret analyzeUnencryptedTicket(List<Ticket> tickets) {
+    private static DetailedResult<FoundSecret> analyzeUnencryptedTicket(List<Ticket> tickets) {
         for (Ticket ticket : tickets) {
             FoundSecret foundSecret = ticket.checkContainsSecrets(ticket.getTicketBytesOriginal());
             if (foundSecret != null) {
-                return foundSecret;
+                return DetailedResult.TRUE(foundSecret);
             }
         }
-        return null;
+        return DetailedResult.FALSE();
     }
 
-    private static FoundDefaultStek analyzeDefaultStek(
+    private static DetailedResult<FoundDefaultStek> analyzeDefaultStek(
             List<Ticket> tickets, int keyNameLength, ScannerDetail detail) {
         // for ticket
         // for algorithm
@@ -265,16 +285,17 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
                         byte[] decState = algo.decryptIgnoringIntegrity(key, iv, ciphertext);
                         FoundSecret foundSecret = ticket.checkContainsSecrets(decState);
                         if (foundSecret != null) {
-                            return new FoundDefaultStek(algo, format, key, foundSecret);
+                            return DetailedResult.TRUE(
+                                    new FoundDefaultStek(algo, format, key, foundSecret));
                         }
                     }
                 }
             }
         }
-        return null;
+        return DetailedResult.FALSE();
     }
 
-    private static FoundDefaultHmacKey analyzeDefaultHmacKey(
+    private static DetailedResult<FoundDefaultHmacKey> analyzeDefaultHmacKey(
             List<Ticket> tickets, ScannerDetail detail) {
         // for ticket
         // for algorithm
@@ -301,7 +322,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
                                 if (ArrayUtil.findSubarray(prefix, tag).isPresent()
                                         || ArrayUtil.findSubarray(suffix, tag).isPresent()) {
 
-                                    return new FoundDefaultHmacKey(algo, format, key);
+                                    return DetailedResult.TRUE(
+                                            new FoundDefaultHmacKey(algo, format, key));
                                 }
                             } catch (CryptoException e) {
                                 throw new RuntimeException(e);
@@ -311,7 +333,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
                 }
             }
         }
-        return null;
+        return DetailedResult.FALSE();
     }
 
     private static List<PossibleSecret> xorSecrets(
@@ -340,7 +362,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
      *
      * @param tickets Tickets to analyze
      */
-    private static FoundSecret analyzeReusedKeyStream(List<Ticket> tickets) {
+    private static DetailedResult<FoundSecret> analyzeReusedKeyStream(List<Ticket> tickets) {
         for (int i = 0; i < tickets.size(); i++) {
             Ticket ticketA = tickets.get(i);
             for (int j = i + 1; j < tickets.size(); j++) {
@@ -353,10 +375,10 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
                 FoundSecret foundSecret = combinedSecrets.checkContainsSecrets(xoredTickets);
                 if (foundSecret != null) {
-                    return foundSecret;
+                    return DetailedResult.TRUE(foundSecret);
                 }
             }
         }
-        return null;
+        return DetailedResult.FALSE();
     }
 }
