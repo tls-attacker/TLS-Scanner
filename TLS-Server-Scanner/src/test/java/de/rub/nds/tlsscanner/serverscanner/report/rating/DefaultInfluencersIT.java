@@ -1015,6 +1015,36 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.UNENCRYPTED_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.NO_MAC_CHECK_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSABLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
@@ -1066,6 +1096,9 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS,
+                                TlsAnalyzedProperty
+                                        .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
+                                TlsAnalyzedProperty.STATISTICS_TICKET,
 
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,

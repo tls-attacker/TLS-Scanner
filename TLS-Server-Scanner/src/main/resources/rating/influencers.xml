@@ -1599,7 +1599,7 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
+        <property>ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
@@ -1698,11 +1698,34 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>VULNERABLE_TO_SESSION_TICKET_ZERO_KEY</property>
+        <property>DEFAULT_ENCRYPTION_KEY_TICKET</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-1000</influence>
             <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>PADDING_ORACLE_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-900</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>DEFAULT_HMAC_KEY_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
             <result>FALSE</result>
@@ -2076,6 +2099,72 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>UNENCRYPTED_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-900</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>NO_MAC_CHECK_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>REUSED_KEYSTREAM_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-900</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ALLOW_CIPHERSUITE_CHANGE_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ALLOW_VERSION_CHANGE_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>REUSABLE_TICKET</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SUPPORTED_APPLICATIONS</property>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -2211,6 +2300,12 @@
         <property>CLIENT_ADVERTISED_ALPNS</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STATISTICS_TICKET</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SERVER_CERT_MIN_KEY_SIZE_RSA_SIG</property>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -2250,7 +2345,7 @@
         <property>SUPPORTS_BLOCK_CIPHERS</property>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>SUPPORTS_SESSION_TICKETS</property>
+        <property>SUPPORTS_SESSION_TICKET_EXTENSION</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>SUPPORTS_TLS13_PSK</property>
@@ -2317,9 +2412,6 @@
     </ratingInfluencer>
     <ratingInfluencer>
         <property>ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH</property>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <property>HAS_GNU_TLS_MAGIC_BYTES</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>VULNERABLE_TO_CCA_BYPASS</property>

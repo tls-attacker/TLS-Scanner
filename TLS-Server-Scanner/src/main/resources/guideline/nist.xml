@@ -515,7 +515,7 @@
             <result>TRUE</result>
         </condition>
         <property>REUSABLE_TICKET</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The null compression method shall be enabled, and all other compression methods shall be disabled.</name>
