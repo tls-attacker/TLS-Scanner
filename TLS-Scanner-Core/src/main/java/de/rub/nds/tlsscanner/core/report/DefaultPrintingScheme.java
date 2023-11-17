@@ -258,7 +258,7 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,

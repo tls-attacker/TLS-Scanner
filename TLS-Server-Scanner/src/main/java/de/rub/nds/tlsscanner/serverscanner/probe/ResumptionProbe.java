@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -38,6 +39,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -54,7 +56,8 @@ public class ResumptionProbe extends TlsServerProbe {
     private TestResult respectsPskModes = TestResults.COULD_NOT_TEST;
     private TestResult supportsResumption = TestResults.COULD_NOT_TEST;
     private TestResult supportsSessionTicketResumption = TestResults.COULD_NOT_TEST;
-    private TestResult supportsTls13SessionTicket = TestResults.COULD_NOT_TEST;
+    private TestResult issuesTls13SessionTicketAfterHandshake = TestResults.COULD_NOT_TEST;
+    private TestResult issuesTls13SessionTicketWithApplicationData = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13ZeroRtt = TestResults.COULD_NOT_TEST;
@@ -66,7 +69,8 @@ public class ResumptionProbe extends TlsServerProbe {
         register(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
@@ -83,13 +87,16 @@ public class ResumptionProbe extends TlsServerProbe {
 
             supportsDtlsCookieExchangeInSessionTicketResumption =
                     getSupportsDtlsCookieExchangeInSessionTicketResumption();
-            supportsTls13SessionTicket =
-                    supportsTls13PskDhe =
-                            supportsTls13Psk = supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
+            issuesTls13SessionTicketAfterHandshake =
+                    issuesTls13SessionTicketWithApplicationData =
+                            supportsTls13PskDhe =
+                                    supportsTls13Psk =
+                                            supportsTls13ZeroRtt = TestResults.NOT_TESTED_YET;
         } else {
             supportsDtlsCookieExchangeInResumption = TestResults.NOT_TESTED_YET;
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
-            supportsTls13SessionTicket = getIssuesTls13SessionTicket();
+            issuesTls13SessionTicketAfterHandshake = getIssuesTls13SessionTicket(false);
+            issuesTls13SessionTicketWithApplicationData = getIssuesTls13SessionTicket(true);
             supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
             supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
             supportsTls13ZeroRtt = getSupports0rtt();
@@ -269,6 +276,10 @@ public class ResumptionProbe extends TlsServerProbe {
     }
 
     private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
+        // add app data if the server does not issue a ticket without them.
+        boolean addApplicationData =
+                issuesTls13SessionTicketAfterHandshake == TestResults.FALSE
+                        && issuesTls13SessionTicketWithApplicationData == TestResults.TRUE;
         try {
             if (configSelector.foundWorkingTls13Config()) {
                 Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -280,7 +291,33 @@ public class ResumptionProbe extends TlsServerProbe {
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
                 // allow an early NewSessionTicket without aborting execution
                 tlsConfig.setStopTraceAfterUnexpected(false);
+                if (addApplicationData) {
+                    LayerConfiguration layerConfiguration =
+                            configSelector
+                                    .getScannerConfig()
+                                    .getApplicationProtocol()
+                                    .getExpectedLayerConfiguration();
+                    if (layerConfiguration != null) {
+                        tlsConfig.setDefaultLayerConfiguration(layerConfiguration);
+                    }
+                }
                 State state = new State(tlsConfig);
+
+                if (addApplicationData) {
+                    WorkflowTrace trace = state.getWorkflowTrace();
+                    int resetIndex =
+                            WorkflowTraceUtil.indexOfIdenticalAction(
+                                    trace, trace.getFirstAction(ResetConnectionAction.class));
+                    List<TlsAction> actionsToAdd =
+                            configSelector
+                                    .getScannerConfig()
+                                    .getApplicationProtocol()
+                                    .createDummyActions(tlsConfig);
+                    for (int i = 0; i < actionsToAdd.size(); i++) {
+                        trace.addTlsAction(resetIndex - 1 + i, actionsToAdd.get(0));
+                    }
+                }
+
                 executeState(state);
 
                 MessageAction lastRcv =
@@ -340,7 +377,7 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
-    private TestResult getIssuesTls13SessionTicket() {
+    private TestResult getIssuesTls13SessionTicket(boolean includeApplicationData) {
         try {
             if (configSelector.foundWorkingTls13Config()) {
                 Config tlsConfig = configSelector.getTls13BaseConfig();
@@ -350,7 +387,26 @@ public class ResumptionProbe extends TlsServerProbe {
                 tlsConfig.setPSKKeyExchangeModes(pskKex);
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+                if (includeApplicationData) {
+                    LayerConfiguration layerConfiguration =
+                            configSelector
+                                    .getScannerConfig()
+                                    .getApplicationProtocol()
+                                    .getExpectedLayerConfiguration();
+                    if (layerConfiguration != null) {
+                        tlsConfig.setDefaultLayerConfiguration(layerConfiguration);
+                    }
+                }
                 State state = new State(tlsConfig);
+                if (includeApplicationData) {
+                    state.getWorkflowTrace()
+                            .addTlsActions(
+                                    configSelector
+                                            .getScannerConfig()
+                                            .getApplicationProtocol()
+                                            .createDummyActions(tlsConfig));
+                }
+
                 state.getWorkflowTrace()
                         .addTlsAction(
                                 new ReceiveAction(
@@ -399,7 +455,12 @@ public class ResumptionProbe extends TlsServerProbe {
         put(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
                 supportsSessionTicketResumption);
-        put(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        put(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                issuesTls13SessionTicketAfterHandshake);
+        put(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
+                issuesTls13SessionTicketWithApplicationData);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);

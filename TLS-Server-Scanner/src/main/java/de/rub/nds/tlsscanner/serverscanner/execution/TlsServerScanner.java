@@ -39,12 +39,14 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
+import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
@@ -137,6 +139,7 @@ public final class TlsServerScanner
         statsWriter.addExtractor(new EcPublicKeyExtractor());
         statsWriter.addExtractor(new CbcIvExtractor());
         statsWriter.addExtractor(new SessionIdExtractor());
+        statsWriter.addExtractor(new SessionTicketExtractor());
         statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
         statsWriter.addExtractor(new DestinationPortExtractor());
         return statsWriter;
@@ -164,7 +167,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new ECPointFormatProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RenegotiationProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new SessionTicketZeroKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HeartbleedProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));
@@ -215,6 +217,14 @@ public final class TlsServerScanner
         registerProbeForExecution(
                 new ConnectionClosingProbe(configSelector, parallelExecutor), false);
         registerProbeForExecution(new PoodleAfterProbe());
+        registerProbeForExecution(new SessionTicketProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketManipulationProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketPaddingOracleProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketCollectingProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new SessionTicketAfterProbe(configSelector));
     }
 
     @Override

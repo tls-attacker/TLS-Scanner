@@ -149,7 +149,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
                 report.getResult(
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
         issuesTls13SessionTickets =
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+                report.getResult(TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
         supportsTls13PskDhe = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
         supportedFpGroups = new LinkedList<>();

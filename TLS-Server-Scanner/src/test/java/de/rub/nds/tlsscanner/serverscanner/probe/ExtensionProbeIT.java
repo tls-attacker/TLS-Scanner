@@ -60,7 +60,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE)
-                && verifyProperty(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TestResults.TRUE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, TestResults.TRUE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, TestResults.FALSE)
                 && verifyProperty(

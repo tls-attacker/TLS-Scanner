@@ -769,7 +769,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
@@ -814,8 +814,18 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+                        TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -1000, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.PADDING_ORACLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
@@ -1005,6 +1015,36 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.UNENCRYPTED_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.NO_MAC_CHECK_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSABLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
@@ -1056,6 +1096,9 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS,
+                                TlsAnalyzedProperty
+                                        .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
+                                TlsAnalyzedProperty.STATISTICS_TICKET,
 
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
@@ -1071,7 +1114,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_RSA_SIG,
                                 TlsAnalyzedProperty.SUPPORTS_KERBEROS,
                                 TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
-                                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
@@ -1097,7 +1140,6 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS,
                                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH,
-                                TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES,
                                 TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS,
                                 TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
                                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,

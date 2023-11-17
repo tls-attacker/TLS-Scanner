@@ -486,8 +486,8 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
-                        TestResults.TRUE));
+                        TlsAnalyzedProperty.REUSABLE_TICKET,
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",
