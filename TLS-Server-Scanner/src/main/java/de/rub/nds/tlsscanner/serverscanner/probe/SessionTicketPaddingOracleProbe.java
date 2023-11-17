@@ -196,6 +196,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
         List<TicketPaddingOracleOffsetResult> offsetResults =
                 new ArrayList<>(PADDING_IV_OFFSETS.length);
         boolean breakEarly = false;
+        LOGGER.debug("Starting to evaluate version {}", version);
         for (Integer offset : PADDING_IV_OFFSETS) {
             if (!shouldCheckOffset(offset, originalTicket.getTicketBytesOriginal().length)) {
                 continue;
@@ -203,6 +204,8 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
             TicketPaddingOracleLastByteTestInfo lastByteTestInfo =
                     new TicketPaddingOracleLastByteTestInfo(version, offset);
             List<TicketPaddingOracleVector> lastVectors = createPaddingVectorsLastByte(offset);
+
+            LOGGER.debug("Checking Offset {} with {} vectors", offset, lastVectors.size());
 
             InformationLeakTest<TicketPaddingOracleLastByteTestInfo> lastByteLeakTest =
                     createInformationLeakTest(
@@ -217,13 +220,23 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
                     new ArrayList<>();
 
             if (lastByteLeakTest.isSignificantDistinctAnswers()) {
-                for (VectorResponse response : getRareResponses(lastByteLeakTest, 2)) {
+                List<VectorResponse> rareResponses = getRareResponses(lastByteLeakTest, 2);
+                LOGGER.debug(
+                        "At Offset {} found significant difference with {} rare response(s)",
+                        offset,
+                        rareResponses.size());
+                for (VectorResponse response : rareResponses) {
                     TicketPaddingOracleVectorLast lastVector =
                             (TicketPaddingOracleVectorLast) response.getVector();
                     TicketPaddingOracleSecondByteTestInfo secondByteTestInfo =
                             new TicketPaddingOracleSecondByteTestInfo(version, lastVector);
                     List<TicketPaddingOracleVector> secondVectors =
                             createPaddingVectorsSecondByte(offset, lastVector.xorValue);
+
+                    LOGGER.debug(
+                            "At Offset {} checking further {} vectors",
+                            offset,
+                            secondVectors.size());
 
                     InformationLeakTest<TicketPaddingOracleSecondByteTestInfo> secondByteLeakTest =
                             createInformationLeakTest(
@@ -330,6 +343,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
         InformationLeakTest<I> informationLeakTest = new InformationLeakTest<>(testInfo, responses);
 
         if (informationLeakTest.isDistinctAnswers()) {
+            LOGGER.debug("Found distinct answers - fetching more responses to check significance");
             // TODO reduce vectors for second byte
             responses =
                     createVectorResponseList(

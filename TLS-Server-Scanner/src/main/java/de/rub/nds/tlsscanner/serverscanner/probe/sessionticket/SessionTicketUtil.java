@@ -26,8 +26,8 @@ public class SessionTicketUtil {
      * generates a list of all session secrets of current state which might be included in a session
      * ticket by the server
      *
-     * @param state
-     * @return
+     * @param state The state to extract the secrets from.
+     * @return List of secrets associated with the state.
      */
     public static List<PossibleSecret> generateSecretList(State state) {
         List<PossibleSecret> secretList = new LinkedList<>();
@@ -66,7 +66,7 @@ public class SessionTicketUtil {
         TlsContext context = state.getTlsContext();
         ProtocolVersion protocolVersion = context.getSelectedProtocolVersion();
         if (protocolVersion.isTLS13()) {
-            if (context.getPskSets() == null){
+            if (context.getPskSets() == null) {
                 return new TicketHolder(protocolVersion);
             }
             return context.getPskSets().stream()
