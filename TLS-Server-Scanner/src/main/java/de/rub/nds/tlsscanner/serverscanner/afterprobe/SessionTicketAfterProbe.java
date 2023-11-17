@@ -25,9 +25,9 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummariz
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterStats;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.DefaultKeys;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketEncryptionFormat;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketMacFormat;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.TicketEncryptionAlgorithm;
@@ -68,8 +68,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         ScannerDetail detail =
                 configSelector.getScannerConfig().getExecutorConfig().getPostAnalysisDetail();
 
-        VersionDependentResult<SessionTicketAfterProbeResult> statistics =
-                new VersionDependentResult<>();
+        VersionDependentResult<SessionTicketAfterStats> statistics = new VersionDependentResult<>();
 
         VersionDependentSummarizableResult<DetailedResult<FoundSecret>> unencryptedTicket =
                 new VersionDependentSummarizableResult<>();
@@ -91,7 +90,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
         for (Entry<ProtocolVersion, List<Ticket>> entry : ticketMap.entrySet()) {
             ProtocolVersion version = entry.getKey();
-            SessionTicketAfterProbeResult versionStats = analyzeStatistics(entry.getValue());
+            SessionTicketAfterStats versionStats = analyzeStatistics(entry.getValue());
             statistics.putResult(version, versionStats);
             List<Ticket> tickets = entry.getValue();
 
@@ -104,8 +103,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         }
     }
 
-    public static SessionTicketAfterProbeResult analyzeStatistics(List<Ticket> tickets) {
-        SessionTicketAfterProbeResult result = new SessionTicketAfterProbeResult();
+    public static SessionTicketAfterStats analyzeStatistics(List<Ticket> tickets) {
+        SessionTicketAfterStats result = new SessionTicketAfterStats();
 
         result.setTicketLengthOccurences(analyzeTicketLength(tickets));
         result.setKeyNameLength(analyzeKeyNameLength(tickets));
@@ -336,18 +335,18 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         return DetailedResult.FALSE();
     }
 
-    private static List<PossibleSecret> xorSecrets(
+    private static List<SessionSecret> xorSecrets(
             Ticket ticketA, Ticket ticketB, boolean skipSameSecrets) {
-        List<PossibleSecret> xoredSecrets = new LinkedList<>();
-        for (PossibleSecret secretA : ticketA.getPossibleSecrets()) {
-            for (PossibleSecret secretB : ticketB.getPossibleSecrets()) {
+        List<SessionSecret> xoredSecrets = new LinkedList<>();
+        for (SessionSecret secretA : ticketA.getSessionSecrets()) {
+            for (SessionSecret secretB : ticketB.getSessionSecrets()) {
                 if (secretA.secretType == secretB.secretType
                         && secretA.value.length == secretB.value.length) {
                     if (skipSameSecrets && Arrays.equals(secretA.value, secretB.value)) {
                         continue;
                     }
                     xoredSecrets.add(
-                            new PossibleSecret(
+                            new SessionSecret(
                                     secretA.secretType,
                                     ArrayUtil.xor(secretA.value, secretB.value)));
                 }

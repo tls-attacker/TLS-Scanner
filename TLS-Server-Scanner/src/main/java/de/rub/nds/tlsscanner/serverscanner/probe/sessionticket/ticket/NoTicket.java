@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.List;
 
 public class NoTicket implements Ticket {
@@ -36,7 +36,7 @@ public class NoTicket implements Ticket {
     }
 
     @Override
-    public List<PossibleSecret> getPossibleSecrets() {
+    public List<SessionSecret> getSessionSecrets() {
         throw new UnsupportedOperationException();
     }
 }

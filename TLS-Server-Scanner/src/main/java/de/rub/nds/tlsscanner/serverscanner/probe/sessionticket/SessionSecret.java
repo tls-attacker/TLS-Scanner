@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import java.io.Serializable;
 import java.util.Optional;
 
-public class PossibleSecret implements Serializable {
+public class SessionSecret implements Serializable {
     public enum Secret {
         PREMASTER_SECRET,
         HANDSHAKE_SECRET,
@@ -24,7 +24,7 @@ public class PossibleSecret implements Serializable {
     public final Secret secretType;
     public final byte[] value;
 
-    public PossibleSecret(Secret secret, byte[] value) {
+    public SessionSecret(Secret secret, byte[] value) {
         this.secretType = secret;
         this.value = value;
     }

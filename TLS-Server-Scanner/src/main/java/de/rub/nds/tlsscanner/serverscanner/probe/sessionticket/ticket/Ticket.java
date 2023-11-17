@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +50,7 @@ public interface Ticket {
      *
      * @return Secret associated to this ticket including descriptions.
      */
-    List<PossibleSecret> getPossibleSecrets();
+    List<SessionSecret> getSessionSecrets();
 
     /**
      * Check whether the haystack contains a secret associated to this ticket.
@@ -62,10 +62,10 @@ public interface Ticket {
         if (haystack == null || haystack.length == 0) {
             return null;
         }
-        for (PossibleSecret possibleSecret : getPossibleSecrets()) {
-            Optional<Integer> offset = possibleSecret.findIn(haystack);
+        for (SessionSecret sessionSecret : getSessionSecrets()) {
+            Optional<Integer> offset = sessionSecret.findIn(haystack);
             if (offset.isPresent()) {
-                return new FoundSecret(possibleSecret, offset.get());
+                return new FoundSecret(sessionSecret, offset.get());
             }
         }
         return null;

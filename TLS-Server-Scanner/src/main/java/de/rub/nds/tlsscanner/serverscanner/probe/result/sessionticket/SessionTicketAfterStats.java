@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SessionTicketAfterProbeResult {
+public class SessionTicketAfterStats {
     private Map<Integer, Integer> ticketLengthOccurences;
     private Integer keyNameLength = null;
     private List<String> asciiStringsFound;

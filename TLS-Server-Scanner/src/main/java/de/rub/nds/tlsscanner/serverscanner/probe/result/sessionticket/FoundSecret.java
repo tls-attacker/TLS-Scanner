@@ -8,15 +8,15 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.io.Serializable;
 
 public class FoundSecret implements Serializable {
-    public final PossibleSecret secret;
+    public final SessionSecret secret;
     /** Offset of the secret in the ticket (from left; 0=start). */
     public final int offset;
 
-    public FoundSecret(PossibleSecret secret, int offset) {
+    public FoundSecret(SessionSecret secret, int offset) {
         this.secret = secret;
         this.offset = offset;
     }

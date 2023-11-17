@@ -10,24 +10,24 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.List;
 
 public class TicketTls12 implements Ticket {
 
     private byte[] ticketBytes;
     private byte[] masterSecret;
-    private List<PossibleSecret> possibleSecrets;
+    private List<SessionSecret> sessionSecrets;
 
     public TicketTls12(
-            byte[] ticketBytes, byte[] masterSecret, List<PossibleSecret> possibleSecrets) {
+            byte[] ticketBytes, byte[] masterSecret, List<SessionSecret> sessionSecrets) {
         this.ticketBytes = ticketBytes;
         this.masterSecret = masterSecret;
-        this.possibleSecrets = possibleSecrets;
+        this.sessionSecrets = sessionSecrets;
     }
 
     public TicketTls12(TicketTls12 toCopy) {
-        this(toCopy.ticketBytes, toCopy.masterSecret, toCopy.possibleSecrets);
+        this(toCopy.ticketBytes, toCopy.masterSecret, toCopy.sessionSecrets);
     }
 
     @Override
@@ -52,8 +52,8 @@ public class TicketTls12 implements Ticket {
     }
 
     @Override
-    public List<PossibleSecret> getPossibleSecrets() {
-        return possibleSecrets;
+    public List<SessionSecret> getSessionSecrets() {
+        return sessionSecrets;
     }
 
     @Override

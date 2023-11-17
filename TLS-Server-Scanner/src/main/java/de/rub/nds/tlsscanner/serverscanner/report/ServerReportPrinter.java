@@ -1415,7 +1415,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
 
         var statistics =
-                (VersionDependentResult<SessionTicketAfterProbeResult>)
+                (VersionDependentResult<SessionTicketAfterStats>)
                         report.getResult(TlsAnalyzedProperty.STATISTICS_TICKET);
         var unencrypted =
                 (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>)
@@ -1431,10 +1431,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         report.getResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
         if (statistics != null) {
             prettyAppendSubSubheading(builder, "Analysis");
-            for (Entry<ProtocolVersion, SessionTicketAfterProbeResult> afterResultEntry :
+            for (Entry<ProtocolVersion, SessionTicketAfterStats> afterResultEntry :
                     statistics.getResultMap().entrySet()) {
                 ProtocolVersion version = afterResultEntry.getKey();
-                SessionTicketAfterProbeResult afterResult = afterResultEntry.getValue();
+                SessionTicketAfterStats afterResult = afterResultEntry.getValue();
                 prettyAppendSubSubSubheading(builder, version.toString());
                 prettyAppend(builder, "Ticket length", afterResult.getTicketLengths());
                 prettyAppend(

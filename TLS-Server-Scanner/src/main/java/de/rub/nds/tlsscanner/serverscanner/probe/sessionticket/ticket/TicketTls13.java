@@ -11,15 +11,15 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.psk.PskSet;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.PossibleSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.Arrays;
 import java.util.List;
 
 public class TicketTls13 implements Ticket {
     private PskSet pskSet;
-    private List<PossibleSecret> possibleSecrets;
+    private List<SessionSecret> sessionSecrets;
 
-    public TicketTls13(PskSet pskSet, List<PossibleSecret> possibleSecrets) {
+    public TicketTls13(PskSet pskSet, List<SessionSecret> sessionSecrets) {
         this.pskSet =
                 new PskSet(
                         pskSet.getPreSharedKeyIdentity(),
@@ -28,11 +28,11 @@ public class TicketTls13 implements Ticket {
                         pskSet.getTicketAgeAdd(),
                         pskSet.getTicketNonce(),
                         pskSet.getCipherSuite());
-        this.possibleSecrets = possibleSecrets;
+        this.sessionSecrets = sessionSecrets;
     }
 
     public TicketTls13(TicketTls13 toCopy) {
-        this(toCopy.pskSet, toCopy.possibleSecrets);
+        this(toCopy.pskSet, toCopy.sessionSecrets);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class TicketTls13 implements Ticket {
     }
 
     @Override
-    public List<PossibleSecret> getPossibleSecrets() {
-        return possibleSecrets;
+    public List<SessionSecret> getSessionSecrets() {
+        return sessionSecrets;
     }
 
     @Override
