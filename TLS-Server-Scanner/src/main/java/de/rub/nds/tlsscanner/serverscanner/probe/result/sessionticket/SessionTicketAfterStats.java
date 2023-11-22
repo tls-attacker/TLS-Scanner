@@ -8,12 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SessionTicketAfterStats {
+public class SessionTicketAfterStats implements Serializable {
     private Map<Integer, Integer> ticketLengthOccurences;
     private Integer keyNameLength = null;
     private List<String> asciiStringsFound;
