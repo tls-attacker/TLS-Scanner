@@ -13,11 +13,12 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketBitFlipVector;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TicketManipulationResult implements SummarizableTestResult {
+public class TicketManipulationResult implements SummarizableTestResult, Serializable {
     public static final char CHR_ACCEPT = 'A';
     public static final char CHR_ACCEPT_DIFFERENT_SECRET = '#';
     public static final char CHR_REJECT = '_';

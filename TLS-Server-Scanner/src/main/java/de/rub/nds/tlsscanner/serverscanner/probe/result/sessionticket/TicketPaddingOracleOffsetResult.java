@@ -11,9 +11,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
+import java.io.Serializable;
 import java.util.List;
 
-public class TicketPaddingOracleOffsetResult {
+public class TicketPaddingOracleOffsetResult implements Serializable {
 
     private final InformationLeakTest<TicketPaddingOracleLastByteTestInfo> lastByteLeakTest;
     private final List<InformationLeakTest<TicketPaddingOracleSecondByteTestInfo>>
