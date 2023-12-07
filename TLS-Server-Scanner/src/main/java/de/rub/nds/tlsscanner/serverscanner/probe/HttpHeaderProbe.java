@@ -15,7 +15,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.http.HttpMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
@@ -71,7 +71,7 @@ public class HttpHeaderProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
-        tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+        tlsConfig.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
         executeState(state);

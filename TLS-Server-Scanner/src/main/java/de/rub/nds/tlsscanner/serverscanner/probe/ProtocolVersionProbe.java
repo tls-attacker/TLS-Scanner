@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -100,7 +100,7 @@ public class ProtocolVersionProbe extends TlsServerProbe {
         executeState(state);
 
         if (toTest == ProtocolVersion.DTLS10_DRAFT) {
-            Record record = WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
+            Record record = WorkflowTraceResultUtil.getLastReceivedRecord(state.getWorkflowTrace());
             if (record != null) {
                 ProtocolVersion version =
                         ProtocolVersion.getProtocolVersion(record.getProtocolVersion().getValue());
@@ -110,8 +110,8 @@ public class ProtocolVersionProbe extends TlsServerProbe {
             }
             return false;
         } else {
-            if (!WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (!WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
                 LOGGER.debug("Did not receive ServerHello Message");
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 return false;

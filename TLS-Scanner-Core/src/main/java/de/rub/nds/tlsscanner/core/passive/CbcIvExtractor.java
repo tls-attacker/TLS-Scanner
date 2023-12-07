@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import java.util.List;
 
 public class CbcIvExtractor extends StatExtractor<State, ComparableByteArray> {
@@ -28,7 +28,7 @@ public class CbcIvExtractor extends StatExtractor<State, ComparableByteArray> {
         if (state.getTlsContext().getSelectedCipherSuite() != null
                 && state.getTlsContext().getSelectedCipherSuite().isCBC()) {
             WorkflowTrace trace = state.getWorkflowTrace();
-            List<Record> allReceivedRecords = WorkflowTraceUtil.getAllReceivedRecords(trace);
+            List<Record> allReceivedRecords = WorkflowTraceResultUtil.getAllReceivedRecords(trace);
             for (Record receivedRecord : allReceivedRecords) {
                 if (receivedRecord instanceof Record) {
                     if (((Record) receivedRecord).getComputations() != null) {

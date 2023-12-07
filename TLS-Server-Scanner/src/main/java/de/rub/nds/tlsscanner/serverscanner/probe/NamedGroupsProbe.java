@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessag
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -231,8 +231,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
         }
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return state.getTlsContext();
         } else {
             LOGGER.debug(
@@ -299,14 +299,14 @@ public class NamedGroupsProbe extends TlsServerProbe {
         State state = new State(tlsConfig);
         executeState(state);
 
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), ProtocolMessageType.UNKNOWN)) {
             return TestResults.UNCERTAIN;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE)) {
             HandshakeMessage skeMsg =
-                    WorkflowTraceUtil.getFirstReceivedMessage(
-                            HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+                    WorkflowTraceResultUtil.getFirstReceivedMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE);
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
@@ -377,8 +377,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return state.getTlsContext();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");

@@ -24,7 +24,6 @@ import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -99,7 +98,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         // container.add(createRaccoonResultsContainer(report));
         container.add(createCertificateContainer(report));
         // container.add(createOcspContainer(report));
-        container.add(createCertificateTransparencyContainer(report));
+        // container.add(createCertificateTransparencyContainer(report));
         // container.add(createSessionContainer(report));
         // container.add(createRenegotiationContainer(report));
         container.add(createHttpsContainer(report));
@@ -457,46 +456,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             container.add(new HeadlineContainer("Session Ticket Zero Key Attack Details"));
             container.add(
                     createKeyValueContainer(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, report));
-        }
-        return container;
-    }
-
-    private ReportContainer createCertificateTransparencyContainer(ServerReport report) {
-        ListContainer container = new ListContainer();
-        container.add(new HeadlineContainer("Certificate Transparency"));
-        container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, report));
-        container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, report));
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE)
-                == TestResults.TRUE) {
-            ListContainer precertificateSctContainer = new ListContainer(1);
-            container.add(precertificateSctContainer);
-            precertificateSctContainer.add(new HeadlineContainer("Precertificate SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getPrecertificateSctList().getCertificateTimestampList()) {
-                precertificateSctContainer.add(createDefaultTextContainer(sct.toString()));
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResults.TRUE) {
-            ListContainer handshakeSctcontainer = new ListContainer(1);
-            container.add(handshakeSctcontainer);
-            handshakeSctcontainer.add(new HeadlineContainer("TLS Handshake SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getHandshakeSctList().getCertificateTimestampList()) {
-                handshakeSctcontainer.add(createDefaultTextContainer(sct.toString()));
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResults.TRUE) {
-            ListContainer ocspResponseSctContainer = new ListContainer(1);
-            container.add(ocspResponseSctContainer);
-            ocspResponseSctContainer.add(new HeadlineContainer("OCSP Response SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getOcspSctList().getCertificateTimestampList()) {
-                ocspResponseSctContainer.add(createDefaultTextContainer(sct.toString()));
-            }
         }
         return container;
     }

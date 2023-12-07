@@ -254,7 +254,7 @@ public class NistGuidelineSerializationIT {
                 new HashAlgorithmStrengthCheck(
                         "All server and client certificates and certificates in their certification paths shall be signed using SHA-224 or a stronger hashing algorithm.",
                         RequirementLevel.MUST,
-                        HashAlgorithm.SHA512_224));
+                        HashAlgorithm.SHA224));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The server shall support secure renegotiation Extension.",

@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ECDHClientKeyExchangeMessage
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import java.util.List;
 
 public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
@@ -33,7 +33,8 @@ public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         List<ProtocolMessage> allReceivedMessages =
-                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
+                        trace, ProtocolMessageType.HANDSHAKE);
         if (state.getRunningMode() == RunningModeType.CLIENT) {
             for (ProtocolMessage message : allReceivedMessages) {
                 if (message instanceof ECDHEServerKeyExchangeMessage) {

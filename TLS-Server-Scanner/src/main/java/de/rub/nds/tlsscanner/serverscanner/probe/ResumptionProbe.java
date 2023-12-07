@@ -32,7 +32,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
@@ -253,7 +253,7 @@ public class ResumptionProbe extends TlsServerProbe {
 
     private TestResult isKeyShareExtensionNegotiated(State state) {
         List<HandshakeMessage> handshakes =
-                WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
+                WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
         List<ServerHelloMessage> hellos =
                 handshakes.stream()
                         .filter(message -> message instanceof ServerHelloMessage)
@@ -358,8 +358,8 @@ public class ResumptionProbe extends TlsServerProbe {
                                         new NewSessionTicketMessage()));
                 executeState(state);
 
-                if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
+                if (WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
                     return TestResults.TRUE;
                 }
             }

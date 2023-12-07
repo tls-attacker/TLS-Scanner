@@ -26,7 +26,7 @@ import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
 import de.rub.nds.tlsattacker.core.http.header.GenericHttpHeader;
 import de.rub.nds.tlsattacker.core.http.header.HostHeader;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -34,7 +34,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -106,7 +106,7 @@ public class MacProbe extends TlsServerProbe {
         }
         config.setWorkflowExecutorShouldClose(false);
         configSelector.repairConfig(config);
-        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+        config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
@@ -165,7 +165,7 @@ public class MacProbe extends TlsServerProbe {
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
-        config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+        config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
@@ -212,7 +212,7 @@ public class MacProbe extends TlsServerProbe {
         VariableModification<byte[]> xor =
                 ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
         modMac.setModification(xor);
-        lastSendingAction.setRecords(r);
+        lastSendingAction.setConfiguredRecords(List.of(r));
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
     }
@@ -224,7 +224,8 @@ public class MacProbe extends TlsServerProbe {
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         FinishedMessage lastSendMessage =
                 (FinishedMessage)
-                        WorkflowTraceUtil.getLastSendMessage(HandshakeMessageType.FINISHED, trace);
+                        WorkflowTraceResultUtil.getLastSentMessage(
+                                trace, HandshakeMessageType.FINISHED);
         lastSendMessage.setVerifyData(Modifiable.xor(new byte[] {01}, xorPosition));
         return trace;
     }
@@ -242,7 +243,7 @@ public class MacProbe extends TlsServerProbe {
         ModifiableByteArray modMac = new ModifiableByteArray();
         r.getComputations().setMac(modMac);
         modMac.setModification(xor);
-        lastSendingAction.setRecords(new Record(), new Record(), r);
+        lastSendingAction.setConfiguredRecords(List.of(new Record(), new Record(), r));
         return trace;
     }
 
@@ -397,9 +398,9 @@ public class MacProbe extends TlsServerProbe {
     }
 
     public boolean receivedFinAndCcs(WorkflowTrace trace) {
-        return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)
-                && WorkflowTraceUtil.didReceiveMessage(
-                        ProtocolMessageType.CHANGE_CIPHER_SPEC, trace);
+        return WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.FINISHED)
+                && WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, ProtocolMessageType.CHANGE_CIPHER_SPEC);
     }
 
     @Override

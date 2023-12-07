@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -118,7 +118,7 @@ public class RandomnessProbe extends TlsServerProbe {
                                     WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             if (configSelector.getScannerConfig().getApplicationProtocol()
                     == ApplicationProtocol.HTTP) {
-                config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+                config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
                 workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
                 workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));
             } else {

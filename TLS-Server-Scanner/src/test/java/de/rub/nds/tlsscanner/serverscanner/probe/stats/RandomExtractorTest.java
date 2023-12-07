@@ -62,7 +62,7 @@ public class RandomExtractorTest {
         ReceiveAction testServerHello = new ReceiveAction();
         ServerHelloMessage msg = new ServerHelloMessage();
         msg.setRandom(rndBytes);
-        testServerHello.setMessages(msg);
+        testServerHello.setExpectedMessages(msg);
         return testServerHello;
     }
 
@@ -75,7 +75,7 @@ public class RandomExtractorTest {
         testClientHello = new SendAction();
         ClientHelloMessage msgClient = new ClientHelloMessage();
         msgClient.setRandom(STATIC_RANDOM1.clone());
-        testClientHello.setMessages(msgClient);
+        testClientHello.setConfiguredMessages(msgClient);
 
         testTrace = new WorkflowTrace();
         extractor = new RandomExtractor();
@@ -213,7 +213,7 @@ public class RandomExtractorTest {
         // ServerHello without random-bytes
         ReceiveAction testServerHello2 = new ReceiveAction();
         ServerHelloMessage msg = new ServerHelloMessage();
-        testServerHello2.setMessages(msg);
+        testServerHello2.setExpectedMessages(msg);
 
         testTrace.addTlsAction(testServerHello1);
         testTrace.addTlsAction(testServerHello2);
@@ -234,7 +234,7 @@ public class RandomExtractorTest {
         // ServerHello without random-bytes
         ReceiveAction testServerHello = new ReceiveAction();
         ServerHelloMessage msg = new ServerHelloMessage();
-        testServerHello.setMessages(msg);
+        testServerHello.setExpectedMessages(msg);
 
         testTrace.addTlsAction(testServerHello);
         State state = new State(testTrace);

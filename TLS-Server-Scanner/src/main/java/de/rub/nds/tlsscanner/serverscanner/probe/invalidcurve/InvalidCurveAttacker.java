@@ -29,7 +29,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.task.InvalidCurveTask;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
@@ -289,10 +289,12 @@ public class InvalidCurveAttacker {
             WorkflowTrace trace = task.getState().getWorkflowTrace();
             if (!task.isHasError()) {
                 foundExecutedAsPlanned = true;
-                if (!(WorkflowTraceUtil.getLastReceivedMessage(trace) != null
-                        && WorkflowTraceUtil.getLastReceivedMessage(trace)
+                if (!(WorkflowTraceResultUtil.getLastReceivedMessage(trace) != null
+                        && WorkflowTraceResultUtil.getLastReceivedMessage(trace)
                                 instanceof HandshakeMessage
-                        && ((HandshakeMessage) WorkflowTraceUtil.getLastReceivedMessage(trace))
+                        && ((HandshakeMessage)
+                                                WorkflowTraceResultUtil.getLastReceivedMessage(
+                                                        trace))
                                         .getHandshakeMessageType()
                                 == HandshakeMessageType.FINISHED)) {
                     LOGGER.debug(

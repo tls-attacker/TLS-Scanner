@@ -69,7 +69,7 @@ public class InvalidCurvePointTest {
     private boolean isOrderCorrect(InvalidCurvePoint invP) {
         EllipticCurve curve =
                 (((NamedEllipticCurveParameters) invP.getNamedGroup().getGroupParameters()))
-                        .getCurve();
+                        .getGroup();
         FieldElementFp bX = new FieldElementFp(invP.getPublicPointBaseX(), curve.getModulus());
         FieldElementFp bY = new FieldElementFp(invP.getPublicPointBaseY(), curve.getModulus());
         Point point = new Point(bX, bY);

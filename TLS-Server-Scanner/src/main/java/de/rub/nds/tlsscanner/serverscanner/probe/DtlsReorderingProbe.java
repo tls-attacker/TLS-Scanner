@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteEpochAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -59,8 +59,8 @@ public class DtlsReorderingProbe extends TlsServerProbe {
         State state = new State(config, trace);
         executeState(state);
         supportsReordering =
-                WorkflowTraceUtil.didReceiveMessage(
-                                HandshakeMessageType.FINISHED, state.getWorkflowTrace())
+                WorkflowTraceResultUtil.didReceiveMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)
                         ? TestResults.TRUE
                         : TestResults.FALSE;
     }

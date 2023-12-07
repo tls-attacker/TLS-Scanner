@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
@@ -119,15 +119,15 @@ public class SessionTicketZeroKeyProbe extends TlsServerProbe {
         state = new State(tlsConfig, trace);
         executeState(state);
 
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
             hasDecryptableMasterSecret = hasGnuTlsMagicBytes = TestResults.COULD_NOT_TEST;
             return;
         }
 
         byte[] ticket = null;
         for (ProtocolMessage msg :
-                WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
+                WorkflowTraceResultUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
             if (msg instanceof NewSessionTicketMessage) {
                 NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;
                 ticket = newSessionTicketMessage.getTicket().getIdentity().getValue();

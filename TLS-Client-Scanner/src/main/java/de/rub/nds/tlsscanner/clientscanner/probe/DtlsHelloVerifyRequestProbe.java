@@ -77,11 +77,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
                         .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage();
         hvrMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS10.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.HELLO_VERIFY_REQUEST, hvrMessage);
         ServerHelloMessage serverHello = new ServerHelloMessage(config);
         serverHello.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.SERVER_HELLO, serverHello);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 

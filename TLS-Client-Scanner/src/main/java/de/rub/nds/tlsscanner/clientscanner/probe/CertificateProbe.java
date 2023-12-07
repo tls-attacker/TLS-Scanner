@@ -128,7 +128,7 @@ public class CertificateProbe extends TlsClientProbe {
         CertificateRequestMessage message = new CertificateRequestMessage(config);
         message.setClientCertificateTypesCount(Modifiable.explicit(1));
         message.setClientCertificateTypes(Modifiable.explicit(new byte[] {certType.getValue()}));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.CERTIFICATE_REQUEST, message);
 
         State state = new State(config, trace);

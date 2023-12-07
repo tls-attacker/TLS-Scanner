@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -54,7 +54,7 @@ public class ConnectionClosingProbe extends TlsServerProbe {
         WorkflowTrace handshakeWithAppData =
                 ConnectionClosingUtils.getWorkflowTrace(tlsConfig, RunningModeType.CLIENT);
         if (useHttpAppData) {
-            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+            tlsConfig.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
             handshakeWithAppData.addTlsAction(new SendAction(new HttpRequestMessage()));
         } else {
             handshakeWithAppData.addTlsAction(new SendAction(new ApplicationMessage()));

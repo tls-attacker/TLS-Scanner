@@ -78,7 +78,7 @@ public class InvalidCurveVector implements Vector {
     }
 
     public EllipticCurve getTargetedCurve() {
-        return ((NamedEllipticCurveParameters) namedGroup.getGroupParameters()).getCurve();
+        return ((NamedEllipticCurveParameters) namedGroup.getGroupParameters()).getGroup();
     }
 
     /**

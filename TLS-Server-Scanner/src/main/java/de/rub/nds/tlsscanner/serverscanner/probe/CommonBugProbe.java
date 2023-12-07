@@ -35,7 +35,7 @@ import de.rub.nds.tlsattacker.core.state.Context;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -179,12 +179,12 @@ public class CommonBugProbe extends TlsServerProbe {
             State state = new State(config, trace);
             executeState(state);
             return checkForTrue
-                            == (WorkflowTraceUtil.didReceiveMessage(
-                                            HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                            == (WorkflowTraceResultUtil.didReceiveMessage(
+                                            trace, HandshakeMessageType.SERVER_HELLO_DONE)
                                     || (state.getTlsContext().getSelectedProtocolVersion()
                                                     == ProtocolVersion.TLS13
-                                            && (WorkflowTraceUtil.didReceiveMessage(
-                                                    HandshakeMessageType.FINISHED, trace))))
+                                            && (WorkflowTraceResultUtil.didReceiveMessage(
+                                                    trace, HandshakeMessageType.FINISHED))))
                     ? TestResults.TRUE
                     : TestResults.FALSE;
         } catch (Exception e) {
@@ -277,8 +277,8 @@ public class CommonBugProbe extends TlsServerProbe {
         if (receivedShd == TestResults.TRUE) {
             ServerHelloMessage serverHelloMessage =
                     (ServerHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.SERVER_HELLO, trace);
+                            WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    trace, HandshakeMessageType.SERVER_HELLO);
             if (Arrays.equals(
                     serverHelloMessage.getSelectedCipherSuite().getValue(),
                     new byte[] {(byte) 0xEE, (byte) 0xCC})) {

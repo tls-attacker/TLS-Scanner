@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
@@ -151,11 +151,12 @@ public class ConfigSelector {
         if ((reveicedRecords != null
                         && !reveicedRecords.isEmpty()
                         && reveicedRecords.get(0) instanceof Record)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.HELLO_VERIFY_REQUEST, trace)
-                || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.HELLO_VERIFY_REQUEST)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO_DONE)) {
             speaksProtocol = true;
         }
         return trace.executedAsPlanned();

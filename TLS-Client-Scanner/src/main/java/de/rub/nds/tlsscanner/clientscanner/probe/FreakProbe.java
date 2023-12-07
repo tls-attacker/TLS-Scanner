@@ -28,7 +28,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeServerRsaParametersAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -85,8 +85,8 @@ public class FreakProbe extends TlsClientProbe {
         executeState(new State(config, trace));
 
         HandshakeMessage ckeMessage =
-                WorkflowTraceUtil.getFirstReceivedMessage(
-                        HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+                WorkflowTraceResultUtil.getFirstReceivedMessage(
+                        trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
         if (ckeMessage != null && ckeMessage instanceof RSAClientKeyExchangeMessage) {
             RSAClientKeyExchangeMessage rsaCke = (RSAClientKeyExchangeMessage) ckeMessage;
             BigInteger encryptedPMS = new BigInteger(1, rsaCke.getPublicKey().getValue());

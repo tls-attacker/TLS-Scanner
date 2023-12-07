@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -77,8 +77,8 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
         State state = new State(config, trace);
         TlsContext oldContext = state.getTlsContext();
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.HELLO_VERIFY_REQUEST)) {
             config = configSelector.getBaseConfig();
             config.getDefaultClientConnection().setSourcePort(3333);
             trace =
@@ -91,8 +91,8 @@ public class DtlsIpAddressInCookieProbe extends TlsServerProbe {
             state.getTlsContext().setDtlsCookie(oldContext.getDtlsCookie());
             executeState(state);
             usesIpAdressInCookie =
-                    WorkflowTraceUtil.didReceiveMessage(
-                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+                    WorkflowTraceResultUtil.didReceiveMessage(
+                                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)
                             ? TestResults.TRUE
                             : TestResults.FALSE;
         } else {

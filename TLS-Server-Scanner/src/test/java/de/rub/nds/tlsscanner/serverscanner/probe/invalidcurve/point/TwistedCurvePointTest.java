@@ -67,7 +67,7 @@ public class TwistedCurvePointTest {
     private boolean isOrderCorrect(TwistedCurvePoint invP) {
         if (invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X25519
                 || invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X448) {
-            RFC7748Curve rfcCurve = (RFC7748Curve) invP.getIntendedGroup().getCurve();
+            RFC7748Curve rfcCurve = (RFC7748Curve) invP.getIntendedGroup().getGroup();
             Point montgPoint =
                     rfcCurve.getPoint(invP.getPublicPointBaseX(), invP.getPublicPointBaseY());
             Point weierPoint = rfcCurve.toWeierstrass(montgPoint);
@@ -79,7 +79,7 @@ public class TwistedCurvePointTest {
                             .mod(rfcCurve.getModulus());
 
             EllipticCurveOverFp intendedCurve =
-                    ((RFC7748Curve) invP.getIntendedGroup().getCurve()).getWeierstrassEquivalent();
+                    ((RFC7748Curve) invP.getIntendedGroup().getGroup()).getWeierstrassEquivalent();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()
@@ -106,7 +106,7 @@ public class TwistedCurvePointTest {
             }
         } else {
             EllipticCurveOverFp intendedCurve =
-                    (EllipticCurveOverFp) invP.getIntendedGroup().getCurve();
+                    (EllipticCurveOverFp) invP.getIntendedGroup().getGroup();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()

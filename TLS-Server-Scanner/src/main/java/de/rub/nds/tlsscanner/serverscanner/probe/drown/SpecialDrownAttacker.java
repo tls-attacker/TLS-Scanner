@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -115,14 +115,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, SSL2MessageType.SSL_SERVER_HELLO)) {
             return DrownVulnerabilityType.NONE;
         }
 
         SSL2ServerVerifyMessage serverVerifyMessage =
                 (SSL2ServerVerifyMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_VERIFY);
         if (serverVerifyMessage != null
                 && ServerVerifyChecker.check(serverVerifyMessage, state.getTlsContext(), true)) {
             return DrownVulnerabilityType.SPECIAL;
@@ -166,14 +166,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, SSL2MessageType.SSL_SERVER_HELLO)) {
             return DrownVulnerabilityType.NONE;
         }
 
         SSL2ServerVerifyMessage serverVerifyMessage =
                 (SSL2ServerVerifyMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_VERIFY);
         if (serverVerifyMessage != null) {
             LeakyExportCheckData checkData =
                     new LeakyExportCheckData(

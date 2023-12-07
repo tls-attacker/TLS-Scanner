@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.probe.result.MapResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -55,11 +54,6 @@ public class ServerReport extends TlsScanReport {
     // Certificate
     private int minimumRsaCertKeySize;
     private int minimumDssCertKeySize;
-
-    // Certificate Transparency
-    private SignedCertificateTimestampList precertificateSctList = null;
-    private SignedCertificateTimestampList handshakeSctList = null;
-    private SignedCertificateTimestampList ocspSctList = null;
 
     // Session
     private Long sessionTicketLengthHint = null;
@@ -339,31 +333,6 @@ public class ServerReport extends TlsScanReport {
                         NamedGroup.class,
                         NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
-    }
-
-    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
-        return precertificateSctList;
-    }
-
-    public synchronized void setPrecertificateSctList(
-            SignedCertificateTimestampList precertificateSctList) {
-        this.precertificateSctList = precertificateSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
-        return handshakeSctList;
-    }
-
-    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
-        this.handshakeSctList = handshakeSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getOcspSctList() {
-        return ocspSctList;
-    }
-
-    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
-        this.ocspSctList = ocspSctList;
     }
 
     public synchronized int getScore() {

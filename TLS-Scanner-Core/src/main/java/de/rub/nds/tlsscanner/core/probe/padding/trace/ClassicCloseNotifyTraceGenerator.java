@@ -53,9 +53,9 @@ public class ClassicCloseNotifyTraceGenerator extends PaddingTraceGenerator {
         AlertMessage alert = new AlertMessage();
         alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
         SendAction sendAction = new SendAction(applicationMessage, alert);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
-        sendAction.getRecords().add(new Record(config));
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
+        sendAction.getConfiguredRecords().add(new Record(config));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -359,8 +359,8 @@ public class CertificateProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE)
                 && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                 && state.getTlsContext().getServerCertificateChain() != null) {
             return new CertificateChainReport(
@@ -383,8 +383,8 @@ public class CertificateProbe extends TlsServerProbe {
         do {
             State state = new State(tlsConfig);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                            HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE)
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                     && state.getTlsContext().getServerCertificateChain() != null
                     && state.getTlsContext()
@@ -429,8 +429,8 @@ public class CertificateProbe extends TlsServerProbe {
         do {
             State state = new State(tlsConfig);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                            HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE)
                     && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                     && state.getTlsContext().getServerCertificateChain() != null
                     && state.getTlsContext()
