@@ -208,7 +208,7 @@
         <name>All server and client certificates and certificates in their certification paths shall be signed using SHA-224 or a stronger hashing algorithm.</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
-        <minimumStrength>SHA512_224</minimumStrength>
+        <minimumStrength>SHA224</minimumStrength>
     </hashAlgorithmStrengthCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The server shall support secure renegotiation Extension.</name>
