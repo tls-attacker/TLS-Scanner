@@ -39,7 +39,7 @@ public class CertificateReportGenerator {
         CertificateReport report = new CertificateReport();
         setSubject(report, cert);
         setCommonNames(report, cert);
-        setAlternativeNames(report, cert);
+        // setAlternativeNames(report, cert); TODO
         setValidFrom(report, cert);
         setValidTo(report, cert);
         setPubkey(report, cert);

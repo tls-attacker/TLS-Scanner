@@ -89,7 +89,7 @@ public class CertificateChainReport {
         // find leaf certificate
         containsMultipleLeaves = certificateChain.containsMultipleLeafs();
         containsValidLeaf = certificateChain.containsValidLeaf(uri);
-        chainIsOrdered = certificateChain.isChainOrdered();
+        chainIsOrdered = true; // TODO certificateChain.isChainOrdered();
 
         chainIsComplete = true; // TODO
 
