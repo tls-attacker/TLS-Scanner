@@ -20,8 +20,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Test-Class for RandomExtractor.java, which currently looks for the serverHello-message of the
@@ -59,10 +61,12 @@ public class RandomExtractorTest {
      * @return serverHello Message with the random-bytes set.
      */
     private ReceiveAction generateServerHello(byte[] rndBytes) {
-        ReceiveAction testServerHello = new ReceiveAction();
+        ReceiveAction testServerHello = Mockito.mock(ReceiveAction.class);
         ServerHelloMessage msg = new ServerHelloMessage();
         msg.setRandom(rndBytes);
         testServerHello.setExpectedMessages(msg);
+        Mockito.when(testServerHello.getReceivedMessages()).thenReturn(List.of(msg));
+
         return testServerHello;
     }
 
