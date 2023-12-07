@@ -17,17 +17,19 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.FlushSessionCacheAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.RenegotiationAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
+import de.rub.nds.tlsattacker.core.workflow.action.StaticSendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -147,15 +149,14 @@ public class RenegotiationProbe extends TlsServerProbe {
     }
 
     private void addRenegotiationCipherSuiteToClientHello(Config tlsConfig, WorkflowTrace trace) {
-        for (SendingAction action :
-                WorkflowTraceResultUtil.getSendingActionsForMessage(
+        for (StaticSendingAction action :
+                WorkflowTraceConfigurationUtil.getStaticSendingActionsWithConfiguration(
                         trace, HandshakeMessageType.CLIENT_HELLO)) {
-            action.getSentMessages().clear();
             ClientHelloMessage clientHelloMessage = new ClientHelloMessage(tlsConfig);
             clientHelloMessage.setCipherSuites(
                     Modifiable.insert(
                             CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV.getByteValue(), 0));
-            action.getSentMessages().add(clientHelloMessage);
+            action.getConfiguredList(ProtocolMessage.class).add(clientHelloMessage);
         }
     }
 

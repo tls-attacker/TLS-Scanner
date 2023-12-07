@@ -520,7 +520,7 @@ public class NistGuidelineSerializationIT {
         Guideline<ServerReport> guideline =
                 new Guideline<>(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
-        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
     }
 }

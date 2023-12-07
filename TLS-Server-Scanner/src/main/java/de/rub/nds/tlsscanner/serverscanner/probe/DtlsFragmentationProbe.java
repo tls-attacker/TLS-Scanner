@@ -98,7 +98,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setConfiguredDtlsHandshakeMessageFragments(
+        action.setConfiguredFragmentList(
                 List.of(
                         new DtlsHandshakeMessageFragment(config, 20),
                         new DtlsHandshakeMessageFragment(config, 20)));
@@ -129,7 +129,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setConfiguredDtlsHandshakeMessageFragments(
+        action.setConfiguredFragmentList(
                 List.of(
                         new DtlsHandshakeMessageFragment(config, 20),
                         new DtlsHandshakeMessageFragment(config, 20)));

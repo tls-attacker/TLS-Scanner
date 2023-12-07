@@ -8,12 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.namedgroup;
 
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
-import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,8 +58,8 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingRsaCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                    && AlgorithmResolver.getCertificateKeyType(cipherSuite)
-                            == X509PublicKeyType.RSA) {
+                    && AlgorithmResolver.getRequiredSignatureAlgorithm(cipherSuite)
+                            == SignatureAlgorithm.RSA_PKCS1) {
                 return true;
             }
         }

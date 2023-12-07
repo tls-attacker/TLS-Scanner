@@ -321,7 +321,7 @@ public class BsiGuidelineSerializationIT {
                         "BSI TR-02102-2",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
-        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
     }
 }

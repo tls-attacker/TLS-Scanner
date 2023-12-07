@@ -317,9 +317,9 @@ public final class TlsServerScanner
 
         LOGGER.debug("Loading guidelines from files...");
         List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
-        GuidelineIO<ServerReport> guidelineIO;
+        GuidelineIO guidelineIO;
         try {
-            guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
@@ -329,7 +329,7 @@ public final class TlsServerScanner
             try {
                 InputStream guideLineStream =
                         TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add(guidelineIO.read(guideLineStream));
+                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
             } catch (JAXBException | XMLStreamException ex) {
                 LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
                 return null;
