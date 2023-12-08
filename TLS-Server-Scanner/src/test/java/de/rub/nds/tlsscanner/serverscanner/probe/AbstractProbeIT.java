@@ -142,21 +142,20 @@ public abstract class AbstractProbeIT {
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             try {
                 executeProbe();
+                if (executedAsPlanned()) {
+                    return;
+                }
             } catch (Exception ignored) {
-                LOGGER.info(
-                        "Encountered exception during scanner execution ("
-                                + ignored.getMessage()
-                                + ")");
+                LOGGER.error(
+                        "Encountered exception during scanner execution ({})",
+                        ignored.getMessage(),
+                        ignored);
             }
-            if (!executedAsPlanned()) {
-                LOGGER.info("Failed to complete scan, reexecuting...");
-                killContainer();
-                prepareContainer();
-            } else {
-                return;
-            }
+            LOGGER.warn("Failed to complete scan, reexecuting...");
+            killContainer();
+            prepareContainer();
         }
-        LOGGER.error("Failed");
+        LOGGER.error("Failed {}", getProbe().getProbeName());
     }
 
     private void executeProbe() {
