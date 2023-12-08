@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ECPointFormatExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -81,8 +82,11 @@ public class ECPointFormatProbe extends TlsServerProbe {
         State state =
                 ECPointFormatUtils.getState(
                         ourECDHCipherSuites, dummyFormat, groups, configSelector.getBaseConfig());
-        state.getWorkflowTrace()
-                .getFirstSendMessage(ClientHelloMessage.class)
+        ClientHelloMessage clientHelloMessage =
+                (ClientHelloMessage)
+                        (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.CLIENT_HELLO));
+        clientHelloMessage
                 .getExtension(ECPointFormatExtensionMessage.class)
                 .setPointFormats(Modifiable.explicit(ECPointFormatUtils.UNDEFINED_FORMAT));
         executeState(state);

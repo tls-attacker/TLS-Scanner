@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNotNull;
 
 import com.github.dockerjava.api.exception.DockerException;
@@ -156,6 +157,7 @@ public abstract class AbstractProbeIT {
             prepareContainer();
         }
         LOGGER.error("Failed {}", getProbe().getProbeName());
+        fail();
     }
 
     private void executeProbe() {

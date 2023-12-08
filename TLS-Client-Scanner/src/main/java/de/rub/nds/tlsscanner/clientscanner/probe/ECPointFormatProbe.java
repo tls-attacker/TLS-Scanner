@@ -25,6 +25,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.RenegotiationInfoExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -104,10 +105,11 @@ public class ECPointFormatProbe extends TlsClientProbe {
         if (shouldAddRenegotiationInfo) {
             extensionList.add(new RenegotiationInfoExtensionMessage());
         }
-
-        state.getWorkflowTrace()
-                .getFirstSendMessage(ServerHelloMessage.class)
-                .setExtensions(extensionList);
+        ServerHelloMessage serverHello =
+                (ServerHelloMessage)
+                        (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO));
+        serverHello.setExtensions(extensionList);
         executeState(state);
         if (WorkflowTraceResultUtil.didReceiveMessage(
                 state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
