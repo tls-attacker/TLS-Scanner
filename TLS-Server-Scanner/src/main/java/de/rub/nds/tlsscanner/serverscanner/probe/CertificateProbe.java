@@ -80,24 +80,19 @@ public class CertificateProbe extends TlsServerProbe {
             if (scanForRsaCert) {
                 certificateChains.addAll(getRsaCerts());
             }
-            System.out.println("certificates.size() = " + certificateChains.size());
             if (scanForDssCert) {
                 certificateChains.addAll(getDssCerts());
             }
-            System.out.println("certificates.size() = " + certificateChains.size());
             if (scanForEcdsaCert) {
                 certificateChains.addAll(getEcdsaCerts());
             }
-            System.out.println("certificates.size() = " + certificateChains.size());
             if (scanForGostCert) {
                 certificateChains.addAll(getGostCert());
             }
-            System.out.println("certificates.size() = " + certificateChains.size());
         }
         if (scanForTls13) {
             certificateChains.addAll(getTls13Certs());
         }
-        System.out.println("certificates.size() = " + certificateChains.size());
         if (certificateChains.isEmpty()) {
             certificateChains = null;
             ecdsaPkGroupsStatic =
