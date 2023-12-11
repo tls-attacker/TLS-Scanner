@@ -40,7 +40,7 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
     private static final List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST =
             Arrays.asList(
                     SignatureAlgorithm.RSA_PKCS1,
-                    SignatureAlgorithm.RSA_PSS,
+                    SignatureAlgorithm.RSA_SSA_PSS,
                     SignatureAlgorithm.ECDSA,
                     SignatureAlgorithm.DSA);
 
