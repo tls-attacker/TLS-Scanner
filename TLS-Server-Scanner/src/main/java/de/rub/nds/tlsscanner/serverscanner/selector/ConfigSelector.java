@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -188,9 +187,6 @@ public class ConfigSelector {
 
         int timeout = scannerConfig.getTimeout();
         config.getDefaultClientConnection().setTimeout(timeout);
-        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
-            config.getDefaultClientConnection().setFirstTimeout(timeout);
-        }
     }
 
     private void repairSni(Config config) {
