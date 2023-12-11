@@ -46,7 +46,7 @@
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>true</atLeastOneCertificateShallPass>
         <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_SSA_PSS</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsTypeCertificateGuidelineCheck>
     <certificateCurveGuidelineCheck>

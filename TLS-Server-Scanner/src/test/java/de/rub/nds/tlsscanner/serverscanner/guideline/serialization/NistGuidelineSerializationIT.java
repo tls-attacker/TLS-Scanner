@@ -101,7 +101,7 @@ public class NistGuidelineSerializationIT {
                         true,
                         Arrays.asList(
                                 SignatureAlgorithm.RSA_PKCS1,
-                                SignatureAlgorithm.RSA_PSS,
+                                SignatureAlgorithm.RSA_SSA_PSS,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
                 new CertificateCurveGuidelineCheck(
