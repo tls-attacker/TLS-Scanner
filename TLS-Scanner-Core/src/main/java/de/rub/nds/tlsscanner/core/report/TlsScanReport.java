@@ -28,12 +28,12 @@ import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -133,16 +133,18 @@ public abstract class TlsScanReport extends ScanReport {
 
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>>
             getPaddingOracleTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<PaddingOracleTestInfo>>)
                         getListResult(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<CertificateChain> getCertificateChainList() {
-        ListResult<CertificateChain> listResult =
-                getListResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, CertificateChain.class);
+    public synchronized List<CertificateChainReport> getCertificateChainList() {
+        ListResult<CertificateChainReport> listResult =
+                (ListResult<CertificateChainReport>)
+                        getListResult(
+                                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                                CertificateChainReport.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -159,11 +161,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
-        ListResult<SignatureAndHashAlgorithm> listResult =
+    public List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
+        ListResult<X509SignatureAlgorithm> listResult =
                 getListResult(
-                        TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
-                        SignatureAndHashAlgorithm.class);
+                        TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                        X509SignatureAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -184,18 +186,11 @@ public abstract class TlsScanReport extends ScanReport {
     }
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        if (getSupportedSignatureAndHashAlgorithmsCert() == null
+        if (getSupportedCertSignatureAlgorithms() == null
                 && getSupportedSignatureAndHashAlgorithmsSke() == null) {
             return null;
         }
-        Set<SignatureAndHashAlgorithm> combined = new HashSet<>();
-        if (getSupportedSignatureAndHashAlgorithmsCert() != null) {
-            combined.addAll(getSupportedSignatureAndHashAlgorithmsCert());
-        }
-        if (getSupportedSignatureAndHashAlgorithmsSke() != null) {
-            combined.addAll(getSupportedSignatureAndHashAlgorithmsSke());
-        }
-        return new LinkedList<>(combined);
+        return getSupportedSignatureAndHashAlgorithmsSke();
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {

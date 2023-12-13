@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -33,7 +33,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
@@ -46,7 +46,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ResumptionProbe extends TlsServerProbe {
@@ -260,7 +264,7 @@ public class ResumptionProbe extends TlsServerProbe {
 
     private TestResult isKeyShareExtensionNegotiated(State state) {
         List<HandshakeMessage> handshakes =
-                WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
+                WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
         List<ServerHelloMessage> hellos =
                 handshakes.stream()
                         .filter(message -> message instanceof ServerHelloMessage)
@@ -292,13 +296,13 @@ public class ResumptionProbe extends TlsServerProbe {
                 // allow an early NewSessionTicket without aborting execution
                 tlsConfig.setStopTraceAfterUnexpected(false);
                 if (addApplicationData) {
-                    LayerConfiguration layerConfiguration =
+                    StackConfiguration stackConfiguration =
                             configSelector
                                     .getScannerConfig()
                                     .getApplicationProtocol()
-                                    .getExpectedLayerConfiguration();
-                    if (layerConfiguration != null) {
-                        tlsConfig.setDefaultLayerConfiguration(layerConfiguration);
+                                    .getExpectedStackConfiguration();
+                    if (stackConfiguration != null) {
+                        tlsConfig.setDefaultLayerConfiguration(stackConfiguration);
                     }
                 }
                 State state = new State(tlsConfig);
@@ -306,8 +310,8 @@ public class ResumptionProbe extends TlsServerProbe {
                 if (addApplicationData) {
                     WorkflowTrace trace = state.getWorkflowTrace();
                     int resetIndex =
-                            WorkflowTraceUtil.indexOfIdenticalAction(
-                                    trace, trace.getFirstAction(ResetConnectionAction.class));
+                            trace.getTlsActions()
+                                    .indexOf(trace.getFirstAction(ResetConnectionAction.class));
                     List<TlsAction> actionsToAdd =
                             configSelector
                                     .getScannerConfig()
@@ -388,13 +392,13 @@ public class ResumptionProbe extends TlsServerProbe {
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
                 if (includeApplicationData) {
-                    LayerConfiguration layerConfiguration =
+                    StackConfiguration stackConfiguration =
                             configSelector
                                     .getScannerConfig()
                                     .getApplicationProtocol()
-                                    .getExpectedLayerConfiguration();
-                    if (layerConfiguration != null) {
-                        tlsConfig.setDefaultLayerConfiguration(layerConfiguration);
+                                    .getExpectedStackConfiguration();
+                    if (stackConfiguration != null) {
+                        tlsConfig.setDefaultLayerConfiguration(stackConfiguration);
                     }
                 }
                 State state = new State(tlsConfig);
@@ -414,8 +418,8 @@ public class ResumptionProbe extends TlsServerProbe {
                                         new NewSessionTicketMessage()));
                 executeState(state);
 
-                if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
+                if (WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
                     return TestResults.TRUE;
                 }
             }

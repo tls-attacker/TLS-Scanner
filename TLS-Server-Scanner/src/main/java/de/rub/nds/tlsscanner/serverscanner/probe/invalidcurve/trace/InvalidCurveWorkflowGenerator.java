@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeDefaultPreMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -72,8 +72,8 @@ public class InvalidCurveWorkflowGenerator {
 
             ClientHelloMessage clientHello =
                     (ClientHelloMessage)
-                            WorkflowTraceUtil.getFirstSendMessage(
-                                    HandshakeMessageType.CLIENT_HELLO, trace);
+                            WorkflowTraceResultUtil.getFirstSentMessage(
+                                    trace, HandshakeMessageType.CLIENT_HELLO);
             KeyShareExtensionMessage ksExt;
             for (ExtensionMessage ext : clientHello.getExtensions()) {
                 if (ext instanceof KeyShareExtensionMessage) {
@@ -96,8 +96,8 @@ public class InvalidCurveWorkflowGenerator {
 
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceUtil.getFirstSendMessage(
-                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+                            WorkflowTraceResultUtil.getFirstSentMessage(
+                                    trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);
@@ -155,8 +155,8 @@ public class InvalidCurveWorkflowGenerator {
                                     RunningModeType.CLIENT);
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceUtil.getLastSendMessage(
-                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+                            WorkflowTraceResultUtil.getLastSentMessage(
+                                    trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);

@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceMutator;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteSequenceNumberAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
@@ -85,16 +85,16 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
         executeState(state);
         ClientHelloMessage firstClientHello =
                 (ClientHelloMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                HandshakeMessageType.CLIENT_HELLO, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, HandshakeMessageType.CLIENT_HELLO);
         ClientHelloMessage secondClientHello =
                 (ClientHelloMessage)
-                        WorkflowTraceUtil.getLastReceivedMessage(
-                                HandshakeMessageType.CLIENT_HELLO, trace);
+                        WorkflowTraceResultUtil.getLastReceivedMessage(
+                                trace, HandshakeMessageType.CLIENT_HELLO);
         HelloVerifyRequestMessage helloVerifyRequest =
                 (HelloVerifyRequestMessage)
-                        WorkflowTraceUtil.getFirstSendMessage(
-                                HandshakeMessageType.HELLO_VERIFY_REQUEST, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, HandshakeMessageType.HELLO_VERIFY_REQUEST);
         if (firstClientHello != secondClientHello
                 && secondClientHello
                         .getCookie()
@@ -113,11 +113,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
                         .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage();
         hvrMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS10.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.HELLO_VERIFY_REQUEST, hvrMessage);
         ServerHelloMessage serverHello = new ServerHelloMessage(config);
         serverHello.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.SERVER_HELLO, serverHello);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 

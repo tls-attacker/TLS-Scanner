@@ -11,9 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
-import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
@@ -35,13 +34,13 @@ public enum ApplicationProtocol {
     UNKNOWN,
     OTHER;
 
-    public LayerConfiguration getExpectedLayerConfiguration() {
+    public StackConfiguration getExpectedStackConfiguration() {
         // TODO do something smarter than this...
         // This does not distinguish between TLS and DTLS
         // Currently this just serves as a reminder to set the layer configuration for HTTPS
         switch (this) {
             case HTTP:
-                return LayerConfiguration.HTTPS;
+                return StackConfiguration.HTTPS;
             default:
                 return null;
         }
@@ -57,10 +56,10 @@ public enum ApplicationProtocol {
         String alias = config.getDefaultClientConnection().getAlias();
         switch (this) {
             case HTTP:
-                MessageAction send = new SendAction(alias);
-                send.setHttpMessages(Arrays.asList(new HttpRequestMessage(config)));
-                MessageAction recv = new ReceiveAction(alias);
-                recv.setHttpMessages(Arrays.asList(new HttpResponseMessage(config)));
+                SendAction send = new SendAction(alias);
+                send.setConfiguredHttpMessages(Arrays.asList(new HttpRequestMessage(config)));
+                ReceiveAction recv = new ReceiveAction(alias);
+                recv.setExpectedHttpMessages(Arrays.asList(new HttpResponseMessage(config)));
                 return Arrays.asList(send, recv);
             case ECHO:
                 byte[] msg = "RFC 862".getBytes();

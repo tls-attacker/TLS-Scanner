@@ -17,8 +17,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.EarlyDataExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.PreSharedKeyExtensionMessage;
@@ -26,7 +27,9 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.session.TicketSession;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.StaticReceivingAction;
+import de.rub.nds.tlsattacker.core.workflow.action.StaticSendingAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -162,14 +165,16 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
         tlsConfig.setHighestProtocolVersion(version);
         tlsConfig.setSupportedVersions(version);
         if (version.isTLS13()) {
-            // in TLS 1.3 we also want to send application data as tickets might be issued later
-            // (e.g. BoringSSL sends the ticket just before sending the first application data)
+            // in TLS 1.3 we also want to send application data as tickets might be issued
+            // later
+            // (e.g. BoringSSL sends the ticket just before sending the first application
+            // data)
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
-            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+            tlsConfig.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         } else {
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-            tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.TLS);
+            tlsConfig.setDefaultLayerConfiguration(StackConfiguration.TLS);
         }
         tlsConfig.setAddSessionTicketTLSExtension(true);
 
@@ -208,27 +213,58 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
 
     protected void patchTraceMightFailAfterMessage(
             WorkflowTrace trace, ProtocolMessageType firstMessageFailing) {
-        TlsAction firstActionWithMsg =
-                WorkflowTraceUtil.getFirstActionForMessage(firstMessageFailing, trace);
-        patchTraceMightFailAfterAction(trace, firstActionWithMsg);
+        for (TlsAction action : trace.getTlsActions()) {
+            if (action instanceof StaticReceivingAction) {
+                for (ProtocolMessage message :
+                        ((StaticReceivingAction) action).getExpectedList(ProtocolMessage.class)) {
+                    if (message.getProtocolMessageType() == firstMessageFailing) {
+                        patchTraceMightFailAfterIndex(trace, trace.getTlsActions().indexOf(action));
+                        return;
+                    }
+                }
+            }
+            if (action instanceof StaticSendingAction) {
+                for (ProtocolMessage message :
+                        ((StaticSendingAction) action).getConfiguredList(ProtocolMessage.class)) {
+                    if (message.getProtocolMessageType() == firstMessageFailing) {
+                        patchTraceMightFailAfterIndex(trace, trace.getTlsActions().indexOf(action));
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    protected void patchTraceMightFailAfterIndex(WorkflowTrace trace, int index) {
+        for (int i = index; i < trace.getTlsActions().size(); i++) {
+            trace.getTlsActions().get(i).addActionOption(ActionOption.MAY_FAIL);
+        }
     }
 
     protected void patchTraceMightFailAfterMessage(
             WorkflowTrace trace, HandshakeMessageType firstMessageFailing) {
-        TlsAction firstActionWithMsg =
-                WorkflowTraceUtil.getFirstActionForMessage(firstMessageFailing, trace);
-        patchTraceMightFailAfterAction(trace, firstActionWithMsg);
-    }
-
-    protected void patchTraceMightFailAfterAction(
-            WorkflowTrace trace, TlsAction firstFailingAction) {
-        boolean foundAction = false;
         for (TlsAction action : trace.getTlsActions()) {
-            if (action == firstFailingAction) {
-                foundAction = true;
+            if (action instanceof StaticReceivingAction) {
+                for (ProtocolMessage message :
+                        ((StaticReceivingAction) action).getExpectedList(ProtocolMessage.class)) {
+                    if (message instanceof HandshakeMessage
+                            && ((HandshakeMessage) message).getHandshakeMessageType()
+                                    == firstMessageFailing) {
+                        patchTraceMightFailAfterIndex(trace, trace.getTlsActions().indexOf(action));
+                        return;
+                    }
+                }
             }
-            if (foundAction) {
-                action.addActionOption(ActionOption.MAY_FAIL);
+            if (action instanceof StaticSendingAction) {
+                for (ProtocolMessage message :
+                        ((StaticSendingAction) action).getConfiguredList(ProtocolMessage.class)) {
+                    if (message instanceof HandshakeMessage
+                            && ((HandshakeMessage) message).getHandshakeMessageType()
+                                    == firstMessageFailing) {
+                        patchTraceMightFailAfterIndex(trace, trace.getTlsActions().indexOf(action));
+                        return;
+                    }
+                }
             }
         }
     }
@@ -295,16 +331,17 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
         }
 
         WorkflowTrace trace = state.getWorkflowTrace();
-        return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)
-                && WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.NEW_SESSION_TICKET, trace)
+        return WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.FINISHED)
+                && WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.NEW_SESSION_TICKET)
                 && ticketIssued;
     }
 
     protected boolean resumptionHandshakeSuccessful(State state, boolean checkAcceptedEarlyData) {
         WorkflowTrace trace = state.getWorkflowTrace();
         HandshakeMessage serverHello =
-                WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
+                WorkflowTraceResultUtil.getFirstReceivedMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO);
         if (state.getTlsContext() == null
                 || state.getTlsContext().getSelectedProtocolVersion() == null
                 || serverHello == null) {
@@ -320,8 +357,8 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
             if (!state.getTlsContext().getSelectedProtocolVersion().isTLS13()) {
                 return false;
             }
-            if (WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.ENCRYPTED_EXTENSIONS, trace)
+            if (WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    trace, HandshakeMessageType.ENCRYPTED_EXTENSIONS)
                             .getExtension(EarlyDataExtensionMessage.class)
                     == null) {
                 return false;
@@ -329,8 +366,9 @@ public abstract class SessionTicketBaseProbe extends TlsServerProbe {
         }
 
         // if server authenticated again (using cert), they rejected the ticket
-        // if FIN was not received, either the server behaved wrong or we had the wrong secret
-        return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace)
-                && WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace);
+        // if FIN was not received, either the server behaved wrong or we had the wrong
+        // secret
+        return !WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.CERTIFICATE)
+                && WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.FINISHED);
     }
 }

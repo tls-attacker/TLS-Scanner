@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -115,8 +115,8 @@ public class RandomnessProbe extends TlsServerProbe {
 
             ApplicationProtocol applicationProtocol =
                     configSelector.getScannerConfig().getApplicationProtocol();
-            LayerConfiguration expLayerConfiguration =
-                    applicationProtocol.getExpectedLayerConfiguration();
+            StackConfiguration expLayerConfiguration =
+                    applicationProtocol.getExpectedStackConfiguration();
             if (expLayerConfiguration != null) {
                 config.setDefaultLayerConfiguration(expLayerConfiguration);
             }

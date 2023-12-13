@@ -24,7 +24,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionM
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -78,8 +78,8 @@ public class BasicProbe extends TlsClientProbe {
 
             ClientHelloMessage receivedClientHello =
                     (ClientHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.CLIENT_HELLO, state.getWorkflowTrace());
+                            WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    state.getWorkflowTrace(), HandshakeMessageType.CLIENT_HELLO);
             clientKeyShareNamedGroupsList = getKeyShareGroups(receivedClientHello);
         }
     }

@@ -42,12 +42,58 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
-import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsIpAddressInCookieProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HelloRetryProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketCollectingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketManipulationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureHashAlgorithmOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -57,7 +103,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -158,7 +203,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new NamedGroupsProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new NamedCurvesOrderProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CertificateProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new OcspProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ProtocolVersionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
@@ -171,8 +215,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new InvalidCurveProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(
-                new CertificateTransparencyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CcaSupportProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CcaRequiredProbe(configSelector, parallelExecutor));
         registerProbeForExecution(
@@ -207,8 +249,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new HelloRetryProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RecordFragmentationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EarlyCcsProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new MacProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new CcaProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EsniProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new TokenbindingProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HttpHeaderProbe(configSelector, parallelExecutor));
@@ -290,30 +330,9 @@ public final class TlsServerScanner
 
         LOGGER.debug("Loading guidelines from files...");
         List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
-        GuidelineIO<ServerReport> guidelineIO;
+        GuidelineIO guidelineIO;
         try {
-            guidelineIO =
-                    new GuidelineIO<>(
-                            TlsAnalyzedProperty.class,
-                            Set.of(
-                                    AnalyzedPropertyGuidelineCheck.class,
-                                    CertificateAgilityGuidelineCheck.class,
-                                    CertificateCurveGuidelineCheck.class,
-                                    CertificateSignatureCheck.class,
-                                    CertificateValidityGuidelineCheck.class,
-                                    CertificateVersionGuidelineCheck.class,
-                                    CipherSuiteGuidelineCheck.class,
-                                    ExtendedKeyUsageCertificateCheck.class,
-                                    ExtensionGuidelineCheck.class,
-                                    HashAlgorithmsGuidelineCheck.class,
-                                    HashAlgorithmStrengthCheck.class,
-                                    KeySizeCertGuidelineCheck.class,
-                                    KeyUsageCertificateCheck.class,
-                                    NamedGroupsGuidelineCheck.class,
-                                    SignatureAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAlgorithmsGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsGuidelineCheck.class));
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
@@ -323,7 +342,7 @@ public final class TlsServerScanner
             try {
                 InputStream guideLineStream =
                         TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add(guidelineIO.read(guideLineStream));
+                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
             } catch (JAXBException | XMLStreamException ex) {
                 LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
                 return null;

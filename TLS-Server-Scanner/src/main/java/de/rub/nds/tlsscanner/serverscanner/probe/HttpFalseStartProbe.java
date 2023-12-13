@@ -15,7 +15,7 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
 import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -50,7 +50,7 @@ public class HttpFalseStartProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
-        tlsConfig.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
+        tlsConfig.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace =

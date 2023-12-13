@@ -8,22 +8,24 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
+
 public class KeySizeData {
-    private String algorithm;
+    private AsymmetricAlgorithmType algorithm;
     private int minimumLength;
     private int actualLength;
 
-    public KeySizeData(String algorithm, int minimumLength, int actualLength) {
+    public KeySizeData(AsymmetricAlgorithmType algorithm, int minimumLength, int actualLength) {
         this.algorithm = algorithm;
         this.minimumLength = minimumLength;
         this.actualLength = actualLength;
     }
 
-    public String getAlgorithm() {
+    public AsymmetricAlgorithmType getAlgorithm() {
         return algorithm;
     }
 
-    public void setAlgorithm(String algorithm) {
+    public void setAlgorithm(AsymmetricAlgorithmType algorithm) {
         this.algorithm = algorithm;
     }
 

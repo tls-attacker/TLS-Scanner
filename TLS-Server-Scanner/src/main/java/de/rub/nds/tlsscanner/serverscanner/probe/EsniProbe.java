@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -56,8 +56,8 @@ public class EsniProbe extends TlsServerProbe {
                 context.getEsniServerNonce() != null
                         && Arrays.equals(
                                 context.getEsniServerNonce(), context.getEsniClientNonce());
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             receivedCorrectNonce = TestResults.ERROR_DURING_TEST;
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
             receivedCorrectNonce = TestResults.TRUE;

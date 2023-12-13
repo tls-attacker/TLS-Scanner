@@ -18,11 +18,11 @@ package de.rub.nds.tlsscanner.core.probe.certificate.roca;
  * Thanks for giving us permission to use your code @crocs-muni
  */
 
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.x509attacker.x509.model.X509Certificate;
 import java.math.BigInteger;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
 
-public class BrokenKey {
+public class RocaBrokenKey {
 
     private static final int[] prims =
             new int[] {
@@ -79,15 +79,15 @@ public class BrokenKey {
                 new BigInteger("187072209578355573530071658587684226515959365500926")
             };
 
-    public static boolean isAffected(X509Certificate c) {
-        if (!(c.getPublicKey() instanceof RSAPublicKey)) {
+    public static boolean isAffected(X509Certificate certificate) {
+        if (!(certificate.getPublicKey() instanceof RsaPublicKey)) {
             return false;
         }
 
-        return isAffected((RSAPublicKey) c.getPublicKey());
+        return isAffected((RsaPublicKey) certificate.getPublicKey());
     }
 
-    public static boolean isAffected(RSAPublicKey pubkey) {
+    public static boolean isAffected(RsaPublicKey pubkey) {
         BigInteger modulus = pubkey.getModulus();
 
         for (int i = 0; i < primes.length; i++) {

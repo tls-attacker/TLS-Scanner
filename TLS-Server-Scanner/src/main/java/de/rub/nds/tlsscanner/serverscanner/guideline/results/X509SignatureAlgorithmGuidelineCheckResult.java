@@ -9,20 +9,20 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Objects;
 import java.util.Set;
 
-public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
+public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<SignatureAlgorithm> notRecommendedAlgorithms;
+    private final Set<X509SignatureAlgorithm> notRecommendedAlgorithms;
 
-    public SignatureAlgorithmsGuidelineCheckResult(
+    public X509SignatureAlgorithmGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            Set<SignatureAlgorithm> notRecommendedAlgorithms) {
+            Set<X509SignatureAlgorithm> notRecommendedAlgorithms) {
         super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
@@ -33,14 +33,14 @@ public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResul
             return "Missing Information";
         }
         if (notRecommendedAlgorithms.isEmpty()) {
-            return "Only listed Signature Algorithms are supported.";
+            return "Only listed X509SignatureAlgorithms are supported.";
         } else {
-            return "The following Signature Algorithms were supported but not recommended:\n"
+            return "The following X509SignatureAlgorithms were supported but not recommended:\n"
                     + Joiner.on('\n').join(notRecommendedAlgorithms);
         }
     }
 
-    public Set<SignatureAlgorithm> getNotRecommendedAlgorithms() {
+    public Set<X509SignatureAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
     }
 }

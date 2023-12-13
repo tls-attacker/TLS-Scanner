@@ -82,7 +82,7 @@ public class DheParameterProbe extends TlsClientProbe {
         for (PrimeModulus modulus : primeModuli) {
             Config config = scannerConfig.createConfig();
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            config.setDefaultServerDhModulus(modulus.getModulus());
+            config.setDefaultServerEphemeralDhModulus(modulus.getModulus());
             if (testConfig(config)) {
                 return modulus.getBitLength();
             }
@@ -108,10 +108,12 @@ public class DheParameterProbe extends TlsClientProbe {
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
             switch (compositeType) {
                 case EVEN:
-                    config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createEvenModulus(lowestDheModulusLength));
                     break;
                 case MOD3:
-                    config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createModThreeModulus(lowestDheModulusLength));
                     break;
                 default:
                     break;
@@ -150,10 +152,10 @@ public class DheParameterProbe extends TlsClientProbe {
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
             switch (smallSubgroupType) {
                 case GENERATOR_ONE:
-                    config.setDefaultServerDhGenerator(BigInteger.ONE);
+                    config.setDefaultServerEphemeralDhGenerator(BigInteger.ONE);
                     break;
                 case MODULUS_ONE:
-                    config.setDefaultServerDhModulus(BigInteger.ONE);
+                    config.setDefaultServerEphemeralDhModulus(BigInteger.ONE);
                     break;
                 default:
                     break;

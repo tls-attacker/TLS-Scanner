@@ -8,15 +8,13 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import de.rub.nds.protocol.constants.HashAlgorithm;
 import java.io.ByteArrayInputStream;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
 
 public class CertificateJudge {
@@ -47,20 +45,11 @@ public class CertificateJudge {
     }
 
     public Boolean isWeakHashAlgo(CertificateReport report) {
-        if (report.getSignatureAndHashAlgorithm() != null) {
-            HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
+        if (report.getHashAlgorithm() != null) {
+            HashAlgorithm algo = report.getHashAlgorithm();
             return algo == HashAlgorithm.MD5
                     || algo == HashAlgorithm.NONE
                     || algo == HashAlgorithm.SHA1;
-        } else {
-            return null;
-        }
-    }
-
-    public Boolean isWeakSigAlgo(CertificateReport report) {
-        if (report.getSignatureAndHashAlgorithm() != null) {
-            SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
-            return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
         } else {
             return null;
         }
@@ -71,16 +60,16 @@ public class CertificateJudge {
     }
 
     public Boolean isCertificateExpired(CertificateReport report) {
-        if (report.getValidTo() != null) {
-            return !report.getValidTo().after(new Date(System.currentTimeMillis()));
+        if (report.getNotAfter() != null) {
+            return report.getNotAfter().isBeforeNow();
         } else {
             return null;
         }
     }
 
     public Boolean isCertificateValidYet(CertificateReport report) {
-        if (report.getValidFrom() != null) {
-            return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
+        if (report.getNotBefore() != null) {
+            return report.getNotBefore().isBeforeNow();
         } else {
             return null;
         }
@@ -91,17 +80,17 @@ public class CertificateJudge {
         return false;
     }
 
-    public Boolean domainNameDoesNotMatch(Certificate certificate, String domainName) {
+    public Boolean domainNameDoesNotMatch(X509Certificate certificate, String domainName) {
         // TODO
         return false;
     }
 
-    private Boolean isNotTrusted(Certificate certificate) {
+    private Boolean isNotTrusted(X509Certificate certificate) {
         // TODO
         return false;
     }
 
-    private Boolean isSelfSigned(Certificate certificate) {
+    private Boolean isSelfSigned(X509Certificate certificate) {
         return false;
     }
 
@@ -121,29 +110,6 @@ public class CertificateJudge {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private Boolean checkDomainNameMatch() {
-        // if (domainNameDoesNotMatch(certificate, domainName)) {
-        // tlsCheckList.add(new ConfigurationFlaw("Domain invalid",
-        // FlawLevel.FATAL,
-        // "The used certificate is not valid for the scanned ID. Request a new certificate which is
-        // valid for "
-        // + domainName
-        // + " as well."));
-        // }
-        return null;
-    }
-
-    private Boolean checkCertificateTrusted() {
-        // if (isNotTrusted(certificate)) {
-        // tlsCheckList.add(new
-        // ConfigurationFlaw("Certificate untrusted.",
-        // FlawLevel.FATAL,
-        // "We don't trust the certificate.",
-        // "Request a new certificate which can be trusted."));
-        // }
-        return null;
     }
 
     private Boolean checkBlacklistedKey() {

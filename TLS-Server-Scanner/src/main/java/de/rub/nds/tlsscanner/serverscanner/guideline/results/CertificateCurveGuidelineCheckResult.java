@@ -10,21 +10,21 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     private boolean supported;
-    private NamedGroup namedGroup;
+    private X509NamedCurve namedCurve;
 
     public CertificateCurveGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
             boolean supported,
-            NamedGroup namedGroup) {
+            X509NamedCurve namedEllipticCurveParameters) {
         super(checkName, adherence);
         this.supported = supported;
-        this.namedGroup = namedGroup;
+        this.namedCurve = namedEllipticCurveParameters;
     }
 
     public CertificateCurveGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
@@ -33,11 +33,11 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String toString() {
-        return supported ? namedGroup + " is recommended." : namedGroup + " is not recommended.";
+        return supported ? namedCurve + " is recommended." : namedCurve + " is not recommended.";
     }
 
-    public NamedGroup getNamedGroup() {
-        return namedGroup;
+    public X509NamedCurve getNamedCurve() {
+        return namedCurve;
     }
 
     public boolean isSupported() {

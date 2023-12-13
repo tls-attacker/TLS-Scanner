@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -52,8 +52,8 @@ public class RecordFragmentationProbe extends TlsClientProbe {
         executeState(state);
 
         result =
-                WorkflowTraceUtil.didReceiveMessage(
-                                HandshakeMessageType.FINISHED, state.getWorkflowTrace())
+                WorkflowTraceResultUtil.didReceiveMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)
                         ? TestResults.TRUE
                         : TestResults.FALSE;
     }

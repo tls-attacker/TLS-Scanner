@@ -71,9 +71,10 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         } else {
             algorithms = new LinkedList<>();
             ListResult<SignatureAndHashAlgorithm> samResultCert =
-                    report.getListResult(
-                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
-                            SignatureAndHashAlgorithm.class);
+                    (ListResult<SignatureAndHashAlgorithm>)
+                            report.getListResult(
+                                    TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                                    SignatureAndHashAlgorithm.class);
             if (samResultCert != null) {
                 algorithms.addAll(samResultCert.getList());
             }
@@ -95,7 +96,8 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult( // TODO this needs to
+                // be a new result now
                 getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
     }
 

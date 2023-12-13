@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -47,7 +47,8 @@ public class RecordFragmentationProbe extends TlsServerProbe {
                         ? HandshakeMessageType.FINISHED
                         : HandshakeMessageType.SERVER_HELLO_DONE;
         supported =
-                WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())
+                WorkflowTraceResultUtil.didReceiveMessage(
+                                state.getWorkflowTrace(), expectedFinalMessage)
                         ? TestResults.TRUE
                         : TestResults.FALSE;
     }

@@ -9,13 +9,19 @@
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.probe.result.DetailedResult;
-import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -28,28 +34,22 @@ import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
@@ -58,7 +58,6 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
-import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -66,8 +65,6 @@ import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
@@ -76,18 +73,19 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.*;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterStats;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
-import java.security.PublicKey;
 import java.text.DecimalFormat;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -96,11 +94,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -155,18 +154,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
-        // appendGcm(builder);
-        // appendRfc(builder);
         appendCertificates(builder);
-        appendOcsp(builder);
-        appendCertificateTransparency(builder);
         appendSession(builder);
         appendSessionTicketEval(builder);
         appendRenegotiation(builder);
         appendHttps(builder);
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
-        appendClientAuthentication(builder);
         if (report.getProtocolType() == ProtocolType.DTLS) {
             appendDtlsSpecificResults(builder);
         }
@@ -186,7 +180,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
             for (ScannerProbe<?, ?> unexecutedProbe : report.getUnexecutedProbes())
-                //noinspection unchecked
+                // noinspection unchecked
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
@@ -584,7 +578,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
             prettyAppend(
                     builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
+            // prettyAppend(builder, "Alpn Protocols",
+            // simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -630,7 +625,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         int certCtr = 1;
         if (report.getCertificateChainList() != null
                 && !report.getCertificateChainList().isEmpty()) {
-            for (CertificateChain chain : report.getCertificateChainList()) {
+            for (CertificateChainReport chainReport : report.getCertificateChainList()) {
                 prettyAppendHeading(
                         builder,
                         "Certificate Chain (Certificate "
@@ -638,36 +633,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                 + " of "
                                 + report.getCertificateChainList().size()
                                 + ")");
-                appendCertificate(builder, chain);
+                appendCertificate(builder, chainReport);
                 certCtr++;
             }
         }
         return builder;
     }
 
-    private StringBuilder appendCertificate(StringBuilder builder, CertificateChain chain) {
+    private StringBuilder appendCertificate(StringBuilder builder, CertificateChainReport chain) {
         prettyAppend(
                 builder,
                 "Chain ordered",
                 chain.getChainIsOrdered(),
-                chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+                Objects.equals(chain.getChainIsOrdered(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.YELLOW);
         prettyAppend(
                 builder,
                 "Contains Trust Anchor",
                 chain.getContainsTrustAnchor(),
-                chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
+                Objects.equals(chain.getContainsTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.RED
+                        : AnsiColor.GREEN);
         prettyAppend(
                 builder,
                 "Generally Trusted",
                 chain.getGenerallyTrusted(),
-                chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
-        if (TrustAnchorManager.getInstance().hasCustomTrustAnchros()) {
-            prettyAppend(
-                    builder,
-                    "Custom Trusted",
-                    chain.getContainsCustomTrustAnchor(),
-                    chain.getContainsCustomTrustAnchor() ? AnsiColor.GREEN : AnsiColor.RED);
-        }
+                Objects.equals(chain.getGenerallyTrusted(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
+        prettyAppend(
+                builder,
+                "Custom Trusted",
+                chain.getContainsCustomTrustAnchor(),
+                Objects.equals(chain.getContainsCustomTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
+
         if (chain.getCertificateIssues().size() > 0) {
             prettyAppendSubheading(builder, "Certificate Issues");
             for (CertificateIssue issue : chain.getCertificateIssues()) {
@@ -686,41 +688,40 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 if (certReport.getIssuer() != null) {
                     prettyAppend(builder, "Issuer", certReport.getIssuer());
                 }
-                if (certReport.getValidFrom() != null) {
-                    if (certReport.getValidFrom().before(new Date())) {
+                if (certReport.getNotBefore() != null) {
+                    if (certReport.getNotBefore().isBeforeNow()) {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString(),
+                                certReport.getNotBefore().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString() + " - NOT YET VALID",
+                                certReport.getNotBefore().toString() + " - NOT YET VALID",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidTo() != null) {
-                    if (certReport.getValidTo().after(new Date())) {
+                if (certReport.getNotAfter() != null) {
+                    if (certReport.getNotAfter().isAfterNow()) {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString(),
+                                certReport.getNotAfter().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString() + " - EXPIRED",
+                                certReport.getNotAfter().toString() + " - EXPIRED",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidFrom() != null
-                        && certReport.getValidTo() != null
-                        && certReport.getValidTo().after(new Date())) {
-                    long time = certReport.getValidTo().getTime() - System.currentTimeMillis();
-                    long days = TimeUnit.MILLISECONDS.toDays(time);
+                if (certReport.getNotBefore() != null
+                        && certReport.getNotAfter() != null
+                        && certReport.getNotAfter().isAfterNow()) {
+                    int days = Days.daysBetween(DateTime.now(), certReport.getNotAfter()).getDays();
                     if (days < 1) {
                         prettyAppend(
                                 builder,
@@ -764,44 +765,32 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             certReport.getWeakDebianKey(),
                             certReport.getWeakDebianKey() ? AnsiColor.RED : AnsiColor.GREEN);
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
+                if (certReport.getSignatureAlgorithm() != null) {
                     prettyAppend(
                             builder,
                             "Signature Algorithm",
-                            certReport
-                                    .getSignatureAndHashAlgorithm()
-                                    .getSignatureAlgorithm()
-                                    .name());
+                            certReport.getSignatureAlgorithm().name());
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
-                    if (certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.SHA1
-                            || certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.MD5) {
+                if (certReport.getSignatureAlgorithm() != null) {
+                    if (certReport.getHashAlgorithm() == HashAlgorithm.SHA1
+                            || certReport.getHashAlgorithm() == HashAlgorithm.MD5) {
                         if (!certReport.isTrustAnchor() && !certReport.getSelfSigned()) {
                             prettyAppend(
                                     builder,
                                     "Hash Algorithm",
-                                    certReport
-                                            .getSignatureAndHashAlgorithm()
-                                            .getHashAlgorithm()
-                                            .name(),
+                                    certReport.getHashAlgorithm().name(),
                                     AnsiColor.RED);
                         } else {
                             prettyAppend(
                                     builder,
                                     "Hash Algorithm",
-                                    certReport
-                                                    .getSignatureAndHashAlgorithm()
-                                                    .getHashAlgorithm()
-                                                    .name()
-                                            + " - Not critical");
+                                    certReport.getHashAlgorithm().name() + " - Not critical");
                         }
                     } else {
                         prettyAppend(
                                 builder,
                                 "Hash Algorithm",
-                                certReport.getSignatureAndHashAlgorithm().getHashAlgorithm().name(),
+                                certReport.getHashAlgorithm().name(),
                                 AnsiColor.GREEN);
                     }
                 }
@@ -867,282 +856,52 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     builder.append("ROCA (simple): not tested");
                 }
                 prettyAppendHexString(
-                        builder, "Fingerprint (SHA256)", certReport.getSHA256Fingerprint());
+                        builder,
+                        "Fingerprint (SHA256)",
+                        ArrayConverter.bytesToHexString(
+                                certReport.getSHA256Fingerprint(), false, false));
             }
         }
         return builder;
     }
 
-    private String prettyAppendPublicKey(StringBuilder builder, PublicKey publicKey) {
-        if (publicKey instanceof CustomDhPublicKey) {
-            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+    private String prettyAppendPublicKey(StringBuilder builder, PublicKeyContainer publicKey) {
+        if (publicKey instanceof DhPublicKey) {
+            DhPublicKey dhPublicKey = (DhPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "Static Diffie Hellman");
 
             prettyAppendHexString(builder, "Modulus", dhPublicKey.getModulus().toString(16));
-            prettyAppendHexString(builder, "Generator", dhPublicKey.getModulus().toString(16));
-            prettyAppendHexString(builder, "Y", dhPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomDsaPublicKey) {
-            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            prettyAppendHexString(builder, "Generator", dhPublicKey.getGenerator().toString(16));
+            prettyAppendHexString(builder, "Y", dhPublicKey.getPublicKey().toString(16));
+        } else if (publicKey instanceof DsaPublicKey) {
+            DsaPublicKey dsaPublicKey = (DsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "DSA");
-            prettyAppendHexString(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
-            prettyAppendHexString(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
-            prettyAppendHexString(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            prettyAppendHexString(builder, "Modulus", dsaPublicKey.getModulus().toString(16));
+            prettyAppendHexString(builder, "Generator", dsaPublicKey.getGenerator().toString(16));
+            prettyAppendHexString(builder, "Q", dsaPublicKey.getQ().toString(16));
             prettyAppendHexString(builder, "X", dsaPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomRsaPublicKey) {
-            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+        } else if (publicKey instanceof RsaPublicKey) {
+            RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "RSA");
             prettyAppendHexString(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
             prettyAppendHexString(
                     builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
-        } else if (publicKey instanceof CustomEcPublicKey) {
-            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
-            prettyAppend(builder, "PublicKey Type:", "EC");
-            if (ecPublicKey.getGroup() == null) {
-                prettyAppend(builder, "Group (GOST)", ecPublicKey.getGostCurve().name());
-            } else {
-                prettyAppend(builder, "Group", ecPublicKey.getGroup().name());
-            }
-            prettyAppendHexString(builder, "Public Point", ecPublicKey.getPoint().toString(16));
+        } else if (publicKey instanceof EcdhPublicKey) {
+            EcdhPublicKey ecdhPublicKey = (EcdhPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "ECDH");
+            prettyAppend(builder, "Group", ecdhPublicKey.getParameters().name());
+            prettyAppendHexString(
+                    builder, "Public Point", ecdhPublicKey.getPublicPoint().toString());
+        } else if (publicKey instanceof EcdsaPublicKey) {
+            EcdsaPublicKey ecdsaPublicKey = (EcdsaPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "ECDH/ECDSA");
+            prettyAppend(builder, "Group", ecdsaPublicKey.getParameters().name());
+            prettyAppendHexString(
+                    builder, "Public Point", ecdsaPublicKey.getPublicPoint().toString());
         } else {
             builder.append(publicKey.toString()).append("\n");
         }
         return builder.toString();
-    }
-
-    private StringBuilder appendOcsp(StringBuilder builder) {
-        prettyAppendHeading(builder, "OCSP");
-        appendOcspOverview(builder);
-        ListResult<OcspCertificateResult> ocspResult =
-                report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
-        if (ocspResult != null) {
-            int certCtr = 1;
-            for (OcspCertificateResult result : report.getOcspResults()) {
-                prettyAppendSubheading(
-                        builder,
-                        "Detailed OCSP results for certificate "
-                                + certCtr
-                                + " of "
-                                + report.getOcspResults().size());
-                appendOcspForCertificate(builder, result);
-                certCtr++;
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder appendOcspOverview(StringBuilder builder) {
-        prettyAppend(builder, "Supports OCSP ", TlsAnalyzedProperty.SUPPORTS_OCSP);
-        // In case extension probe & OCSP probe differ, report stapling as
-        // unreliable.
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST)
-                        == TestResults.TRUE
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.FALSE) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
-                    AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "The results are likely incomplete. Maybe rescan for more information? \n",
-                    AnsiColor.RED);
-            report.putResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
-        } else if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST)
-                        == TestResults.FALSE
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.TRUE) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "Extension scan reported no OCSP support, but OCSP scan does. \n",
-                    AnsiColor.YELLOW);
-            report.putResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
-        }
-
-        // Print stapling support & 'must-staple'
-        if (report.getResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE) == TestResults.TRUE) {
-            prettyAppend(builder, "OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
-            if (report.getResult(TlsAnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
-                prettyAppend(builder, "Must Staple", "true", AnsiColor.RED);
-            } else {
-                prettyAppend(builder, "Must Staple", TlsAnalyzedProperty.MUST_STAPLE);
-            }
-        } else {
-            if (report.getResult(TlsAnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
-                if (report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.TRUE) {
-                    prettyAppend(builder, "OCSP Stapling", "true", AnsiColor.GREEN);
-                } else {
-                    prettyAppend(builder, "OCSP Stapling", "false", AnsiColor.RED);
-                }
-                prettyAppend(builder, "Must Staple", "true", AnsiColor.GREEN);
-            } else {
-                prettyAppend(builder, "OCSP Stapling", TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING);
-                prettyAppend(builder, "Must Staple", TlsAnalyzedProperty.MUST_STAPLE);
-            }
-        }
-
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13)
-                != TestResults.COULD_NOT_TEST) {
-            prettyAppend(
-                    builder,
-                    "OCSP Stapling (TLS 1.3)",
-                    TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
-            prettyAppend(
-                    builder,
-                    "Multi Stapling (TLS 1.3)",
-                    TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
-        }
-        if (Boolean.TRUE.equals(
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
-            prettyAppend(
-                    builder, "Nonce Mismatch / Cached Nonce", TlsAnalyzedProperty.NONCE_MISMATCH);
-        }
-
-        // Is stapling supported, but a CertificateStatus message is missing?
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.TRUE) {
-            prettyAppend(
-                    builder,
-                    "Includes Stapled Response",
-                    TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
-            prettyAppend(
-                    builder,
-                    "Stapled Response Expired",
-                    TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
-        }
-
-        // Are nonces used? If so, do they match?
-        prettyAppend(builder, "Supports Nonce", TlsAnalyzedProperty.SUPPORTS_NONCE);
-        if (Boolean.TRUE.equals(
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
-            prettyAppend(
-                    builder, "Nonce Mismatch / Cached Nonce", TlsAnalyzedProperty.NONCE_MISMATCH);
-        }
-
-        return builder;
-    }
-
-    private StringBuilder appendOcspForCertificate(
-            StringBuilder builder, OcspCertificateResult result) {
-        if (result.isSupportsStapling()) {
-            if (result.getStapledResponse() != null) {
-                prettyAppend(builder, "Includes Stapled Response", true);
-                if (result.getFirstResponse().getResponseStatus() == 0) {
-                    long differenceHoursStapled = result.getDifferenceHoursStapled();
-                    if (differenceHoursStapled < 24) {
-                        prettyAppend(
-                                builder,
-                                "Stapled Response Cached",
-                                differenceHoursStapled + " hours",
-                                AnsiColor.GREEN);
-                    } else {
-                        prettyAppend(
-                                builder,
-                                "Stapled Response Cached",
-                                differenceHoursStapled / 24 + " days",
-                                AnsiColor.YELLOW);
-                    }
-                    prettyAppend(
-                            builder, "Stapled Response Expired", result.isStapledResponseExpired());
-                }
-                prettyAppend(builder, "Supports Stapled Nonce", result.isSupportsStapledNonce());
-            } else {
-                prettyAppend(builder, "Includes Stapled Response", false);
-            }
-        }
-
-        prettyAppend(builder, "Supports Nonce", result.isSupportsNonce());
-        prettyAppend(builder, "Nonce Mismatch / Cached Nonce", result.isNonceMismatch());
-
-        if (result.getStapledResponse() != null) {
-            prettyAppendSubheading(builder, "Stapled OCSP Response");
-            if (result.getStapledResponse().getResponseStatus() > 0) {
-                prettyAppend(
-                        builder, "Server stapled an erroneous OCSP response. \n", AnsiColor.RED);
-            }
-            prettyAppend(builder, result.getStapledResponse().toString(false));
-        }
-
-        if (result.getFirstResponse() != null) {
-            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP POST)");
-            if (result.getFirstResponse().getResponseStatus() > 0) {
-                prettyAppend(
-                        builder,
-                        "OCSP Request was not accepted by the OCSP Responder.",
-                        AnsiColor.RED);
-
-                // Check if certificate chain was unordered. This will make the
-                // request fail very likely.
-                CertificateChain chain = result.getCertificate();
-                if (Boolean.FALSE.equals(chain.getChainIsOrdered())) {
-                    prettyAppend(
-                            builder,
-                            "This likely happened due the certificate chain being unordered. This is not supported yet by this scan.",
-                            AnsiColor.RED);
-                }
-                prettyAppend(builder, result.getFirstResponse().toString(false));
-            }
-        } else if (result.getFirstResponse() == null && result.getHttpGetResponse() != null) {
-            prettyAppend(
-                    builder,
-                    "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.",
-                    AnsiColor.YELLOW);
-        }
-
-        // Print requested HTTP GET response
-        if (result.getHttpGetResponse() != null) {
-            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP GET)");
-            prettyAppend(builder, result.getHttpGetResponse().toString(false));
-        } else if (result.getHttpGetResponse() == null && result.getFirstResponse() != null) {
-            prettyAppend(
-                    builder,
-                    "Retrieved an OCSP response via HTTP POST, but not via HTTP GET.",
-                    AnsiColor.YELLOW);
-        }
-
-        return builder;
-    }
-
-    private StringBuilder appendCertificateTransparency(StringBuilder builder) {
-        prettyAppendHeading(builder, "Certificate Transparency");
-        prettyAppend(
-                builder,
-                "Supports Precertificate SCTs",
-                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
-        prettyAppend(
-                builder,
-                "Supports TLS Handshake SCTs",
-                TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
-        prettyAppend(
-                builder, "Supports OCSP Response SCTs", TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP);
-        prettyAppend(
-                builder, "Meets Chrome's CT Policy", TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
-
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE)
-                == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "Precertificate SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getPrecertificateSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "TLS Handshake SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getHandshakeSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "OCSP Response SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getOcspSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-
-        return builder;
     }
 
     public StringBuilder appendSession(StringBuilder builder) {
@@ -1183,12 +942,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        // prettyAppend(builder, "Session Ticket Hint",
-        // report.getSessionTicketLengthHint());
-        // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
-        // report.getSessionTicketGetsRotated());
-        // prettyAppendRedOnFailure(builder, "Ticketbleed",
-        // report.getVulnerableTicketBleed());
         return builder;
     }
 
@@ -1223,7 +976,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         prettyAppendSubheading(builder, "Details");
         // TODO use tables
-        // once we have support for tables, most of the data below can be put into tables
+        // once we have support for tables, most of the data below can be put into
+        // tables
         // the columns would be the protocol version
         appendSessionTicketEval_VersionChange(builder);
         appendSessionTicketEval_CipherSuiteChange(builder);
@@ -2535,7 +2289,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
         appendTls13Groups(builder);
-        appendCurves(builder);
+        appendGroups(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
     }
@@ -2928,40 +2682,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
     }
 
-    public StringBuilder appendCurves(StringBuilder builder) {
+    public StringBuilder appendGroups(StringBuilder builder) {
         List<NamedGroup> namedGroups = report.getSupportedNamedGroups();
         if (namedGroups != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (namedGroups.size() > 0) {
                 for (NamedGroup group : namedGroups) {
                     builder.append(group.name());
-                    if (detail == ScannerDetail.ALL) {
-                        builder.append("\n  Found using:");
-                        NamedGroupWitness witness =
-                                report.getSupportedNamedGroupsWitnesses().get(group);
-                        for (CipherSuite cipher : witness.getCipherSuites()) {
-                            builder.append("\n    ").append(cipher.toString());
-                        }
-                        builder.append("\n  ECDSA Required Groups:");
-                        if (witness.getEcdsaPkGroupEphemeral() != null
-                                && witness.getEcdsaPkGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaPkGroupEphemeral())
-                                    .append(" (Certificate Public Key - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupEphemeral() != null
-                                && witness.getEcdsaSigGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupEphemeral())
-                                    .append(" (Certificate Signature  - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupStatic() != null
-                                && witness.getEcdsaSigGroupStatic() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupStatic())
-                                    .append(" (Certificate Signature  - Static Cipher Suite)");
-                        }
-                    }
                     builder.append("\n");
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
@@ -2974,6 +2701,20 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             builder,
                             "Groups required for ECDSA validation are not enforced",
                             AnsiColor.YELLOW);
+                }
+                if (detail == ScannerDetail.ALL) {
+                    prettyAppendHeading(builder, "Witnesses");
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
+                        builder.append(
+                                "SKE: "
+                                        + witness.getEcdhPublicKeyGroup()
+                                        + " Cert:"
+                                        + witness.getCertificateGroup()
+                                        + " CS:"
+                                        + witness.getCipherSuites()
+                                        + "\n");
+                    }
                 }
                 prettyAppendHeading(builder, "NamedGroups General");
                 prettyAppend(
@@ -3073,76 +2814,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         } else {
             LOGGER.debug("Not printing performance data.");
-        }
-    }
-
-    private void appendClientAuthentication(StringBuilder builder) {
-        prettyAppendHeading(builder, "Client authentication");
-        prettyAppend(builder, "Supported", report.getCcaSupported());
-        prettyAppend(builder, "Required", report.getCcaRequired());
-
-        if (report.getCcaTestResultList() != null) {
-            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
-            ccaTestResults.sort(
-                    new Comparator<CcaTestResult>() {
-                        @Override
-                        public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
-                            int c;
-                            c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c =
-                                    ccaTestResult
-                                            .getCertificateType()
-                                            .compareTo(t1.getCertificateType());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c =
-                                    ccaTestResult
-                                            .getProtocolVersion()
-                                            .compareTo(t1.getProtocolVersion());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
-                            return c;
-                        }
-                    });
-            CcaWorkflowType lastCcaWorkflowType = null;
-            CcaCertificateType lastCcaCertificateType = null;
-            ProtocolVersion lastProtocolVersion = null;
-            for (CcaTestResult ccaTestResult : ccaTestResults) {
-                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
-                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
-                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
-                }
-                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
-                    lastCcaCertificateType = ccaTestResult.getCertificateType();
-                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
-                }
-                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
-                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
-                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
-                }
-                prettyAppend(
-                        builder,
-                        ccaTestResult
-                                .getWorkflowType()
-                                .name()
-                                .concat("--")
-                                .concat(ccaTestResult.getCertificateType().name())
-                                .concat("--")
-                                .concat(ccaTestResult.getProtocolVersion().name())
-                                .concat("--")
-                                .concat(ccaTestResult.getCipherSuite().name()),
-                        ccaTestResult.getSucceeded(),
-                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
-            }
         }
     }
 }

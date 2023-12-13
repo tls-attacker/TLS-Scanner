@@ -111,7 +111,7 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>RSA</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
         <recommendedAlgorithms>DSA</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsGuidelineCheck>
@@ -249,17 +249,13 @@
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>RSA_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA256_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA384_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA512_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>RSASSA_PSS</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA512</recommendedAlgorithms>
     </signatureAndHashAlgorithmsCertificateGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>

@@ -17,17 +17,19 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.FlushSessionCacheAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.RenegotiationAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
+import de.rub.nds.tlsattacker.core.workflow.action.StaticSendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -106,7 +108,7 @@ public class RenegotiationProbe extends TlsServerProbe {
                         .getTlsActions());
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -140,22 +142,21 @@ public class RenegotiationProbe extends TlsServerProbe {
         trace.addTlsActions(secondHandshake.getTlsActions());
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     private void addRenegotiationCipherSuiteToClientHello(Config tlsConfig, WorkflowTrace trace) {
-        for (SendingAction action :
-                WorkflowTraceUtil.getSendingActionsForMessage(
-                        HandshakeMessageType.CLIENT_HELLO, trace)) {
-            action.getSendMessages().clear();
+        for (StaticSendingAction action :
+                WorkflowTraceConfigurationUtil.getStaticSendingActionsWithConfiguration(
+                        trace, HandshakeMessageType.CLIENT_HELLO)) {
             ClientHelloMessage clientHelloMessage = new ClientHelloMessage(tlsConfig);
             clientHelloMessage.setCipherSuites(
                     Modifiable.insert(
                             CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV.getByteValue(), 0));
-            action.getSendMessages().add(clientHelloMessage);
+            action.getConfiguredList(ProtocolMessage.class).add(clientHelloMessage);
         }
     }
 
@@ -171,8 +172,8 @@ public class RenegotiationProbe extends TlsServerProbe {
             state = new State(tlsConfig, trace);
         }
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -193,8 +194,8 @@ public class RenegotiationProbe extends TlsServerProbe {
             state = new State(tlsConfig, trace);
         }
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -212,8 +213,8 @@ public class RenegotiationProbe extends TlsServerProbe {
             state = new State(tlsConfig, trace);
         }
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
@@ -252,8 +253,8 @@ public class RenegotiationProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.FALSE : TestResults.TRUE;

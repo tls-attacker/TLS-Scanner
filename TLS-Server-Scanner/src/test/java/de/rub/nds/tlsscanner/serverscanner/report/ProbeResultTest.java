@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.HandshakeSimulationProbe;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -41,10 +40,6 @@ public class ProbeResultTest {
                 continue;
             }
             String testName = someProbeClass.getSimpleName().replace("Probe", "");
-            if (someProbeClass.equals(HandshakeSimulationProbe.class)) {
-                LOGGER.info("Skipping: HandshakeSimulation due to performance reasons");
-                continue;
-            }
             // Trying to find equivalent preparator, message and serializer
             for (Constructor c : someProbeClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {

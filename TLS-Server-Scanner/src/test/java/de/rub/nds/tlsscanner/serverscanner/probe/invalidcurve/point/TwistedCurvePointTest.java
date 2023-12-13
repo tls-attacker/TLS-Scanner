@@ -11,12 +11,12 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
+import de.rub.nds.protocol.crypto.ec.EllipticCurveOverFp;
+import de.rub.nds.protocol.crypto.ec.FieldElementFp;
+import de.rub.nds.protocol.crypto.ec.Point;
+import de.rub.nds.protocol.crypto.ec.RFC7748Curve;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
-import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
-import de.rub.nds.tlsattacker.core.crypto.ec.FieldElementFp;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
-import de.rub.nds.tlsattacker.core.crypto.ec.RFC7748Curve;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ public class TwistedCurvePointTest {
             assertTrue(pointsForGroupAreOrdered(group));
             TwistedCurvePoint invP = TwistedCurvePoint.smallOrder(group);
             if (invP != null) {
-                assertEquals(group, invP.getIntendedNamedGroup());
+                assertEquals(group.getGroupParameters(), invP.getIntendedGroup());
                 assertTrue(isOrderCorrect(invP));
             }
         }
@@ -45,7 +45,7 @@ public class TwistedCurvePointTest {
             assertTrue(pointsForGroupAreOrdered(group));
             TwistedCurvePoint invP = TwistedCurvePoint.alternativeOrder(group);
             if (invP != null) {
-                assertEquals(group, invP.getIntendedNamedGroup());
+                assertEquals(group.getGroupParameters(), invP.getIntendedGroup());
                 assertTrue(isOrderCorrect(invP));
             }
         }
@@ -58,17 +58,16 @@ public class TwistedCurvePointTest {
             assertTrue(pointsForGroupAreOrdered(group));
             TwistedCurvePoint invP = TwistedCurvePoint.largeOrder(group);
             if (invP != null) {
-                assertEquals(group, invP.getIntendedNamedGroup());
+                assertEquals(group.getGroupParameters(), invP.getIntendedGroup());
                 assertTrue(isOrderCorrect(invP));
             }
         }
     }
 
     private boolean isOrderCorrect(TwistedCurvePoint invP) {
-        if (invP.getIntendedNamedGroup() == NamedGroup.ECDH_X25519
-                || invP.getIntendedNamedGroup() == NamedGroup.ECDH_X448) {
-            RFC7748Curve rfcCurve =
-                    (RFC7748Curve) CurveFactory.getCurve(invP.getIntendedNamedGroup());
+        if (invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X25519
+                || invP.getIntendedGroup() == NamedEllipticCurveParameters.CURVE_X448) {
+            RFC7748Curve rfcCurve = (RFC7748Curve) invP.getIntendedGroup().getGroup();
             Point montgPoint =
                     rfcCurve.getPoint(invP.getPublicPointBaseX(), invP.getPublicPointBaseY());
             Point weierPoint = rfcCurve.toWeierstrass(montgPoint);
@@ -80,8 +79,7 @@ public class TwistedCurvePointTest {
                             .mod(rfcCurve.getModulus());
 
             EllipticCurveOverFp intendedCurve =
-                    ((RFC7748Curve) CurveFactory.getCurve(invP.getIntendedNamedGroup()))
-                            .getWeierstrassEquivalent();
+                    ((RFC7748Curve) invP.getIntendedGroup().getGroup()).getWeierstrassEquivalent();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()
@@ -98,7 +96,7 @@ public class TwistedCurvePointTest {
                     new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
             Point point =
                     Point.createPoint(
-                            transformedX, invP.getPublicPointBaseY(), invP.getIntendedNamedGroup());
+                            transformedX, invP.getPublicPointBaseY(), invP.getIntendedGroup());
 
             for (long i = 1; i <= invP.getOrder().longValue(); i++) {
                 Point res = twistedCurve.mult(BigInteger.valueOf(i), point);
@@ -108,7 +106,7 @@ public class TwistedCurvePointTest {
             }
         } else {
             EllipticCurveOverFp intendedCurve =
-                    (EllipticCurveOverFp) CurveFactory.getCurve(invP.getIntendedNamedGroup());
+                    (EllipticCurveOverFp) invP.getIntendedGroup().getGroup();
             BigInteger modA =
                     intendedCurve
                             .getFieldA()

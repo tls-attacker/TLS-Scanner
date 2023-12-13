@@ -13,7 +13,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -65,10 +65,9 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         boolean failFlag = false;
         boolean uncertainFlag = false;
         CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult(getName());
-        @SuppressWarnings("unchecked")
-        List<CertificateChain> certchains = report.getCertificateChainList();
-        for (int i = 0; i < certchains.size(); i++) {
-            CertificateChain chain = certchains.get(i);
+
+        List<CertificateChainReport> certificateChains = report.getCertificateChainList();
+        for (CertificateChainReport chain : certificateChains) {
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
             if (Objects.equals(GuidelineAdherence.ADHERED, currentResult.getAdherence())) {
@@ -91,7 +90,7 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ServerRep
         return result;
     }
 
-    public abstract GuidelineCheckResult evaluateChain(CertificateChain chain);
+    public abstract GuidelineCheckResult evaluateChain(CertificateChainReport chain);
 
     public boolean isAtLeastOneCertificateShallPass() {
         return atLeastOneCertificateShallPass;

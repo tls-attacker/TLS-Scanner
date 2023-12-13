@@ -10,13 +10,12 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -26,15 +25,15 @@ import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
+public class SignatureAlgorithmsTypeCertificateGuidelineCheck extends CertificateGuidelineCheck {
 
     private List<SignatureAlgorithm> recommendedAlgorithms;
 
-    private SignatureAlgorithmsGuidelineCheck() {
+    private SignatureAlgorithmsTypeCertificateGuidelineCheck() {
         super(null, null);
     }
 
-    public SignatureAlgorithmsGuidelineCheck(
+    public SignatureAlgorithmsTypeCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             List<SignatureAlgorithm> recommendedAlgorithms) {
@@ -42,37 +41,43 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    public SignatureAlgorithmsGuidelineCheck(
+    public SignatureAlgorithmsTypeCertificateGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            boolean onlyOneCertificate,
+            List<SignatureAlgorithm> recommendedAlgorithms) {
+        super(name, requirementLevel, onlyOneCertificate);
+        this.recommendedAlgorithms = recommendedAlgorithms;
+    }
+
+    public SignatureAlgorithmsTypeCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
+            boolean onlyOneCertificate,
             List<SignatureAlgorithm> recommendedAlgorithms) {
-        super(name, requirementLevel, condition);
+        super(name, requirementLevel, condition, onlyOneCertificate);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
-    public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms =
-                report.getSupportedSignatureAndHashAlgorithms();
-        if (algorithms != null) {
-            Set<SignatureAlgorithm> notRecommended = new HashSet<>();
-            for (SignatureAndHashAlgorithm alg : algorithms) {
-                if (!this.recommendedAlgorithms.contains(alg.getSignatureAlgorithm())) {
-                    notRecommended.add(alg.getSignatureAlgorithm());
-                }
-            }
-            return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
-        } else {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
+        CertificateReport report = chain.getCertificateReportList().get(0);
+        if (report.getX509SignatureAlgorithm() == null) {
             return new SignatureAlgorithmsGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
+        Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
+        if (!this.recommendedAlgorithms.contains(report.getSignatureAlgorithm())) {
+            nonRecommended.add(report.getSignatureAlgorithm());
+        }
+        return new SignatureAlgorithmsGuidelineCheckResult(
+                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override
     public String toString() {
-        return "SignatureAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
+        return "SignatureAlgorithmsCert_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 
     public List<SignatureAlgorithm> getRecommendedAlgorithms() {

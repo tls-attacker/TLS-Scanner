@@ -52,6 +52,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
+import org.mockito.Mockito;
 
 public class SessionTicketPaddingOracleProbeTest {
     private static List<OracleParameters> PARAMETERS;
@@ -413,8 +414,10 @@ public class SessionTicketPaddingOracleProbeTest {
 
             WorkflowTrace trace = state.getWorkflowTrace();
             ReceiveTillAction receive = (ReceiveTillAction) trace.getLastReceivingAction();
-            receive.setMessages(
-                    Arrays.asList(new FinishedMessage(), new NewSessionTicketMessage()));
+            Mockito.spy(receive);
+            Mockito.doReturn(Arrays.asList(new FinishedMessage(), new NewSessionTicketMessage()))
+                    .when(receive)
+                    .getReceivedMessages();
         }
 
         @Override

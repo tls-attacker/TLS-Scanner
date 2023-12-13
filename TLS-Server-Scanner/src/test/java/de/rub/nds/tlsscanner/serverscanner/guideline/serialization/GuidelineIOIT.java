@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -36,7 +35,7 @@ import org.junit.jupiter.api.io.TempDir;
 public class GuidelineIOIT {
     private Guideline<ServerReport> original, result;
 
-    private GuidelineIO<ServerReport> guidelineIO;
+    private GuidelineIO guidelineIO;
 
     @BeforeEach
     public void setUp() throws JAXBException {
@@ -52,9 +51,7 @@ public class GuidelineIOIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         this.original = new Guideline<>(testName, testLink, checks);
-        this.guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class, Set.of(AnalyzedPropertyGuidelineCheck.class));
+        this.guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
     }
 
     @Test
@@ -63,7 +60,9 @@ public class GuidelineIOIT {
             throws IOException, JAXBException, XMLStreamException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         guidelineIO.write(stream, this.original);
-        this.result = guidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
+        this.result =
+                (Guideline<ServerReport>)
+                        guidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
         assertEquals(
                 this.original.getChecks().size(),
@@ -84,7 +83,7 @@ public class GuidelineIOIT {
 
         File tempFile = new File(tempDir, "serializarion_test_simple.xml");
         guidelineIO.write(tempFile, this.original);
-        this.result = guidelineIO.read(tempFile);
+        this.result = (Guideline<ServerReport>) guidelineIO.read(tempFile);
 
         assertEquals(
                 this.original.getChecks().size(),

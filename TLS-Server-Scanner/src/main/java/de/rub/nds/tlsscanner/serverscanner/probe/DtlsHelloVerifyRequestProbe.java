@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -122,9 +122,9 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        HandshakeMessage<?> message =
-                WorkflowTraceUtil.getLastReceivedMessage(
-                        HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace());
+        HandshakeMessage message =
+                WorkflowTraceResultUtil.getLastReceivedMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.HELLO_VERIFY_REQUEST);
         if (message != null) {
             if (message.isRetransmission()) {
                 return TestResults.TRUE;
@@ -141,8 +141,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             if (state.getTlsContext().getDtlsCookie() != null) {
                 cookieLength = state.getTlsContext().getDtlsCookie().length;
                 if (cookieLength == 0) {
@@ -266,10 +266,10 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
 
     private TestResult getResult(State state) {
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.HELLO_VERIFY_REQUEST)) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
                 return TestResults.FALSE;
             } else {
                 return TestResults.TRUE;
