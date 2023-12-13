@@ -220,28 +220,36 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
 
         int threadNumber = Runtime.getRuntime().availableProcessors();
         LOGGER.debug("Using " + threadNumber + " threads");
-        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        int firstBytesPerThread = 256 / threadNumber;
+        ExecutorService executor = null;
+        ArrayList<LeakyExportCheckCallable> allCallables;
+        ArrayList<Future<Boolean>> allResults;
+        try {
+            executor = Executors.newFixedThreadPool(threadNumber);
+            int firstBytesPerThread = 256 / threadNumber;
 
-        ArrayList<LeakyExportCheckCallable> allCallables = new ArrayList();
-        ArrayList<Future<Boolean>> allResults = new ArrayList();
+            allCallables = new ArrayList();
+            allResults = new ArrayList();
 
-        for (int i = 0; i < threadNumber; i++) {
-            int firstByteFrom = -128 + i * firstBytesPerThread;
-            int firstByteTo;
-            if (i == threadNumber - 1) {
-                firstByteTo = 128;
-            } else {
-                firstByteTo = firstByteFrom + firstBytesPerThread;
+            for (int i = 0; i < threadNumber; i++) {
+                int firstByteFrom = -128 + i * firstBytesPerThread;
+                int firstByteTo;
+                if (i == threadNumber - 1) {
+                    firstByteTo = 128;
+                } else {
+                    firstByteTo = firstByteFrom + firstBytesPerThread;
+                }
+
+                LeakyExportCheckCallable callable =
+                        new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
+                allCallables.add(callable);
+                allResults.add(executor.submit(callable));
             }
 
-            LeakyExportCheckCallable callable =
-                    new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
-            allCallables.add(callable);
-            allResults.add(executor.submit(callable));
+        } finally {
+            if (executor != null) {
+                executor.shutdown();
+            }
         }
-
-        executor.shutdown();
         DrownVulnerabilityType vulnerabilityType = DrownVulnerabilityType.SSL2;
         // Count the processed second bytes across all threads to get a quicker
         // and more accurate progress indicator than processing the first bytes
@@ -269,6 +277,9 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        LOGGER.warn("Was interrupted - aborting");
+                        Thread.currentThread().interrupt();
+                        break outer;
                     } catch (ExecutionException e) {
                         throw new RuntimeException(e);
                     }
@@ -279,6 +290,9 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                LOGGER.warn("Was interrupted - aborting");
+                Thread.currentThread().interrupt();
+                break;
             }
         } while (processedSecondBytes < 256 * 256);
 

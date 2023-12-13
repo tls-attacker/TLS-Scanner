@@ -21,6 +21,8 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
+import de.rub.nds.scanner.core.probe.result.DetailedResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
@@ -68,15 +70,28 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterStats;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -141,11 +156,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendRaccoonAttackDetails(builder);
         appendCertificates(builder);
         appendSession(builder);
+        appendSessionTicketEval(builder);
         appendRenegotiation(builder);
         appendHttps(builder);
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
-        appendClientAuthentication(builder);
         if (report.getProtocolType() == ProtocolType.DTLS) {
             appendDtlsSpecificResults(builder);
         }
@@ -902,7 +917,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
         }
         prettyAppend(
-                builder, "Issues Session Tickets", TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+                builder,
+                "Issues Session Tickets",
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION);
         prettyAppend(
                 builder,
                 "Supports Session Ticket Resumption",
@@ -915,12 +932,393 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         prettyAppend(
                 builder,
-                "Issues TLS 1.3 Session Tickets",
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+                "Issues TLS 1.3 Session Tickets directly after handshake",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
+        prettyAppend(
+                builder,
+                "Issues TLS 1.3 Session Tickets with Application Data",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA);
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval(StringBuilder builder) {
+        prettyAppendHeading(builder, "SessionTicketEval");
+
+        prettyAppendSubheading(builder, "Summary");
+        prettyAppend(
+                builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK (enc)",
+                TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK (MAC)",
+                TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
+        prettyAppend(builder, "No (full) MAC check", TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+        prettyAppend(
+                builder, "Vulnerable to Padding Oracle", TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
+        prettyAppend(builder, "Tickets can be reused", TlsAnalyzedProperty.REUSABLE_TICKET);
+
+        prettyAppend(
+                builder,
+                "Allows ciphersuite change",
+                TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        prettyAppend(
+                builder,
+                "Tickets resumable in different version",
+                TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+
+        prettyAppendSubheading(builder, "Details");
+        // TODO use tables
+        // once we have support for tables, most of the data below can be put into
+        // tables
+        // the columns would be the protocol version
+        appendSessionTicketEval_VersionChange(builder);
+        appendSessionTicketEval_CipherSuiteChange(builder);
+        appendSessionTicketEval_ReusableTicket(builder);
+        appendSessionTicketEval_Manipulation(builder);
+        appendSessionTicketEval_PaddingOracle(builder);
+        appendSessionTicketEval_Statistics(builder);
+        appendSessionTicketEval_Unencrypted(builder);
+        appendSessionTicketEval_ReusedKeystream(builder);
+        appendSessionTicketEval_DefaultStek(builder);
+        appendSessionTicketEval_DefaultMacStek(builder);
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_VersionChange(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var allowsVersionChange =
+                    (VersionDependentSummarizableResult<VersionDependentTestResults>) result;
+            for (Entry<ProtocolVersion, VersionDependentTestResults> versionResults :
+                    allowsVersionChange.getResultMap().entrySet()) {
+                VersionDependentTestResults versionResult = versionResults.getValue();
+                prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
+                if (versionResult.isExplicitSummary()) {
+                    prettyAppend(builder, "\t" + versionResult.getSummarizedResult().toString());
+                } else {
+                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                            versionResult.getResultMap().entrySet()) {
+                        prettyAppend(
+                                builder,
+                                "\t" + changeResult.getKey() + ": ",
+                                changeResult.getValue().toString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_CipherSuiteChange(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        if (result instanceof VersionDependentTestResults) {
+            var allowsCipherSuiteChange = (VersionDependentTestResults) result;
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsCipherSuiteChange.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Allows ciphersuite change [" + versionResults.getKey() + "]",
+                        versionResults.getValue().toString());
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_ReusableTicket(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.REUSABLE_TICKET);
+        if (result instanceof VersionDependentTestResults) {
+            var allowsReplayingTickets = (VersionDependentTestResults) result;
+
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsReplayingTickets.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Tickets can be reused [" + versionResults.getKey() + "]",
+                        versionResults.getValue().toString());
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Manipulation(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+
+        if (result instanceof VersionDependentResult) {
+            var mainManipulationResult = (VersionDependentResult<TicketManipulationResult>) result;
+            // have one map, such that the classes stay the same
+            Map<ResponseFingerprint, Integer> manipulationClassifications = new HashMap<>();
+
+            prettyAppendSubheading(builder, "Manipulation");
+            // print brief overview
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Manipulation Overview "
+                                + manipulationResult.getKey()
+                                + ": "
+                                + manipulationResult
+                                        .getValue()
+                                        .getResultsAsShortString(
+                                                manipulationClassifications, true));
+            }
+
+            if (detail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
+                for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                        mainManipulationResult.getResultMap().entrySet()) {
+                    prettyAppend(
+                            builder,
+                            "Manipulation Details "
+                                    + manipulationResult.getKey()
+                                    + ": "
+                                    + manipulationResult
+                                            .getValue()
+                                            .getResultsAsShortString(
+                                                    manipulationClassifications, false));
+                }
+            }
+
+            // print legend
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getValue().getAcceptFingerprint());
+            }
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT_DIFFERENT_SECRET
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult
+                                        .getValue()
+                                        .getAcceptDifferentSecretFingerprint());
+            }
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_REJECT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getValue().getRejectFingerprint());
+            }
+
+            for (Entry<ResponseFingerprint, Integer> entry :
+                    manipulationClassifications.entrySet().stream()
+                            .sorted((a, b) -> Integer.compare(a.getValue(), b.getValue()))
+                            .toArray(Entry[]::new)) {
+                String key;
+                if (entry.getValue() < TicketManipulationResult.CHR_CLASSIFICATIONS.length()) {
+                    key =
+                            ""
+                                    + TicketManipulationResult.CHR_CLASSIFICATIONS.charAt(
+                                            entry.getValue());
+                } else {
+                    key = "" + entry.getValue();
+                }
+                prettyAppend(builder, padToLength(key, 10) + "\t: " + entry.getKey());
+            }
+
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_NO_RESULT + "", 10)
+                            + "\t: *not tested/no result*");
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_UNKNOWN + "", 10)
+                            + "\t: *multiple classifications/no more chars left to classify*");
+        }
+
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_PaddingOracle(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
+        if (result instanceof VersionDependentResult) {
+            prettyAppendSubSubheading(builder, "Padding Oracle");
+            var mainPaddingOracleResult =
+                    (VersionDependentResult<TicketPaddingOracleResult>) result;
+
+            for (Entry<ProtocolVersion, TicketPaddingOracleResult> paddingResult :
+                    mainPaddingOracleResult.getResultMap().entrySet()) {
+                prettyAppendSubSubSubheading(builder, paddingResult.getKey().toString());
+                prettyAppend(
+                        builder,
+                        "Overall Result",
+                        paddingResult.getValue().getOverallResult().toString());
+                for (TicketPaddingOracleVectorSecond vector :
+                        paddingResult.getValue().getSecondVectorsWithRareResponses()) {
+                    prettyAppend(
+                            builder,
+                            "Possible Plaintext:",
+                            String.format(
+                                    "%02x%02x (XOR %02x%02x@%d)",
+                                    vector.secondAssumedPlaintext,
+                                    vector.lastAssumedPlaintext,
+                                    vector.secondXorValue,
+                                    vector.lastXorValue,
+                                    vector.offset));
+                }
+
+                appendInformationLeakTestList(
+                        builder,
+                        paddingResult.getValue().getPositionResults().stream()
+                                .map(TicketPaddingOracleOffsetResult::getLastByteLeakTest)
+                                .collect(Collectors.toList()),
+                        "Padding Oracle Details");
+            }
+        }
+
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Statistics(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.STATISTICS_TICKET);
+        if (result instanceof VersionDependentResult) {
+            var statistics = (VersionDependentResult<SessionTicketAfterStats>) result;
+            prettyAppendSubSubheading(builder, "Statistics");
+            for (Entry<ProtocolVersion, SessionTicketAfterStats> afterResultEntry :
+                    statistics.getResultMap().entrySet()) {
+                ProtocolVersion version = afterResultEntry.getKey();
+                SessionTicketAfterStats afterResult = afterResultEntry.getValue();
+                prettyAppendSubSubSubheading(builder, version.toString());
+                prettyAppend(builder, "Ticket length", afterResult.getTicketLengths());
+                prettyAppend(
+                        builder,
+                        "Keyname/Prefix length",
+                        String.valueOf(afterResult.getKeyNameLength()));
+                prettyAppend(builder, "Found ASCII Strings", "");
+                for (String found : afterResult.getAsciiStringsFound()) {
+                    prettyAppend(builder, "", "[" + found.length() + " Bytes] \"" + found + "\"");
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Unencrypted(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var unencrypted =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            if (unencrypted.getSummarizedResult() == TestResults.TRUE) {
+                for (var entry : unencrypted.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        prettyAppendSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder,
+                                "Found Plain Secret",
+                                entry.getValue().getDetails().toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_ReusedKeystream(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var reusedKeystream =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            if (reusedKeystream.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Reused Keystream");
+                for (var entry : reusedKeystream.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        prettyAppendSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder,
+                                "Found Reused Keystream - Found Secret",
+                                entry.getValue().getDetails().toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_DefaultStek(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var defaultStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>>) result;
+            if (defaultStek.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Default STEK");
+                for (var entry : defaultStek.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        FoundDefaultStek foundDefaultStek = entry.getValue().getDetails();
+                        prettyAppendSubSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(builder, "Found Format", foundDefaultStek.format.toString());
+                        prettyAppend(
+                                builder, "Found Algorithm", foundDefaultStek.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultStek.key, false, false));
+                        prettyAppend(
+                                builder, "Found Secret", foundDefaultStek.secret.toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_DefaultMacStek(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var defaultMacStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>>)
+                            result;
+            if (defaultMacStek.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Default MAC STEK");
+                for (var entry : defaultMacStek.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        FoundDefaultHmacKey foundDefaultHmacKey = entry.getValue().getDetails();
+                        prettyAppendSubSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder, "Found Format", foundDefaultHmacKey.format.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Algorithm",
+                                foundDefaultHmacKey.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultHmacKey.key, false, false));
+                    }
+                }
+            }
+        }
         return builder;
     }
 
@@ -1082,10 +1480,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(
-                builder,
-                "CVE-2020-13777 (Zero key)",
-                TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
@@ -2421,23 +2815,5 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         } else {
             LOGGER.debug("Not printing performance data.");
         }
-    }
-
-    private void appendClientAuthentication(StringBuilder builder) {
-        prettyAppendHeading(builder, "Client authentication");
-        prettyAppend(builder, "Supported", report.getCcaSupported());
-        prettyAppend(builder, "Required", report.getCcaRequired());
-    }
-
-    private StringBuilder appendSessionTicketZeroKeyDetails(StringBuilder builder) {
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY)
-                == TestResults.TRUE) {
-            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
-            prettyAppend(
-                    builder,
-                    "Has GnuTls magic bytes:",
-                    TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
-        }
-        return builder;
     }
 }

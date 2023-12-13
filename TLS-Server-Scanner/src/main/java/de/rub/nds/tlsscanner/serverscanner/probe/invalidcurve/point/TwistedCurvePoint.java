@@ -211,6 +211,19 @@ public class TwistedCurvePoint {
                         new BigInteger(
                                 "F151DA48F37BACE95DEE7E0F6F2477C60C131264C2A5B900D214C76115C10CC86A22E33E6C07933F6369E8544580C6780F256EE77F8F3513",
                                 16));
+            case CURVE_SM2:
+                return new TwistedCurvePoint(
+                        new BigInteger(
+                                "66364d81b7e64b1140b2badaecff4e58e2ae2201b5787cfb5bfa7a6989171480",
+                                16),
+                        new BigInteger(
+                                "84CCB042979EE3F760E72B62647BB9016856D07D978C2A63CFC0FFCA285C9652",
+                                16),
+                        new BigInteger("7"),
+                        (NamedEllipticCurveParameters) NamedGroup.CURVE_SM2.getGroupParameters(),
+                        new BigInteger(
+                                "8E2055D05F0AFAC5052AC1039C8F7ED981D43A4F48AA0E2ECE351C8F319AD720",
+                                16));
             default:
                 return null;
         }

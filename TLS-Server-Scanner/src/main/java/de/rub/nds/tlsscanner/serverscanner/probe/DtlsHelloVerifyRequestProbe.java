@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -31,6 +32,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TightReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -45,6 +47,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
 
     public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
 
+    private TestResult supportsCookieExchange = TestResults.COULD_NOT_TEST;
     private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;
     private TestResult checksCookie = TestResults.COULD_NOT_TEST;
     private TestResult usesPortInCookie = TestResults.COULD_NOT_TEST;
@@ -54,12 +57,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
     private TestResult usesCiphersuitesInCookie = TestResults.COULD_NOT_TEST;
     private TestResult usesCompressionsInCookie = TestResults.COULD_NOT_TEST;
 
-    private Integer cookieLength;
+    private Integer cookieLength = COOKIE_LENGTH_ERROR_VALUE;
 
     public DtlsHelloVerifyRequestProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, configSelector);
         register(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE,
                 TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS,
                 TlsAnalyzedProperty.HAS_COOKIE_CHECKS,
                 TlsAnalyzedProperty.USES_PORT_FOR_COOKIE,
@@ -73,28 +77,37 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         try {
-            hasHvrRetransmissions = hasHvrRetransmissions();
-            checksCookie = checksCookie();
-            usesPortInCookie = usesPortInCookie();
-            usesVersionInCookie = usesVersionInCookie();
-            usesRandomInCookie = usesRandomInCookie();
-            usesSessionIdInCookie = usesSessionIdInCookie();
-            usesCiphersuitesInCookie = usesCiphersuitesInCookie();
-            usesCompressionsInCookie = usesCompressionsInCookie();
+            supportsCookieExchange = supportsCookieExchange();
+            if (supportsCookieExchange == TestResults.TRUE) {
+                hasHvrRetransmissions = hasHvrRetransmissions();
+                checksCookie = checksCookie();
+                usesPortInCookie = usesPortInCookie();
+                usesVersionInCookie = usesVersionInCookie();
+                usesRandomInCookie = usesRandomInCookie();
+                usesSessionIdInCookie = usesSessionIdInCookie();
+                usesCiphersuitesInCookie = usesCiphersuitesInCookie();
+                usesCompressionsInCookie = usesCompressionsInCookie();
+            }
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            hasHvrRetransmissions =
-                    checksCookie =
-                            usesPortInCookie =
-                                    usesVersionInCookie =
-                                            usesRandomInCookie =
-                                                    usesSessionIdInCookie =
-                                                            usesCiphersuitesInCookie =
-                                                                    usesCompressionsInCookie =
-                                                                            TestResults
-                                                                                    .COULD_NOT_TEST;
-            cookieLength = COOKIE_LENGTH_ERROR_VALUE;
         }
+    }
+
+    private TestResult supportsCookieExchange() {
+        Config config = configSelector.getBaseConfig();
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new TightReceiveAction(new ServerHelloMessage()));
+        State state = new State(config, trace);
+        executeState(state);
+        if (trace.executedAsPlanned()) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
     }
 
     private TestResult hasHvrRetransmissions() {

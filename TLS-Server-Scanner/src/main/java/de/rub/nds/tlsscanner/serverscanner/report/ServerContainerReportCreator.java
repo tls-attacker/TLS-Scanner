@@ -92,7 +92,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createAlpacaContainer(report));
         // container.add(createBleichenbacherOracleContainer(report));
         // container.add(createPaddingOracleContainer(report));
-        container.add(createSessionTicketZeroKeyContainer(report));
         // container.add(createDirectRaccoonResultsContainer(report));
         // container.add(createInvalidCurveResultsContainer(report));
         // container.add(createRaccoonResultsContainer(report));
@@ -394,9 +393,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, report));
-        container.add(
-                createKeyValueContainer(
-                        TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
         container.add(
                 createKeyValueContainer(
@@ -446,17 +442,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             }
         }
 
-        return container;
-    }
-
-    private ReportContainer createSessionTicketZeroKeyContainer(ServerReport report) {
-        ListContainer container = new ListContainer();
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY)
-                == TestResults.TRUE) {
-            container.add(new HeadlineContainer("Session Ticket Zero Key Attack Details"));
-            container.add(
-                    createKeyValueContainer(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, report));
-        }
         return container;
     }
 

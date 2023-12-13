@@ -13,9 +13,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,10 +29,10 @@ public abstract class TlsProbe<ReportT extends TlsScanReport> extends ScannerPro
     }
 
     public final void executeState(State... states) {
-        this.executeState(new ArrayList<>(Arrays.asList(states)));
+        this.executeState(Arrays.asList(states));
     }
 
-    public final void executeState(List<State> states) {
+    public final void executeState(Iterable<State> states) {
         parallelExecutor.bulkExecuteStateTasks(states);
         extractStats(states);
     }

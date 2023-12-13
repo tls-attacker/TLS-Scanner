@@ -16,14 +16,10 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
-import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
 import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -116,14 +112,23 @@ public class RandomnessProbe extends TlsServerProbe {
                     new WorkflowConfigurationFactory(config)
                             .createWorkflowTrace(
                                     WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (configSelector.getScannerConfig().getApplicationProtocol()
-                    == ApplicationProtocol.HTTP) {
-                config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
-                workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
-                workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));
-            } else {
-                // TODO: Add application specific app data to provoke data transmission
+
+            ApplicationProtocol applicationProtocol =
+                    configSelector.getScannerConfig().getApplicationProtocol();
+            StackConfiguration expLayerConfiguration =
+                    applicationProtocol.getExpectedStackConfiguration();
+            if (expLayerConfiguration != null) {
+                config.setDefaultLayerConfiguration(expLayerConfiguration);
             }
+            try {
+                workflowTrace.addTlsActions(applicationProtocol.createDummyActions(config));
+            } catch (UnsupportedOperationException e) {
+                // TODO: Add application specific app data to provoke data transmission
+                LOGGER.warn(
+                        "No application specific actions for {} available; could not provoke data transmission.",
+                        applicationProtocol);
+            }
+
             State state = new State(config, workflowTrace);
             stateList.add(state);
         }

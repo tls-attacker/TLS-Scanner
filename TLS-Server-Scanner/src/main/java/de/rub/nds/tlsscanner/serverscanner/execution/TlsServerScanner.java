@@ -39,11 +39,13 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
+import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
@@ -82,7 +84,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketCollectingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketManipulationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SignatureHashAlgorithmOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
@@ -179,6 +184,7 @@ public final class TlsServerScanner
         statsWriter.addExtractor(new EcPublicKeyExtractor());
         statsWriter.addExtractor(new CbcIvExtractor());
         statsWriter.addExtractor(new SessionIdExtractor());
+        statsWriter.addExtractor(new SessionTicketExtractor());
         statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
         statsWriter.addExtractor(new DestinationPortExtractor());
         return statsWriter;
@@ -205,7 +211,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new ECPointFormatProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RenegotiationProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new SessionTicketZeroKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HeartbleedProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));
@@ -252,6 +257,14 @@ public final class TlsServerScanner
         registerProbeForExecution(
                 new ConnectionClosingProbe(configSelector, parallelExecutor), false);
         registerProbeForExecution(new PoodleAfterProbe());
+        registerProbeForExecution(new SessionTicketProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketManipulationProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketPaddingOracleProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new SessionTicketCollectingProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new SessionTicketAfterProbe(configSelector));
     }
 
     @Override
@@ -312,7 +325,7 @@ public final class TlsServerScanner
     @Override
     protected List<Guideline<ServerReport>> getGuidelines() {
         if (getProtocolType() == ProtocolType.DTLS) {
-            return null;
+            return List.of();
         }
 
         LOGGER.debug("Loading guidelines from files...");
