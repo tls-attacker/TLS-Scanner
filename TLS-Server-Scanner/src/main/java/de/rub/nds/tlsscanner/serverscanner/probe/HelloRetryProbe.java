@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -68,18 +68,18 @@ public class HelloRetryProbe extends TlsServerProbe {
         executeState(state);
         sendsHelloRetryRequest = TestResults.FALSE;
         issuesCookie = TestResults.FALSE;
-        if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)
                 && ((ServerHelloMessage)
-                                WorkflowTraceUtil.getFirstReceivedMessage(
-                                        HandshakeMessageType.SERVER_HELLO,
-                                        state.getWorkflowTrace()))
+                                WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                        state.getWorkflowTrace(),
+                                        HandshakeMessageType.SERVER_HELLO))
                         .isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
+                            WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO))
                     .containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;
             }

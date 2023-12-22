@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.List;
 
 public class DtlsBugsProbe extends TlsServerProbe {
 
@@ -63,13 +64,13 @@ public class DtlsBugsProbe extends TlsServerProbe {
         SendAction sendAction = new SendAction(new FinishedMessage());
         Record record = new Record(config);
         record.setEpoch(Modifiable.explicit(0));
-        sendAction.setRecords(record);
+        sendAction.setConfiguredRecords(List.of(record));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -87,8 +88,8 @@ public class DtlsBugsProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;

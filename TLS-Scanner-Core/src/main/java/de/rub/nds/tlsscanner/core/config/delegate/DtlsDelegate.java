@@ -15,7 +15,7 @@ import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.connection.OutboundConnection;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 
@@ -49,7 +49,7 @@ public class DtlsDelegate extends Delegate {
             config.getDefaultClientConnection().setTransportHandlerType(TransportHandlerType.UDP);
             config.getDefaultServerConnection().setTransportHandlerType(TransportHandlerType.UDP);
 
-            config.setDefaultLayerConfiguration(LayerConfiguration.DTLS);
+            config.setDefaultLayerConfiguration(StackConfiguration.DTLS);
             config.setWorkflowExecutorType(WorkflowExecutorType.DTLS);
             config.setFinishWithCloseNotify(true);
             config.setIgnoreRetransmittedCssInDtls(true);

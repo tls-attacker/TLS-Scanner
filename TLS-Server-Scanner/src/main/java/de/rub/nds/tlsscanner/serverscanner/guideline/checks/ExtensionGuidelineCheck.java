@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -48,13 +48,14 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         return new ExtensionGuidelineCheckResult(
-                TestResults.of(report.getSupportedExtensions().contains(requiredExtension)),
+                getName(),
+                GuidelineAdherence.of(report.getSupportedExtensions().contains(requiredExtension)),
                 report.getSupportedExtensions().contains(requiredExtension),
                 requiredExtension);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "Extension_" + getRequirementLevel() + "_" + requiredExtension;
     }
 

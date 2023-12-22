@@ -15,7 +15,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     ESNI,
     VERSIONS,
-    SESSION_TICKET,
     CIPHER_SUITES,
     EXTENSIONS,
     SESSION_RESUMPTION,

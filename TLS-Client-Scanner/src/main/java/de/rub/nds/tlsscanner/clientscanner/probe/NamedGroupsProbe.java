@@ -28,7 +28,8 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareE
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -107,8 +108,8 @@ public class NamedGroupsProbe extends TlsClientProbe {
         }
         executeState(statesToExecute);
         for (State executedState : statesToExecute) {
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, executedState.getWorkflowTrace())) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    executedState.getWorkflowTrace(), HandshakeMessageType.CLIENT_KEY_EXCHANGE)) {
                 supportedGroups.add(executedState.getConfig().getDefaultSelectedNamedGroup());
             }
         }
@@ -137,7 +138,9 @@ public class NamedGroupsProbe extends TlsClientProbe {
                         new WorkflowConfigurationFactory(config)
                                 .createShortHelloWorkflow(config.getDefaultServerConnection());
                 ServerHelloMessage serverHello =
-                        workflowTrace.getFirstSendMessage(ServerHelloMessage.class);
+                        (ServerHelloMessage)
+                                (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                        workflowTrace, HandshakeMessageType.SERVER_HELLO));
                 serverHello.setAutoSetHelloRetryModeInKeyShare(true);
                 serverHello.setRandom(
                         Modifiable.explicit(ServerHelloMessage.getHelloRetryRequestRandom()));
@@ -149,20 +152,20 @@ public class NamedGroupsProbe extends TlsClientProbe {
         for (State executedState : statesToExecute) {
             NamedGroup testedGroup = executedState.getConfig().getDefaultSelectedNamedGroup();
             if (advertisedKeyShareGroups.contains(testedGroup)
-                    && WorkflowTraceUtil.didReceiveMessage(
-                            HandshakeMessageType.FINISHED, executedState.getWorkflowTrace())) {
+                    && WorkflowTraceResultUtil.didReceiveMessage(
+                            executedState.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
                 supportedGroups.add(testedGroup);
             } else if (!advertisedKeyShareGroups.contains(testedGroup)) {
                 List<HandshakeMessage> handshakeMessages =
-                        WorkflowTraceUtil.getAllReceivedHandshakeMessages(
+                        WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(
                                 executedState.getWorkflowTrace());
                 if (handshakeMessages.stream().filter(ClientHelloMessage.class::isInstance).count()
                         > 1) {
                     ClientHelloMessage updatedClientHello =
                             (ClientHelloMessage)
-                                    WorkflowTraceUtil.getLastReceivedMessage(
-                                            HandshakeMessageType.CLIENT_HELLO,
-                                            executedState.getWorkflowTrace());
+                                    WorkflowTraceResultUtil.getLastReceivedMessage(
+                                            executedState.getWorkflowTrace(),
+                                            HandshakeMessageType.CLIENT_HELLO);
                     if (updatedClientHello
                             .getExtension(KeyShareExtensionMessage.class)
                             .getKeyShareList()

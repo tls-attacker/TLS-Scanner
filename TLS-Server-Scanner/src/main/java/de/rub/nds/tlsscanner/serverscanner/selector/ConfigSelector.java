@@ -10,8 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -21,7 +19,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
@@ -30,10 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.bouncycastle.util.IPAddress;
 
 public class ConfigSelector {
@@ -151,7 +147,9 @@ public class ConfigSelector {
     private void pauseSearch() {
         try {
             Thread.sleep(COOLDOWN_TIMEOUT_MULTIPLIER * scannerConfig.getTimeout());
-        } catch (InterruptedException ignored) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Was interrupted - aborting", e);
         }
     }
 
@@ -168,11 +166,12 @@ public class ConfigSelector {
         if ((reveicedRecords != null
                         && !reveicedRecords.isEmpty()
                         && reveicedRecords.get(0) instanceof Record)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.HELLO_VERIFY_REQUEST, trace)
-                || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.HELLO_VERIFY_REQUEST)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO_DONE)) {
             speaksProtocol = true;
         }
         return trace.executedAsPlanned();
@@ -194,20 +193,6 @@ public class ConfigSelector {
     private void applyDelegates(Config config) throws ConfigurationException {
         for (Delegate delegate : scannerConfig.getDelegateList()) {
             delegate.applyDelegate(config);
-            if (delegate instanceof GeneralDelegate) {
-                GeneralDelegate generalDelegate = (GeneralDelegate) delegate;
-                // set log levels for scanner
-                if (generalDelegate.isTrace()) {
-                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.TRACE);
-                    Configurator.setAllLevels("de.rub.nds.scanner", Level.TRACE);
-                } else if (generalDelegate.isDebug()) {
-                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.DEBUG);
-                    Configurator.setAllLevels("de.rub.nds.scanner", Level.DEBUG);
-                } else if (generalDelegate.isQuiet()) {
-                    Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.OFF);
-                    Configurator.setAllLevels("de.rub.nds.scanner", Level.OFF);
-                }
-            }
         }
     }
 
@@ -218,9 +203,6 @@ public class ConfigSelector {
 
         int timeout = scannerConfig.getTimeout();
         config.getDefaultClientConnection().setTimeout(timeout);
-        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
-            config.getDefaultClientConnection().setFirstTimeout(timeout);
-        }
     }
 
     private void repairSni(Config config) {

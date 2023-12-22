@@ -37,6 +37,9 @@ public class CertificateProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
+        System.out.println(
+                "report.getCertificateChainList().size() = "
+                        + report.getCertificateChainList().size());
         return report.getCertificateChainList().size() == 1
                 && report.getStaticEcdsaPkgGroups().size() == 0
                 && report.getEphemeralEcdsaPkgGroups().size() == 0

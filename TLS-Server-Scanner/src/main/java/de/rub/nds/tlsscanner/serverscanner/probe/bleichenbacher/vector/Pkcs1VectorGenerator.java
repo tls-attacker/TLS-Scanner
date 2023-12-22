@@ -9,11 +9,13 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsattacker.core.constants.Bits;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
@@ -42,27 +44,20 @@ public class Pkcs1VectorGenerator {
      * @return encrypted pkcs1Vectors
      */
     public static List<Pkcs1Vector> generatePkcs1Vectors(
-            RSAPublicKey publicKey, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
+            RsaPublicKey publicKey, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
         List<Pkcs1Vector> encryptedVectors =
                 generatePlainPkcs1Vectors(
                         publicKey.getModulus().bitLength(), type, protocolVersion);
-        try {
-            Cipher rsa = Cipher.getInstance("RSA/NONE/NoPadding");
-            rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-            // encrypt all the padded keys
-            for (Pkcs1Vector vector : encryptedVectors) {
-                byte[] encrypted = rsa.doFinal(vector.getPlainValue());
-                vector.setEncryptedValue(encrypted);
-            }
-            return encryptedVectors;
-        } catch (BadPaddingException
-                | IllegalBlockSizeException
-                | InvalidKeyException
-                | NoSuchAlgorithmException
-                | NoSuchPaddingException ex) {
-            throw new ConfigurationException(
-                    "The different PKCS#1 attack vectors could not be generated.", ex);
+        // encrypt all the padded keys
+        for (Pkcs1Vector vector : encryptedVectors) {
+            BigInteger plaintext = new BigInteger(1, vector.getPlainValue());
+            byte[] encrypted =
+                    ArrayConverter.bigIntegerToNullPaddedByteArray(
+                            plaintext.modPow(publicKey.getPublicExponent(), publicKey.getModulus()),
+                            publicKey.getModulus().bitLength() / Bits.IN_A_BYTE);
+            vector.setEncryptedValue(encrypted);
         }
+        return encryptedVectors;
     }
 
     /**

@@ -81,7 +81,7 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe {
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
         State state = new State(config, trace);

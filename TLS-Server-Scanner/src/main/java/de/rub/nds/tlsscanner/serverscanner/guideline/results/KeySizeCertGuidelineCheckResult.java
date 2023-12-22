@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.probe.result.TestResults;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +17,8 @@ public class KeySizeCertGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<KeySizeData> keySizes = new ArrayList<>();
 
-    public KeySizeCertGuidelineCheckResult() {
-        super(TestResults.UNCERTAIN);
+    public KeySizeCertGuidelineCheckResult(String checkName) {
+        super(checkName, GuidelineAdherence.CHECK_FAILED);
     }
 
     public void addKeySize(KeySizeData data) {
@@ -30,7 +30,7 @@ public class KeySizeCertGuidelineCheckResult extends GuidelineCheckResult {
     }
 
     @Override
-    public String display() {
+    public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (KeySizeData data : this.keySizes) {
             stringBuilder

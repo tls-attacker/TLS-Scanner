@@ -30,7 +30,7 @@
         <Logger name="DirectLogger" level="OFF" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Root level="WARN">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

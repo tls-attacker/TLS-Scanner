@@ -10,9 +10,9 @@ package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test;
 
 public class DhValueAfterProbeTest {
 
-    private final CustomDhPublicKey PUBLIC_KEY_1 =
-            new CustomDhPublicKey(BigInteger.ONE, BigInteger.ONE, BigInteger.ONE);
-    private final CustomDhPublicKey PUBLIC_KEY_2 =
-            new CustomDhPublicKey(BigInteger.TWO, BigInteger.TWO, BigInteger.TWO);
+    private final DhPublicKey PUBLIC_KEY_1 =
+            new DhPublicKey(BigInteger.ONE, BigInteger.ONE, BigInteger.ONE);
+    private final DhPublicKey PUBLIC_KEY_2 =
+            new DhPublicKey(BigInteger.TWO, BigInteger.TWO, BigInteger.TWO);
 
     private ClientReport report;
     private DhValueAfterProbe probe;
-    private ExtractedValueContainer<CustomDhPublicKey> publicKeyContainer;
+    private ExtractedValueContainer<DhPublicKey> publicKeyContainer;
 
     @BeforeEach
     public void setup() {

@@ -11,9 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -27,7 +27,7 @@ public class RaccoonAttackAfterProbeTest {
 
     private ServerReport report;
     private RaccoonAttackAfterProbe probe;
-    private ExtractedValueContainer<CustomDhPublicKey> publicKeyContainer;
+    private ExtractedValueContainer<DhPublicKey> publicKeyContainer;
 
     @BeforeEach
     public void setup() {
@@ -69,7 +69,7 @@ public class RaccoonAttackAfterProbeTest {
                                 + "5c7e9be938b187cd9781de993970e73a3fbf79a049a6d"
                                 + "804a487de1013f71167cbf78aa65f3",
                         16);
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
         probe.analyze(report);
 
         // (modulus length + hash length + maximum padding) % blocksize

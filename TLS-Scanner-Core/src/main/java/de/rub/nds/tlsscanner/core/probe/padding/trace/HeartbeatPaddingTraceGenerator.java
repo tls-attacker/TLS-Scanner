@@ -50,9 +50,9 @@ public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
         ApplicationMessage applicationMessage = new ApplicationMessage();
         HeartbeatMessage heartbeat = new HeartbeatMessage();
         SendAction sendAction = new SendAction(applicationMessage, heartbeat);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
-        sendAction.getRecords().add(new Record(config));
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
+        sendAction.getConfiguredRecords().add(new Record(config));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

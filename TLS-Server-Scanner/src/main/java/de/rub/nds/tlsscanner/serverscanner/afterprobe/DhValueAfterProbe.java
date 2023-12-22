@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
@@ -58,7 +58,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
 
         if (publicKeyContainer != null && !publicKeyContainer.getExtractedValueList().isEmpty()) {
             for (Object o : publicKeyContainer.getExtractedValueList()) {
-                CustomDhPublicKey publicKey = (CustomDhPublicKey) o;
+                DhPublicKey publicKey = (DhPublicKey) o;
                 if (onlyPrime == TestResults.TRUE && !publicKey.getModulus().isProbablePrime(30)) {
                     onlyPrime = TestResults.FALSE;
                 }

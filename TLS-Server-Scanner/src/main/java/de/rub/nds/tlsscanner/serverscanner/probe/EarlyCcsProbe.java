@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.EarlyCcsAction;
@@ -62,12 +62,12 @@ public class EarlyCcsProbe extends TlsServerProbe {
 
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), ProtocolMessageType.ALERT)) {
             LOGGER.debug("Not vulnerable (definitely), Alert message found");
             return TestResults.FALSE;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             LOGGER.debug("Vulnerable (definitely), Finished message found");
             return TestResults.TRUE;
         } else {

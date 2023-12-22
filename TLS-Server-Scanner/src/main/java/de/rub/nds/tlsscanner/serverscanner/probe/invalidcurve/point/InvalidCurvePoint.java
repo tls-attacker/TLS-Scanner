@@ -154,6 +154,16 @@ public class InvalidCurvePoint {
                                 16),
                         new BigInteger("5"),
                         NamedGroup.BRAINPOOLP512R1);
+            case CURVE_SM2:
+                return new InvalidCurvePoint(
+                        new BigInteger(
+                                "B3B6AFF681452D8ADF2D6F557C6BAE63D8DF17B9161E7912FB331881C4B052CD",
+                                16),
+                        new BigInteger(
+                                "57FDB33C0CAAB77FB4485BC9127E38278A4FC795CD0136DBF72727B24C2A1B22",
+                                16),
+                        new BigInteger("5"),
+                        NamedGroup.CURVE_SM2);
             default:
                 return null;
         }

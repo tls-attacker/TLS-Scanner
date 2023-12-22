@@ -16,7 +16,6 @@ import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
@@ -34,9 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveRespon
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
 import java.util.Map;
@@ -62,11 +59,6 @@ public class ServerReport extends TlsScanReport {
     // Certificate
     private int minimumRsaCertKeySize;
     private int minimumDssCertKeySize;
-
-    // Certificate Transparency
-    private SignedCertificateTimestampList precertificateSctList = null;
-    private SignedCertificateTimestampList handshakeSctList = null;
-    private SignedCertificateTimestampList ocspSctList = null;
 
     // Session
     private Long sessionTicketLengthHint = null;
@@ -281,12 +273,6 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<OcspCertificateResult> getOcspResults() {
-        ListResult<OcspCertificateResult> listResult =
-                getListResult(TlsAnalyzedProperty.OCSP_RESULTS, OcspCertificateResult.class);
-        return listResult == null ? null : listResult.getList();
-    }
-
     public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>>
             getRaccoonTestResultList() {
         @SuppressWarnings("unchecked")
@@ -302,12 +288,6 @@ public class ServerReport extends TlsScanReport {
         ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<BleichenbacherOracleTestInfo>>)
                         getListResult(TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT);
-        return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized List<CcaTestResult> getCcaTestResultList() {
-        ListResult<CcaTestResult> listResult =
-                getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS, CcaTestResult.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -361,31 +341,6 @@ public class ServerReport extends TlsScanReport {
                         NamedGroup.class,
                         NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
-    }
-
-    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
-        return precertificateSctList;
-    }
-
-    public synchronized void setPrecertificateSctList(
-            SignedCertificateTimestampList precertificateSctList) {
-        this.precertificateSctList = precertificateSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
-        return handshakeSctList;
-    }
-
-    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
-        this.handshakeSctList = handshakeSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getOcspSctList() {
-        return ocspSctList;
-    }
-
-    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
-        this.ocspSctList = ocspSctList;
     }
 
     public synchronized int getScore() {

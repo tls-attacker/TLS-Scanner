@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.List;
 
 public class DtlsFragmentationProbe extends TlsServerProbe {
 
@@ -76,8 +77,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
 
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO_DONE)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -97,16 +98,17 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(
-                new DtlsHandshakeMessageFragment(config, 20),
-                new DtlsHandshakeMessageFragment(config, 20));
+        action.setConfiguredFragmentList(
+                List.of(
+                        new DtlsHandshakeMessageFragment(config, 20),
+                        new DtlsHandshakeMessageFragment(config, 20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -127,16 +129,17 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(
-                new DtlsHandshakeMessageFragment(config, 20),
-                new DtlsHandshakeMessageFragment(config, 20));
+        action.setConfiguredFragmentList(
+                List.of(
+                        new DtlsHandshakeMessageFragment(config, 20),
+                        new DtlsHandshakeMessageFragment(config, 20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;

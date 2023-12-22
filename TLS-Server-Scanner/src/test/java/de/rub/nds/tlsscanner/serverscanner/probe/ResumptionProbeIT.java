@@ -42,7 +42,8 @@ public class ResumptionProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TestResults.TRUE)
                 && verifyProperty(
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, TestResults.TRUE)
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                        TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE)
