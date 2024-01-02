@@ -12,14 +12,13 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -42,12 +41,12 @@ public class QuicTls12HandshakeProbe extends QuicServerProbe {
                         ConfigSelector.DEFAULT_CONFIG,
                         DefaultConfigProfile.HIGHLY_REDUCED_CIPHERSUITES);
         config.setExpectHandshakeDoneQuicFrame(true);
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-        config.setQuicVersion(QuicVersion.VERSION_1.getByteValue());
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS12);
         config.setSupportedVersions(ProtocolVersion.TLS12);
         config.setDefaultLastRecordProtocolVersion(ProtocolVersion.TLS12);
+
         State state = new State(config);
         executeState(state);
         this.handshakeCompleted = state.getWorkflowTrace().executedAsPlanned();
@@ -58,9 +57,9 @@ public class QuicTls12HandshakeProbe extends QuicServerProbe {
     @Override
     protected void mergeData(ServerReport report) {
         put(
-                TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_DONE,
+                QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE,
                 handshakeCompleted ? TestResults.TRUE : TestResults.FALSE);
-        put(TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME, connectionCloseFrame);
+        put(QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME, connectionCloseFrame);
     }
 
     @Override

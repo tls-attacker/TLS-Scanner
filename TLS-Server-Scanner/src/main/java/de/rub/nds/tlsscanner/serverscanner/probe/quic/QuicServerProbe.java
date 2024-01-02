@@ -19,11 +19,8 @@ public abstract class QuicServerProbe extends TlsServerProbe {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
-    protected final ConfigSelector configSelector;
-
     protected QuicServerProbe(
             ParallelExecutor parallelExecutor, QuicProbeType type, ConfigSelector configSelector) {
         super(parallelExecutor, type, configSelector);
-        this.configSelector = configSelector;
     }
 }

@@ -298,7 +298,6 @@ public final class TlsServerScanner
         boolean isConnectable = false;
         boolean speaksProtocol = false;
         boolean isHandshaking = false;
-        boolean quicRetryRequired = false;
 
         if (isConnectable()) {
             isConnectable = true;
@@ -312,7 +311,6 @@ public final class TlsServerScanner
                 LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + getProtocolType());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
-                    quicRetryRequired = configSelector.isQuicRetryRequired();
                     LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
                 }
             }
@@ -322,7 +320,7 @@ public final class TlsServerScanner
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
         report.setProtocolType(getProtocolType());
-        report.setQuicRetryRequired(quicRetryRequired);
+        report.setQuicRetryRequired(configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }
 

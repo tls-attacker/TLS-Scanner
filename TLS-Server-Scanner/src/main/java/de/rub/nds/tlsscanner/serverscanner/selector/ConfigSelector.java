@@ -51,8 +51,7 @@ public class ConfigSelector {
 
     public static final String PATH = "/configs/";
     public static final String SSL2_CONFIG = "ssl2Only.config";
-    public static final String TLS13_CONFIG = "tls13.config";
-    public static final String TLS13_RICH_CONFIG = "tls13rich.config";
+    public static final String TLS13_CONFIG = "tls13rich.config";
     public static final String DEFAULT_CONFIG = "default.config";
     private static final int COOLDOWN_TIMEOUT_MULTIPLIER = 5;
 
@@ -114,7 +113,7 @@ public class ConfigSelector {
 
     public boolean findWorkingTls13Config() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
-            Config baseConfig = getConfigForProfile(TLS13_RICH_CONFIG, configProfile);
+            Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
             if (configWorks(baseConfig)) {
                 configProfileIdentifierTls13 = configProfile.getIdentifier();
                 reportLimitation(configProfile, "TLS 1.3");
@@ -297,7 +296,7 @@ public class ConfigSelector {
 
     public Config getTls13BaseConfig() {
         if (workingTl13Config == null) {
-            return Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_RICH_CONFIG));
+            return Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
         }
         return workingTl13Config.createCopy();
     }

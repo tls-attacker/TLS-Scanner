@@ -12,18 +12,15 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.OutboundConnection;
-import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class QuicConnectionMigrationProbe extends QuicServerProbe {
 
@@ -32,8 +29,6 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
     private boolean ipv6HandshakeSuccessful;
     private boolean ipv6ConnectionMigrationSuccessful;
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
     public QuicConnectionMigrationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.CONNECTION_MIGRATION, configSelector);
@@ -41,16 +36,14 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
 
     @Override
     public void executeTest() {
-
+        // Port Connection Migration
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(true);
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_PORT_CONNECTION_MIGRATION);
-        config.setQuicVersion(QuicVersion.VERSION_1.getByteValue());
         State state = new State(config);
         executeState(state);
-
         portConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
-
+        // IPV6 Handshake
         if (config.getDefaultClientConnection().getIpv6() != null) {
             ipv6Address = config.getDefaultClientConnection().getIpv6();
             config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
@@ -61,8 +54,8 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
             state = new State(config);
             executeState(state);
             ipv6HandshakeSuccessful = state.getWorkflowTrace().executedAsPlanned();
-
-            if (state.getWorkflowTrace().executedAsPlanned()) {
+            // IPV4 To IPV6 Connection Migration
+            if (ipv6HandshakeSuccessful) {
                 config.setWorkflowTraceType(WorkflowTraceType.QUIC_IPV6_CONNECTION_MIGRATION);
                 state = new State(config);
                 executeState(state);
@@ -79,18 +72,18 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
     @Override
     protected void mergeData(ServerReport report) {
         put(
-                TlsAnalyzedProperty.QUIC_PORT_CONNECTION_MIGRATION_SUCCESSFUL,
+                QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_SUCCESSFUL,
                 portConnectionMigrationSuccessful ? TestResults.TRUE : TestResults.FALSE);
-        put(TlsAnalyzedProperty.QUIC_IPV6_ADDRESS, ipv6Address);
+        put(QuicAnalyzedProperty.IPV6_ADDRESS, ipv6Address);
         if (ipv6HandshakeSuccessful) {
-            put(TlsAnalyzedProperty.QUIC_IPV6_HANDSHAKE_DONE, TestResults.TRUE);
+            put(QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE, TestResults.TRUE);
             put(
-                    TlsAnalyzedProperty.QUIC_IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
+                    QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
                     ipv6ConnectionMigrationSuccessful ? TestResults.TRUE : TestResults.FALSE);
         } else {
-            put(TlsAnalyzedProperty.QUIC_IPV6_HANDSHAKE_DONE, TestResults.FALSE);
+            put(QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE, TestResults.FALSE);
             put(
-                    TlsAnalyzedProperty.QUIC_IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
+                    QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
                     TestResults.COULD_NOT_TEST);
         }
     }

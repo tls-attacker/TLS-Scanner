@@ -10,12 +10,14 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencersIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
 import java.io.File;
@@ -1047,7 +1049,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
-        List<TlsAnalyzedProperty> neutralProperties =
+        List<AnalyzedProperty> neutralProperties =
                 new LinkedList<>(
                         // list results
                         Arrays.asList(
@@ -1177,7 +1179,15 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE,
                                 TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION,
                                 TlsAnalyzedProperty.FORCED_COMPRESSION,
-                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE));
+                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE,
+                                QuicAnalyzedProperty.VERSIONS,
+                                QuicAnalyzedProperty.TRANSPORT_PARAMETERS,
+                                QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE,
+                                QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
+                                QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_SUCCESSFUL,
+                                QuicAnalyzedProperty.IPV6_ADDRESS,
+                                QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE,
+                                QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL));
 
         influencers.addAll(
                 neutralProperties.stream().map(RatingInfluencer::new).collect(Collectors.toList()));

@@ -12,28 +12,9 @@ import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
-    ESNI,
+public enum QuicAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     VERSIONS,
-    CIPHER_SUITES,
-    EXTENSIONS,
-    SESSION_RESUMPTION,
-    RENEGOTIATION,
-    HTTPS_HEADERS,
+    TRANSPORT_PARAMETERS,
+    CONNECTION_MIGRATION,
     QUIRKS,
-    ATTACKS,
-    COMPARISON_FAILURE,
-    CERTIFICATE,
-    CERTIFICATE_TRANSPARENCY,
-    OCSP,
-    FRESHNESS,
-    SNI,
-    COMPRESSION,
-    EC,
-    FFDHE,
-    BEST_PRACTICES,
-    DTLS,
-    HELLO_VERIFY_REQUEST,
-    APPLICATION_LAYER,
-    CLIENT_ADVERTISED
 }

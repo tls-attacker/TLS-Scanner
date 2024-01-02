@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import java.io.IOException;
 
 public class ConnectionCloseFrameSerializer extends StdSerializer<ConnectionCloseFrame> {
+
     public ConnectionCloseFrameSerializer() {
         super(ConnectionCloseFrame.class);
     }

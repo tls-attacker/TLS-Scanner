@@ -15,8 +15,8 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -30,7 +30,7 @@ public class QuicVersionProbe extends QuicServerProbe {
     private List<byte[]> supportedVersions;
 
     public QuicVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, QuicProbeType.SUPPORTED_VERSION, configSelector);
+        super(parallelExecutor, QuicProbeType.SUPPORTED_VERSIONS, configSelector);
         this.supportedVersions = new ArrayList<>();
     }
 
@@ -45,24 +45,19 @@ public class QuicVersionProbe extends QuicServerProbe {
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_VERSION_NEGOTIATION);
         config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION.getByteValue());
         config.setFinishWithCloseNotify(false);
+
         State state = new State(config);
         executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            LOGGER.info(
-                    "Supported Quic Versions: "
-                            + state.getContext().getQuicContext().getSupportedVersions().stream()
-                                    .map(QuicVersion::getVersionNameFromBytes)
-                                    .collect(Collectors.joining(", ")));
-            supportedVersions = state.getContext().getQuicContext().getSupportedVersions();
-        } else {
-            supportedVersions = List.of();
-        }
+        supportedVersions =
+                state.getWorkflowTrace().executedAsPlanned()
+                        ? state.getContext().getQuicContext().getSupportedVersions()
+                        : List.of();
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         put(
-                TlsAnalyzedProperty.QUIC_VERSIONS,
+                QuicAnalyzedProperty.VERSIONS,
                 supportedVersions.stream()
                         .map(
                                 versionBytes ->

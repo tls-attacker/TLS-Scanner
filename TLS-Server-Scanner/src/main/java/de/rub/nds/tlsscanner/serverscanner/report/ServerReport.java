@@ -19,6 +19,7 @@ import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -404,34 +405,33 @@ public class ServerReport extends TlsScanReport {
         this.quicRetryRequired = quicRetryRequired;
     }
 
+    public synchronized Boolean isQuicRetryRequired() {
+        return quicRetryRequired;
+    }
+
     public synchronized List<QuicVersionProbe.Entry> getSupportedQuicVersions() {
         ListResult<QuicVersionProbe.Entry> listResult =
-                getListResult(TlsAnalyzedProperty.QUIC_VERSIONS, QuicVersionProbe.Entry.class);
+                getListResult(QuicAnalyzedProperty.VERSIONS, QuicVersionProbe.Entry.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized QuicTransportParameters getQuicTransportParameters() {
         ObjectResult<QuicTransportParameters> objectResult =
                 getObjectResult(
-                        TlsAnalyzedProperty.QUIC_TRANSPORT_PARAMETERS,
-                        QuicTransportParameters.class);
+                        QuicAnalyzedProperty.TRANSPORT_PARAMETERS, QuicTransportParameters.class);
         return objectResult == null ? null : objectResult.getValue();
-    }
-
-    public synchronized TestResults getQuicTls12HandshakeDoneResult() {
-        return (TestResults) getResult(TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_DONE);
     }
 
     public synchronized ConnectionCloseFrame getQuicTls12HandshakeConnectionCloseFrame() {
         ObjectResult<ConnectionCloseFrame> objectResult =
                 getObjectResult(
-                        TlsAnalyzedProperty.QUIC_TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
+                        QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
                         ConnectionCloseFrame.class);
         return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized String getIpv6Address() {
-        StringResult stringResult = getStringResult(TlsAnalyzedProperty.QUIC_IPV6_ADDRESS);
+        StringResult stringResult = getStringResult(QuicAnalyzedProperty.IPV6_ADDRESS);
         return stringResult == null ? null : stringResult.getValue();
     }
 }

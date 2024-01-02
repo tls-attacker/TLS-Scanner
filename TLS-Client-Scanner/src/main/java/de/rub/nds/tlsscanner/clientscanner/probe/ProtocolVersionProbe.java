@@ -254,8 +254,6 @@ public class ProtocolVersionProbe extends TlsClientProbe {
             toTestList.add(ProtocolVersion.DTLS10_DRAFT);
             toTestList.add(ProtocolVersion.DTLS10);
             toTestList.add(ProtocolVersion.DTLS12);
-        } else if (scannerConfig.getQuicDelegate().isQuic()) {
-            toTestList.add(ProtocolVersion.TLS13);
         } else {
             toTestList.add(ProtocolVersion.SSL2);
             toTestList.add(ProtocolVersion.SSL3);
