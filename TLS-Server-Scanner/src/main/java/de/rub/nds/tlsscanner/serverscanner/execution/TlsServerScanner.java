@@ -270,6 +270,7 @@ public final class TlsServerScanner
     @Override
     protected ServerReport getEmptyReport() {
         return new ServerReport(
+                config.getClientDelegate().getSniHostname(),
                 config.getClientDelegate().getExtractedHost(),
                 config.getClientDelegate().getExtractedPort());
     }

@@ -52,6 +52,7 @@ public class ServerReport extends TlsScanReport {
         };
     }
 
+    private final String sniHostname;
     private final String host;
     private final Integer port;
 
@@ -103,15 +104,27 @@ public class ServerReport extends TlsScanReport {
     private String configProfileIdentifierTls13;
 
     public ServerReport() {
-        super();
-        host = null;
-        port = null;
+        this(null, null, null);
     }
 
-    public ServerReport(String host, int port) {
+    public ServerReport(String host, Integer port) {
+        this(null, host, port);
+    }
+
+    public ServerReport(String sniHostname, String host, Integer port) {
         super();
+        this.sniHostname = sniHostname;
         this.host = host;
         this.port = port;
+    }
+
+    @Override
+    public String getRemoteName() {
+        if (sniHostname != null) {
+            return sniHostname + "(" + host + "):" + port;
+        } else {
+            return host + ":" + port;
+        }
     }
 
     public synchronized Long getSessionTicketLengthHint() {
