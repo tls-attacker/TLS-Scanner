@@ -60,10 +60,6 @@ public class BleichenbacherAttacker {
     private long additionalTimeout = 1000;
     private long additionalTcpTimeout = 5000;
     private List<VectorResponse> fullResponseMap;
-    private EqualityError resultError;
-
-    private boolean shakyScans = false;
-    private boolean erroneousScans = false;
 
     public BleichenbacherAttacker(
             Config baseConfig,
