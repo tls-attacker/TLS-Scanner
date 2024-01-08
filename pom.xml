@@ -138,7 +138,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>5.3.4-SNAPSHOT</version>
+            <version>5.3.4</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
