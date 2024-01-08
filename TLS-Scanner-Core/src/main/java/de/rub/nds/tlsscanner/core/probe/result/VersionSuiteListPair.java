@@ -19,6 +19,8 @@ public class VersionSuiteListPair implements Serializable {
 
     private final List<CipherSuite> cipherSuiteList;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private VersionSuiteListPair() {
         version = null;
         cipherSuiteList = null;

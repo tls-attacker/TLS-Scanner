@@ -29,6 +29,8 @@ public class InvalidCurveVector implements Vector {
     private boolean attackInRenegotiation;
     private List<NamedGroup> ecdsaRequiredGroups;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private InvalidCurveVector() {}
 
     public InvalidCurveVector(
