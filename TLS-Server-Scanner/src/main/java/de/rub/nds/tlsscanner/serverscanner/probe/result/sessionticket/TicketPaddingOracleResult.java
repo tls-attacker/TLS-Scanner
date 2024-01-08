@@ -18,11 +18,10 @@ import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketVector;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TicketPaddingOracleResult implements SummarizableTestResult, Serializable {
+public class TicketPaddingOracleResult implements SummarizableTestResult {
     private final TestResults overallResult;
 
     private final List<TicketPaddingOracleOffsetResult> positionResults;
