@@ -32,6 +32,9 @@ public class QuicTls12HandshakeProbe extends QuicServerProbe {
     public QuicTls12HandshakeProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.TLS12_HANDSHAKE, configSelector);
+        register(
+                QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE,
+                QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME);
     }
 
     @Override

@@ -28,6 +28,7 @@ public class QuicTransportParameterProbe extends QuicServerProbe {
     public QuicTransportParameterProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.TRANSPORT_PARAMETERS, configSelector);
+        register(QuicAnalyzedProperty.TRANSPORT_PARAMETERS);
     }
 
     @Override

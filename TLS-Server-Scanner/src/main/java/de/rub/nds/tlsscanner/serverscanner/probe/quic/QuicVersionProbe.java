@@ -32,6 +32,7 @@ public class QuicVersionProbe extends QuicServerProbe {
     public QuicVersionProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.SUPPORTED_VERSIONS, configSelector);
         this.supportedVersions = new ArrayList<>();
+        register(QuicAnalyzedProperty.VERSIONS);
     }
 
     @Override

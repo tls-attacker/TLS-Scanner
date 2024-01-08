@@ -32,6 +32,11 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
     public QuicConnectionMigrationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.CONNECTION_MIGRATION, configSelector);
+        register(
+                QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_SUCCESSFUL,
+                QuicAnalyzedProperty.IPV6_ADDRESS,
+                QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE,
+                QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL);
     }
 
     @Override
