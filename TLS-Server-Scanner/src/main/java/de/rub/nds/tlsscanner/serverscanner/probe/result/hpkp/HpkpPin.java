@@ -15,6 +15,8 @@ public class HpkpPin {
     private String pinType;
     private byte[] pin;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private HpkpPin() {}
 
     public HpkpPin(String pinType, byte[] ping) {
