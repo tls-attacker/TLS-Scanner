@@ -111,7 +111,6 @@ public class BleichenbacherAttacker {
             }
         }
 
-        resultError = referenceError;
         return referenceError != EqualityError.NONE;
     }
 
