@@ -1049,7 +1049,6 @@ public class DefaultInfluencersIT {
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
                 new LinkedList<>(
-                        // list results
                         Arrays.asList(
                                 TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
                                 TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
@@ -1116,8 +1115,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.WEAKEST_DH_STRENGTH,
                                 TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
                                 TlsAnalyzedProperty.COOKIE_LENGTH,
-                                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULU_SIZE,
-                                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULU_SIZE,
+                                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
+                                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE,
                                 TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
                                 TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                                 TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
