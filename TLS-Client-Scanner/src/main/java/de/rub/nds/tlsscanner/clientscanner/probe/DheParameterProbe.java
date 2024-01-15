@@ -60,7 +60,9 @@ public class DheParameterProbe extends TlsClientProbe {
                 TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
                 TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
-                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
+                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
+                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULU_SIZE,
+                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULU_SIZE);
 
         random = new Random(0);
         primeModuli = Arrays.asList(PrimeModulus.values());
@@ -173,8 +175,8 @@ public class DheParameterProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
-        report.setHighestPossibleDheModulusSize(highestDheModulusLength);
+        put(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULU_SIZE, lowestDheModulusLength);
+        put(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULU_SIZE, highestDheModulusLength);
         mergeCompositeModulusResult(report);
         mergeSmallSubgroupResult(report);
     }

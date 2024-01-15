@@ -356,7 +356,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** Client Specific Properties */
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
     FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS),
-    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS);
+    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS),
+    LOWEST_POSSIBLE_DHE_MODULU_SIZE(TlsAnalyzedPropertyCategory.FFDHE),
+    HIGHEST_POSSIBLE_DHE_MODULU_SIZE(TlsAnalyzedPropertyCategory.FFDHE);
 
     private final TlsAnalyzedPropertyCategory category;
 
