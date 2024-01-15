@@ -72,6 +72,10 @@ public class MacProbe extends TlsServerProbe {
 
     public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, configSelector);
+        register(
+                TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA,
+                TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN,
+                TlsAnalyzedProperty.VERIFY_CHECK_PATTERN);
     }
 
     @Override
