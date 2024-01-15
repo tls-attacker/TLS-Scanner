@@ -71,7 +71,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
                 TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
                 TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
-                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
+                TlsAnalyzedProperty.COOKIE_LENGTH);
     }
 
     @Override
@@ -297,6 +298,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         put(TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
         put(TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
         put(TlsAnalyzedProperty.USES_PORT_FOR_COOKIE, usesPortInCookie);
-        report.setCookieLength(cookieLength);
+        put(TlsAnalyzedProperty.COOKIE_LENGTH, cookieLength);
     }
 }

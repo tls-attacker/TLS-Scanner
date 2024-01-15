@@ -13,8 +13,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.LongResult;
 import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
@@ -40,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerReport extends TlsScanReport {
+
     public static Module[] getSerializerModules() {
         return new Module[] {
             new SimpleModule()
@@ -59,41 +63,6 @@ public class ServerReport extends TlsScanReport {
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
-
-    // Attacks
-    private NamedGroup helloRetryRequestSelectedNamedGroup = null;
-
-    // RFC
-    private CheckPattern macCheckPatternAppData = null;
-    private CheckPattern macCheckPatternFinished = null;
-    private CheckPattern verifyCheckPattern = null;
-
-    // Certificate
-    private int minimumRsaCertKeySize;
-    private int minimumDssCertKeySize;
-
-    // Session
-    private Long sessionTicketLengthHint = null;
-
-    // Renegotiation + SCSV
-    // GCM Nonces
-    private GcmPattern gcmPattern = null;
-
-    // HTTPS Header
-    private Long hstsMaxAge = null;
-    private Integer hpkpMaxAge = null; //
-
-    // DTLS
-    private Integer cookieLength = null;
-
-    // PublicKey Params
-    private Integer weakestDhStrength = null;
-
-    // Handshake Simulation
-    private Integer handshakeSuccessfulCounter = null;
-    private Integer handshakeFailedCounter = null;
-    private Integer connectionRfc7918SecureCounter = null;
-    private Integer connectionInsecureCounter = null;
 
     // Rating
     private int score;
@@ -127,14 +96,6 @@ public class ServerReport extends TlsScanReport {
         }
     }
 
-    public synchronized Long getSessionTicketLengthHint() {
-        return sessionTicketLengthHint;
-    }
-
-    public synchronized void setSessionTicketLengthHint(Long sessionTicketLengthHint) {
-        this.sessionTicketLengthHint = sessionTicketLengthHint;
-    }
-
     public synchronized String getHost() {
         return host;
     }
@@ -152,19 +113,15 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized CheckPattern getMacCheckPatternAppData() {
-        return macCheckPatternAppData;
-    }
-
-    public synchronized void setMacCheckPatternAppData(CheckPattern macCheckPatternAppData) {
-        this.macCheckPatternAppData = macCheckPatternAppData;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized CheckPattern getVerifyCheckPattern() {
-        return verifyCheckPattern;
-    }
-
-    public synchronized void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
-        this.verifyCheckPattern = verifyCheckPattern;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.VERIFY_CHECK_PATTERN, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Boolean getSpeaksProtocol() {
@@ -184,52 +141,32 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized Integer getCookieLength() {
-        return cookieLength;
-    }
-
-    public synchronized void setCookieLength(Integer cookieLength) {
-        this.cookieLength = cookieLength;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.COOKIE_LENGTH);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized GcmPattern getGcmPattern() {
-        return gcmPattern;
-    }
-
-    public synchronized void setGcmPattern(GcmPattern gcmPattern) {
-        this.gcmPattern = gcmPattern;
+        ObjectResult<GcmPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.GCM_PATTERN, GcmPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Integer getHandshakeSuccessfulCounter() {
-        return handshakeSuccessfulCounter;
-    }
-
-    public synchronized void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
-        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getHandshakeFailedCounter() {
-        return handshakeFailedCounter;
-    }
-
-    public synchronized void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
-        this.handshakeFailedCounter = handshakeFailedCounter;
-    }
-
-    public synchronized Integer getConnectionRfc7918SecureCounter() {
-        return connectionRfc7918SecureCounter;
-    }
-
-    public synchronized void setConnectionRfc7918SecureCounter(
-            Integer connectionRfc7918SecureCounter) {
-        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getConnectionInsecureCounter() {
-        return connectionInsecureCounter;
-    }
-
-    public synchronized void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
-        this.connectionInsecureCounter = connectionInsecureCounter;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     @Override
@@ -243,35 +180,24 @@ public class ServerReport extends TlsScanReport {
     }
 
     public synchronized CheckPattern getMacCheckPatternFinished() {
-        return macCheckPatternFinished;
-    }
-
-    public synchronized void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
-        this.macCheckPatternFinished = macCheckPatternFinished;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Long getHstsMaxAge() {
-        return hstsMaxAge;
-    }
-
-    public synchronized void setHstsMaxAge(Long hstsMaxAge) {
-        this.hstsMaxAge = hstsMaxAge;
+        LongResult longResult = getLongResult(TlsAnalyzedProperty.HSTS_MAX_AGE);
+        return longResult == null ? null : longResult.getValue();
     }
 
     public synchronized Integer getHpkpMaxAge() {
-        return hpkpMaxAge;
-    }
-
-    public synchronized void setHpkpMaxAge(Integer hpkpMaxAge) {
-        this.hpkpMaxAge = hpkpMaxAge;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.HPKP_MAX_AGE);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getWeakestDhStrength() {
-        return weakestDhStrength;
-    }
-
-    public synchronized void setWeakestDhStrength(Integer weakestDhStrength) {
-        this.weakestDhStrength = weakestDhStrength;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
@@ -378,31 +304,6 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
-    }
-
-    public synchronized int getMinimumRsaCertKeySize() {
-        return minimumRsaCertKeySize;
-    }
-
-    public synchronized void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
-        this.minimumRsaCertKeySize = minimumRsaCertKeySize;
-    }
-
-    public synchronized int getMinimumDssCertKeySize() {
-        return minimumDssCertKeySize;
-    }
-
-    public synchronized void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
-        this.minimumDssCertKeySize = minimumDssCertKeySize;
-    }
-
-    public synchronized NamedGroup getHelloRetryRequestSelectedNamedGroup() {
-        return helloRetryRequestSelectedNamedGroup;
-    }
-
-    public synchronized void setHelloRetryRequestSelectedNamedGroup(
-            NamedGroup helloRetryRequestSelectedNamedGroup) {
-        this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
     }
 
     public synchronized String getConfigProfileIdentifier() {

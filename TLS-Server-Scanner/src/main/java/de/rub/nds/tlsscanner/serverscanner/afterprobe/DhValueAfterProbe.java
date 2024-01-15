@@ -100,7 +100,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
         report.putResult(TlsAnalyzedProperty.COMMON_DH_VALUES, usedCommonValues);
         report.putResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
-            report.setWeakestDhStrength(shortestBitLength);
+            report.putResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH, shortestBitLength);
         }
     }
 

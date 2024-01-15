@@ -434,8 +434,8 @@ public class MacProbe extends TlsServerProbe {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setMacCheckPatternAppData(appPattern);
-        report.setMacCheckPatternFinished(finishedPattern);
-        report.setVerifyCheckPattern(verifyPattern);
+        put(TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA, appPattern);
+        put(TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN, finishedPattern);
+        put(TlsAnalyzedProperty.VERIFY_CHECK_PATTERN, verifyPattern);
     }
 }
