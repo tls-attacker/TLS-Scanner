@@ -284,7 +284,6 @@ public final class TlsServerScanner
 
     @Override
     protected boolean checkScanPrerequisites(ServerReport report) {
-        report.setProtocolType(getProtocolType());
         boolean isConnectable = false;
         boolean speaksProtocol = false;
         boolean isHandshaking = false;
@@ -309,7 +308,7 @@ public final class TlsServerScanner
         report.setServerIsAlive(isConnectable);
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
-        report.setProtocolType(getProtocolType());
+        report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
         return isConnectable && speaksProtocol && isHandshaking;
     }
 

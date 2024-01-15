@@ -52,6 +52,7 @@ import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterPro
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
@@ -152,7 +153,7 @@ public final class TlsClientScanner
     protected boolean checkScanPrerequisites(ClientReport report) {
         ProtocolType protocolType =
                 config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
-        report.setProtocolType(protocolType);
+        report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, protocolType);
         return true;
     }
 

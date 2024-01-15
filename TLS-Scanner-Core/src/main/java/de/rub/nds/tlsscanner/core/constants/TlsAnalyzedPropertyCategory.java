@@ -13,6 +13,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
+    CONNECTION,
     ESNI,
     VERSIONS,
     CIPHER_SUITES,

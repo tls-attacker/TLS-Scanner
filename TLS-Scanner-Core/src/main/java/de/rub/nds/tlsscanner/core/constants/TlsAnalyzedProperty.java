@@ -17,6 +17,10 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
+    PROTOCOL_TYPE(TlsAnalyzedPropertyCategory.CONNECTION),
+    CLOSED_AFTER_FINISHED_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
+    CLOSED_AFTER_APP_DATA_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
+    KNOWN_PADDING_ORACLE_VULNERABILITY(TlsAnalyzedPropertyCategory.ATTACKS),
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -342,6 +346,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
             TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     HAS_CLIENT_HELLO_MISMATCH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     ACCEPTS_EMPTY_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    TOTAL_RECEIVED_RETRANSMISSIONS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     /** SessionTicket */
     UNENCRYPTED_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
     NO_MAC_CHECK_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
