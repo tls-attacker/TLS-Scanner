@@ -1100,7 +1100,6 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty
                                         .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                                 TlsAnalyzedProperty.STATISTICS_TICKET,
-                                
                                 TlsAnalyzedProperty.PROTOCOL_TYPE,
                                 TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
                                 TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA,
@@ -1122,7 +1121,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
                                 TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                                 TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
-                                
+
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA,
