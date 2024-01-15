@@ -17,4 +17,7 @@ public enum QuicAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     TRANSPORT_PARAMETERS,
     CONNECTION_MIGRATION,
     QUIRKS,
+    RETRY_PACKET,
+    NEW_CONNECTION_ID_FRAME,
+    NEW_TOKEN_FRAME
 }

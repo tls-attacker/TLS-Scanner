@@ -15,7 +15,9 @@ public enum QuicProbeType implements ProbeType {
     SUPPORTED_VERSIONS("Supported Versions"),
     TRANSPORT_PARAMETERS("Transport Parameters"),
     TLS12_HANDSHAKE("TLS 1.2 Handshake"),
-    CONNECTION_MIGRATION("Connection Migration");
+    CONNECTION_MIGRATION("Connection Migration"),
+    RETRY_PACKET("Retry Packet"),
+    AFTER_HANDSHAKE("After Handhshake");
 
     @Override
     public String getName() {

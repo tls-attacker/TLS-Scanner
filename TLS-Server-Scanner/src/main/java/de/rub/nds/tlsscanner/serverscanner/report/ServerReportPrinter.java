@@ -321,6 +321,62 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendQuicTransportParameters(builder);
         appendQuicTlsHandshakeProbe(builder);
         appendQuicConnectionMigrationProbe(builder);
+        appendQuicRetryPacketProbe(builder);
+        appendQuicAfterHandshakeProbe(builder);
+    }
+
+    private void appendQuicAfterHandshakeProbe(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC After Handshake Probe");
+        prettyAppend(builder, "QUIC NEW_TOKEN Frame");
+        if (report.getResult(QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND) == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends NEW_TOKEN frame", true);
+            prettyAppend(
+                    builder,
+                    "Number of Tokens",
+                    ""
+                            + report.getIntegerResult(QuicAnalyzedProperty.NUMBER_OF_NEW_TOKENS)
+                                    .getValue());
+            prettyAppend(
+                    builder,
+                    "Token Length",
+                    "" + report.getLongResult(QuicAnalyzedProperty.NEW_TOKEN_LENGTH).getValue());
+        } else {
+            prettyAppend(builder, "Server sends NEW_TOKEN frame", false);
+        }
+        prettyAppend(builder, "\nQUIC NEW_CONNECTION_ID Frame");
+        if (report.getResult(QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND)
+                == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends NEW_CONNECTION_ID frame", true);
+            prettyAppend(
+                    builder,
+                    "Number of IDs",
+                    ""
+                            + report.getIntegerResult(
+                                            QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_IDS)
+                                    .getValue());
+        } else {
+            prettyAppend(builder, "Server sends NEW_CONNECTION_ID frame", false);
+        }
+    }
+
+    private void appendQuicRetryPacketProbe(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Retry Packet Probe");
+        if (report.getResult(QuicAnalyzedProperty.RETRY_REQUIRED) == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends RETRY packet", true);
+            prettyAppend(
+                    builder,
+                    "Token Length",
+                    ""
+                            + report.getIntegerResult(QuicAnalyzedProperty.RETRY_TOKEN_LENGTH)
+                                    .getValue());
+            prettyAppend(builder, "Checks Token", QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS);
+            prettyAppend(
+                    builder,
+                    "Token Retransmissions",
+                    QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS);
+        } else {
+            prettyAppend(builder, "Server sends RETRY frame", false);
+        }
     }
 
     private void appendQuicConnectionMigrationProbe(StringBuilder builder) {

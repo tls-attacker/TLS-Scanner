@@ -12,8 +12,10 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.OutboundConnection;
+import de.rub.nds.tlsattacker.core.quic.constants.QuicFrameType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
@@ -25,18 +27,22 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 public class QuicConnectionMigrationProbe extends QuicServerProbe {
 
     private boolean portConnectionMigrationSuccessful;
+    private boolean portConnectionMigrationWithPathChallange;
     private String ipv6Address;
     private boolean ipv6HandshakeSuccessful;
     private boolean ipv6ConnectionMigrationSuccessful;
+    private boolean ipv6ConnectionMigrationWithPathChallange;
 
     public QuicConnectionMigrationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.CONNECTION_MIGRATION, configSelector);
         register(
                 QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_SUCCESSFUL,
+                QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE,
                 QuicAnalyzedProperty.IPV6_ADDRESS,
                 QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE,
-                QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL);
+                QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
+                QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE);
     }
 
     @Override
@@ -48,6 +54,9 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
         State state = new State(config);
         executeState(state);
         portConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
+        portConnectionMigrationWithPathChallange =
+                WorkflowTraceResultUtil.didReceiveFrame(
+                        state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
         // IPV6 Handshake
         if (config.getDefaultClientConnection().getIpv6() != null) {
             ipv6Address = config.getDefaultClientConnection().getIpv6();
@@ -65,6 +74,10 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
                 state = new State(config);
                 executeState(state);
                 ipv6ConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
+                ipv6ConnectionMigrationWithPathChallange =
+                        WorkflowTraceResultUtil.didReceiveFrame(
+                                state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
+
             } else {
                 ipv6ConnectionMigrationSuccessful = false;
             }
@@ -79,16 +92,27 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
         put(
                 QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_SUCCESSFUL,
                 portConnectionMigrationSuccessful ? TestResults.TRUE : TestResults.FALSE);
+        put(
+                QuicAnalyzedProperty.PORT_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE,
+                portConnectionMigrationWithPathChallange ? TestResults.TRUE : TestResults.FALSE);
         put(QuicAnalyzedProperty.IPV6_ADDRESS, ipv6Address);
         if (ipv6HandshakeSuccessful) {
             put(QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE, TestResults.TRUE);
             put(
                     QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
                     ipv6ConnectionMigrationSuccessful ? TestResults.TRUE : TestResults.FALSE);
+            put(
+                    QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE,
+                    ipv6ConnectionMigrationWithPathChallange
+                            ? TestResults.TRUE
+                            : TestResults.FALSE);
         } else {
             put(QuicAnalyzedProperty.IPV6_HANDSHAKE_DONE, TestResults.FALSE);
             put(
                     QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL,
+                    TestResults.COULD_NOT_TEST);
+            put(
+                    QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE,
                     TestResults.COULD_NOT_TEST);
         }
     }

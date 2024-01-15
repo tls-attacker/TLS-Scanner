@@ -22,9 +22,22 @@ public enum QuicAnalyzedProperty implements AnalyzedProperty {
     TLS12_HANDSHAKE_DONE(QuicAnalyzedPropertyCategory.QUIRKS),
     TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME(QuicAnalyzedPropertyCategory.QUIRKS),
     PORT_CONNECTION_MIGRATION_SUCCESSFUL(QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
+    PORT_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE(
+            QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
     IPV6_ADDRESS(QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
     IPV6_HANDSHAKE_DONE(QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
-    IPV6_CONNECTION_MIGRATION_SUCCESSFUL(QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION);
+    IPV6_CONNECTION_MIGRATION_SUCCESSFUL(QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
+    IPV6_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE(
+            QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
+    RETRY_REQUIRED(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    HAS_RETRY_TOKEN_RETRANSMISSIONS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    HAS_RETRY_TOKEN_CHECKS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    RETRY_TOKEN_LENGTH(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    IS_NEW_TOKEN_FRAME_SEND(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
+    NUMBER_OF_NEW_TOKENS(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
+    NEW_TOKEN_LENGTH(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
+    IS_NEW_CONNECTION_ID_FRAME_SEND(QuicAnalyzedPropertyCategory.NEW_CONNECTION_ID_FRAME),
+    NUMBER_OF_NEW_CONNECTION_IDS(QuicAnalyzedPropertyCategory.NEW_CONNECTION_ID_FRAME);
 
     private final QuicAnalyzedPropertyCategory category;
 

@@ -75,9 +75,6 @@ public class ServerReport extends TlsScanReport {
     // DTLS
     private Integer cookieLength = null;
 
-    // QUIC
-    private Boolean quicRetryRequired = null;
-
     // PublicKey Params
     private Integer weakestDhStrength = null;
 
@@ -399,14 +396,6 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setConfigProfileIdentifierTls13(String configProfileIdentifierTls13) {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
-    }
-
-    public void setQuicRetryRequired(Boolean quicRetryRequired) {
-        this.quicRetryRequired = quicRetryRequired;
-    }
-
-    public synchronized Boolean isQuicRetryRequired() {
-        return quicRetryRequired;
     }
 
     public synchronized List<QuicVersionProbe.Entry> getSupportedQuicVersions() {
