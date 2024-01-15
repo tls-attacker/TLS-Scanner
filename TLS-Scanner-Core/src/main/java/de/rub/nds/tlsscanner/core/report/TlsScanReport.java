@@ -44,10 +44,6 @@ import java.util.stream.Collectors;
 
 public abstract class TlsScanReport extends ScanReport {
 
-    // Scan Timestamps
-    private long scanStartTime;
-    private long scanEndTime;
-
     public TlsScanReport() {
         super();
     }
@@ -70,22 +66,6 @@ public abstract class TlsScanReport extends ScanReport {
         IntegerResult integerResult =
                 getIntegerResult(TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS);
         return integerResult == null ? null : integerResult.getValue();
-    }
-
-    public synchronized long getScanStartTime() {
-        return scanStartTime;
-    }
-
-    public synchronized void setScanStartTime(long scanStartTime) {
-        this.scanStartTime = scanStartTime;
-    }
-
-    public synchronized long getScanEndTime() {
-        return scanEndTime;
-    }
-
-    public synchronized void setScanEndTime(long scanEndTime) {
-        this.scanEndTime = scanEndTime;
     }
 
     public synchronized Boolean getCcaSupported() {
