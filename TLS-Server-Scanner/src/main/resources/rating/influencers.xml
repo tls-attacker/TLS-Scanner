@@ -2309,6 +2309,69 @@
         <property>STATISTICS_TICKET</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>PROTOCOL_TYPE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>CLOSED_AFTER_FINISHED_DELTA</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>CLOSED_AFTER_APP_DATA_DELTA</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>KNOWN_PADDING_ORACLE_VULNERABILITY</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MINIMUM_RSA_CERT_KEY_SIZE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MINIMUM_DSS_CERT_KEY_SIZE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HSTS_MAX_AGE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HPKP_MAX_AGE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>GCM_PATTERN</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MAC_CHECK_PATTERN_FIN</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MAC_CHECK_PATTERN_APP_DATA</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VERIFY_CHECK_PATTERN</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HRR_SELECTED_GROUP</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>WEAKEST_DH_STRENGTH</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>TOTAL_RECEIVED_RETRANSMISSIONS</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>COOKIE_LENGTH</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>LOWEST_POSSIBLE_DHE_MODULU_SIZE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HIGHEST_POSSIBLE_DHE_MODULU_SIZE</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HANDSHAKE_SUCCESFUL_COUNTER</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HANDSHAKE_FAILED_COUNTER</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>CONNECTION_INSECURE_COUNTER</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SERVER_CERT_MIN_KEY_SIZE_RSA_SIG</property>
     </ratingInfluencer>
     <ratingInfluencer>

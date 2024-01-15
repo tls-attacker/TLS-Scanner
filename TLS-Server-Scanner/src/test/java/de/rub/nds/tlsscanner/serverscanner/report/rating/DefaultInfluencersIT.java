@@ -1100,6 +1100,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty
                                         .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                                 TlsAnalyzedProperty.STATISTICS_TICKET,
+                                
                                 TlsAnalyzedProperty.PROTOCOL_TYPE,
                                 TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
                                 TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA,
