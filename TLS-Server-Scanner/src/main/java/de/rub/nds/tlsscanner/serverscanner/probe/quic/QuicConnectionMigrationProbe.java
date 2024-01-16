@@ -55,7 +55,7 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
         executeState(state);
         portConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
         portConnectionMigrationWithPathChallange =
-                WorkflowTraceResultUtil.didReceiveFrame(
+                WorkflowTraceResultUtil.didReceiveQuicFrame(
                         state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
         // IPV6 Handshake
         if (config.getDefaultClientConnection().getIpv6() != null) {
@@ -75,7 +75,7 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
                 executeState(state);
                 ipv6ConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
                 ipv6ConnectionMigrationWithPathChallange =
-                        WorkflowTraceResultUtil.didReceiveFrame(
+                        WorkflowTraceResultUtil.didReceiveQuicFrame(
                                 state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
 
             } else {

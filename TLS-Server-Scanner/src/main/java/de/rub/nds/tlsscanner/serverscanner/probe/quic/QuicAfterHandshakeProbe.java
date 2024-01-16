@@ -55,11 +55,11 @@ public class QuicAfterHandshakeProbe extends QuicServerProbe {
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
             List<QuicFrame> frames =
-                    WorkflowTraceResultUtil.getAllReceivedFrames(state.getWorkflowTrace());
-            if (WorkflowTraceResultUtil.didReceiveFrame(
+                    WorkflowTraceResultUtil.getAllReceivedQuicFrames(state.getWorkflowTrace());
+            if (WorkflowTraceResultUtil.didReceiveQuicFrame(
                     state.getWorkflowTrace(), QuicFrameType.NEW_TOKEN_FRAME)) {
                 List<QuicFrame> newTokens =
-                        WorkflowTraceResultUtil.getAllReceivedFramesOfType(
+                        WorkflowTraceResultUtil.getAllReceivedQuicFramesOfType(
                                 state.getWorkflowTrace(), QuicFrameType.NEW_TOKEN_FRAME);
                 if (newTokens.size() > 0) {
                     isNewTokenSend = TestResults.TRUE;
@@ -67,10 +67,10 @@ public class QuicAfterHandshakeProbe extends QuicServerProbe {
                     newTokenLength = ((NewTokenFrame) newTokens.get(0)).getTokenLength().getValue();
                 }
             }
-            if (WorkflowTraceResultUtil.didReceiveFrame(
+            if (WorkflowTraceResultUtil.didReceiveQuicFrame(
                     state.getWorkflowTrace(), QuicFrameType.NEW_CONNECTION_ID_FRAME)) {
                 List<QuicFrame> newConnectionIds =
-                        WorkflowTraceResultUtil.getAllReceivedFramesOfType(
+                        WorkflowTraceResultUtil.getAllReceivedQuicFramesOfType(
                                 state.getWorkflowTrace(), QuicFrameType.NEW_CONNECTION_ID_FRAME);
                 if (newConnectionIds.size() > 0) {
                     isNewConnectionIdSend = TestResults.TRUE;

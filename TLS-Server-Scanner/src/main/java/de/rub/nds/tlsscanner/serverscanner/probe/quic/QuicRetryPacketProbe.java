@@ -70,7 +70,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         State state = new State(config, trace);
         executeState(state);
         int numberRetryPackets =
-                WorkflowTraceResultUtil.getAllReceivedPacketsOfType(
+                WorkflowTraceResultUtil.getAllReceivedQuicPacketsOfType(
                                 trace, QuicPacketType.RETRY_PACKET)
                         .size();
         if (numberRetryPackets > 1) {
@@ -88,7 +88,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceResultUtil.didReceivePacket(
+        if (WorkflowTraceResultUtil.didReceiveQuicPacket(
                 state.getWorkflowTrace(), QuicPacketType.RETRY_PACKET)) {
             retryTokenLength = state.getContext().getQuicContext().getInitialPacketToken().length;
             if (retryTokenLength == 0) {
