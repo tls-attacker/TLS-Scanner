@@ -79,9 +79,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     HPKP_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
 
     GCM_PATTERN(TlsAnalyzedPropertyCategory.QUIRKS),
-    MAC_CHECK_PATTERN_FIN(TlsAnalyzedPropertyCategory.QUIRKS),
-    MAC_CHECK_PATTERN_APP_DATA(TlsAnalyzedPropertyCategory.QUIRKS),
-    VERIFY_CHECK_PATTERN(TlsAnalyzedPropertyCategory.QUIRKS),
+    MAC_CHECK_PATTERN_FIN(TlsAnalyzedPropertyCategory.MAC),
+    MAC_CHECK_PATTERN_APP_DATA(TlsAnalyzedPropertyCategory.MAC),
+    VERIFY_CHECK_PATTERN(TlsAnalyzedPropertyCategory.MAC),
 
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
