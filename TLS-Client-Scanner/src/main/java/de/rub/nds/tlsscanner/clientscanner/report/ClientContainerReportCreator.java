@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
@@ -427,7 +428,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
     private ReportContainer createDheParameterContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DHE Parameters"));
-        Integer lowestPossibleDheModulusSize = report.getLowestPossibleDheModulusSize();
+        IntegerResult lowestPossibleDheModulusSize =
+                report.getIntegerResult(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (lowestPossibleDheModulusSize != null) {
             String containerKey = "Lowest accepted modulus (>= 2 bits)";
             String containerValue = lowestPossibleDheModulusSize + " bits";
@@ -436,9 +438,10 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                             containerKey,
                             AnsiColor.DEFAULT_COLOR,
                             containerValue,
-                            getColorForDhModulusSize(lowestPossibleDheModulusSize)));
+                            getColorForDhModulusSize(lowestPossibleDheModulusSize.getValue())));
         }
-        Integer highestPossibleDheModulusSize = report.getHighestPossibleDheModulusSize();
+        IntegerResult highestPossibleDheModulusSize =
+                report.getIntegerResult(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (highestPossibleDheModulusSize != null) {
             String containerKey = "Highest accepted modulus (<= 8192 bits)";
             String containerValue = highestPossibleDheModulusSize + " bits";
@@ -447,7 +450,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                             containerKey,
                             AnsiColor.DEFAULT_COLOR,
                             containerValue,
-                            getColorForDhModulusSize(highestPossibleDheModulusSize)));
+                            getColorForDhModulusSize(highestPossibleDheModulusSize.getValue())));
         }
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS, report));

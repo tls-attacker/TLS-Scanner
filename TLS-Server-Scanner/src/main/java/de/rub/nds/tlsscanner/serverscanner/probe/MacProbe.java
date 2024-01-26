@@ -72,6 +72,10 @@ public class MacProbe extends TlsServerProbe {
 
     public MacProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.MAC, configSelector);
+        register(
+                TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA,
+                TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN,
+                TlsAnalyzedProperty.VERIFY_CHECK_PATTERN);
     }
 
     @Override
@@ -434,8 +438,8 @@ public class MacProbe extends TlsServerProbe {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setMacCheckPatternAppData(appPattern);
-        report.setMacCheckPatternFinished(finishedPattern);
-        report.setVerifyCheckPattern(verifyPattern);
+        put(TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA, appPattern);
+        put(TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN, finishedPattern);
+        put(TlsAnalyzedProperty.VERIFY_CHECK_PATTERN, verifyPattern);
     }
 }

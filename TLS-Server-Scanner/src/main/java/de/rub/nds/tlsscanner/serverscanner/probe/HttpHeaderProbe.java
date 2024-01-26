@@ -65,7 +65,9 @@ public class HttpHeaderProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS,
                 TlsAnalyzedProperty.HSTS_NOT_PARSEABLE,
                 TlsAnalyzedProperty.HPKP_NOT_PARSEABLE,
-                TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+                TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS,
+                TlsAnalyzedProperty.HSTS_MAX_AGE,
+                TlsAnalyzedProperty.HPKP_MAX_AGE);
     }
 
     @Override
@@ -230,8 +232,8 @@ public class HttpHeaderProbe extends TlsServerProbe {
         } else {
             setPropertiesToCouldNotTest();
         }
-        report.setHstsMaxAge(hstsMaxAge);
-        report.setHpkpMaxAge(hpkpMaxAge);
+        put(TlsAnalyzedProperty.HSTS_MAX_AGE, hstsMaxAge);
+        put(TlsAnalyzedProperty.HPKP_MAX_AGE, hpkpMaxAge);
         put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);
         put(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, reportOnlyPinList);
     }
