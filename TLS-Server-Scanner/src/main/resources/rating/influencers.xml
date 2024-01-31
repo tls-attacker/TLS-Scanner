@@ -2357,10 +2357,10 @@
         <property>COOKIE_LENGTH</property>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>LOWEST_POSSIBLE_DHE_MODULU_SIZE</property>
+        <property>LOWEST_POSSIBLE_DHE_MODULUS_SIZE</property>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>HIGHEST_POSSIBLE_DHE_MODULU_SIZE</property>
+        <property>HIGHEST_POSSIBLE_DHE_MODULUS_SIZE</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>HANDSHAKE_SUCCESFUL_COUNTER</property>
