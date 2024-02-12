@@ -114,6 +114,7 @@ public class ConfigSelector {
     public boolean findWorkingTls13Config() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
             Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
+            baseConfig.setQuicRetryFlowRequired(false);
             if (configWorks(baseConfig)) {
                 configProfileIdentifierTls13 = configProfile.getIdentifier();
                 reportLimitation(configProfile, "TLS 1.3");
