@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicPacketType;
 import de.rub.nds.tlsattacker.core.quic.packet.InitialPacket;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -41,6 +42,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
 
     public static Integer RETRY_TOKEN_LENGTH_ERROR_VALUE = -1;
 
+    private TestResult processesSplittedClientHello = TestResults.COULD_NOT_TEST;
     private TestResult hasRetryTokenRetransmissions = TestResults.COULD_NOT_TEST;
     private TestResult checksRetryToken = TestResults.COULD_NOT_TEST;
     private Integer retryTokenLength = RETRY_TOKEN_LENGTH_ERROR_VALUE;
@@ -48,6 +50,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
     public QuicRetryPacketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.RETRY_PACKET, configSelector);
         register(
+                QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO,
                 QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS,
                 QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS,
                 QuicAnalyzedProperty.RETRY_TOKEN_LENGTH);
@@ -57,6 +60,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
     public void executeTest() {
         hasRetryTokenRetransmissions = hasRetryPacketRetransmissions();
         checksRetryToken = checksRetryToken();
+        processesSplittedClientHello = processesSplittedClientHello();
     }
 
     private TestResult hasRetryPacketRetransmissions() {
@@ -78,7 +82,7 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         } else if (numberRetryPackets == 1) {
             return TestResults.FALSE;
         } else {
-            return TestResults.CANNOT_BE_TESTED;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
@@ -111,26 +115,42 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
         state = new State(config, trace);
-        return getResult(state);
+        executeState(state);
+        return serverHelloReceived(state, false);
     }
 
-    private TestResult getResult(State state) {
+    private TestResult processesSplittedClientHello() {
+        Config config = configSelector.getTls13BaseConfig();
+        config.setExpectHandshakeDoneQuicFrame(false);
+        config.setQuicMaximumFrameSize(50);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage()));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloMessage()));
+        State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceResultUtil.didReceiveMessage(
-                state.getWorkflowTrace(), HandshakeMessageType.HELLO_VERIFY_REQUEST)) {
+        // TODO: Check immediately after the first fragment
+        return serverHelloReceived(state, true);
+    }
+
+    private TestResult serverHelloReceived(State state, boolean checkForTrue) {
+        if (WorkflowTraceResultUtil.didReceiveQuicPacket(
+                state.getWorkflowTrace(), QuicPacketType.RETRY_PACKET)) {
             if (WorkflowTraceResultUtil.didReceiveMessage(
                     state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
-                return TestResults.FALSE;
+                return checkForTrue ? TestResults.TRUE : TestResults.FALSE;
             } else {
-                return TestResults.TRUE;
+                return checkForTrue ? TestResults.FALSE : TestResults.TRUE;
             }
         } else {
-            return TestResults.CANNOT_BE_TESTED;
+            return TestResults.ERROR_DURING_TEST;
         }
     }
 
     @Override
     protected void mergeData(ServerReport report) {
+        put(QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO, processesSplittedClientHello);
         put(QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS, hasRetryTokenRetransmissions);
         put(QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS, checksRetryToken);
         put(QuicAnalyzedProperty.RETRY_TOKEN_LENGTH, retryTokenLength);

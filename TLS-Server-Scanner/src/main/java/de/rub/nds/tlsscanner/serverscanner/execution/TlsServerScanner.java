@@ -281,6 +281,7 @@ public final class TlsServerScanner
                 new QuicConnectionMigrationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicAfterHandshakeProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
     }
 
     @Override

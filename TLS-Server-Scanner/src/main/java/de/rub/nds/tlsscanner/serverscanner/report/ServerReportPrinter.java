@@ -374,6 +374,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     builder,
                     "Token Retransmissions",
                     QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS);
+            prettyAppend(
+                    builder,
+                    "Sends token after complete CH",
+                    QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO);
         } else {
             prettyAppend(builder, "Server sends RETRY frame", false);
         }

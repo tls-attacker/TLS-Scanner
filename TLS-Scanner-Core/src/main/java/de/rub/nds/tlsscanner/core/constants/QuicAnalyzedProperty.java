@@ -30,6 +30,7 @@ public enum QuicAnalyzedProperty implements AnalyzedProperty {
     IPV6_CONNECTION_MIGRATION_WITH_PATH_CHALLANGE(
             QuicAnalyzedPropertyCategory.CONNECTION_MIGRATION),
     RETRY_REQUIRED(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    PROCESSES_SPLITTED_CLIENT_HELLO(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     HAS_RETRY_TOKEN_RETRANSMISSIONS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     HAS_RETRY_TOKEN_CHECKS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     RETRY_TOKEN_LENGTH(QuicAnalyzedPropertyCategory.RETRY_PACKET),
