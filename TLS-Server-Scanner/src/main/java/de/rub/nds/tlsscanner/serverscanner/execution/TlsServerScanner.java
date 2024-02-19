@@ -96,6 +96,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAfterHandshakeProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAntiDosLimitProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicConnectionMigrationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicRetryPacketProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTls12HandshakeProbe;
@@ -282,6 +283,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicAfterHandshakeProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicAntiDosLimitProbe(configSelector, parallelExecutor));
     }
 
     @Override

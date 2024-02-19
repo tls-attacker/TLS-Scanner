@@ -322,7 +322,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendQuicTlsHandshakeProbe(builder);
         appendQuicConnectionMigrationProbe(builder);
         appendQuicRetryPacketProbe(builder);
+        appendQuicAntiDosLimitProbe(builder);
         appendQuicAfterHandshakeProbe(builder);
+    }
+
+    private void appendQuicAntiDosLimitProbe(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Anti Dos Limit Probe");
+        prettyAppend(
+                builder, "Server holds anti DoS limit", QuicAnalyzedProperty.HOLDS_ANTI_DOS_LIMIT);
     }
 
     private void appendQuicAfterHandshakeProbe(StringBuilder builder) {

@@ -17,7 +17,8 @@ public enum QuicProbeType implements ProbeType {
     TLS12_HANDSHAKE("TLS 1.2 Handshake"),
     CONNECTION_MIGRATION("Connection Migration"),
     RETRY_PACKET("Retry Packet"),
-    AFTER_HANDSHAKE("After Handhshake");
+    AFTER_HANDSHAKE("After Handhshake"),
+    ANTI_DOS_LIMIT("Anti DoS Limit");
 
     @Override
     public String getName() {

@@ -34,6 +34,7 @@ public enum QuicAnalyzedProperty implements AnalyzedProperty {
     HAS_RETRY_TOKEN_RETRANSMISSIONS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     HAS_RETRY_TOKEN_CHECKS(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     RETRY_TOKEN_LENGTH(QuicAnalyzedPropertyCategory.RETRY_PACKET),
+    HOLDS_ANTI_DOS_LIMIT(QuicAnalyzedPropertyCategory.RETRY_PACKET),
     IS_NEW_TOKEN_FRAME_SEND(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
     NUMBER_OF_NEW_TOKENS(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
     NEW_TOKEN_LENGTH(QuicAnalyzedPropertyCategory.NEW_TOKEN_FRAME),
