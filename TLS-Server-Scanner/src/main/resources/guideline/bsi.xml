@@ -265,9 +265,6 @@
         <recommendedAlgorithms>ECDSA_WITH_SHA256</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_WITH_SHA384</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_WITH_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_BRAINPOOL_P256R1_TLS13_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_BRAINPOOL_P384R1_TLS13_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
     </signatureAndHashAlgorithmsCertificateGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
