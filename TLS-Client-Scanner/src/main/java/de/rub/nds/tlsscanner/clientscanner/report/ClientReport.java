@@ -27,6 +27,7 @@ import java.util.Set;
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsScanReport {
+
     public static Module[] getSerializerModules() {
         return new Module[] {
             new SimpleModule()
@@ -37,10 +38,6 @@ public class ClientReport extends TlsScanReport {
             new JodaModule()
         };
     }
-
-    // DHE
-    private Integer lowestPossibleDheModulusSize;
-    private Integer highestPossibleDheModulusSize;
 
     public ClientReport() {
         super();
@@ -80,22 +77,6 @@ public class ClientReport extends TlsScanReport {
                 getListResult(
                         TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, ECPointFormat.class);
         return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
-
-    public Integer getHighestPossibleDheModulusSize() {
-        return highestPossibleDheModulusSize;
-    }
-
-    public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
-        this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
-    }
-
-    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
     }
 
     public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {

@@ -39,6 +39,8 @@ public class DtlsRetransmissionAfterProbe<ReportT extends TlsScanReport>
                 TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS,
                 new MapResult<>(
                         TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS, retransmissionCounters));
-        report.setTotalReceivedRetransmissions(container.getNumberOfExtractedValues());
+        report.putResult(
+                TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
+                container.getNumberOfExtractedValues());
     }
 }

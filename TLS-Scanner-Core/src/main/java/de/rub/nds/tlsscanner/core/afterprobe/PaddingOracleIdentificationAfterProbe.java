@@ -32,7 +32,8 @@ public class PaddingOracleIdentificationAfterProbe<ReportT extends TlsScanReport
                 TestResults.TRUE)) {
             KnownPaddingOracleVulnerability knownVulnerability =
                     attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
-            report.setKnownPaddingOracleVulnerability(knownVulnerability);
+            report.putResult(
+                    TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY, knownVulnerability);
         }
     }
 }

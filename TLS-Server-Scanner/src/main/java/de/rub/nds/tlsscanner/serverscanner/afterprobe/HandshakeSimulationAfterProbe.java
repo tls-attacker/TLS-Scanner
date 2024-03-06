@@ -65,10 +65,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                     simulatedClient.setHandshakeSuccessful(false);
                 }
             }
-            report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
-            report.setHandshakeFailedCounter(
+            report.putResult(TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER, isSuccessfulCounter);
+            report.putResult(
+                    TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                     report.getSimulatedClientsResultList().size() - isSuccessfulCounter);
-            report.setConnectionInsecureCounter(isInsecureCounter);
+            report.putResult(TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER, isInsecureCounter);
         } else {
             LOGGER.debug(
                     "property "

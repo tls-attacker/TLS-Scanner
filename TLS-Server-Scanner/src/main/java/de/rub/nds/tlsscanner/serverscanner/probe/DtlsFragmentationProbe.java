@@ -165,9 +165,16 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
         } else if (supportsWithExtension == TestResults.TRUE) {
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
             put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.TRUE);
-        } else {
+        } else if (supportsDirectly == TestResults.FALSE
+                && supportsAfterCookieExchange == TestResults.FALSE
+                && supportsWithExtension == TestResults.FALSE) {
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.FALSE);
             put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
+        } else {
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
+                    TestResults.COULD_NOT_TEST);
         }
 
         if (supportsDirectlyIndPackets == TestResults.TRUE) {
@@ -194,7 +201,9 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                     TlsAnalyzedProperty
                             .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
                     TestResults.TRUE);
-        } else {
+        } else if (supportsDirectlyIndPackets == TestResults.FALSE
+                && supportsAfterCookieExchangeIndPackets == TestResults.FALSE
+                && supportsWithExtensionIndPackets == TestResults.FALSE) {
             put(
                     TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
                     TestResults.FALSE);
@@ -202,6 +211,14 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                     TlsAnalyzedProperty
                             .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
                     TestResults.FALSE);
+        } else {
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.COULD_NOT_TEST);
         }
     }
 }

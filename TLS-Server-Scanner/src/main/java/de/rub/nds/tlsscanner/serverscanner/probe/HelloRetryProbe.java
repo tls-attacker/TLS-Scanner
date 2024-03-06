@@ -41,7 +41,8 @@ public class HelloRetryProbe extends TlsServerProbe {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, configSelector);
         register(
                 TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY,
-                TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+                TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST,
+                TlsAnalyzedProperty.HRR_SELECTED_GROUP);
     }
 
     @Override
@@ -98,6 +99,6 @@ public class HelloRetryProbe extends TlsServerProbe {
         } else {
             put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
         }
-        report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
+        put(TlsAnalyzedProperty.HRR_SELECTED_GROUP, serversChosenGroup);
     }
 }

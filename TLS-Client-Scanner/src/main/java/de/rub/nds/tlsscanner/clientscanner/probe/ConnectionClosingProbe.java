@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
@@ -33,12 +34,15 @@ public class ConnectionClosingProbe extends TlsClientProbe {
     public ConnectionClosingProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, scannerConfig);
+        register(
+                TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
+                TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA);
     }
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
-        report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA, closedAfterAppDataDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA, closedAfterFinishedDelta);
     }
 
     @Override

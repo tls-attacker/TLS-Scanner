@@ -180,8 +180,12 @@ public class DtlsMessageSequenceProbe extends TlsClientProbe {
                 && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
                 && acceptsRandomMessageNumbers == TestResults.FALSE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
-        } else {
+        } else if (acceptsSkippedMessageNumbersOnce == TestResults.TRUE
+                || acceptsSkippedMessageNumbersMultiple == TestResults.TRUE
+                || acceptsRandomMessageNumbers == TestResults.TRUE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+        } else {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.COULD_NOT_TEST);
         }
     }
 
