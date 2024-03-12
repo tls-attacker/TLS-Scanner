@@ -151,6 +151,7 @@ public class BsiGuidelineSerializationIT {
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
                                 NamedGroup.SECP384R1,
+                                NamedGroup.SECP521R1,
                                 NamedGroup.BRAINPOOLP256R1,
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
@@ -255,9 +256,10 @@ public class BsiGuidelineSerializationIT {
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
                                 NamedGroup.SECP384R1,
-                                // NamedGroup.BRAINPOOLP256R1TLS13,
-                                // NamedGroup.BRAINPOOLP384R1TLS13,
-                                // NamedGroup.BRAINPOOLP512R1TLS13,
+                                NamedGroup.SECP521R1,
+                                NamedGroup.BRAINPOOLP256R1,
+                                NamedGroup.BRAINPOOLP384R1,
+                                NamedGroup.BRAINPOOLP512R1,
                                 NamedGroup.FFDHE2048,
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096),
@@ -278,11 +280,11 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384,
                                 SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,
                                 SignatureAndHashAlgorithm.ECDSA_SHA256,
-                                SignatureAndHashAlgorithm.ECDSA_SHA384
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-                                ),
+                                SignatureAndHashAlgorithm.ECDSA_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_SHA512,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         checks.add(
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
@@ -298,7 +300,6 @@ public class BsiGuidelineSerializationIT {
                                 X509SignatureAlgorithm.ECDSA_WITH_SHA256,
                                 X509SignatureAlgorithm.ECDSA_WITH_SHA384,
                                 X509SignatureAlgorithm.ECDSA_WITH_SHA512
-
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
