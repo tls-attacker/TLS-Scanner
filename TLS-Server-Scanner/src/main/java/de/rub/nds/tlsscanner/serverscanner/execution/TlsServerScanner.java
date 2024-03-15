@@ -73,7 +73,7 @@ public final class TlsServerScanner
     private final ParallelExecutor parallelExecutor;
     private final ServerScannerConfig config;
     private boolean closeAfterFinishParallel;
-    private String vulns;
+    private final String vulns;
 
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getExecutorConfig().getProbes());
@@ -112,6 +112,7 @@ public final class TlsServerScanner
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.vulns = config.getVulns();
         closeAfterFinishParallel = false;
         setDefaultProbeWriter();
         setCallbacks();
