@@ -1,30 +1,29 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.modifiablevariable.util.UnformattedByteArrayAdapter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.record.layer.TlsRecordLayer;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
-
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.stream.XMLStreamException;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -39,13 +38,17 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
+
     @XmlJavaTypeAdapter(UnformattedByteArrayAdapter.class)
     private byte[] initialBytes;
+
     private Boolean isSSL2CompatibleClientHello = false;
 
-    public static TlsClientConfig createTlsClientConfig(String resourcePath) {
-        InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath);
-        return TlsClientConfigIO.read(stream);
+    public static TlsClientConfig createTlsClientConfig(String resourcePath)
+            throws JAXBException, XMLStreamException, IOException {
+        try (InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath)) {
+            return new TlsClientConfigIO().read(stream);
+        }
     }
 
     public void createTlsClientConfig(String type, String version) {
@@ -117,7 +120,8 @@ public class TlsClientConfig implements Serializable {
         return supportedVersionList;
     }
 
-    public void setVersionAcceptForbiddenCipherSuiteList(List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
+    public void setVersionAcceptForbiddenCipherSuiteList(
+            List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
         this.versionAcceptForbiddenCipherSuiteList = versionAcceptForbiddenCipherSuiteList;
     }
 
@@ -144,11 +148,10 @@ public class TlsClientConfig implements Serializable {
     public ClientHelloMessage createClientHello() {
         ClientHelloMessage hello = new ClientHelloMessage(config);
         hello.setExtensions(
-            ((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0)).getExtensions());
+                ((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0))
+                        .getExtensions());
         State s = new State(config);
-        s.getTlsContext().setRecordLayer(new TlsRecordLayer(s.getTlsContext()));
-        SendMessageHelper.prepareMessage(hello, s.getTlsContext());
+        hello.getPreparator(s.getTlsContext()).prepare();
         return hello;
     }
-
 }

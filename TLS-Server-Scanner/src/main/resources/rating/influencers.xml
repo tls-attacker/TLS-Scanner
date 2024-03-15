@@ -1,1352 +1,2078 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ratingInfluencers>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_SSL_2</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-300</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_SSL_3</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_0</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_1</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_2</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-200</influence>
             <scoreCap>1500</scoreCap>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_3</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>500</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_3_DRAFT</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_DTLS_1_0</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DTLS_1_0</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-300</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DTLS_1_2</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-300</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DTLS_1_3</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-300</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PFS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_DTLS_1_2</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-200</influence>
-            <scoreCap>1500</scoreCap>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_NULL_CIPHERS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-500</influence>
-            <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_FORTEZZA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_EXPORT</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-800</influence>
-            <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ANON</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-            <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DES</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-500</influence>
-            <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_3DES</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SEED</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_IDEA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RC2</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-            <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RC4</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_AEAD</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_POST_QUANTUM</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ONLY_PFS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_DTLS_1_3</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>500</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_AES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_PFS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CAMELLIA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ARIA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CHACHA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RSA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DH</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_STATIC_ECDH</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_GOST</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SRP</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_KERBEROS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PSK_PLAIN</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PSK_RSA</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PSK_DHE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PSK_ECDHE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_NEWHOPE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ECMQV</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_STREAM_CIPHERS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_BLOCK_CIPHERS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_EXTENDED_MASTER_SECRET</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ENCRYPT_THEN_MAC</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TOKENBINDING</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_MONTGOMERY_CURVES</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_TICKETS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_IDS</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_TICKET_ROTATION_HINT</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</referencedProperty>
-            <referencedPropertyResult>TRUE</referencedPropertyResult>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</referencedProperty>
-            <referencedPropertyResult>TRUE</referencedPropertyResult>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_CRIME</referencedProperty>
-            <referencedPropertyResult>TRUE</referencedPropertyResult>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ONLY_PRIME_MODULI</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-200</influence>
             <scoreCap>1500</scoreCap>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_NULL_CIPHERS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <influence>-500</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ONLY_SAFEPRIME_MODULI</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_FORTEZZA</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_EXPORT</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-800</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ANON</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_DES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_3DES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SEED</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_IDEA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_RC2</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_RC4</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_AEAD</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-100</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HTTPS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_POST_QUANTUM</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HSTS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_ONLY_PFS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>500</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_AES</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CAMELLIA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ARIA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CHACHA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_RSA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
             <influence>-100</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HSTS_PRELOADING</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_DHE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HPKP</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_ECDHE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HPKP_REPORTING</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_STATIC_DH</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_STATIC_ECDH</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_GOST</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SRP</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_PSK_PLAIN</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_PSK_RSA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_PSK_DHE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_PSK_ECDHE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_NEWHOPE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ECMQV</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_STREAM_CIPHERS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_HTTP_COMPRESSION</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_BREACH</referencedProperty>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TOKENBINDING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_MONTGOMERY_CURVES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SESSION_TICKET_RESUMPTION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SESSION_ID_RESUMPTION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SESSION_TICKET_ROTATION_HINT</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</property>
             <referencedPropertyResult>TRUE</referencedPropertyResult>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</property>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>PREFERS_PFS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</property>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</property>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFORCES_PFS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_COMPRESSION</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <property>VULNERABLE_TO_CRIME</property>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFORCES_CS_ORDERING</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_ONLY_PRIME_MODULI</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-200</influence>
+            <scoreCap>1500</scoreCap>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_COMMON_DH_PRIMES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ONLY_SAFEPRIME_MODULI</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HTTPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HSTS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HSTS_PRELOADING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HPKP</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HPKP_REPORTING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HTTP_COMPRESSION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <property>VULNERABLE_TO_BREACH</property>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>PREFERS_PFS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>ENFORCES_PFS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ENFORCES_CS_ORDERING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ENFORCES_NAMED_GROUP_ORDERING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HAS_VERSION_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CIPHER_SUITE_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_CIPHER_SUITE_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_EXTENSION_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_EXTENSION_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_COMPRESSION_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_COMPRESSION_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_ALPN_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_ALPN_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_BIG_CLIENT_HELLO_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_BIG_CLIENT_HELLO_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_NAMED_GROUP_INTOLERANCE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_NAMED_GROUP_INTOLERANCE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REFLECTS_OFFERED_CIPHER_SUITES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>REFLECTS_OFFERED_CIPHER_SUITES</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>IGNORES_OFFERED_CIPHER_SUITES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>IGNORES_OFFERED_CIPHER_SUITES</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>IGNORES_OFFERED_NAMED_GROUPS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>IGNORES_OFFERED_NAMED_GROUPS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>IGNORES_OFFERED_SIG_HASH_ALGOS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>IGNORES_OFFERED_SIG_HASH_ALGOS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_BLEICHENBACHER</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_BLEICHENBACHER</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-800</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_GENERAL_DROWN</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_GENERAL_DROWN</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-800</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_PADDING_ORACLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_PADDING_ORACLE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_HEARTBLEED</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_HEARTBLEED</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-1200</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_TICKETBLEED</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_TICKETBLEED</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-800</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_INVALID_CURVE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-1200</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-800</influence>
             <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_POODLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_POODLE</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_TLS_POODLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-800</influence>
-            <scoreCap>500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_SWEET_32</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_SWEET_32</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-300</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_EARLY_CCS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_EARLY_CCS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-300</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_CRIME</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_CRIME</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_BREACH</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_BREACH</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_LOGJAM</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_LOGJAM</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_FREAK</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_FREAK</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_MAC_APPDATA_CHECKS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_MAC_FINISHED_CHECKS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_VERIFY_DATA_CHECKS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>MISSES_MAC_APPDATA_CHECKS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_GCM_CHECKS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>MISSES_MAC_FINISHED_CHECKS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REUSES_GCM_NONCES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>MISSES_VERIFY_DATA_CHECKS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CERTIFICATE_ISSUES</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>MISSES_GCM_CHECKS</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_WEAK_RANDOMNESS</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>REUSES_GCM_NONCES</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REUSES_EC_PUBLICKEY</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>HAS_CERTIFICATE_ISSUES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HAS_WEAK_RANDOMNESS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>REUSES_EC_PUBLICKEY</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
             <scoreCap>1500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REUSES_DH_PUBLICKEY</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>REUSES_DH_PUBLICKEY</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>-200</influence>
             <scoreCap>1500</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REQUIRES_SNI</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>REQUIRES_SNI</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>0</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>STRICT_ALPN</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>STRICT_SNI</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_14</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_15</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_16</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_17</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_18</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_19</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_20</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_21</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_22</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_23</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_24</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_25</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_26</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_27</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS_1_3_DRAFT_28</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_LEGACY_PRF</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SHA256_PRF</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SHA384_PRF</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ALPACA_MITIGATED</analyzedProperty>
-        <propertyResultRatingInfluencer>
+        <property>SUPPORTS_ECDSA</property>
+        <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_RSA_CERT</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_DSS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_EXPLICIT_PRIME_CURVE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_EXPLICIT_CHAR2_CURVE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_OCSP</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MUST_STAPLE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>INCLUDES_CERTIFICATE_STATUS_MESSAGE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STAPLED_RESPONSE_EXPIRED</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_NONCE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>NONCE_MISMATCH</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STAPLING_UNRELIABLE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_HTTP_FALSE_START</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VULNERABLE_TO_SESSION_TICKET_ZERO_KEY</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-1000</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VULNERABLE_TO_DIRECT_RACCOON</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-800</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VULNERABLE_TO_RACCOON_ATTACK</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_STAPLED_NONCE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>25</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_OCSP_STAPLING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STAPLING_TLS13_MULTIPLE_CERTIFICATES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>IGNORES_ECDSA_GROUP_DISPARITY</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VULNERABLE_TO_EXTRA_CLEAR_DROWN</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-800</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>VULNERABLE_TO_INVALID_CURVE_TWIST</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-1200</influence>
+            <scoreCap>500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CCA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>REQUIRES_CCA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS13_PSK_DHE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CERTIFICATE_STATUS_REQUEST</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SCTS_PRECERTIFICATE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SCTS_HANDSHAKE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SCTS_OCSP</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CHROME_CT_POLICY</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_UNCOMPRESSED_POINT</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ANSIX962_COMPRESSED_PRIME</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ANSIX962_COMPRESSED_CHAR2</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_TLS13_SECP_COMPRESSION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>GROUPS_DEPEND_ON_CIPHER</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_ESNI</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STRICT_ALPN</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STRICT_SNI</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ALPACA_MITIGATED</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-200</influence>
-        </propertyResultRatingInfluencer>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_DTLS_FRAGMENTATION</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_REORDERING</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>PROCESSES_RETRANSMISSIONS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>HAS_COOKIE_CHECKS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MISSES_MESSAGE_SEQUENCE_CHECKS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
     </ratingInfluencer>
 </ratingInfluencers>

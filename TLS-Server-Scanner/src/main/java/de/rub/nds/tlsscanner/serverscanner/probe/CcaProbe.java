@@ -1,20 +1,18 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
-import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
-import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
-import de.rub.nds.tlsattacker.attacks.task.CcaTask;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -25,41 +23,52 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaTaskVectorPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.cca.vector.CcaVector;
+import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.tlsscanner.serverscanner.task.CcaTask;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe {
+public class CcaProbe extends TlsServerProbe {
+
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
-    private boolean increasingTimeout = false;
+    private static final boolean INCREASING_TIMEOUT = false;
 
-    private long additionalTimeout = 10000;
+    private static final long ADDITIONAL_TIMEOUT = 10000;
 
-    private long additionalTcpTimeout = 1000;
+    private static final long ADDITIONAL_TCP_TIMEOUT = 1000;
 
-    private int reexecutions = 3;
+    private static final int REEXECUTIONS = 3;
 
-    public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config);
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
+    private List<CcaTestResult> resultList;
+
+    public CcaProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CCA, configSelector);
         versionSuiteListPairsList = new LinkedList<>();
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, TlsAnalyzedProperty.CCA_TEST_RESULTS);
     }
 
     @Override
-    public ProbeResult executeTest() {
-
+    public void executeTest() {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
-        CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+        CcaDelegate ccaDelegate = configSelector.getScannerConfig().getCcaDelegate();
 
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 
@@ -72,7 +81,8 @@ public class CcaProbe extends TlsProbe {
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.warn("No common cipher suites found. Can't continue scan.");
-            return new CcaResult(TestResult.COULD_NOT_TEST, null);
+            vulnerable = TestResults.COULD_NOT_TEST;
+            return;
         }
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
@@ -83,27 +93,39 @@ public class CcaProbe extends TlsProbe {
 
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-                /**
+                /*
                  * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally skip
                  * certificate types that aren't required. I.e. a flow not sending a certificate message can simply run
                  * once with the CcaCertificateType EMPTY
                  */
                 if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
-                    || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
-                    || (!ccaWorkflowType.getRequiresCertificate() && ccaCertificateType != CcaCertificateType.EMPTY)) {
+                        || (ccaCertificateType.getRequiresCaCertAndKeys()
+                                && !gotDirectoryParameters)
+                        || (!ccaWorkflowType.getRequiresCertificate()
+                                && ccaCertificateType != CcaCertificateType.EMPTY)) {
                     continue;
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
-
-                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
-                            ccaWorkflowType, ccaCertificateType);
+                        CcaVector ccaVector =
+                                new CcaVector(
+                                        versionSuiteListPair.getVersion(),
+                                        cipherSuite,
+                                        ccaWorkflowType,
+                                        ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-
-                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
-                            increasingTimeout, reexecutions, additionalTcpTimeout);
+                        configSelector.repairConfig(tlsConfig);
+                        CcaTask ccaTask =
+                                new CcaTask(
+                                        ccaVector,
+                                        tlsConfig,
+                                        ccaCertificateManager,
+                                        ADDITIONAL_TIMEOUT,
+                                        INCREASING_TIMEOUT,
+                                        REEXECUTIONS,
+                                        ADDITIONAL_TCP_TIMEOUT);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
@@ -111,68 +133,59 @@ public class CcaProbe extends TlsProbe {
             }
         }
 
-        List<CcaTestResult> resultList = new LinkedList<>();
-        Boolean handshakeSucceeded = false;
+        resultList = new LinkedList<>();
+        boolean handshakeSucceeded = false;
         parallelExecutor.bulkExecuteTasks(taskList);
         for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
             if (ccaTaskVectorPair.getCcaTask().isHasError()) {
                 LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
             } else {
-                Boolean vectorVulnerable = false;
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
-                    ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
+                boolean vectorVulnerable;
+                if (WorkflowTraceUtil.didReceiveMessage(
+                        HandshakeMessageType.FINISHED,
+                        ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
                     handshakeSucceeded = true;
                     vectorVulnerable = true;
                 } else {
                     vectorVulnerable = false;
                 }
-                resultList.add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
-                    ccaTaskVectorPair.getVector().getCcaCertificateType(),
-                    ccaTaskVectorPair.getVector().getProtocolVersion(),
-                    ccaTaskVectorPair.getVector().getCipherSuite()));
+                resultList.add(
+                        new CcaTestResult(
+                                vectorVulnerable,
+                                ccaTaskVectorPair.getVector().getCcaWorkflowType(),
+                                ccaTaskVectorPair.getVector().getCcaCertificateType(),
+                                ccaTaskVectorPair.getVector().getProtocolVersion(),
+                                ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-
-        return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
+        vulnerable = handshakeSucceeded ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if ((report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
-            && (report.getVersionSuitePairs() != null)) {
-            return true;
-        }
-        return false;
+    public Requirement<ServerReport> getRequirements() {
+        return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)
+                .and(new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION))
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.REQUIRES_CCA))
+                .and(new WorkingConfigRequirement(configSelector));
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
-    }
-
-    @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CcaResult(TestResult.COULD_NOT_TEST, null);
+    public void adjustConfig(ServerReport report) {
+        versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     private Config generateConfig() {
-        Config config = getScannerConfig().createConfig();
-        config.setAutoSelectCertificate(false);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+        Config config = configSelector.getBaseConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setAutoSelectCertificate(false);
         config.setClientAuthentication(true);
-
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
-        config.setStopActionsAfterFatal(true);
-
         return config;
     }
 
-    private List<VersionSuiteListPair> getVersionSuitePairList(List<ProtocolVersion> desiredVersions) {
+    private List<VersionSuiteListPair> getVersionSuitePairList(
+            List<ProtocolVersion> desiredVersions) {
         List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
-        for (VersionSuiteListPair versionSuiteListPair : this.versionSuiteListPairsList) {
+        for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairsList) {
             if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
                 versionSuiteListPairs.add(versionSuiteListPair);
             }
@@ -181,16 +194,18 @@ public class CcaProbe extends TlsProbe {
         List<CipherSuite> implementedCipherSuites = CipherSuite.getImplemented();
         List<VersionSuiteListPair> versionSuiteListPairList;
 
-        versionSuiteListPairList = getNonDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
+        versionSuiteListPairList =
+                getNonDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
         if (versionSuiteListPairList.isEmpty()) {
-            versionSuiteListPairList = getDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
+            versionSuiteListPairList =
+                    getDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
         }
-
         return versionSuiteListPairList;
     }
 
-    private List<VersionSuiteListPair> getDetailedVersionSuitePairList(List<VersionSuiteListPair> versionSuiteListPairs,
-        List<CipherSuite> implementedCipherSuites) {
+    private List<VersionSuiteListPair> getDetailedVersionSuitePairList(
+            List<VersionSuiteListPair> versionSuiteListPairs,
+            List<CipherSuite> implementedCipherSuites) {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
             List<CipherSuite> cipherSuites = new LinkedList<>();
@@ -200,32 +215,44 @@ public class CcaProbe extends TlsProbe {
                 }
             }
             if (!cipherSuites.isEmpty()) {
-                versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                versionSuiteListPairList.add(
+                        new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
             }
         }
         return versionSuiteListPairList;
     }
 
     private List<VersionSuiteListPair> getNonDetailedVersionSuitePairList(
-        List<VersionSuiteListPair> versionSuiteListPairs, List<CipherSuite> implementedCipherSuites) {
+            List<VersionSuiteListPair> versionSuiteListPairs,
+            List<CipherSuite> implementedCipherSuites) {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
-        if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (configSelector
+                .getScannerConfig()
+                .getExecutorConfig()
+                .getScanDetail()
+                .isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                 List<CipherSuite> cipherSuites = new LinkedList<>();
                 for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
                     if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh()
-                        && implementedCipherSuites.contains(cipherSuite)) {
+                            && implementedCipherSuites.contains(cipherSuite)) {
                         cipherSuites.add(cipherSuite);
                         break;
                     }
                 }
                 if (!cipherSuites.isEmpty()) {
-                    versionSuiteListPairList
-                        .add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                    versionSuiteListPairList.add(
+                            new VersionSuiteListPair(
+                                    versionSuiteListPair.getVersion(), cipherSuites));
                 }
             }
         }
         return versionSuiteListPairList;
     }
 
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
+        put(TlsAnalyzedProperty.CCA_TEST_RESULTS, resultList);
+    }
 }

@@ -1,17 +1,16 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.util.Objects;
 
 public class DirectRaccoonVector implements Vector {
@@ -24,8 +23,11 @@ public class DirectRaccoonVector implements Vector {
 
     private final boolean pmsWithNullByte;
 
-    public DirectRaccoonVector(DirectRaccoonWorkflowType type, ProtocolVersion version, CipherSuite suite,
-        boolean pmsWithNullByte) {
+    public DirectRaccoonVector(
+            DirectRaccoonWorkflowType type,
+            ProtocolVersion version,
+            CipherSuite suite,
+            boolean pmsWithNullByte) {
         this.type = type;
         this.version = version;
         this.suite = suite;
@@ -70,8 +72,16 @@ public class DirectRaccoonVector implements Vector {
 
     @Override
     public String toString() {
-        return "DirectRaccoonVector{" + "type=" + type + ", version=" + version + ", suite=" + suite
-            + ", pmsWithNullByte=" + pmsWithNullByte + '}';
+        return "DirectRaccoonVector{"
+                + "type="
+                + type
+                + ", version="
+                + version
+                + ", suite="
+                + suite
+                + ", pmsWithNullByte="
+                + pmsWithNullByte
+                + '}';
     }
 
     @Override
@@ -81,7 +91,6 @@ public class DirectRaccoonVector implements Vector {
         } else {
             return "PMS does NOT start with nullByte";
         }
-
     }
 
     @Override

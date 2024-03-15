@@ -1,22 +1,28 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.EllipticCurvesExtensionMessage;
@@ -26,19 +32,16 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.UnknownExtensionMe
 import de.rub.nds.tlsattacker.core.protocol.preparator.ClientHelloPreparator;
 import de.rub.nds.tlsattacker.core.protocol.serializer.ClientHelloSerializer;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CommonBugProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,57 +49,73 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
-public class CommonBugProbe extends TlsProbe {
+public class CommonBugProbe extends TlsServerProbe {
 
     // does it handle unknown extensions correctly?
-    private TestResult extensionIntolerance;
+    private TestResult extensionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown cipher suites correctly?
-    private TestResult cipherSuiteIntolerance;
+    private TestResult cipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle long cipher suite length values correctly?
-    private TestResult cipherSuiteLengthIntolerance512;
+    private TestResult cipherSuiteLengthIntolerance512 = TestResults.COULD_NOT_TEST;
     // does it handle unknown compression algorithms correctly?
-    private TestResult compressionIntolerance;
+    private TestResult compressionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown versions correctly?
-    private TestResult versionIntolerance;
+    private TestResult versionIntolerance = TestResults.COULD_NOT_TEST;
     // does it handle unknown alpn strings correctly?
-    private TestResult alpnIntolerance;
+    private TestResult alpnIntolerance = TestResults.COULD_NOT_TEST;
     // 256 - 511 <-- ch should be bigger than this?
-    private TestResult clientHelloLengthIntolerance;
+    private TestResult clientHelloLengthIntolerance = TestResults.COULD_NOT_TEST;
     // does it break on empty last extension?
-    private TestResult emptyLastExtensionIntolerance;
+    private TestResult emptyLastExtensionIntolerance = TestResults.COULD_NOT_TEST;
     // is only the second byte of the cipher suite evaluated?
-    private TestResult onlySecondCipherSuiteByteEvaluated;
+    private TestResult onlySecondCipherSuiteByteEvaluated = TestResults.COULD_NOT_TEST;
     // does it handle unknown groups correctly?
-    private TestResult namedGroupIntolerant;
+    private TestResult namedGroupIntolerant = TestResults.COULD_NOT_TEST;
     // does it handle signature and hash algorithms correctly?
-    private TestResult namedSignatureAndHashAlgorithmIntolerance;
+    private TestResult namedSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
     // does it ignore the offered cipher suites?
-    private TestResult ignoresCipherSuiteOffering;
+    private TestResult ignoresCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it reflect the offered cipher suites?
-    private TestResult reflectsCipherSuiteOffering;
+    private TestResult reflectsCipherSuiteOffering = TestResults.COULD_NOT_TEST;
     // does it ignore the offered named groups?
-    private TestResult ignoresOfferedNamedGroups;
+    private TestResult ignoresOfferedNamedGroups = TestResults.COULD_NOT_TEST;
     // does it ignore the sig hash algorithms?
-    private TestResult ignoresOfferedSignatureAndHashAlgorithms;
+    private TestResult ignoresOfferedSignatureAndHashAlgorithms = TestResults.COULD_NOT_TEST;
     // server does not like really big client hello messages
-    private TestResult maxLengthClientHelloIntolerant;
+    private TestResult maxLengthClientHelloIntolerant = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the supported groups extension?
-    private TestResult greaseNamedGroupIntolerance;
+    private TestResult greaseNamedGroupIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the cipher suites list?
-    private TestResult greaseCipherSuiteIntolerance;
+    private TestResult greaseCipherSuiteIntolerance = TestResults.COULD_NOT_TEST;
     // does it accept grease values in the signature and hash algorithms extension?
-    private TestResult greaseSignatureAndHashAlgorithmIntolerance;
+    private TestResult greaseSignatureAndHashAlgorithmIntolerance = TestResults.COULD_NOT_TEST;
 
-    public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMMON_BUGS, config);
+    public CommonBugProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.COMMON_BUGS, configSelector);
+        register(
+                TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+                TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+                TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
+                TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
+                TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
+                TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+                TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+                TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public void executeTest() {
         extensionIntolerance = hasExtensionIntolerance();
         cipherSuiteIntolerance = hasCipherSuiteIntolerance();
         cipherSuiteLengthIntolerance512 = hasCipherSuiteLengthIntolerance512();
@@ -114,29 +133,16 @@ public class CommonBugProbe extends TlsProbe {
         maxLengthClientHelloIntolerant = hasBigClientHelloIntolerance();
         greaseNamedGroupIntolerance = hasGreaseNamedGroupIntolerance();
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
-        greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
-        return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
-            compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
-            emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
-            namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
-            ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
-            greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
-
-    }
-
-    private Config getWorkingConfig() {
-        Config config = ConfigSelector.getNiceConfig(scannerConfig);
-        config.setStopActionsAfterIOException(true);
-        return config;
+        greaseSignatureAndHashAlgorithmIntolerance =
+                hasGreaseSignatureAndHashAlgorithmIntolerance();
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
+    public void adjustConfig(ServerReport report) {}
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public Requirement<ServerReport> getRequirements() {
+        return new FulfilledRequirement<>();
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
@@ -144,90 +150,91 @@ public class CommonBugProbe extends TlsProbe {
         ClientHelloPreparator preparator = new ClientHelloPreparator(context.getChooser(), message);
         preparator.prepare();
         ClientHelloSerializer serializer =
-            new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
+                new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
         return serializer.serialize().length;
     }
 
-    private TestResult hasExtensionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+    private WorkflowTrace getWorkflowTrace(Config config, ClientHelloMessage clientHello) {
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace trace =
+                factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(clientHello));
+        if (config.getHighestProtocolVersion().isDTLS() && config.isDtlsCookieExchange()) {
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+            trace.addTlsAction(new SendAction(clientHello));
+        }
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        return trace;
+    }
 
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            UnknownExtensionMessage extension = new UnknownExtensionMessage();
-            extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
-            extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
-            message.getExtensions().add(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+    private TestResult getResult(Config config, WorkflowTrace trace, boolean checkForTrue) {
+        try {
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+            return checkForTrue
+                            == (WorkflowTraceUtil.didReceiveMessage(
+                                            HandshakeMessageType.SERVER_HELLO_DONE, trace)
+                                    || (state.getTlsContext().getSelectedProtocolVersion()
+                                                    == ProtocolVersion.TLS13
+                                            && (WorkflowTraceUtil.didReceiveMessage(
+                                                    HandshakeMessageType.FINISHED, trace))))
+                    ? TestResults.TRUE
+                    : TestResults.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasExtensionIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
+            return TestResults.ERROR_DURING_TEST;
         }
+    }
+
+    private TestResult hasExtensionIntolerance() {
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        UnknownExtensionMessage extension = new UnknownExtensionMessage();
+        extension.setTypeConfig(new byte[] {(byte) 3F, (byte) 3F});
+        extension.setDataConfig(new byte[] {00, 11, 22, 33});
+        message.getExtensions().add(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasBigClientHelloIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            config.setAddPaddingExtension(true);
-            config.setDefaultPaddingExtensionBytes(new byte[14000]);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasBigClientHelloIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddPaddingExtension(true);
+        config.setDefaultPaddingExtensionBytes(new byte[14000]);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasIgnoresSigHashAlgoOfferingBug() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            config.setAddSignatureAndHashAlgorithmsExtension(false);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral()) {
-                    suiteList.add(suite);
-                }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddSignatureAndHashAlgorithmsExtension(false);
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral()) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(true);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
-            message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
-                : TestResult.FALSE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasIgnoresSigHashAlgoOfferingBug():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        configSelector.repairConfig(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        SignatureAndHashAlgorithmsExtensionMessage extension =
+                new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(
+                Modifiable.explicit(new byte[] {(byte) 0xED, (byte) 0xED}));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, true);
     }
 
     private TestResult hasIgnoresNamedGroupsOfferingBug() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
             List<CipherSuite> suiteList = new LinkedList<>();
             for (CipherSuite suite : CipherSuite.getImplemented()) {
                 if (suite.isEphemeral() && suite.name().contains("EC")) {
@@ -239,357 +246,262 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(false);
             ClientHelloMessage message = new ClientHelloMessage(config);
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+            extension.setSupportedGroups(
+                    Modifiable.explicit(new byte[] {(byte) 0xED, (byte) 0xED}));
             message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
-                LOGGER.debug("Received a SH for invalid NamedGroup, server selected: "
-                    + state.getTlsContext().getSelectedGroup().name());
-                return TestResult.TRUE;
-            }
-            return TestResult.FALSE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasIgnoresNamedGroupsOfferingBug():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, true);
+        } else {
+            // servers choosing a different group in TLS 1.3 would send an
+            // invalid HelloRetryRequest message which has a significantly
+            // different meaning than the TLS 1.2 test case
+            return TestResults.FALSE;
         }
     }
 
     private void adjustCipherSuiteSelectionBugs() {
-        try {
-
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
-                .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
-            if (receivedShd) {
-                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
-                    new byte[] { (byte) 0xEE, (byte) 0xCC })) {
-                    reflectsCipherSuiteOffering = TestResult.TRUE;
-                    ignoresCipherSuiteOffering = TestResult.FALSE;
-                } else {
-                    reflectsCipherSuiteOffering = TestResult.FALSE;
-                    ignoresCipherSuiteOffering = TestResult.TRUE;
-                }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setCipherSuites(Modifiable.explicit(new byte[] {(byte) 0xEE, (byte) 0xCC}));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        State state = new State(config, trace);
+        executeState(state);
+        TestResult receivedShd = getResult(config, trace, true);
+        if (receivedShd == TestResults.TRUE) {
+            ServerHelloMessage serverHelloMessage =
+                    (ServerHelloMessage)
+                            WorkflowTraceUtil.getFirstReceivedMessage(
+                                    HandshakeMessageType.SERVER_HELLO, trace);
+            if (Arrays.equals(
+                    serverHelloMessage.getSelectedCipherSuite().getValue(),
+                    new byte[] {(byte) 0xEE, (byte) 0xCC})) {
+                reflectsCipherSuiteOffering = TestResults.TRUE;
+                ignoresCipherSuiteOffering = TestResults.FALSE;
             } else {
-                reflectsCipherSuiteOffering = TestResult.FALSE;
-                ignoresCipherSuiteOffering = TestResult.FALSE;
+                reflectsCipherSuiteOffering = TestResults.FALSE;
+                ignoresCipherSuiteOffering = TestResults.TRUE;
             }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for adjustCipherSuiteSelectionBugs():" + getProbeName(), e);
-            reflectsCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
-            ignoresCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
+        } else if (receivedShd == TestResults.FALSE) {
+            reflectsCipherSuiteOffering = TestResults.FALSE;
+            ignoresCipherSuiteOffering = TestResults.FALSE;
+        } else if (receivedShd == TestResults.ERROR_DURING_TEST) {
+            reflectsCipherSuiteOffering = TestResults.ERROR_DURING_TEST;
+            ignoresCipherSuiteOffering = TestResults.ERROR_DURING_TEST;
         }
     }
 
     private TestResult hasSignatureAndHashAlgorithmIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            config.setAddSignatureAndHashAlgorithmsExtension(false);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral()) {
-                    suiteList.add(suite);
-                }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddSignatureAndHashAlgorithmsExtension(false);
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral()) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(true);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
-            message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasSignatureAndHashAlgorithmIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        configSelector.repairConfig(config);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        SignatureAndHashAlgorithmsExtensionMessage extension =
+                new SignatureAndHashAlgorithmsExtensionMessage();
+        extension.setSignatureAndHashAlgorithms(
+                Modifiable.insert(new byte[] {(byte) 0xED, (byte) 0xED}, 0));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasNamedGroupIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isEphemeral() && suite.name().contains("EC")) {
-                    suiteList.add(suite);
-                }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isEphemeral() && suite.name().contains("EC")) {
+                suiteList.add(suite);
             }
-            config.setDefaultClientSupportedCipherSuites(suiteList);
-            config.setAddECPointFormatExtension(true);
-            config.setAddEllipticCurveExtension(false);
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            if (receivedShd) {
-                trace.reset();
-                extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
-                state = new State(config, trace);
-                executeState(state);
-                receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-                return !receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
-            } else {
-                return TestResult.FALSE;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasNamedGroupIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
         }
+        config.setDefaultClientSupportedCipherSuites(suiteList);
+        config.setAddECPointFormatExtension(true);
+        config.setAddEllipticCurveExtension(false);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
+        extension.setSupportedGroups(Modifiable.insert(new byte[] {(byte) 0xED, (byte) 0xED}, 0));
+        message.addExtension(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasOnlySecondCipherSuiteByteEvaluatedBug() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             for (CipherSuite suite : CipherSuite.values()) {
                 if (suite.getByteValue()[0] == 0x00) {
                     try {
-                        stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
+                        stream.write(new byte[] {(byte) 0xDF, suite.getByteValue()[1]});
                     } catch (IOException ex) {
                         LOGGER.debug(ex);
                     }
                 }
             }
             message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            return receivedShd ? TestResult.TRUE : TestResult.FALSE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasOnlySecondCipherSuiteByteEvaluatedBug():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, true);
+        } else {
+            // not applicable to TLS 1.3-only servers due to 0x13XX structure
+            return TestResults.FALSE;
         }
     }
 
     private TestResult hasEmptyLastExtensionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
-            message.getExtensions().add(extension);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasEmptyLastExtensionIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
+        message.getExtensions().add(extension);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasVersionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasVersionIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setProtocolVersion(Modifiable.explicit(new byte[] {0x03, 0x05}));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasCompressionIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        if (configSelector.foundWorkingConfig()) {
+            Config config = configSelector.getBaseConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCompressionIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+            message.setCompressions(new byte[] {(byte) 0xFF, (byte) 0x00});
+            WorkflowTrace trace = getWorkflowTrace(config, message);
+            return getResult(config, trace, false);
+        } else {
+            // At this point, we must have only found a working TLS 1.3 config
+            // and RFC 8446 states:
+            // If a TLS 1.3 ClientHello is received with any other value in this
+            // field, the server MUST abort the handshake with an
+            // "illegal_parameter" alert.
+            return TestResults.FALSE;
         }
     }
 
     private TestResult hasCipherSuiteLengthIntolerance512() {
-        try {
-            Config config = getWorkingConfig();
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            config.setDefaultClientSupportedCipherSuites(toTestList);
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCipherSuiteLengthIntolerance512():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        config.setDefaultClientSupportedCipherSuites(toTestList);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasCipherSuiteIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCipherSuiteIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        message.setCipherSuites(Modifiable.insert(new byte[] {(byte) 0xCF, (byte) 0xAA}, 1));
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasAlpnIntolerance() {
-        try {
-            Config config = getWorkingConfig();
-            config.setAddAlpnExtension(true);
-            List<String> alpnProtocols = new LinkedList<>();
-            for (AlpnProtocol protocol : AlpnProtocol.values()) {
-                alpnProtocols.add(protocol.getConstant());
-            }
-            alpnProtocols.add("This is not an ALPN Protocol");
-            config.setDefaultProposedAlpnProtocols(alpnProtocols);
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasAlpnIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddAlpnExtension(true);
+        List<String> alpnProtocols = new LinkedList<>();
+        for (AlpnProtocol protocol : AlpnProtocol.values()) {
+            alpnProtocols.add(protocol.getConstant());
         }
+        alpnProtocols.add("This is not an ALPN Protocol");
+        config.setDefaultProposedAlpnProtocols(alpnProtocols);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasClientHelloLengthIntolerance() {
-        try {
-            Config config = ConfigSelector.getNiceConfig(scannerConfig);
-
-            config.setAddAlpnExtension(true);
-            config.setAddPaddingExtension(true);
-
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-
-            int newLength = 512 - 4 - getClientHelloLength(message, config);
-            if (newLength > 0) {
-                config.setDefaultPaddingExtensionBytes(new byte[newLength]);
-            } else {
-                // TODO this is currently not working as intended
-            }
-            message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasClientHelloLengthIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddPaddingExtension(true);
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        int newLength = 512 - 4 - getClientHelloLength(message, config);
+        if (newLength > 0) {
+            config.setDefaultPaddingExtensionBytes(new byte[newLength]);
+        } else {
+            // TODO this is currently not working as intended
         }
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseCipherSuiteIntolerance() {
-        Config config = getWorkingConfig();
-        Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
-            .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
-        return hasGreaseIntolerance(config);
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(CipherSuite.values()).stream()
+                .filter(cipherSuite -> cipherSuite.isGrease())
+                .forEach(
+                        greaseCipher ->
+                                config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseNamedGroupIntolerance() {
-        Config config = getWorkingConfig();
-        Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
-            .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
-        return hasGreaseIntolerance(config);
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(NamedGroup.values()).stream()
+                .filter(group -> group.isGrease())
+                .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
-        Config config = getWorkingConfig();
-        Arrays.asList(SignatureAndHashAlgorithm.values()).stream().filter(algorithm -> algorithm.isGrease()).forEach(
-            greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
-        return hasGreaseIntolerance(config);
-    }
-
-    private TestResult hasGreaseIntolerance(Config config) {
-        try {
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
-            executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for hasGreaseIntolerance():" + getProbeName(), e);
-            return TestResult.ERROR_DURING_TEST;
-        }
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        Arrays.asList(SignatureAndHashAlgorithm.values()).stream()
+                .filter(algorithm -> algorithm.isGrease())
+                .forEach(
+                        greaseAlgorithm ->
+                                config.getDefaultClientSupportedSignatureAndHashAlgorithms()
+                                        .add(greaseAlgorithm));
+        ClientHelloMessage message = new ClientHelloMessage(config);
+        WorkflowTrace trace = getWorkflowTrace(config, message);
+        return getResult(config, trace, false);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
+        put(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, cipherSuiteIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
+                cipherSuiteLengthIntolerance512);
+        put(TlsAnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, compressionIntolerance);
+        put(TlsAnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
+        put(TlsAnalyzedProperty.HAS_ALPN_INTOLERANCE, alpnIntolerance);
+        put(TlsAnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, clientHelloLengthIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+                emptyLastExtensionIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
+                onlySecondCipherSuiteByteEvaluated);
+        put(TlsAnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
+        put(
+                TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+                namedSignatureAndHashAlgorithmIntolerance);
+        put(TlsAnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, ignoresCipherSuiteOffering);
+        put(TlsAnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, reflectsCipherSuiteOffering);
+        put(TlsAnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
+        put(
+                TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
+                ignoresOfferedSignatureAndHashAlgorithms);
+        put(TlsAnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, maxLengthClientHelloIntolerant);
+        put(TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, greaseNamedGroupIntolerance);
+        put(TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, greaseCipherSuiteIntolerance);
+        put(
+                TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+                greaseSignatureAndHashAlgorithmIntolerance);
     }
 }

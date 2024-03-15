@@ -1,98 +1,89 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import java.util.ArrayList;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.ciphersuite.CipherSuiteEvaluationHelper;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CipherSuiteProbe extends TlsProbe {
+public class CipherSuiteProbe extends TlsServerProbe {
 
-    private final List<ProtocolVersion> protocolVersions;
+    private final CipherSuiteEvaluationHelper evaluationHelper;
 
-    public CipherSuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHER_SUITE, config);
-        protocolVersions = new LinkedList<>();
+    public CipherSuiteProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.CIPHER_SUITE, configSelector);
+        evaluationHelper = new CipherSuiteEvaluationHelper(new LinkedList<>());
+        register(CipherSuiteEvaluationHelper.getProperties());
     }
 
     @Override
-    public ProbeResult executeTest() {
-        try {
-            List<VersionSuiteListPair> pairLists = new LinkedList<>();
-            for (ProtocolVersion version : protocolVersions) {
-                LOGGER.debug("Testing:" + version.name());
-                if (version.isTLS13()) {
-                    pairLists.add(new VersionSuiteListPair(version, getSupportedCipherSuites()));
-                } else {
-                    List<CipherSuite> toTestList = new LinkedList<>();
-                    List<CipherSuite> versionSupportedSuites = new LinkedList<>();
-                    if (version == ProtocolVersion.SSL3) {
-                        toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                    } else {
-                        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-                        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                        if (versionSupportedSuites.isEmpty()) {
-                            versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
-                        }
-                    }
-                    if (versionSupportedSuites.size() > 0) {
-                        pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
-                    }
+    public void executeTest() {
+        evaluationHelper.setPairLists(new LinkedList<>());
+        for (ProtocolVersion version : evaluationHelper.getProtocolVersions()) {
+            LOGGER.debug("Testing:" + version.name());
+            if (version.isTLS13()) {
+                evaluationHelper
+                        .getPairLists()
+                        .add(new VersionSuiteListPair(version, getSupportedTls13CipherSuites()));
+            } else {
+                List<CipherSuite> toTestList =
+                        new LinkedList<>(Arrays.asList(CipherSuite.values()));
+                List<CipherSuite> versionSupportedSuites =
+                        getSupportedCipherSuites(toTestList, version);
+                if (versionSupportedSuites.isEmpty()) {
+                    versionSupportedSuites =
+                            getSupportedCipherSuites(CipherSuite.getImplemented(), version);
+                }
+                if (versionSupportedSuites.size() > 0) {
+                    evaluationHelper
+                            .getPairLists()
+                            .add(new VersionSuiteListPair(version, versionSupportedSuites));
                 }
             }
-            return new CipherSuiteProbeResult(pairLists);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CipherSuiteProbeResult(null);
         }
     }
 
-    private List<CipherSuite> getSupportedCipherSuites() {
-        CipherSuite selectedSuite = null;
-        List<CipherSuite> toTestList = new LinkedList<>();
-        List<CipherSuite> supportedSuits = new LinkedList<>();
-        for (CipherSuite suite : CipherSuite.values()) {
-            if (suite.isTLS13()) {
-                toTestList.add(suite);
-            }
-        }
-        do {
-            selectedSuite = getSelectedCipherSuite(toTestList);
+    private List<CipherSuite> getCipherSuitesForVersion(
+            List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> applicableCipherSuites =
+                baseList.stream()
+                        .filter(cipherSuite -> cipherSuite.isSupportedInProtocol(version))
+                        .collect(Collectors.toList());
+        applicableCipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        applicableCipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        return applicableCipherSuites;
+    }
 
+    private List<CipherSuite> getSupportedTls13CipherSuites() {
+        CipherSuite selectedSuite = null;
+        List<CipherSuite> toTestList = CipherSuite.getTls13CipherSuites();
+        List<CipherSuite> supportedSuits = new LinkedList<>();
+        do {
+            selectedSuite = getSelectedTls13CipherSuite(toTestList);
             if (selectedSuite != null) {
                 if (!toTestList.contains(selectedSuite)) {
                     LOGGER.warn("Server chose a CipherSuite we did not propose!");
@@ -106,35 +97,15 @@ public class CipherSuiteProbe extends TlsProbe {
         return supportedSuits;
     }
 
-    private CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
+    private CipherSuite getSelectedTls13CipherSuite(List<CipherSuite> toTestList) {
+        Config tlsConfig = configSelector.getTls13BaseConfig();
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-
+        configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedCipherSuite();
-        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
-            state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -143,50 +114,30 @@ public class CipherSuiteProbe extends TlsProbe {
         }
     }
 
-    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(ProtocolVersion version) {
-        return getSupportedCipherSuitesWithIntolerance(new ArrayList<>(CipherSuite.getImplemented()), version);
-    }
-
-    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList,
-        ProtocolVersion version) {
-        List<CipherSuite> listWeSupport = new LinkedList<>(toTestList);
+    public List<CipherSuite> getSupportedCipherSuites(
+            List<CipherSuite> baseList, ProtocolVersion version) {
+        List<CipherSuite> listWeSupport = getCipherSuitesForVersion(baseList, version);
         List<CipherSuite> supported = new LinkedList<>();
 
         boolean supportsMore = false;
         do {
-            Config config = getScannerConfig().createConfig();
+            Config config = configSelector.getBaseConfig();
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
             config.setDefaultClientSupportedCipherSuites(listWeSupport);
             config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
-            boolean containsEc = false;
-            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
-                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
-                if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
-                    containsEc = true;
-                    break;
-                }
-            }
-            config.setAddEllipticCurveExtension(containsEc);
-            config.setAddECPointFormatExtension(containsEc);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            config.setAddRenegotiationInfoExtension(true);
-            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            config.setStopActionsAfterIOException(true);
-            config.setStopActionsAfterFatal(true);
-            List<NamedGroup> namedGroup = new LinkedList<>();
-            namedGroup.addAll(Arrays.asList(NamedGroup.values()));
-            config.setDefaultClientNamedGroups(namedGroup);
+            configSelector.repairConfig(config);
             State state = new State(config);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(
+                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
                 }
-                LOGGER.debug("Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
+                LOGGER.debug(
+                        "Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
                 if (listWeSupport.contains(state.getTlsContext().getSelectedCipherSuite())) {
                     supportsMore = true;
                     supported.add(state.getTlsContext().getSelectedCipherSuite());
@@ -201,10 +152,11 @@ public class CipherSuiteProbe extends TlsProbe {
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil
-                        .getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                    AlertMessage alert =
+                            (AlertMessage)
+                                    WorkflowTraceUtil.getFirstReceivedMessage(
+                                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
-
                 }
             }
         } while (supportsMore);
@@ -212,35 +164,17 @@ public class CipherSuiteProbe extends TlsProbe {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return true;
-        } else {
-            return false;
-        }
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<>(TlsProbeType.PROTOCOL_VERSION);
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE) {
-            protocolVersions.add(ProtocolVersion.SSL3);
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
-            protocolVersions.add(ProtocolVersion.TLS10);
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
-            protocolVersions.add(ProtocolVersion.TLS11);
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
-            protocolVersions.add(ProtocolVersion.TLS12);
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
-            protocolVersions.add(ProtocolVersion.TLS13);
-        }
+    public void adjustConfig(ServerReport report) {
+        evaluationHelper.configureVersions(report);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new CipherSuiteProbeResult(null);
+    protected void mergeData(ServerReport report) {
+        evaluationHelper.mergeData(report, this);
     }
 }

@@ -1,15 +1,14 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import java.util.List;
 
@@ -23,10 +22,10 @@ public class CheckPattern {
 
     private List<ResponseFingerprint> responseFingerprintList = null;
 
-    private CheckPattern() {
-    }
+    private CheckPattern() {}
 
-    public CheckPattern(CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
+    public CheckPattern(
+            CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
         this.type = type;
         this.foundFinishedAndAlert = foundFinishedAndAlert;
         this.bytePattern = bytePattern;
@@ -87,5 +86,4 @@ public class CheckPattern {
                 return super.toString();
         }
     }
-
 }

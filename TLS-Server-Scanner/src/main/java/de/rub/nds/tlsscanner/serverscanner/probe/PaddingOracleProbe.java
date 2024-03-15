@@ -1,100 +1,123 @@
-/**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
  *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
-import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
-import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttacker;
+import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingRecordGeneratorType;
+import de.rub.nds.tlsscanner.core.probe.padding.constants.PaddingVectorGeneratorType;
+import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
-public class PaddingOracleProbe extends TlsProbe {
+public class PaddingOracleProbe extends TlsServerProbe {
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private TestResult vulnerable = TestResults.COULD_NOT_TEST;
+
+    private static final int NUMBER_OF_ITERATIONS = 3;
+    private static final int NUMBER_OF_ITERATIONS_IN_QUICK_MODE = 1;
+    private static final int NUMBER_OF_ADDTIONAL_ITERATIONS = 7;
+    private static final int NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE = 9;
+
+    private final ScannerDetail scanDetail;
+    private final int numberOfIterations;
+    private final int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
+    private List<InformationLeakTest<PaddingOracleTestInfo>> resultList = new LinkedList<>();
 
-    public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PADDING_ORACLE, config);
+    public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.PADDING_ORACLE, configSelector);
+        scanDetail = configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
+        numberOfIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? NUMBER_OF_ITERATIONS
+                        : NUMBER_OF_ITERATIONS_IN_QUICK_MODE;
+        numberOfAddtionalIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? NUMBER_OF_ADDTIONAL_ITERATIONS
+                        : NUMBER_OF_ADDTIONAL_ITERATIONS_IN_QUICK_MODE;
+        register(
+                TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
+                TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        try {
-            long st = System.currentTimeMillis();
-            List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-            List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
-            for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
-                for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12) {
-                        for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                                PaddingOracleCommandConfig paddingOracleConfig =
-                                    createPaddingOracleCommandConfig(pair.getVersion(), suite);
-                                paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                                testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
-                            }
+    public void executeTest() {
+        LOGGER.debug("Starting evaluation");
+        List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
+        resultList = new LinkedList<>();
+        for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
+                        if (!suite.isPsk()
+                                && suite.isCBC()
+                                && CipherSuite.getImplemented().contains(suite)) {
+                            PaddingRecordGeneratorType recordGeneratorType =
+                                    scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                                            ? PaddingRecordGeneratorType.SHORT
+                                            : PaddingRecordGeneratorType.VERY_SHORT;
+                            resultList.add(
+                                    getPaddingOracleInformationLeakTest(
+                                            vectorGeneratorType,
+                                            recordGeneratorType,
+                                            numberOfIterations,
+                                            pair.getVersion(),
+                                            suite));
                         }
                     }
                 }
             }
-            // If we found some difference in the server behavior we need to
-            if (isPotentiallyVulnerable(testResultList)
-                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("We found non-determinism during the padding oracle scan");
-                LOGGER.debug("Starting non-determinism evaluation");
-                for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
-                    if (fingerprint.isDistinctAnswers()
-                        || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        LOGGER.debug("Found a candidate for the non-determinism eval:"
-                            + fingerprint.getTestInfo().getCipherSuite() + " - "
-                            + fingerprint.getTestInfo().getCipherSuite());
-                        extendFingerPrint(fingerprint, scannerConfig.getNumexe());
-                    }
+        }
+        LOGGER.debug("Finished evaluation");
+        if (isPotentiallyVulnerable(resultList)
+                || scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            LOGGER.debug("Starting extended evaluation");
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : resultList) {
+                if (fingerprint.isDistinctAnswers()
+                        || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                 }
-                LOGGER.debug("Finished non-determinism evaluation");
             }
-            long et = System.currentTimeMillis();
-            LOGGER.info("Padding Oracle took: " + (et-st));
-            return new PaddingOracleResult(testResultList, TestResult.TRUE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new PaddingOracleResult(null,TestResult.ERROR_DURING_TEST);
+            LOGGER.debug("Finished extended evaluation");
+        }
+        vulnerable = TestResults.FALSE;
+        for (InformationLeakTest<?> informationLeakTest : resultList) {
+            if (informationLeakTest.isSignificantDistinctAnswers()) {
+                vulnerable = TestResults.TRUE;
+            }
         }
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
         List<PaddingVectorGeneratorType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
-        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+        if (scanDetail == ScannerDetail.ALL) {
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED);
             vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
@@ -102,92 +125,76 @@ public class PaddingOracleProbe extends TlsProbe {
         return vectorTypeList;
     }
 
-    private PaddingOracleCommandConfig createPaddingOracleCommandConfig(ProtocolVersion version,
-        CipherSuite cipherSuite) {
-        PaddingOracleCommandConfig paddingOracleConfig =
-            new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) paddingOracleConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        PaddingRecordGeneratorType recordGeneratorType;
-        paddingOracleConfig.setNumberOfIterations(2);
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-            recordGeneratorType = PaddingRecordGeneratorType.SHORT;
-            paddingOracleConfig.setNumberOfIterations(3);
-        } else {
-            recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
-            paddingOracleConfig.setNumberOfIterations(1);
-        }
-        paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
-        paddingOracleConfig.getCipherSuiteDelegate().setCipherSuites(cipherSuite);
-        paddingOracleConfig.getProtocolVersionDelegate().setProtocolVersion(version);
-        return paddingOracleConfig;
-    }
-
-    private InformationLeakTest<PaddingOracleTestInfo>
-        getPaddingOracleInformationLeakTest(PaddingOracleCommandConfig paddingOracleConfig) {
+    private InformationLeakTest<PaddingOracleTestInfo> getPaddingOracleInformationLeakTest(
+            PaddingVectorGeneratorType vectorGeneratorType,
+            PaddingRecordGeneratorType paddingRecordGeneratorType,
+            int numberOfIterations,
+            ProtocolVersion testedVersion,
+            CipherSuite testedSuite) {
         PaddingOracleAttacker attacker =
-            new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                new PaddingOracleAttacker(
+                        configSelector.getBaseConfig(),
+                        getParallelExecutor(),
+                        paddingRecordGeneratorType,
+                        vectorGeneratorType,
+                        numberOfIterations,
+                        testedVersion,
+                        testedSuite);
+        if (scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
         } else {
             attacker.setAdditionalTimeout(50);
         }
-        try {
-            attacker.isVulnerable();
-        } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
-        }
-
+        attacker.isVulnerable();
         return new InformationLeakTest<>(
-            new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
-                paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
-                paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
-            attacker.getResponseMapList());
+                new PaddingOracleTestInfo(
+                        testedVersion,
+                        testedSuite,
+                        vectorGeneratorType,
+                        paddingRecordGeneratorType),
+                attacker.getFullResponseMap());
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
-        } else {
-            return false;
-        }
+    public Requirement<ServerReport> getRequirements() {
+        return new ProbeRequirement<ServerReport>(
+                        TlsProbeType.CIPHER_SUITE, TlsProbeType.PROTOCOL_VERSION)
+                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS));
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 
-    @Override
-    public ProbeResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(null, TestResult.COULD_NOT_TEST);
-    }
-
-    private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
-        int numberOfAdditionalIterations) {
-        PaddingOracleCommandConfig paddingOracleCommandConfig = createPaddingOracleCommandConfig(
-            informationLeakTest.getTestInfo().getVersion(), informationLeakTest.getTestInfo().getCipherSuite());
-        paddingOracleCommandConfig.setRecordGeneratorType(informationLeakTest.getTestInfo().getRecordGeneratorType());
-        paddingOracleCommandConfig.setVectorGeneratorType(informationLeakTest.getTestInfo().getVectorGeneratorType());
-        paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);
+    private void extendFingerPrint(
+            InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
+            int numberOfAdditionalIterations) {
         InformationLeakTest<PaddingOracleTestInfo> intermediateResponseMap =
-            getPaddingOracleInformationLeakTest(paddingOracleCommandConfig);
-        informationLeakTest.extendTestWithVectorContainers(intermediateResponseMap.getVectorContainerList());
-
+                getPaddingOracleInformationLeakTest(
+                        informationLeakTest.getTestInfo().getVectorGeneratorType(),
+                        informationLeakTest.getTestInfo().getRecordGeneratorType(),
+                        numberOfAdditionalIterations,
+                        informationLeakTest.getTestInfo().getVersion(),
+                        informationLeakTest.getTestInfo().getCipherSuite());
+        informationLeakTest.extendTestWithVectorContainers(
+                intermediateResponseMap.getVectorContainerList());
     }
 
-    private boolean isPotentiallyVulnerable(List<InformationLeakTest<PaddingOracleTestInfo>> testResultList) {
-        for (InformationLeakTest fingerprint : testResultList) {
+    private boolean isPotentiallyVulnerable(
+            List<InformationLeakTest<PaddingOracleTestInfo>> testResultList) {
+        for (InformationLeakTest<?> fingerprint : testResultList) {
             if (fingerprint.isDistinctAnswers()) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    protected void mergeData(ServerReport report) {
+        put(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT, resultList);
+        put(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 }
