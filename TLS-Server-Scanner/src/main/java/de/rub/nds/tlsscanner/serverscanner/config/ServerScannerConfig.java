@@ -47,6 +47,12 @@ public class ServerScannerConfig extends TlsScannerConfig {
                     "Add one or more custom CA's by separating them with a comma to verify the corresponding chain of certificates.")
     private List<String> customCAPathList = null;
 
+    @Parameter(names = "-vulns", required = false, description = "Vulnerabilities to look for")
+    private String vulns = "";
+
+    @Parameter(names = "-numexe", required = false, description = "Number of rexecutions")
+    private int numexe = 3;
+
     @Parameter(
             names = "-configSearchCooldown",
             required = false,
@@ -120,5 +126,21 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
     public void setConfigSearchCooldown(boolean configSearchCooldown) {
         this.configSearchCooldown = configSearchCooldown;
+    }
+
+    public int getNumexe() {
+        return numexe;
+    }
+
+    public void setNumexe(int numexe) {
+        this.numexe = numexe;
+    }
+
+    public String getVulns() {
+        return vulns;
+    }
+
+    public void setVulns(String vulns) {
+        this.vulns = vulns;
     }
 }
