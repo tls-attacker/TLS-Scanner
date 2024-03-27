@@ -26,7 +26,10 @@ class ServerReportSerializesIT extends AbstractScannerIT {
 
     @Test
     void realReportSerializes() {
-        ServerReport report = runScanner(ScannerDetail.QUICK);
+        ServerScannerConfig cfg = new ServerScannerConfig(new GeneralDelegate());
+        cfg.getExecutorConfig().setScanDetail(ScannerDetail.QUICK);
+        cfg.setTimeout(100);
+        ServerReport report = runScanner(cfg);
         ServerReportSerializesTest.serializeCheckingFailingProperties(report);
     }
 
