@@ -8,14 +8,15 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.dummy.DummyOrchestrationProvider;
 import de.rub.nds.tlscrawler.dummy.DummyPersistenceProvider;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ControllerTest {
 
@@ -39,7 +40,7 @@ public class ControllerTest {
 
         Thread.sleep(1000);
 
-        Assert.assertEquals(2, orchestrationProvider.jobQueue.size());
-        Assert.assertEquals(0, orchestrationProvider.unackedJobs.size());
+        assertEquals(2, orchestrationProvider.jobQueue.size());
+        assertEquals(0, orchestrationProvider.unackedJobs.size());
     }
 }

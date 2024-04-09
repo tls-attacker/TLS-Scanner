@@ -80,16 +80,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ByteArraySerializer());
         module.addSerializer(new ResponseFingerprintSerializer());
-        module.addSerializer(new CertificateSerializer());
-        module.addSerializer(new Asn1CertificateSerializer());
-        module.addSerializer(new CustomDhPublicKeySerializer());
-        module.addSerializer(new CustomEcPublicKeySerializer());
-        module.addSerializer(new CustomRsaPublicKeySerializer());
-        module.addSerializer(new CustomDsaPublicKeySerializer());
         module.addSerializer(new VectorSerializer());
         module.addSerializer(new PointSerializer());
         module.addSerializer(new HttpsHeaderSerializer());
-        module.addSerializer(new Asn1EncodableSerializer());
 
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
