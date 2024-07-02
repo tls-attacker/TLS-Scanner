@@ -104,6 +104,10 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
@@ -134,6 +138,10 @@
         <dependency>
             <groupId>de.rub.nds.tls.scanner</groupId>
             <artifactId>tls-server-scanner</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

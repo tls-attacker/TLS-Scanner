@@ -39,7 +39,7 @@ services:
         - credentials_provider
     restart: "no"
     command: controller
-      -hostFile resources/text.txt
+      -hostFile resources/hostfile.txt
       -denylist resources/denylist.txt
       -portToBeScanned 443
       -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw
