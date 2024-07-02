@@ -21,10 +21,10 @@ fi
 # You can also set 'N/A' to skip the dependency and rely on maven
 
 export MODVAR_BRANCH='N/A'
-export ASN1_BRANCH='master'
-export X509_BRANCH='master'
-export ATTACKER_BRANCH='master'
-export SCANNER_BRANCH='master'
+export ASN1_BRANCH='main'
+export X509_BRANCH='main'
+export ATTACKER_BRANCH='main'
+export SCANNER_BRANCH='main'
 
 docker_args=()
 if [ "$1" != "use-cache" ]; then

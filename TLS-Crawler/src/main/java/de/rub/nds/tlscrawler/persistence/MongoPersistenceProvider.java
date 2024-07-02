@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -86,6 +87,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(new JodaModule());
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configOverride(BigDecimal.class)
                 .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
