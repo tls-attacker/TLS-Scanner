@@ -48,7 +48,6 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
     public QuicRetryPacketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.RETRY_PACKET, configSelector);
         register(
-                QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO,
                 QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS,
                 QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS,
                 QuicAnalyzedProperty.RETRY_TOKEN_LENGTH);
