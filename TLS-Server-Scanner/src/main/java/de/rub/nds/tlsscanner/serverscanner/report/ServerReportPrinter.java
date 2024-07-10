@@ -324,6 +324,19 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendQuicRetryPacketProbe(builder);
         appendQuicAntiDosLimitProbe(builder);
         appendQuicAfterHandshakeProbe(builder);
+        appendQuicFragmentationProbe(builder);
+    }
+
+    private void appendQuicFragmentationProbe(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Fragmentation Probe");
+        prettyAppend(
+                builder,
+                "Server accepts splitted Client Hello messages ",
+                QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO);
+        prettyAppend(
+                builder,
+                "Server overwrites reiceived crypto frames ",
+                QuicAnalyzedProperty.OVERWRITES_RECEIVED_CRYPTO_FRAMES);
     }
 
     private void appendQuicAntiDosLimitProbe(StringBuilder builder) {

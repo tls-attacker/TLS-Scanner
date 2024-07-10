@@ -19,5 +19,6 @@ public enum QuicAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     QUIRKS,
     RETRY_PACKET,
     NEW_CONNECTION_ID_FRAME,
-    NEW_TOKEN_FRAME
+    NEW_TOKEN_FRAME,
+    FRAGMENTATION,
 }

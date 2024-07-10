@@ -18,7 +18,8 @@ public enum QuicProbeType implements ProbeType {
     CONNECTION_MIGRATION("Connection Migration"),
     RETRY_PACKET("Retry Packet"),
     AFTER_HANDSHAKE("After Handhshake"),
-    ANTI_DOS_LIMIT("Anti DoS Limit");
+    ANTI_DOS_LIMIT("Anti DoS Limit"),
+    FRAGMENTATION("Fragmentation");
 
     @Override
     public String getName() {
