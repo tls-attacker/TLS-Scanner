@@ -40,7 +40,8 @@ public enum QuicAnalyzedProperty implements AnalyzedProperty {
     IS_NEW_CONNECTION_ID_FRAME_SEND(QuicAnalyzedPropertyCategory.NEW_CONNECTION_ID_FRAME),
     NUMBER_OF_NEW_CONNECTION_IDS(QuicAnalyzedPropertyCategory.NEW_CONNECTION_ID_FRAME),
     PROCESSES_SPLITTED_CLIENT_HELLO(QuicAnalyzedPropertyCategory.FRAGMENTATION),
-    OVERWRITES_RECEIVED_CRYPTO_FRAMES(QuicAnalyzedPropertyCategory.FRAGMENTATION);
+    OVERWRITES_RECEIVED_CRYPTO_FRAMES(QuicAnalyzedPropertyCategory.FRAGMENTATION),
+    OVERWRITES_RECEIVED_STREAM_FRAMES(QuicAnalyzedPropertyCategory.FRAGMENTATION);
 
     private final QuicAnalyzedPropertyCategory category;
 

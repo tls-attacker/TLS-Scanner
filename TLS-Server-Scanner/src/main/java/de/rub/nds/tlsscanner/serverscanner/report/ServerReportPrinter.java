@@ -337,6 +337,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Server overwrites reiceived crypto frames ",
                 QuicAnalyzedProperty.OVERWRITES_RECEIVED_CRYPTO_FRAMES);
+        prettyAppend(
+                builder,
+                "Server overwrites reiceived stream frames ",
+                QuicAnalyzedProperty.OVERWRITES_RECEIVED_STREAM_FRAMES);
     }
 
     private void appendQuicAntiDosLimitProbe(StringBuilder builder) {
