@@ -96,10 +96,10 @@ public class CertificateReportGenerator {
     }
 
     private static void setExtendedKeyUsage(CertificateReport report, X509Certificate cert) {
-        Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
-        for (Extension extension : extensions.getExtensionList()) {
+        //Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
+        //for (Extension extension : extensions.getExtensionList()) {
             // TODO
-        }
+        //}
     }
 
     private static void setCommonNames(CertificateReport report, X509Certificate cert) {
