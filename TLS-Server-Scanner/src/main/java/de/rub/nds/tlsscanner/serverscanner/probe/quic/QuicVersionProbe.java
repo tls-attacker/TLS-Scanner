@@ -44,7 +44,7 @@ public class QuicVersionProbe extends QuicServerProbe {
                         ConfigSelector.TLS13_CONFIG, DefaultConfigProfile.CLEAN_TLS_13);
         config.setExpectHandshakeDoneQuicFrame(false);
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_VERSION_NEGOTIATION);
-        config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION.getByteValue());
+        config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION);
         config.setFinishWithCloseNotify(false);
 
         State state = new State(config);
