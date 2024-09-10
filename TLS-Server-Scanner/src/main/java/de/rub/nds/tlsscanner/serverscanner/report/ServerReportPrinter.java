@@ -1321,26 +1321,30 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         builder,
                         "Overall Result",
                         paddingResult.getValue().getOverallResult().toString());
-                for (TicketPaddingOracleVectorSecond vector :
-                        paddingResult.getValue().getSecondVectorsWithRareResponses()) {
-                    prettyAppend(
-                            builder,
-                            "Possible Plaintext:",
-                            String.format(
-                                    "%02x%02x (XOR %02x%02x@%d)",
-                                    vector.secondAssumedPlaintext,
-                                    vector.lastAssumedPlaintext,
-                                    vector.secondXorValue,
-                                    vector.lastXorValue,
-                                    vector.offset));
+                if (paddingResult.getValue().getSecondVectorsWithRareResponses() != null) {
+                    for (TicketPaddingOracleVectorSecond vector :
+                            paddingResult.getValue().getSecondVectorsWithRareResponses()) {
+                        prettyAppend(
+                                builder,
+                                "Possible Plaintext:",
+                                String.format(
+                                        "%02x%02x (XOR %02x%02x@%d)",
+                                        vector.secondAssumedPlaintext,
+                                        vector.lastAssumedPlaintext,
+                                        vector.secondXorValue,
+                                        vector.lastXorValue,
+                                        vector.offset));
+                    }
                 }
 
-                appendInformationLeakTestList(
-                        builder,
-                        paddingResult.getValue().getPositionResults().stream()
-                                .map(TicketPaddingOracleOffsetResult::getLastByteLeakTest)
-                                .collect(Collectors.toList()),
-                        "Padding Oracle Details");
+                if (paddingResult.getValue().getPositionResults() != null) {
+                    appendInformationLeakTestList(
+                            builder,
+                            paddingResult.getValue().getPositionResults().stream()
+                                    .map(TicketPaddingOracleOffsetResult::getLastByteLeakTest)
+                                    .collect(Collectors.toList()),
+                            "Padding Oracle Details");
+                }
             }
         }
 

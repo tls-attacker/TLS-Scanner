@@ -44,6 +44,9 @@ public class ConnectionClosingProbe extends TlsServerProbe {
     public ConnectionClosingProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, configSelector);
+        register(
+                TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
+                TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA);
     }
 
     @Override
@@ -76,8 +79,8 @@ public class ConnectionClosingProbe extends TlsServerProbe {
 
     @Override
     protected void mergeData(ServerReport report) {
-        report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
-        report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA, closedAfterAppDataDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA, closedAfterFinishedDelta);
     }
 
     @Override

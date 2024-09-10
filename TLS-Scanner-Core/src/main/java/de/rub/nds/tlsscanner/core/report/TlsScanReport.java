@@ -8,8 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
@@ -42,64 +44,28 @@ import java.util.stream.Collectors;
 
 public abstract class TlsScanReport extends ScanReport {
 
-    private ProtocolType protocolType = null;
-
-    private KnownPaddingOracleVulnerability knownPaddingOracleVulnerability = null;
-
-    // DTLS
-    private Integer totalReceivedRetransmissions = 0;
-
-    // Scan Timestamps
-    private long scanStartTime;
-    private long scanEndTime;
-
-    // If the peer closes the connection by itself if nothing gets sent
-    private Long closedAfterFinishedDelta;
-    private Long closedAfterAppDataDelta;
-
     public TlsScanReport() {
         super();
     }
 
     public synchronized ProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    public synchronized void setProtocolType(ProtocolType protocolType) {
-        this.protocolType = protocolType;
+        ObjectResult<ProtocolType> objectResult =
+                getObjectResult(TlsAnalyzedProperty.PROTOCOL_TYPE, ProtocolType.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized KnownPaddingOracleVulnerability getKnownPaddingOracleVulnerability() {
-        return knownPaddingOracleVulnerability;
-    }
-
-    public synchronized void setKnownPaddingOracleVulnerability(
-            KnownPaddingOracleVulnerability knownPaddingOracleVulnerability) {
-        this.knownPaddingOracleVulnerability = knownPaddingOracleVulnerability;
+        ObjectResult<KnownPaddingOracleVulnerability> objectResult =
+                getObjectResult(
+                        TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY,
+                        KnownPaddingOracleVulnerability.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Integer getTotalReceivedRetransmissions() {
-        return totalReceivedRetransmissions;
-    }
-
-    public synchronized void setTotalReceivedRetransmissions(Integer totalReceivedRetransmissions) {
-        this.totalReceivedRetransmissions = totalReceivedRetransmissions;
-    }
-
-    public synchronized long getScanStartTime() {
-        return scanStartTime;
-    }
-
-    public synchronized void setScanStartTime(long scanStartTime) {
-        this.scanStartTime = scanStartTime;
-    }
-
-    public synchronized long getScanEndTime() {
-        return scanEndTime;
-    }
-
-    public synchronized void setScanEndTime(long scanEndTime) {
-        this.scanEndTime = scanEndTime;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Boolean getCcaSupported() {
@@ -274,22 +240,6 @@ public abstract class TlsScanReport extends ScanReport {
                         TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS,
                         TokenBindingKeyParameters.class);
         return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized Long getClosedAfterFinishedDelta() {
-        return closedAfterFinishedDelta;
-    }
-
-    public synchronized void setClosedAfterFinishedDelta(Long closedAfterFinishedDelta) {
-        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
-    }
-
-    public synchronized Long getClosedAfterAppDataDelta() {
-        return closedAfterAppDataDelta;
-    }
-
-    public synchronized void setClosedAfterAppDataDelta(Long closedAfterAppDataDelta) {
-        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
     }
 
     public synchronized List<String> getSupportedAlpnConstans() {

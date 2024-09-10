@@ -64,6 +64,8 @@ public class CertificateChainReport {
 
     private List<TrustPath> trustPaths;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private CertificateChainReport() {}
 
     public CertificateChainReport(X509CertificateChain certificateChain, String uri) {

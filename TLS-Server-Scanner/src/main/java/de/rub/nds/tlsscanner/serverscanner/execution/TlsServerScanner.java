@@ -289,6 +289,7 @@ public final class TlsServerScanner
     @Override
     protected ServerReport getEmptyReport() {
         return new ServerReport(
+                config.getClientDelegate().getSniHostname(),
                 config.getClientDelegate().getExtractedHost(),
                 config.getClientDelegate().getExtractedPort());
     }
@@ -302,7 +303,6 @@ public final class TlsServerScanner
 
     @Override
     protected boolean checkScanPrerequisites(ServerReport report) {
-        report.setProtocolType(getProtocolType());
         boolean isConnectable = false;
         boolean speaksProtocol = false;
         boolean isHandshaking = false;
@@ -327,7 +327,7 @@ public final class TlsServerScanner
         report.setServerIsAlive(isConnectable);
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
-        report.setProtocolType(getProtocolType());
+        report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
         report.putResult(QuicAnalyzedProperty.RETRY_REQUIRED, configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }

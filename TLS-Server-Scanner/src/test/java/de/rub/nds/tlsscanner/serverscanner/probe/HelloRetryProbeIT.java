@@ -32,7 +32,9 @@ public class HelloRetryProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return report.getHelloRetryRequestSelectedNamedGroup() == NamedGroup.ECDH_X25519
+        return report.getObjectResult(TlsAnalyzedProperty.HRR_SELECTED_GROUP, NamedGroup.class)
+                                .getValue()
+                        == NamedGroup.ECDH_X25519
                 && verifyProperty(
                         TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.TRUE);

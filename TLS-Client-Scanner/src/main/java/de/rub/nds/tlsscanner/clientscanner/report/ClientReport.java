@@ -8,10 +8,15 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.converter.*;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -23,9 +28,16 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends TlsScanReport {
 
-    // DHE
-    private Integer lowestPossibleDheModulusSize;
-    private Integer highestPossibleDheModulusSize;
+    public static Module[] getSerializerModules() {
+        return new Module[] {
+            new SimpleModule()
+                    .addSerializer(new ByteArraySerializer())
+                    .addSerializer(new ResponseFingerprintSerializer())
+                    .addSerializer(new VectorSerializer())
+                    .addSerializer(new PointSerializer()),
+            new JodaModule()
+        };
+    }
 
     public ClientReport() {
         super();
@@ -65,22 +77,6 @@ public class ClientReport extends TlsScanReport {
                 getListResult(
                         TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, ECPointFormat.class);
         return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
-
-    public Integer getHighestPossibleDheModulusSize() {
-        return highestPossibleDheModulusSize;
-    }
-
-    public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
-        this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
-    }
-
-    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
     }
 
     public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {

@@ -163,6 +163,7 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe {
 
     @Override
     protected void mergeData(ServerReport report) {
+
         put(
                 TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
                 acceptsStartedWithInvalidMessageNumber);
@@ -177,8 +178,12 @@ public class DtlsMessageSequenceProbe extends TlsServerProbe {
                 && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
                 && acceptsRandomMessageNumbers == TestResults.FALSE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
-        } else {
+        } else if (acceptsSkippedMessageNumbersOnce == TestResults.TRUE
+                || acceptsSkippedMessageNumbersMultiple == TestResults.TRUE
+                || acceptsRandomMessageNumbers == TestResults.TRUE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+        } else {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.COULD_NOT_TEST);
         }
     }
 }

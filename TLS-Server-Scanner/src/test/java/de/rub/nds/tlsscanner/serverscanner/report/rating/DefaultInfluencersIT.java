@@ -1049,7 +1049,6 @@ public class DefaultInfluencersIT {
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
                 new LinkedList<>(
-                        // list results
                         Arrays.asList(
                                 TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
                                 TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
@@ -1100,6 +1099,27 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty
                                         .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                                 TlsAnalyzedProperty.STATISTICS_TICKET,
+                                TlsAnalyzedProperty.PROTOCOL_TYPE,
+                                TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
+                                TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA,
+                                TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY,
+                                TlsAnalyzedProperty.MINIMUM_RSA_CERT_KEY_SIZE,
+                                TlsAnalyzedProperty.MINIMUM_DSS_CERT_KEY_SIZE,
+                                TlsAnalyzedProperty.HSTS_MAX_AGE,
+                                TlsAnalyzedProperty.HPKP_MAX_AGE,
+                                TlsAnalyzedProperty.GCM_PATTERN,
+                                TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN,
+                                TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA,
+                                TlsAnalyzedProperty.VERIFY_CHECK_PATTERN,
+                                TlsAnalyzedProperty.HRR_SELECTED_GROUP,
+                                TlsAnalyzedProperty.WEAKEST_DH_STRENGTH,
+                                TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
+                                TlsAnalyzedProperty.COOKIE_LENGTH,
+                                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
+                                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE,
+                                TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
+                                TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
+                                TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
 
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
