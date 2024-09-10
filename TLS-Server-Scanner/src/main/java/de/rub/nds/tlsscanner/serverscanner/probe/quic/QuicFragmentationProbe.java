@@ -181,11 +181,11 @@ public class QuicFragmentationProbe extends QuicServerProbe {
         StreamFrame frame1 =
                 new StreamFrame(ArrayConverter.hexStringToByteArray("0004100150000710"), 2);
         frame1.setOffset(0);
-        frame1.setFinalFrame(false);
+        frame1.setFinalFrameConfig(true);
         StreamFrame frame2 =
                 new StreamFrame(ArrayConverter.hexStringToByteArray("080121013301ab60374201"), 2);
         frame2.setOffset(8);
-        frame2.setFinalFrame(true);
+        frame2.setFinalFrameConfig(true);
         sendAction.setConfiguredQuicFrames(frame1, frame2);
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
@@ -212,11 +212,11 @@ public class QuicFragmentationProbe extends QuicServerProbe {
         StreamFrame frame1 =
                 new StreamFrame(ArrayConverter.hexStringToByteArray("0004100150000710"), 2);
         frame1.setOffset(0);
-        frame1.setFinalFrame(false);
+        frame1.setFinalFrameConfig(false);
         StreamFrame frame2 =
                 new StreamFrame(ArrayConverter.hexStringToByteArray("14080121013301ab60374201"), 2);
         frame2.setOffset(7);
-        frame2.setFinalFrame(true);
+        frame2.setFinalFrameConfig(true);
         sendAction.setConfiguredQuicFrames(frame1, frame2);
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
