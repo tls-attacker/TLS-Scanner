@@ -170,6 +170,7 @@ public final class TlsServerScanner
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(configSelector, parallelExecutor));
+        addProbeToProbeList(new TlsLatencyProbe(configSelector, parallelExecutor));
         afterList.add(new Sweet32AfterProbe<>());
         afterList.add(new FreakAfterProbe<>());
         afterList.add(new LogjamAfterProbe<>());

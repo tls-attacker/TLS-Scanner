@@ -72,7 +72,8 @@ public enum TlsProbeType implements ProbeType {
     DHE_PARAMETERS("DHE parameters"),
     BASIC("Basic"),
     APPLICATION_MESSAGE("Application message"),
-    SERVER_CERTIFICATE_MINIMUM_KEY_SIZE("Server Certificate Minimum Key Size");
+    SERVER_CERTIFICATE_MINIMUM_KEY_SIZE("Server Certificate Minimum Key Size"),
+    TLS_LATENCY("TLS Handshake Latency");
 
     @Override
     public String getName() {

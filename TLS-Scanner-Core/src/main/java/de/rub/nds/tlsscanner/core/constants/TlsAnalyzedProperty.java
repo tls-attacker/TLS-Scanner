@@ -17,6 +17,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
+    TLS_LATENCY_HELLO(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
+    TLS_LATENCY_KEY_EXCHANGE(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
