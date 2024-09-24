@@ -16,6 +16,7 @@ import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.docker.DockerClientManager;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.docker.DockerTlsServerInstance;
+import de.rub.nds.tls.subject.docker.build.DockerBuilder;
 import java.security.Security;
 import java.util.List;
 import java.util.UUID;
@@ -71,7 +72,11 @@ public abstract class AbstractDockerbasedIT {
     protected void prepareContainer() throws DockerException, InterruptedException {
         Image image =
                 DockerTlsManagerFactory.getMatchingImage(
-                        localImages, implementation, version, ConnectionRole.SERVER);
+                        localImages,
+                        implementation,
+                        version,
+                        DockerBuilder.NO_ADDITIONAL_BUILDFLAGS,
+                        ConnectionRole.SERVER);
         Assertions.assertNotNull(
                 image,
                 String.format(
