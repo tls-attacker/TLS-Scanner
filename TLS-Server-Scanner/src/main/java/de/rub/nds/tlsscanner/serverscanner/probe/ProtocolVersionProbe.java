@@ -68,11 +68,10 @@ public class ProtocolVersionProbe extends TlsServerProbe {
             }
         }
         if (supportedProtocolVersions.isEmpty()) {
-            for (ProtocolVersion version : toTestList) {
+            for (ProtocolVersion version : unsupportedProtocolVersions) {
                 if (isProtocolVersionSupported(version, true)) {
+                    unsupportedProtocolVersions.remove(version);
                     supportedProtocolVersions.add(version);
-                } else {
-                    unsupportedProtocolVersions.add(version);
                 }
             }
         }

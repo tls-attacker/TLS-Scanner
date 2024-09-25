@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -25,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -40,8 +38,6 @@ public class ServerRandomnessAfterProbeTest {
     private ExtractedValueContainer<ComparableByteArray> cookieContainer;
     private ExtractedValueContainer<ComparableByteArray> sessionIdContainer;
     private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
-
-    private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
 
     // generates "cryptographically strong random numbers" with constant seed for deterministic
     // tests

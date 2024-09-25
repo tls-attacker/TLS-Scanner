@@ -60,10 +60,6 @@ public class BleichenbacherAttacker {
     private long additionalTimeout = 1000;
     private long additionalTcpTimeout = 5000;
     private List<VectorResponse> fullResponseMap;
-    private EqualityError resultError;
-
-    private boolean shakyScans = false;
-    private boolean erroneousScans = false;
 
     public BleichenbacherAttacker(
             Config baseConfig,
@@ -115,7 +111,6 @@ public class BleichenbacherAttacker {
             }
         }
 
-        resultError = referenceError;
         return referenceError != EqualityError.NONE;
     }
 
@@ -158,7 +153,6 @@ public class BleichenbacherAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                erroneousScans = true;
                 LOGGER.warn("Could not extract fingerprint for " + pair.toString());
             } else {
                 testedSuite =

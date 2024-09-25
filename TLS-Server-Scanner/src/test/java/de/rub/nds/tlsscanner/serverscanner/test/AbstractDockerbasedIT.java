@@ -16,19 +16,15 @@ import de.rub.nds.tls.subject.constants.TransportType;
 import de.rub.nds.tls.subject.docker.DockerClientManager;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.docker.DockerTlsServerInstance;
-import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.security.Security;
 import java.util.List;
 import java.util.UUID;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assume;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractDockerbasedIT {
-    private static final Logger LOGGER = LogManager.getLogger();
     private static List<Image> localImages;
 
     private final TlsImplementationType implementation;
@@ -37,7 +33,6 @@ public abstract class AbstractDockerbasedIT {
     private final TransportType transportType;
 
     private DockerTlsServerInstance dockerInstance;
-    private ServerScannerConfig config;
 
     public AbstractDockerbasedIT(
             TlsImplementationType implementation,
