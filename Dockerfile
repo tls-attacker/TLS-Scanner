@@ -24,8 +24,6 @@ FROM openjdk:11
 
 COPY --from=build-image /build/TLS-Scanner/apps /apps
 
-RUN apt-get install openssl
-
 WORKDIR /apps
-ENTRYPOINT ["java", "-jar", "TLS-Client-Scanner.jar", "-port", "4433", "-run", "'openssl s_client -connect localhost:4433'"]
+ENTRYPOINT ["java", "-jar", "TLS-Client-Scanner.jar", "-port", "4433", "-run", "openssl s_client -connect localhost:4433"]
 
