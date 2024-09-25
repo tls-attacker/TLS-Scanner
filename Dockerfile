@@ -25,5 +25,5 @@ FROM openjdk:11
 COPY --from=build-image /build/TLS-Scanner/apps /apps
 
 WORKDIR /apps
-ENTRYPOINT ["java", "-jar", "TLS-Server-Scanner.jar"]
+# ENTRYPOINT ["java", "-jar", "TLS-Server-Scanner.jar"]
 
