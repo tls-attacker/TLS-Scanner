@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -43,6 +44,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -89,6 +92,9 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             rootContainer.add(createDtlsBugsContainer(report));
         }
         rootContainer.add(createProbePerformanceContainer(report));
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            rootContainer.add(createGuidelinesContainer(report));
+        }
         return rootContainer;
     }
 
@@ -699,6 +705,31 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 container.add(createDefaultTextContainer("Error: " + e.getMessage()));
             }
         }
+        return container;
+    }
+
+    private ReportContainer createGuidelinesContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        List<GuidelineReport> guidelineReports = report.getGuidelineReports();
+        if (guidelineReports != null
+                && !guidelineReports.isEmpty()) {
+            container.add(new HeadlineContainer("Guidelines"));
+            for (GuidelineReport guidelineReport : guidelineReports) {
+                container.add(createGuidelineContainer(guidelineReport));
+            }
+        }
+        return container;
+    }
+
+    private ReportContainer createGuidelineContainer(GuidelineReport guidelineReport) {
+        ListContainer container = new ListContainer();
+        container.add(new HeadlineContainer("Guideline " + StringUtils.trim(guidelineReport.getName())));
+        // TODO: Maybe replace with KeyValueContainer
+        container.add(new TextContainer("Adhered: " + guidelineReport.getAdhered().size(), AnsiColor.GREEN));
+        container.add(new TextContainer("Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED));
+        container.add(new TextContainer("Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW));
+        container.add(createDefaultTextContainer("Condition Not Met: " + guidelineReport.getConditionNotMet().size()));
+        // TODO: Implement output for greater Scanner Details
         return container;
     }
 }
