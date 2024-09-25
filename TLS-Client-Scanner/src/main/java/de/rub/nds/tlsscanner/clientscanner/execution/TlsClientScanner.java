@@ -10,7 +10,10 @@ package de.rub.nds.tlsscanner.clientscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.Scanner;
+import de.rub.nds.scanner.core.guideline.Guideline;
+import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.passive.StatsWriter;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
@@ -58,9 +61,18 @@ import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+
+import jakarta.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
 
 public final class TlsClientScanner
         extends Scanner<ClientReport, TlsClientProbe, AfterProbe<ClientReport>, State> {
@@ -196,6 +208,45 @@ public final class TlsClientScanner
         registerProbeForExecution(new Version13RandomProbe(parallelExecutor, config));
         registerProbeForExecution(new RecordFragmentationProbe(parallelExecutor, config));
         registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+    }
+
+    @Override
+    protected List<Guideline<ClientReport>> getGuidelines() {
+        if (getProtocolType() == ProtocolType.DTLS) {
+            return List.of();
+        }
+
+        LOGGER.debug("Loading guidelines from files...");
+        List<String> guidelineFiles = Arrays.asList("bsi.xml");
+        GuidelineIO guidelineIO;
+        try {
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
+        } catch (JAXBException e) {
+            LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
+            return null;
+        }
+        List<Guideline<ClientReport>> guidelines = new ArrayList<>();
+        for (String guidelineName : guidelineFiles) {
+            try {
+                InputStream guideLineStream =
+                        TlsClientScanner.class.getResourceAsStream("/guideline/" + guidelineName);
+                guidelines.add((Guideline<ClientReport>) guidelineIO.read(guideLineStream));
+            } catch (JAXBException | XMLStreamException ex) {
+                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
+                return null;
+            }
+        }
+        return guidelines;
+    }
+
+    private ProtocolType getProtocolType() {
+        if (config.getDtlsDelegate().isDTLS()) {
+            return ProtocolType.DTLS;
+        } else if (config.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
+            return ProtocolType.STARTTLS;
+        } else {
+            return ProtocolType.TLS;
+        }
     }
 
     /**
