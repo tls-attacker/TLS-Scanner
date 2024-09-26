@@ -22,17 +22,15 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
-// import de.rub.nds.tlsscanner.clientscanner.guideline.checks.KeySizeCertGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-// import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -286,23 +284,23 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         /*checks.add(
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
-                        "Die folgenden Signaturverfahren werden empfohlen.",
-                        RequirementLevel.SHOULD,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        Arrays.asList(
-                                X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.RSASSA_PSS,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA256,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA384,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA512
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-                                )));*/
+        new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                "Die folgenden Signaturverfahren werden empfohlen.",
+                RequirementLevel.SHOULD,
+                new GuidelineCheckCondition(
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+                Arrays.asList(
+                        X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+                        X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
+                        X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
+                        X509SignatureAlgorithm.RSASSA_PSS,
+                        X509SignatureAlgorithm.ECDSA_WITH_SHA256,
+                        X509SignatureAlgorithm.ECDSA_WITH_SHA384,
+                        X509SignatureAlgorithm.ECDSA_WITH_SHA512
+                        // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
+                        // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
+                        // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
+                        )));*/
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
@@ -313,8 +311,8 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         /*checks.add(
-                new KeySizeCertGuidelineCheck(
-                        "Schlüssellängen", RequirementLevel.SHOULD, 2000, 2000, 250, 2000));*/
+        new KeySizeCertGuidelineCheck(
+                "Schlüssellängen", RequirementLevel.SHOULD, 2000, 2000, 250, 2000));*/
 
         Guideline<ClientReport> guideline =
                 new Guideline<>(
