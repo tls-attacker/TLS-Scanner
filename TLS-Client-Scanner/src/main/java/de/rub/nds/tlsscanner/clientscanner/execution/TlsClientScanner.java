@@ -61,18 +61,15 @@ import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
-
+import jakarta.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
-import jakarta.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.xml.stream.XMLStreamException;
 
 public final class TlsClientScanner
         extends Scanner<ClientReport, TlsClientProbe, AfterProbe<ClientReport>, State> {
@@ -212,7 +209,9 @@ public final class TlsClientScanner
 
     @Override
     protected List<Guideline<ClientReport>> getGuidelines() {
+        LOGGER.info("Guidelines requested.");
         if (getProtocolType() == ProtocolType.DTLS) {
+            LOGGER.info("DTLS is being used. No Guidelines parsed.");
             return List.of();
         }
 
@@ -236,6 +235,7 @@ public final class TlsClientScanner
                 return null;
             }
         }
+        LOGGER.info("Guidelines successfully parsed.");
         return guidelines;
     }
 
