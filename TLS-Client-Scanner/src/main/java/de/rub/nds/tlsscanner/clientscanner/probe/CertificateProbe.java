@@ -69,10 +69,6 @@ public class CertificateProbe extends TlsClientProbe {
         clientCertificateTypes.add(ClientCertificateType.RSA_SIGN);
         clientCertificateTypes.add(ClientCertificateType.DSS_SIGN);
         clientCertificateTypes.add(ClientCertificateType.ECDSA_SIGN);
-        clientCertificateTypes.add(ClientCertificateType.RSA_FIXED_DH);
-        clientCertificateTypes.add(ClientCertificateType.DSS_FIXED_DH);
-        clientCertificateTypes.add(ClientCertificateType.RSA_FIXED_ECDH);
-        clientCertificateTypes.add(ClientCertificateType.ECDSA_FIXED_ECDH);
         return clientCertificateTypes;
     }
 

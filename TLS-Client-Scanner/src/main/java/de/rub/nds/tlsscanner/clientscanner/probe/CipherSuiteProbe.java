@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.core.probe.ciphersuite.CipherSuiteEvaluationHelper;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CipherSuiteProbe extends TlsClientProbe {
 
@@ -51,6 +52,10 @@ public class CipherSuiteProbe extends TlsClientProbe {
 
             List<CipherSuite> toTestList =
                     evaluationHelper.getToTestCipherSuitesByVersion(version, scannerConfig);
+            toTestList =
+                    toTestList.stream()
+                            .filter(cipher -> cipher.name().contains("DH_") == false)
+                            .collect(Collectors.toList());
 
             while (!toTestList.isEmpty()) {
                 Config config;
