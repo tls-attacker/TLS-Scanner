@@ -171,7 +171,9 @@ public class HttpHeaderProbe extends TlsServerProbe {
                         }
                     }
                 }
-                if (header.getHeaderName().getValue().equalsIgnoreCase("Public-Key-Pins-Report-Only")) {
+                if (header.getHeaderName()
+                        .getValue()
+                        .equalsIgnoreCase("Public-Key-Pins-Report-Only")) {
                     supportsHpkpReportOnly = TestResults.TRUE;
                     String[] values = header.getHeaderValue().getValue().split(";");
                     for (String value : values) {
