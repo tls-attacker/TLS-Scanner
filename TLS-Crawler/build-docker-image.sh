@@ -1,8 +1,8 @@
 #!/bin/bash
-# set github token to pull private repos
-# Can be created at https://github.com/settings/tokens
-# (As of 2023-11-03) A fine grained token does not seem to work, a classical one is required with the "repo" permission
-# Unfortunately, less permissions do not seem to work. Hopefully this will change in the future.
+# Set github token to pull private repos
+# They can be created at https://github.com/settings/tokens
+# Fine grained tokens need the Repository>Contents (read-only suffices) permission and need to be created using the resource owner set to tls-attacker.
+# Classical tokens require the "repo" permission.
 
 if [ "$1" = "run-with-credentials" ]; then
     # implementation detail:
