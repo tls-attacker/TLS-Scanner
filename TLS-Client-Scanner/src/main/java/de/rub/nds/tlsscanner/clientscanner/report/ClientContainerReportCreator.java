@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -747,7 +748,54 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 createDefaultKeyValueContainer(
                         "Condition Not Met: ",
                         String.valueOf(guidelineReport.getConditionNotMet().size())));
-        // TODO: Implement output for greater Scanner Details
+
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            container.add(
+                    new TextContainer(StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE));
+            ListContainer detailContainer = new ListContainer(1);
+            container.add(detailContainer);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Passed Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
+                    detailContainer.add(
+                            new TextContainer(
+                                    StringUtils.trim(result.getCheckName()), AnsiColor.GREEN));
+                    detailContainer.add(
+                            createDefaultTextContainer(
+                                    "\t"
+                                            + StringUtils.trim(result.toString())
+                                                    .replace("\n", "\n\t")));
+                }
+            }
+
+            detailContainer.add(new HeadlineContainer("Violated Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getViolated()) {
+                detailContainer.add(
+                        new TextContainer(StringUtils.trim(result.getCheckName()), AnsiColor.RED));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            detailContainer.add(new HeadlineContainer("Failed Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
+                detailContainer.add(
+                        new TextContainer(
+                                StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Condition Not Met Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getConditionNotMet()) {
+                    detailContainer.add(
+                            createDefaultTextContainer(StringUtils.trim(result.getCheckName())));
+                }
+            }
+        }
         return container;
     }
 }
