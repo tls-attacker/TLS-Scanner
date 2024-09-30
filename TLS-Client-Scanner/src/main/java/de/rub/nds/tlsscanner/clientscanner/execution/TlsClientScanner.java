@@ -209,9 +209,7 @@ public final class TlsClientScanner
 
     @Override
     protected List<Guideline<ClientReport>> getGuidelines() {
-        LOGGER.info("Guidelines requested.");
         if (getProtocolType() == ProtocolType.DTLS) {
-            LOGGER.info("DTLS is being used. No Guidelines parsed.");
             return List.of();
         }
 
@@ -235,7 +233,6 @@ public final class TlsClientScanner
                 return null;
             }
         }
-        LOGGER.info("Guidelines successfully parsed.");
         return guidelines;
     }
 
