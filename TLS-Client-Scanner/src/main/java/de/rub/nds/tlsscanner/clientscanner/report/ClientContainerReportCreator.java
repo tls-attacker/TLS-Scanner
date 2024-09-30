@@ -717,7 +717,6 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             for (GuidelineReport guidelineReport : guidelineReports) {
                 container.add(createGuidelineContainer(guidelineReport));
             }
-            LogManager.getLogger().info("Guidelines Container created.");
         }
         return container;
     }
