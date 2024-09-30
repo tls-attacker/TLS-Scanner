@@ -722,22 +722,31 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
     }
 
     private ReportContainer createGuidelineContainer(GuidelineReport guidelineReport) {
-        ListContainer container = new ListContainer();
+        ListContainer container = new ListContainer(1);
         container.add(
                 new HeadlineContainer("Guideline " + StringUtils.trim(guidelineReport.getName())));
-        // TODO: Maybe replace with KeyValueContainer
         container.add(
-                new TextContainer(
-                        "Adhered: " + guidelineReport.getAdhered().size(), AnsiColor.GREEN));
+                new KeyValueContainer(
+                        "Adhered",
+                        AnsiColor.GREEN,
+                        String.valueOf(guidelineReport.getAdhered().size()),
+                        AnsiColor.GREEN));
         container.add(
-                new TextContainer(
-                        "Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED));
+                new KeyValueContainer(
+                        "Violated",
+                        AnsiColor.RED,
+                        String.valueOf(guidelineReport.getViolated().size()),
+                        AnsiColor.RED));
         container.add(
-                new TextContainer(
-                        "Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW));
+                new KeyValueContainer(
+                        "Failed",
+                        AnsiColor.YELLOW,
+                        String.valueOf(guidelineReport.getFailedChecks().size()),
+                        AnsiColor.YELLOW));
         container.add(
-                createDefaultTextContainer(
-                        "Condition Not Met: " + guidelineReport.getConditionNotMet().size()));
+                createDefaultKeyValueContainer(
+                        "Condition Not Met: ",
+                        String.valueOf(guidelineReport.getConditionNotMet().size())));
         // TODO: Implement output for greater Scanner Details
         return container;
     }
