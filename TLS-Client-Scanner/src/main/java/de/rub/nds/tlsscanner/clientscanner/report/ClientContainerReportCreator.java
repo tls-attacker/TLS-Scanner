@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
