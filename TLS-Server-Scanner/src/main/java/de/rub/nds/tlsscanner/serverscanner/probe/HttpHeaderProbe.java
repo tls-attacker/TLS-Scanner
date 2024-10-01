@@ -74,10 +74,6 @@ public class HttpHeaderProbe extends TlsServerProbe {
     protected void executeTest() {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
-        if (configSelector.getBaseConfig().getQuic()) {
-            tlsConfig = configSelector.getTls13BaseConfig();
-            tlsConfig.setDefaultLayerConfiguration(StackConfiguration.QUIC);
-        }
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HTTPS);
         State state = new State(tlsConfig);
         executeState(state);
