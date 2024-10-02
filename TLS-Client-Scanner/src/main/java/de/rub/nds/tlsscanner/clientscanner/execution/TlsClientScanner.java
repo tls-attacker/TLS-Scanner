@@ -214,7 +214,7 @@ public final class TlsClientScanner
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml");
+        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
         GuidelineIO guidelineIO;
         try {
             guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
