@@ -50,7 +50,7 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
         return new GuidelineCheckResult(
                 getName(),
                 GuidelineAdherence.of(
-                        Boolean.TRUE.equals(report.getExtendedKeyUsagePresent())  // TODO: Correct?
+                        Boolean.TRUE.equals(report.getExtendedKeyUsagePresent()) // TODO: Correct?
                                 && Boolean.FALSE.equals(report.getExtendedKeyUsagePresent()))) {
             @Override
             public String toString() {

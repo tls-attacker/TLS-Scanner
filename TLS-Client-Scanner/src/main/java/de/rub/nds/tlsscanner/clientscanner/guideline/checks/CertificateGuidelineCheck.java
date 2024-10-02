@@ -14,14 +14,13 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +36,7 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ClientRep
      * shall be configured with an RSA signature certificate or an ECDSA signature certificate.
      */
     private boolean atLeastOneCertificateShallPass;
+
     public static final GuidelineCheckCondition PRECONDITION =
             new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_CCA, TestResults.TRUE);
 
@@ -61,7 +61,10 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck<ClientRep
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             boolean atLeastOneCertificateShallPass) {
-        super(name, requirementLevel, GuidelineCheckCondition.and(Arrays.asList(PRECONDITION, condition)));
+        super(
+                name,
+                requirementLevel,
+                GuidelineCheckCondition.and(Arrays.asList(PRECONDITION, condition)));
         this.atLeastOneCertificateShallPass = atLeastOneCertificateShallPass;
     }
 
