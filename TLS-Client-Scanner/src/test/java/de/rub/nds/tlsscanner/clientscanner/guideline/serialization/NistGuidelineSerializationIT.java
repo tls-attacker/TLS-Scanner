@@ -1,3 +1,11 @@
+/*
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2023 Ruhr University Bochum, Paderborn University, Technology Innovation Institute, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
 package de.rub.nds.tlsscanner.clientscanner.guideline.serialization;
 
 import de.rub.nds.scanner.core.guideline.*;
@@ -11,14 +19,13 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.JAXBException;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class NistGuidelineSerializationIT {
 
@@ -38,7 +45,8 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                         TestResults.TRUE));
-        // TODO: The client may be configured to use TLS 1.1 and TLS 1.0 to facilitate communication with private sector servers.
+        // TODO: The client may be configured to use TLS 1.1 and TLS 1.0 to facilitate communication
+        // with private sector servers.
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The client shall not be configured to use SSL 2.0 or SSL 3.0.",
@@ -52,17 +60,18 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         // TODO: Agencies shall
-        //support TLS 1.3 by January 1, 2024. After this date, clients shall be configured to use TLS 1.3.
-        //In general, clients that support TLS 1.3 should be configured to use TLS 1.2 as well.
+        // support TLS 1.3 by January 1, 2024. After this date, clients shall be configured to use
+        // TLS 1.3.
+        // In general, clients that support TLS 1.3 should be configured to use TLS 1.2 as well.
         /*checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.2 may be disabled on clients that support TLS 1.3 if TLS 1.2 is not needed for interoperability.",
-                        RequirementLevel.MAY,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                        TestResults.FALSE));*/
+        new AnalyzedPropertyGuidelineCheck(
+                "TLS 1.2 may be disabled on clients that support TLS 1.3 if TLS 1.2 is not needed for interoperability.",
+                RequirementLevel.MAY,
+                new GuidelineCheckCondition(
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                        TestResults.TRUE),
+                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                TestResults.FALSE));*/
         checks.add(
                 new CertificateVersionGuidelineCheck(
                         "The TLS client certificate shall be an X.509 version 3 certificate.",
@@ -183,7 +192,8 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                         TestResults.FALSE));
         // TODO: Validated Cryptography for servers
-        // TODO: The validated random number generator shall be used to generate the random bytes (32 bytes in TLS 1.3; 28 bytes in prior TLS versions) of the client random value.
+        // TODO: The validated random number generator shall be used to generate the random bytes
+        // (32 bytes in TLS 1.3; 28 bytes in prior TLS versions) of the client random value.
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The validated random number generator should be used to generate the 4-byte timestamp of the client random value for TLS versions prior to TLS 1.3.",
@@ -244,15 +254,14 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
-                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,  // TODO: Correct?
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, // TODO: Correct?
                         TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
                 new ExtensionGuidelineCheck(
@@ -311,8 +320,7 @@ public class NistGuidelineSerializationIT {
                         "The Pre-Shared Key extension may be supported by TLS 1.3 clients.",
                         RequirementLevel.MAY,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.PRE_SHARED_KEY));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -354,24 +362,21 @@ public class NistGuidelineSerializationIT {
                         "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3 and should be supported for TLS 1.2.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3 and should be supported for TLS 1.2.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Post-handshake Client Authentication extension may be supported if the client supports TLS 1.3.",
                         RequirementLevel.MAY,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.POST_HANDSHAKE_AUTH));
         checks.add(
                 new ExtensionGuidelineCheck(
@@ -389,18 +394,15 @@ public class NistGuidelineSerializationIT {
                         "Therefore, clients using TLS 1.3 should not send 0-RTT data.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE
-                ));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients shall not use False Start.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START,
                         TestResults.FALSE));
         checks.add(
