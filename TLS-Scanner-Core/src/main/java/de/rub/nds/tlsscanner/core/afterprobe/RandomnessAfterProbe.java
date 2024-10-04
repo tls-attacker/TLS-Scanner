@@ -47,8 +47,6 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
     private static final byte[] TLS_1_3_TO_TLS_1_1_DOWNGRADE_CONST =
             ArrayConverter.hexStringToByteArray("444F574E47524400");
 
-    // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
-    private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
     private final double MINIMUM_P_VALUE = 0.01;

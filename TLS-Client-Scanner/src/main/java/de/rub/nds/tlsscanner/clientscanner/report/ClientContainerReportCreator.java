@@ -43,15 +43,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
 public class ClientContainerReportCreator extends TlsReportCreator<ClientReport> {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public ClientContainerReportCreator(ScannerDetail detail) {
         super(detail, DefaultPrintingScheme.getDefaultPrintingScheme());

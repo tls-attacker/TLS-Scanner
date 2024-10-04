@@ -29,7 +29,7 @@ public class RecommendationsIOIT {
         recommendationsIO.write(stream, recommendations);
         byte[] byteArray = stream.toByteArray();
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
-            Recommendations read = recommendationsIO.read(inputStream);
+            recommendationsIO.read(inputStream);
         }
     }
 }

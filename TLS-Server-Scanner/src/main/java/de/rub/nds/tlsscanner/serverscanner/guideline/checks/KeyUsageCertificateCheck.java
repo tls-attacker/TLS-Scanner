@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
@@ -22,7 +21,6 @@ import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,13 +34,6 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
-
-    private static final List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST =
-            Arrays.asList(
-                    SignatureAlgorithm.RSA_PKCS1,
-                    SignatureAlgorithm.RSA_SSA_PSS,
-                    SignatureAlgorithm.ECDSA,
-                    SignatureAlgorithm.DSA);
 
     private KeyUsageCertificateCheck() {
         super(null, null);

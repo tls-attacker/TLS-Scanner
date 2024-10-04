@@ -31,7 +31,7 @@ public class RatingInfluencersIOIT {
         ratingInfluencersIO.write(stream, ratingInfluencers);
         byte[] byteArray = stream.toByteArray();
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
-            RatingInfluencers read = ratingInfluencersIO.read(inputStream);
+            ratingInfluencersIO.read(inputStream);
         }
     }
 }
