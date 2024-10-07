@@ -131,16 +131,17 @@ public class NamedGroupsProbe extends TlsServerProbe {
 
         Config tlsConfig = getBasicConfig();
         tlsConfig.setDefaultClientSupportedCipherSuites((cipherSuites));
-        List<NamedGroup> toTestList = Arrays.asList(NamedGroup.values()).stream()
-                .filter(
-                        group -> {
-                            if (useCurves) {
-                                return group.isCurve();
-                            } else {
-                                return group.isDhGroup();
-                            }
-                        })
-                .collect(Collectors.toList());
+        List<NamedGroup> toTestList =
+                Arrays.asList(NamedGroup.values()).stream()
+                        .filter(
+                                group -> {
+                                    if (useCurves) {
+                                        return group.isCurve();
+                                    } else {
+                                        return group.isDhGroup();
+                                    }
+                                })
+                        .collect(Collectors.toList());
 
         TlsContext context;
         NamedGroup selectedGroup = null;
@@ -303,8 +304,9 @@ public class NamedGroupsProbe extends TlsServerProbe {
             return TestResults.UNCERTAIN;
         } else if (WorkflowTraceResultUtil.didReceiveMessage(
                 state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE)) {
-            HandshakeMessage skeMsg = WorkflowTraceResultUtil.getFirstReceivedMessage(
-                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE);
+            HandshakeMessage skeMsg =
+                    WorkflowTraceResultUtil.getFirstReceivedMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE);
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
@@ -402,20 +404,21 @@ public class NamedGroupsProbe extends TlsServerProbe {
                             }
                         });
 
-        boolean foundMismatch = overallSupported.keySet().stream()
-                .anyMatch(
-                        group -> {
-                            return (group.isCurve()
-                                    && !overallSupported
-                                            .get(group)
-                                            .getCipherSuites()
-                                            .containsAll(joinedCurveCipherSuites))
-                                    || (!group.isCurve()
-                                            && !overallSupported
-                                                    .get(group)
-                                                    .getCipherSuites()
-                                                    .containsAll(joinedFfdheCipherSuites));
-                        });
+        boolean foundMismatch =
+                overallSupported.keySet().stream()
+                        .anyMatch(
+                                group -> {
+                                    return (group.isCurve()
+                                                    && !overallSupported
+                                                            .get(group)
+                                                            .getCipherSuites()
+                                                            .containsAll(joinedCurveCipherSuites))
+                                            || (!group.isCurve()
+                                                    && !overallSupported
+                                                            .get(group)
+                                                            .getCipherSuites()
+                                                            .containsAll(joinedFfdheCipherSuites));
+                                });
 
         if (foundMismatch) {
             return TestResults.TRUE;

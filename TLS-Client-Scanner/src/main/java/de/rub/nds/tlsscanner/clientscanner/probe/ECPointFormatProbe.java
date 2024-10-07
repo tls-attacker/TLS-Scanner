@@ -74,7 +74,8 @@ public class ECPointFormatProbe extends TlsClientProbe {
             supportedFormats = getSupportedPointFormats();
             completesHandshakeWithUndefined = canHandshakeWithUndefinedFormat();
         }
-        tls13SecpCompression = shouldTestTls13 ? getTls13SecpCompressionSupported() : TestResults.COULD_NOT_TEST;
+        tls13SecpCompression =
+                shouldTestTls13 ? getTls13SecpCompressionSupported() : TestResults.COULD_NOT_TEST;
         if (supportedFormats == null) {
             LOGGER.debug("Unable to determine supported point formats");
         }
@@ -90,11 +91,13 @@ public class ECPointFormatProbe extends TlsClientProbe {
 
     private TestResult canHandshakeWithUndefinedFormat() {
         ECPointFormat dummyFormat = ECPointFormat.UNCOMPRESSED;
-        List<CipherSuite> ourECDHCipherSuites = ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
+        List<CipherSuite> ourECDHCipherSuites =
+                ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
         Config baseConfig = scannerConfig.createConfig();
 
         List<NamedGroup> groups = ECPointFormatUtils.getGroupsForTest(dummyFormat, baseConfig);
-        State state = ECPointFormatUtils.getState(ourECDHCipherSuites, dummyFormat, groups, baseConfig);
+        State state =
+                ECPointFormatUtils.getState(ourECDHCipherSuites, dummyFormat, groups, baseConfig);
         ECPointFormatExtensionMessage modifiedExtension = new ECPointFormatExtensionMessage();
         modifiedExtension.setPointFormats(Modifiable.explicit(ECPointFormatUtils.UNDEFINED_FORMAT));
         List<ExtensionMessage> extensionList = new LinkedList<>();
@@ -102,9 +105,10 @@ public class ECPointFormatProbe extends TlsClientProbe {
         if (shouldAddRenegotiationInfo) {
             extensionList.add(new RenegotiationInfoExtensionMessage());
         }
-        ServerHelloMessage serverHello = (ServerHelloMessage) (WorkflowTraceConfigurationUtil
-                .getFirstStaticConfiguredSendMessage(
-                        state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO));
+        ServerHelloMessage serverHello =
+                (ServerHelloMessage)
+                        (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO));
         serverHello.setExtensions(extensionList);
         executeState(state);
         if (WorkflowTraceResultUtil.didReceiveMessage(
@@ -152,11 +156,14 @@ public class ECPointFormatProbe extends TlsClientProbe {
     }
 
     private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
-        List<CipherSuite> ourECDHCipherSuites = ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
+        List<CipherSuite> ourECDHCipherSuites =
+                ECPointFormatUtils.getCipherSuitesForTest(clientAdvertisedCipherSuites);
 
-        List<NamedGroup> groups = ECPointFormatUtils.getGroupsForTest(format, scannerConfig.createConfig());
-        State state = ECPointFormatUtils.getState(
-                ourECDHCipherSuites, format, groups, scannerConfig.createConfig());
+        List<NamedGroup> groups =
+                ECPointFormatUtils.getGroupsForTest(format, scannerConfig.createConfig());
+        State state =
+                ECPointFormatUtils.getState(
+                        ourECDHCipherSuites, format, groups, scannerConfig.createConfig());
         executeState(state);
         if (WorkflowTraceResultUtil.didReceiveMessage(
                 state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
@@ -168,9 +175,10 @@ public class ECPointFormatProbe extends TlsClientProbe {
     public void adjustConfig(ClientReport report) {
         shouldTestPointFormats = ECPointFormatUtils.testInPreTLS13(report);
         shouldTestTls13 = ECPointFormatUtils.testInPreTLS13(report);
-        shouldAddRenegotiationInfo = report.getClientAdvertisedExtensions().contains(ExtensionType.RENEGOTIATION_INFO)
-                || report.getClientAdvertisedCipherSuites()
-                        .contains(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        shouldAddRenegotiationInfo =
+                report.getClientAdvertisedExtensions().contains(ExtensionType.RENEGOTIATION_INFO)
+                        || report.getClientAdvertisedCipherSuites()
+                                .contains(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         clientAdvertisedCipherSuites.addAll(report.getClientAdvertisedCipherSuites());
     }
 

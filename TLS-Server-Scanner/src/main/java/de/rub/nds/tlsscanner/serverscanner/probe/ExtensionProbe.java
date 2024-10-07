@@ -150,10 +150,14 @@ public class ExtensionProbe extends TlsServerProbe {
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportsTls13 = TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
-        supportsPreTls13 = report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
-                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1) == TestResults.TRUE
-                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE;
+        supportsTls13 =
+                TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+        supportsPreTls13 =
+                report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1)
+                                == TestResults.TRUE
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2)
+                                == TestResults.TRUE;
     }
 
     @Override

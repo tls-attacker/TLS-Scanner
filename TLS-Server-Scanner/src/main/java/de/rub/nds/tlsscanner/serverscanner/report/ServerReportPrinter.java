@@ -8,25 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
-
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
@@ -104,6 +85,23 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPadd
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
 
 public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
@@ -188,8 +186,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         unexecutedProbe.getProbeName(),
                         ((ScannerProbe<ServerReport, ?>) unexecutedProbe)
                                 .getRequirements().getUnfulfilledRequirements(report).stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(";")));
+                                        .map(Object::toString)
+                                        .collect(Collectors.joining(";")));
         }
     }
 
@@ -205,8 +203,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "DTLS Fragmentation");
         prettyAppend(
                 builder, "Supports fragmentation", TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION) == TestResults.PARTIALLY) {
-            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION) == TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION)
+                == TestResults.PARTIALLY) {
+            if (report.getResult(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION)
+                    == TestResults.TRUE) {
                 prettyAppend(builder, "-Requires Max Fragment Length extension");
             } else {
                 prettyAppend(builder, "-After cookie exchange");
@@ -217,9 +217,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 "Supports fragmentation with individual transport packets",
                 TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS);
         if (report.getResult(
-                TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS) == TestResults.PARTIALLY) {
+                        TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS)
+                == TestResults.PARTIALLY) {
             if (report.getResult(
-                    TlsAnalyzedProperty.DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION) == TestResults.TRUE) {
+                            TlsAnalyzedProperty
+                                    .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION)
+                    == TestResults.TRUE) {
                 prettyAppend(builder, "-Requires Max Fragment Length extension");
             } else {
                 prettyAppend(builder, "-After cookie exchange");
@@ -373,9 +376,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public StringBuilder appendHandshakeTableRowSuccessful(
             StringBuilder builder, SimulatedClientResult simulatedClient) {
-        String clientName = simulatedClient.getTlsClientConfig().getType()
-                + ":"
-                + simulatedClient.getTlsClientConfig().getVersion();
+        String clientName =
+                simulatedClient.getTlsClientConfig().getType()
+                        + ":"
+                        + simulatedClient.getTlsClientConfig().getVersion();
         builder.append(
                 getClientColor(
                         clientName,
@@ -991,15 +995,17 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendSessionTicketEval_VersionChange(StringBuilder builder) {
         TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
         if (result instanceof VersionDependentSummarizableResult) {
-            var allowsVersionChange = (VersionDependentSummarizableResult<VersionDependentTestResults>) result;
-            for (Entry<ProtocolVersion, VersionDependentTestResults> versionResults : allowsVersionChange.getResultMap()
-                    .entrySet()) {
+            var allowsVersionChange =
+                    (VersionDependentSummarizableResult<VersionDependentTestResults>) result;
+            for (Entry<ProtocolVersion, VersionDependentTestResults> versionResults :
+                    allowsVersionChange.getResultMap().entrySet()) {
                 VersionDependentTestResults versionResult = versionResults.getValue();
                 prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
                 if (versionResult.isExplicitSummary()) {
                     prettyAppend(builder, "\t" + versionResult.getSummarizedResult().toString());
                 } else {
-                    for (Entry<ProtocolVersion, TestResults> changeResult : versionResult.getResultMap().entrySet()) {
+                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                            versionResult.getResultMap().entrySet()) {
                         prettyAppend(
                                 builder,
                                 "\t" + changeResult.getKey() + ": ",
@@ -1015,8 +1021,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
         if (result instanceof VersionDependentTestResults) {
             var allowsCipherSuiteChange = (VersionDependentTestResults) result;
-            for (Entry<ProtocolVersion, TestResults> versionResults : allowsCipherSuiteChange.getResultMap()
-                    .entrySet()) {
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsCipherSuiteChange.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         "Allows ciphersuite change [" + versionResults.getKey() + "]",
@@ -1031,8 +1037,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (result instanceof VersionDependentTestResults) {
             var allowsReplayingTickets = (VersionDependentTestResults) result;
 
-            for (Entry<ProtocolVersion, TestResults> versionResults : allowsReplayingTickets.getResultMap()
-                    .entrySet()) {
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsReplayingTickets.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         "Tickets can be reused [" + versionResults.getKey() + "]",
@@ -1052,8 +1058,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
             prettyAppendSubheading(builder, "Manipulation");
             // print brief overview
-            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult : mainManipulationResult
-                    .getResultMap().entrySet()) {
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         "Manipulation Overview "
@@ -1066,8 +1072,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
 
             if (detail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
-                for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult : mainManipulationResult
-                        .getResultMap().entrySet()) {
+                for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                        mainManipulationResult.getResultMap().entrySet()) {
                     prettyAppend(
                             builder,
                             "Manipulation Details "
@@ -1081,56 +1087,58 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
 
             // print legend
-            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult : mainManipulationResult
-                    .getResultMap().entrySet()) {
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
-                                TicketManipulationResult.CHR_ACCEPT
-                                        + " ["
-                                        + manipulationResult.getKey()
-                                        + "]",
-                                10)
+                                        TicketManipulationResult.CHR_ACCEPT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
                                 + "\t: "
                                 + manipulationResult.getValue().getAcceptFingerprint());
             }
-            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult : mainManipulationResult
-                    .getResultMap().entrySet()) {
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
-                                TicketManipulationResult.CHR_ACCEPT_DIFFERENT_SECRET
-                                        + " ["
-                                        + manipulationResult.getKey()
-                                        + "]",
-                                10)
+                                        TicketManipulationResult.CHR_ACCEPT_DIFFERENT_SECRET
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
                                 + "\t: "
                                 + manipulationResult
                                         .getValue()
                                         .getAcceptDifferentSecretFingerprint());
             }
-            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult : mainManipulationResult
-                    .getResultMap().entrySet()) {
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
                 prettyAppend(
                         builder,
                         padToLength(
-                                TicketManipulationResult.CHR_REJECT
-                                        + " ["
-                                        + manipulationResult.getKey()
-                                        + "]",
-                                10)
+                                        TicketManipulationResult.CHR_REJECT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
                                 + "\t: "
                                 + manipulationResult.getValue().getRejectFingerprint());
             }
 
-            for (Entry<ResponseFingerprint, Integer> entry : manipulationClassifications.entrySet().stream()
-                    .sorted((a, b) -> Integer.compare(a.getValue(), b.getValue()))
-                    .toArray(Entry[]::new)) {
+            for (Entry<ResponseFingerprint, Integer> entry :
+                    manipulationClassifications.entrySet().stream()
+                            .sorted((a, b) -> Integer.compare(a.getValue(), b.getValue()))
+                            .toArray(Entry[]::new)) {
                 String key;
                 if (entry.getValue() < TicketManipulationResult.CHR_CLASSIFICATIONS.length()) {
-                    key = ""
-                            + TicketManipulationResult.CHR_CLASSIFICATIONS.charAt(
-                                    entry.getValue());
+                    key =
+                            ""
+                                    + TicketManipulationResult.CHR_CLASSIFICATIONS.charAt(
+                                            entry.getValue());
                 } else {
                     key = "" + entry.getValue();
                 }
@@ -1155,18 +1163,19 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
         if (result instanceof VersionDependentResult) {
             prettyAppendSubSubheading(builder, "Padding Oracle");
-            var mainPaddingOracleResult = (VersionDependentResult<TicketPaddingOracleResult>) result;
+            var mainPaddingOracleResult =
+                    (VersionDependentResult<TicketPaddingOracleResult>) result;
 
-            for (Entry<ProtocolVersion, TicketPaddingOracleResult> paddingResult : mainPaddingOracleResult
-                    .getResultMap().entrySet()) {
+            for (Entry<ProtocolVersion, TicketPaddingOracleResult> paddingResult :
+                    mainPaddingOracleResult.getResultMap().entrySet()) {
                 prettyAppendSubSubSubheading(builder, paddingResult.getKey().toString());
                 prettyAppend(
                         builder,
                         "Overall Result",
                         paddingResult.getValue().getOverallResult().toString());
                 if (paddingResult.getValue().getSecondVectorsWithRareResponses() != null) {
-                    for (TicketPaddingOracleVectorSecond vector : paddingResult.getValue()
-                            .getSecondVectorsWithRareResponses()) {
+                    for (TicketPaddingOracleVectorSecond vector :
+                            paddingResult.getValue().getSecondVectorsWithRareResponses()) {
                         prettyAppend(
                                 builder,
                                 "Possible Plaintext:",
@@ -1199,8 +1208,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (result instanceof VersionDependentResult) {
             var statistics = (VersionDependentResult<SessionTicketAfterStats>) result;
             prettyAppendSubSubheading(builder, "Statistics");
-            for (Entry<ProtocolVersion, SessionTicketAfterStats> afterResultEntry : statistics.getResultMap()
-                    .entrySet()) {
+            for (Entry<ProtocolVersion, SessionTicketAfterStats> afterResultEntry :
+                    statistics.getResultMap().entrySet()) {
                 ProtocolVersion version = afterResultEntry.getKey();
                 SessionTicketAfterStats afterResult = afterResultEntry.getValue();
                 prettyAppendSubSubSubheading(builder, version.toString());
@@ -1221,7 +1230,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendSessionTicketEval_Unencrypted(StringBuilder builder) {
         TestResult result = report.getResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET);
         if (result instanceof VersionDependentSummarizableResult) {
-            var unencrypted = (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            var unencrypted =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
             if (unencrypted.getSummarizedResult() == TestResults.TRUE) {
                 for (var entry : unencrypted.getResultMap().entrySet()) {
                     if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
@@ -1240,7 +1250,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendSessionTicketEval_ReusedKeystream(StringBuilder builder) {
         TestResult result = report.getResult(TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET);
         if (result instanceof VersionDependentSummarizableResult) {
-            var reusedKeystream = (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            var reusedKeystream =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
             if (reusedKeystream.getSummarizedResult() == TestResults.TRUE) {
                 prettyAppendSubSubheading(builder, "Reused Keystream");
                 for (var entry : reusedKeystream.getResultMap().entrySet()) {
@@ -1260,7 +1271,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendSessionTicketEval_DefaultStek(StringBuilder builder) {
         TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
         if (result instanceof VersionDependentSummarizableResult) {
-            var defaultStek = (VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>>) result;
+            var defaultStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>>) result;
             if (defaultStek.getSummarizedResult() == TestResults.TRUE) {
                 prettyAppendSubSubheading(builder, "Default STEK");
                 for (var entry : defaultStek.getResultMap().entrySet()) {
@@ -1287,7 +1299,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendSessionTicketEval_DefaultMacStek(StringBuilder builder) {
         TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
         if (result instanceof VersionDependentSummarizableResult) {
-            var defaultMacStek = (VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>>) result;
+            var defaultMacStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>>)
+                            result;
             if (defaultMacStek.getSummarizedResult() == TestResults.TRUE) {
                 prettyAppendSubSubheading(builder, "Default MAC STEK");
                 for (var entry : defaultMacStek.getResultMap().entrySet()) {
@@ -1496,7 +1510,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
         if ((report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResults.TRUE
-                || detail.isGreaterEqualTo(ScannerDetail.DETAILED))
+                        || detail.isGreaterEqualTo(ScannerDetail.DETAILED))
                 && report.getRaccoonAttackProbabilities() != null) {
             prettyAppendHeading(builder, "Raccoon Attack Details");
             prettyAppend(
@@ -1512,7 +1526,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         builder,
                         addIndentations("InjectionPoint") + "\t Leak" + "\tProbability",
                         AnsiColor.BOLD);
-                for (RaccoonAttackProbabilities probabilities : report.getRaccoonAttackProbabilities()) {
+                for (RaccoonAttackProbabilities probabilities :
+                        report.getRaccoonAttackProbabilities()) {
                     builder.append(
                             addIndentations(probabilities.getPosition().name())
                                     + "\t "
@@ -1522,7 +1537,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                     + "\n");
                 }
                 if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_PSK_DHE) == TestResults.TRUE) {
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_PSK_DHE)
+                                == TestResults.TRUE) {
                     prettyAppendSubheading(builder, "PSK Length Probabilities");
                     prettyAppend(
                             builder,
@@ -1531,11 +1547,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                     + "Probability",
                             AnsiColor.BOLD);
 
-                    for (RaccoonAttackProbabilities probabilities : report.getRaccoonAttackProbabilities()) {
+                    for (RaccoonAttackProbabilities probabilities :
+                            report.getRaccoonAttackProbabilities()) {
 
                         prettyAppendSubheading(builder, probabilities.getPosition().name());
 
-                        for (RaccoonAttackPskProbabilities pskProbability : probabilities.getPskProbabilityList()) {
+                        for (RaccoonAttackPskProbabilities pskProbability :
+                                probabilities.getPskProbabilityList()) {
                             prettyAppend(
                                     builder,
                                     addIndentations("" + pskProbability.getPskLength())
@@ -1612,8 +1630,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
 
                 if ((detail == ScannerDetail.DETAILED
-                        && Objects.equals(
-                                testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
+                                && Objects.equals(
+                                        testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
                         || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE
                             || detail == ScannerDetail.ALL) {
@@ -1634,7 +1652,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppendHeading(builder, "PaddingOracle Details");
 
                 if (report.getKnownPaddingOracleVulnerability() != null) {
-                    KnownPaddingOracleVulnerability knownVulnerability = report.getKnownPaddingOracleVulnerability();
+                    KnownPaddingOracleVulnerability knownVulnerability =
+                            report.getKnownPaddingOracleVulnerability();
                     prettyAppend(
                             builder,
                             "Identification",
@@ -1711,8 +1730,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     public StringBuilder appendInformationLeakTestResult(
             StringBuilder builder, InformationLeakTest<?> informationLeakTest) {
         try {
-            ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
-            List<VectorContainer> vectorContainerList = informationLeakTest.getVectorContainerList();
+            ResponseFingerprint defaultAnswer =
+                    informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
+            List<VectorContainer> vectorContainerList =
+                    informationLeakTest.getVectorContainerList();
             for (VectorContainer vectorContainer : vectorContainerList) {
                 prettyAppend(
                         builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
@@ -1781,17 +1802,21 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Invalid Curve Details");
         boolean foundCouldNotTest = false;
         List<InvalidCurveResponse> invalidCurvesResults = report.getInvalidCurveTestResultList();
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.NOT_TESTED_YET
-                && report.getResult(
-                        TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResults.NOT_TESTED_YET
-                && report.getResult(
-                        TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResults.NOT_TESTED_YET) {
+        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE)
+                        == TestResults.NOT_TESTED_YET
+                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL)
+                        == TestResults.NOT_TESTED_YET
+                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST)
+                        == TestResults.NOT_TESTED_YET) {
             prettyAppend(builder, "Not Tested");
         } else if (invalidCurvesResults == null) {
             prettyAppend(builder, "No test results");
-        } else if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResults.FALSE
-                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResults.FALSE
-                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResults.FALSE
+        } else if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE)
+                        == TestResults.FALSE
+                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL)
+                        == TestResults.FALSE
+                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST)
+                        == TestResults.FALSE
                 && detail != ScannerDetail.ALL) {
             prettyAppend(builder, "No Vulnerabilities found");
         } else {
@@ -1802,7 +1827,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     foundCouldNotTest = true;
                 }
                 if ((response.getShowsVulnerability() == TestResults.TRUE
-                        && detail.isGreaterEqualTo(ScannerDetail.NORMAL))
+                                && detail.isGreaterEqualTo(ScannerDetail.NORMAL))
                         || (response.getShowsPointsAreNotValidated() == TestResults.TRUE
                                 && detail.isGreaterEqualTo(ScannerDetail.DETAILED))
                         || detail == ScannerDetail.ALL) {
@@ -1934,7 +1959,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             builder,
                             "Supported in "
                                     + toHumanReadable(versionSuitePair.getVersion())
-                                    + (report.getResult(TlsAnalyzedProperty.ENFORCES_CS_ORDERING) == TestResults.TRUE
+                                    + (report.getResult(TlsAnalyzedProperty.ENFORCES_CS_ORDERING)
+                                                    == TestResults.TRUE
                                             ? "(server order)"
                                             : ""));
                     for (CipherSuite suite : versionSuitePair.getCipherSuiteList()) {
@@ -2067,77 +2093,92 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppend(builder, "TLS 1.2", TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
             prettyAppend(builder, "TLS 1.3", TlsAnalyzedProperty.SUPPORTS_TLS_1_3);
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 14", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 15", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 16", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 17", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 18", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 19", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 20", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 21", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 22", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 23", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 24", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 25", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 26", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 27", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27);
             }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28) == TestResults.TRUE) {
+                    || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28)
+                            == TestResults.TRUE) {
                 prettyAppend(
                         builder, "TLS 1.3 Draft 28", TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28);
             }
@@ -2162,7 +2203,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
                 prettyAppendHeading(builder, "HPKP");
                 if (report.getResult(TlsAnalyzedProperty.SUPPORTS_HPKP) == TestResults.TRUE
-                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING) == TestResults.TRUE) {
+                        || report.getResult(TlsAnalyzedProperty.SUPPORTS_HPKP_REPORTING)
+                                == TestResults.TRUE) {
                     prettyAppend(builder, "HPKP", TlsAnalyzedProperty.SUPPORTS_HPKP);
                     prettyAppend(
                             builder,
@@ -2245,7 +2287,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
 
             prettyAppendHeading(builder, "Tokenbinding Key Parameters");
-            for (TokenBindingKeyParameters keyParameter : report.getSupportedTokenbindingKeyParameters()) {
+            for (TokenBindingKeyParameters keyParameter :
+                    report.getSupportedTokenbindingKeyParameters()) {
                 builder.append(keyParameter.toString()).append("\n");
             }
         }
@@ -2335,8 +2378,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         "Failed TemplateTests",
                         ""
                                 + (Math.round(
-                                        entropyReport.getFailedTemplateTestPercentage()
-                                                * 100.0)
+                                                entropyReport.getFailedTemplateTestPercentage()
+                                                        * 100.0)
                                         / 100.0)
                                 + " %");
             }
@@ -2406,7 +2449,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     .forEach(
                             (entry) -> {
                                 PropertyResultRatingInfluencer influencer = entry.getValue();
-                                Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
+                                Recommendation recommendation =
+                                        recommendations.getRecommendation(entry.getKey());
                                 int scoreInfluence = 0;
                                 StringBuilder additionalInfo = new StringBuilder();
                                 if (influencer.getReferencedProperty() != null) {
@@ -2427,10 +2471,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                     }
                                     additionalInfo.append(")");
                                 }
-                                String result = recommendation.getShortName()
-                                        + ": "
-                                        + influencer.getResult()
-                                        + additionalInfo;
+                                String result =
+                                        recommendation.getShortName()
+                                                + ": "
+                                                + influencer.getResult()
+                                                + additionalInfo;
                                 if (scoreInfluence > 0) {
                                     prettyAppend(builder, result, AnsiColor.GREEN);
                                 } else if (scoreInfluence < -50) {
@@ -2510,8 +2555,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
             ScoreReport scoreReport = report.getScoreReport();
             Recommendations recommendations = rater.getRecommendations();
-            LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>) scoreReport
-                    .getInfluencers();
+            LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(
@@ -2519,9 +2565,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                 PropertyResultRatingInfluencer influencer = entry.getValue();
                                 if (influencer.isBadInfluence()
                                         || influencer.getReferencedProperty() != null) {
-                                    Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
-                                    PropertyResultRecommendation resultRecommendation = recommendation
-                                            .getPropertyResultRecommendation(
+                                    Recommendation recommendation =
+                                            recommendations.getRecommendation(entry.getKey());
+                                    PropertyResultRecommendation resultRecommendation =
+                                            recommendation.getPropertyResultRecommendation(
                                                     influencer.getResult());
                                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                                         printFullRecommendation(
@@ -2561,13 +2608,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             rater = DefaultRatingLoader.getServerReportRater("en");
 
             if (influencer.getReferencedProperty() != null) {
-                scoreInfluence = rater.getRatingInfluencers()
-                        .getPropertyRatingInfluencer(
-                                influencer.getReferencedProperty(),
-                                influencer.getReferencedPropertyResult())
-                        .getInfluence();
-                Recommendation r = rater.getRecommendations()
-                        .getRecommendation(influencer.getReferencedProperty());
+                scoreInfluence =
+                        rater.getRatingInfluencers()
+                                .getPropertyRatingInfluencer(
+                                        influencer.getReferencedProperty(),
+                                        influencer.getReferencedPropertyResult())
+                                .getInfluence();
+                Recommendation r =
+                        rater.getRecommendations()
+                                .getRecommendation(influencer.getReferencedProperty());
                 additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
             } else {
                 scoreInfluence = influencer.getInfluence();
@@ -2646,10 +2695,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     builder.append(group.name());
                     builder.append("\n");
                 }
-                if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResults.TRUE) {
+                if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
+                        == TestResults.TRUE) {
                     prettyAppend(builder, "Not all Groups are supported for all Cipher Suites");
                 }
-                if (report.getResult(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResults.TRUE) {
+                if (report.getResult(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY)
+                        == TestResults.TRUE) {
                     prettyAppend(
                             builder,
                             "Groups required for ECDSA validation are not enforced",
@@ -2657,7 +2708,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 }
                 if (detail == ScannerDetail.ALL) {
                     prettyAppendHeading(builder, "Witnesses");
-                    for (NamedGroupWitness witness : report.getSupportedNamedGroupsWitnesses().values()) {
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
                         builder.append(
                                 "SKE: "
                                         + witness.getEcdhPublicKeyGroup()
@@ -2681,11 +2733,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     public StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
-        List<SignatureAndHashAlgorithm> algorithms = report.getSupportedSignatureAndHashAlgorithms();
+        List<SignatureAndHashAlgorithm> algorithms =
+                report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms != null) {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
-                for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithms()) {
+                for (SignatureAndHashAlgorithm algorithm :
+                        report.getSupportedSignatureAndHashAlgorithms()) {
                     prettyAppend(builder, algorithm.toString());
                 }
                 prettyAppendHeading(builder, "Signature and Hash Algorithms General");
@@ -2697,11 +2751,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder.append("none\n");
             }
         }
-        List<SignatureAndHashAlgorithm> algorithmsTls13 = report.getSupportedSignatureAndHashAlgorithmsTls13();
+        List<SignatureAndHashAlgorithm> algorithmsTls13 =
+                report.getSupportedSignatureAndHashAlgorithmsTls13();
         if (algorithmsTls13 != null) {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
             if (report.getSupportedSignatureAndHashAlgorithmsTls13().size() > 0) {
-                for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsTls13()) {
+                for (SignatureAndHashAlgorithm algorithm :
+                        report.getSupportedSignatureAndHashAlgorithmsTls13()) {
                     prettyAppend(builder, algorithm.toString());
                 }
             } else {
