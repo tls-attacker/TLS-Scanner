@@ -2,7 +2,7 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternExtendedPatternLayoutayout pattern="%highlight{%-5level: %c{1} - %msg%n%throwable}"/>
+            <ExtendedPatternLayout pattern="%highlight{%-5level: %c{1} - %msg%n%throwable}"/>
         </Console>
         <Console name="Info" target="SYSTEM_OUT">
             <ExtendedPatternLayout pattern="%highlight{%-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
