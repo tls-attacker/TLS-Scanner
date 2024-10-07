@@ -12,8 +12,6 @@ import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.roca.RocaBrokenKey;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
-import de.rub.nds.x509attacker.x509.model.Extension;
-import de.rub.nds.x509attacker.x509.model.Extensions;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,10 +94,10 @@ public class CertificateReportGenerator {
     }
 
     private static void setExtendedKeyUsage(CertificateReport report, X509Certificate cert) {
-        //Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
-        //for (Extension extension : extensions.getExtensionList()) {
-            // TODO
-        //}
+        // Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
+        // for (Extension extension : extensions.getExtensionList()) {
+        // TODO
+        // }
     }
 
     private static void setCommonNames(CertificateReport report, X509Certificate cert) {

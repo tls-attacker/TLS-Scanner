@@ -8,11 +8,26 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.rub.nds.protocol.constants.MacAlgorithm;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.DetailedResult;
-import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.CryptoException;
 import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
@@ -36,11 +51,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketHold
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketTls12;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -54,9 +64,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
     public void analyze(ServerReport report) {
-        ExtractedValueContainer<TicketHolder> allTickets =
-                report.getExtractedValueContainer(
-                        TrackableValueType.SESSION_TICKET, TicketHolder.class);
+        ExtractedValueContainer<TicketHolder> allTickets = report.getExtractedValueContainer(
+                TrackableValueType.SESSION_TICKET, TicketHolder.class);
         Map<ProtocolVersion, List<Ticket>> ticketMap = new EnumMap<>(ProtocolVersion.class);
         for (TicketHolder ticketHolder : allTickets.getExtractedValueList()) {
             ProtocolVersion protocolVersion = ticketHolder.getProtocolVersion();
@@ -65,20 +74,15 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
                     .addAll(ticketHolder);
         }
 
-        ScannerDetail detail =
-                configSelector.getScannerConfig().getExecutorConfig().getPostAnalysisDetail();
+        ScannerDetail detail = configSelector.getScannerConfig().getExecutorConfig().getPostAnalysisDetail();
 
         VersionDependentResult<SessionTicketAfterStats> statistics = new VersionDependentResult<>();
 
-        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> unencryptedTicket =
-                new VersionDependentSummarizableResult<>();
-        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> reusedKeystream =
-                new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> unencryptedTicket = new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundSecret>> reusedKeystream = new VersionDependentSummarizableResult<>();
 
-        VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>> defaultEncStek =
-                new VersionDependentSummarizableResult<>();
-        VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>> defaultMacStek =
-                new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>> defaultEncStek = new VersionDependentSummarizableResult<>();
+        VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>> defaultMacStek = new VersionDependentSummarizableResult<>();
 
         report.putResult(TlsAnalyzedProperty.STATISTICS_TICKET, statistics);
 
@@ -178,11 +182,10 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
      * @return The most likely length of the key name
      */
     private static int analyzeKeyNameLength(List<Ticket> tickets) {
-        Map<Integer, Integer> lengthToDivergences =
-                PrefixStatsUtil.computePrefixDivergences(
-                        tickets.stream()
-                                .map(Ticket::getTicketBytesOriginal)
-                                .collect(Collectors.toList()));
+        Map<Integer, Integer> lengthToDivergences = PrefixStatsUtil.computePrefixDivergences(
+                tickets.stream()
+                        .map(Ticket::getTicketBytesOriginal)
+                        .collect(Collectors.toList()));
         // find prefix length with most divergences afterwards
         // this means we want the key with the highest value
         // This approach should solve two problems:
@@ -273,9 +276,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
         for (Ticket ticket : tickets) {
             byte[] ticketBytes = ticket.getTicketBytesOriginal();
             for (TicketEncryptionAlgorithm algo : getEncAlgorithms(detail)) {
-                for (SessionTicketEncryptionFormat format :
-                        SessionTicketEncryptionFormat.generateFormats(
-                                detail, ticketBytes.length, algo.ivNonceSize, keyNameLength)) {
+                for (SessionTicketEncryptionFormat format : SessionTicketEncryptionFormat.generateFormats(
+                        detail, ticketBytes.length, algo.ivNonceSize, keyNameLength)) {
 
                     byte[] iv = format.getIvNonce(ticketBytes);
                     byte[] ciphertext = format.getCiphertextTruncated(ticketBytes, algo.blockSize);
@@ -306,9 +308,8 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
             byte[] ticketBytes = ticket.getTicketBytesOriginal();
 
             for (MacAlgorithm algo : getMacAlgorithms(detail)) {
-                for (SessionTicketMacFormat format :
-                        SessionTicketMacFormat.generateFormats(
-                                detail, ticketBytes.length, algo.getSize())) {
+                for (SessionTicketMacFormat format : SessionTicketMacFormat.generateFormats(
+                        detail, ticketBytes.length, algo.getMacLength())) {
                     byte[] plaintext = format.getMacInput(ticketBytes);
                     byte[] prefix = format.getInputPrefix(ticketBytes);
                     byte[] suffix = format.getInputSuffix(ticketBytes);
@@ -366,11 +367,9 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
             Ticket ticketA = tickets.get(i);
             for (int j = i + 1; j < tickets.size(); j++) {
                 Ticket ticketB = tickets.get(j);
-                byte[] xoredTickets =
-                        ArrayUtil.xor(
-                                ticketA.getTicketBytesOriginal(), ticketB.getTicketBytesOriginal());
-                Ticket combinedSecrets =
-                        new TicketTls12(null, null, xorSecrets(ticketA, ticketB, true));
+                byte[] xoredTickets = ArrayUtil.xor(
+                        ticketA.getTicketBytesOriginal(), ticketB.getTicketBytesOriginal());
+                Ticket combinedSecrets = new TicketTls12(null, null, xorSecrets(ticketA, ticketB, true));
 
                 FoundSecret foundSecret = combinedSecrets.checkContainsSecrets(xoredTickets);
                 if (foundSecret != null) {

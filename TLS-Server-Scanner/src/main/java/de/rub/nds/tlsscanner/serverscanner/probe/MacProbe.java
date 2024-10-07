@@ -111,10 +111,9 @@ public class MacProbe extends TlsServerProbe {
         config.setWorkflowExecutorShouldClose(false);
         configSelector.repairConfig(config);
         config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createWorkflowTrace(
+                        WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HttpRequestMessage httpsRequestMessage = new HttpRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
@@ -170,10 +169,9 @@ public class MacProbe extends TlsServerProbe {
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
         config.setDefaultLayerConfiguration(StackConfiguration.HTTPS);
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createWorkflowTrace(
+                        WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         HttpRequestMessage httpsRequestMessage = new HttpRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
@@ -213,8 +211,7 @@ public class MacProbe extends TlsServerProbe {
         ModifiableByteArray modMac = new ModifiableByteArray();
         r.getComputations().setMac(modMac);
 
-        VariableModification<byte[]> xor =
-                ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
         modMac.setModification(xor);
         lastSendingAction.setConfiguredRecords(List.of(r));
         trace.addTlsAction(new GenericReceiveAction());
@@ -222,25 +219,20 @@ public class MacProbe extends TlsServerProbe {
     }
 
     private WorkflowTrace getVerifyDataTrace(Config config, int xorPosition) {
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-        FinishedMessage lastSendMessage =
-                (FinishedMessage)
-                        WorkflowTraceResultUtil.getLastSentMessage(
-                                trace, HandshakeMessageType.FINISHED);
-        lastSendMessage.setVerifyData(Modifiable.xor(new byte[] {01}, xorPosition));
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createWorkflowTrace(
+                        WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        FinishedMessage lastSendMessage = (FinishedMessage) WorkflowTraceResultUtil.getLastSentMessage(
+                trace, HandshakeMessageType.FINISHED);
+        lastSendMessage.setVerifyData(Modifiable.xor(new byte[] { 01 }, xorPosition));
         return trace;
     }
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor =
-                ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createWorkflowTrace(
-                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createWorkflowTrace(
+                        WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
         Record r = new Record();
         r.prepareComputations();
@@ -335,8 +327,7 @@ public class MacProbe extends TlsServerProbe {
     private ByteCheckStatus[] getMacByteCheckMap(Check check) {
         CipherSuite suite = suiteList.get(0);
         // TODO: Protocol version not from report
-        int macSize =
-                AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize(); // TODO
+        int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getMacLength(); // TODO
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();
         Config config = configSelector.getBaseConfig();
@@ -361,10 +352,8 @@ public class MacProbe extends TlsServerProbe {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (trace.executedAsPlanned()) {
                 if (check == Check.APPDATA) {
-                    ResponseFingerprint fingerprint =
-                            ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                    EqualityError equalityError =
-                            FingerprintChecker.checkEquality(fingerprint, correctFingerprint);
+                    ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
+                    EqualityError equalityError = FingerprintChecker.checkEquality(fingerprint, correctFingerprint);
                     LOGGER.debug("Fingerprint: " + fingerprint.toString());
                     if (equalityError != EqualityError.NONE) {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
@@ -375,8 +364,7 @@ public class MacProbe extends TlsServerProbe {
                     if (receivedOnlyFinAndCcs(trace)) {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
                     } else if (receivedFinAndCcs(trace)) {
-                        byteCheckArray[stateIndexPair.getIndex()] =
-                                ByteCheckStatus.CHECKED_WITH_FIN;
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
                     } else {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
                     }

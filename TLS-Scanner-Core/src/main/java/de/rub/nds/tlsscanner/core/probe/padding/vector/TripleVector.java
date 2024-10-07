@@ -55,22 +55,20 @@ public class TripleVector extends PaddingVector {
     public int getRecordLength(
             CipherSuite testedSuite, ProtocolVersion testedVersion, int appDataLength) {
         Record r = createRecord();
-        int macLength = AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getSize();
+        int macLength = AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getMacLength();
 
         r.setCleanProtocolMessageBytes(new byte[appDataLength]);
         r.getComputations().setMac(new byte[macLength]);
-        int paddingLength =
-                AlgorithmResolver.getCipher(testedSuite).getBlocksize()
-                        - ((r.getCleanProtocolMessageBytes().getValue().length
-                                        + r.getComputations().getMac().getValue().length)
-                                % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
+        int paddingLength = AlgorithmResolver.getCipher(testedSuite).getBlocksize()
+                - ((r.getCleanProtocolMessageBytes().getValue().length
+                        + r.getComputations().getMac().getValue().length)
+                        % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
 
         r.getComputations().setPadding(new byte[paddingLength]);
         return ArrayConverter.concatenate(
-                        r.getCleanProtocolMessageBytes().getValue(),
-                        r.getComputations().getMac().getValue(),
-                        r.getComputations().getPadding().getValue())
-                .length;
+                r.getCleanProtocolMessageBytes().getValue(),
+                r.getComputations().getMac().getValue(),
+                r.getComputations().getPadding().getValue()).length;
     }
 
     public VariableModification getPaddingModification() {

@@ -8,10 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
-import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,17 +15,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.util.Arrays;
 
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.MacAlgorithm;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.util.ComparableByteArray;
+
 public class DefaultKeys {
 
-    private DefaultKeys() {}
+    private DefaultKeys() {
+    }
 
-    private static Map<Pair<Integer, ScannerDetail>, Collection<byte[]>> keySetsCache =
-            new ConcurrentHashMap<>();
-    private static Map<Pair<MacAlgorithm, ScannerDetail>, Collection<Integer>> keyLengthsCache =
-            new ConcurrentHashMap<>();
+    private static Map<Pair<Integer, ScannerDetail>, Collection<byte[]>> keySetsCache = new ConcurrentHashMap<>();
+    private static Map<Pair<MacAlgorithm, ScannerDetail>, Collection<Integer>> keyLengthsCache = new ConcurrentHashMap<>();
 
     private static ComparableByteArray fixedKey(int length, String values) {
         return fixedKey(length, ArrayConverter.hexStringToByteArray(values));
@@ -245,7 +246,7 @@ public class DefaultKeys {
         if (scannerDetail.getLevelValue() >= ScannerDetail.QUICK.getLevelValue()) {
             // add key and output size (if they even differ)
             ret.add(algo.getKeySize());
-            ret.add(algo.getSize());
+            ret.add(algo.getMacLength());
         }
         ret.add(16);
         ret.add(32);

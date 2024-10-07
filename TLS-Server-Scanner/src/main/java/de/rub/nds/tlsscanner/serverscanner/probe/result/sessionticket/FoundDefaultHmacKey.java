@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket;
 
-import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketMacFormat;
 import java.io.Serializable;
+
+import de.rub.nds.protocol.constants.MacAlgorithm;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionTicketMacFormat;
 
 public class FoundDefaultHmacKey implements Serializable {
     public final MacAlgorithm algorithm;

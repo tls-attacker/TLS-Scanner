@@ -92,8 +92,7 @@ public class ConfigSelector {
         if (scannerConfig.isConfigSearchCooldown()) {
             pauseSearch();
         }
-        Config baseConfig =
-                Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
+        Config baseConfig = Config.createConfig(Config.class.getResourceAsStream(PATH + startingConfigFile));
         ConfigFilter.applyFilterProfile(baseConfig, configProfile.getConfigFilterTypes());
         prepareBaseConfig(baseConfig);
         return baseConfig;
@@ -141,17 +140,15 @@ public class ConfigSelector {
 
     private boolean configWorks(Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace =
-                factory.createWorkflowTrace(
-                        WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = factory.createWorkflowTrace(
+                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
         parallelExecutor.bulkExecuteStateTasks(state);
 
-        List<Record> reveicedRecords =
-                state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
+        List<Record> reveicedRecords = state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
         if ((reveicedRecords != null
-                        && !reveicedRecords.isEmpty()
-                        && reveicedRecords.get(0) instanceof Record)
+                && !reveicedRecords.isEmpty()
+                && reveicedRecords.get(0) instanceof Record)
                 || WorkflowTraceResultUtil.didReceiveMessage(
                         trace, HandshakeMessageType.HELLO_VERIFY_REQUEST)
                 || WorkflowTraceResultUtil.didReceiveMessage(
@@ -212,14 +209,12 @@ public class ConfigSelector {
     }
 
     public void adjustEccExtensionsPreTls13(Config config) {
-        boolean containsEc =
-                config.getDefaultClientSupportedCipherSuites().stream()
-                        .filter(CipherSuite::isRealCipherSuite)
-                        .filter(Predicate.not(CipherSuite::isTLS13))
-                        .anyMatch(
-                                cipherSuite ->
-                                        AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                                                .isEC());
+        boolean containsEc = config.getDefaultClientSupportedCipherSuites().stream()
+                .filter(CipherSuite::isRealCipherSuite)
+                .filter(Predicate.not(CipherSuite::isTls13))
+                .anyMatch(
+                        cipherSuite -> AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
+                                .isEC());
         config.setAddEllipticCurveExtension(containsEc);
         config.setAddECPointFormatExtension(containsEc);
     }
@@ -239,23 +234,20 @@ public class ConfigSelector {
     }
 
     public void setDefaultSelectedCipherSuites(Config config) {
-        CipherSuite defaultSelectedCipherSuite =
-                config.getDefaultClientSupportedCipherSuites().stream()
-                        .filter(CipherSuite::isRealCipherSuite)
-                        .findFirst()
-                        .orElse(config.getDefaultSelectedCipherSuite());
+        CipherSuite defaultSelectedCipherSuite = config.getDefaultClientSupportedCipherSuites().stream()
+                .filter(CipherSuite::isRealCipherSuite)
+                .findFirst()
+                .orElse(config.getDefaultSelectedCipherSuite());
         config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
     }
 
     public void restrictBasicFeatures(Config config) {
-        Config relevantConfig =
-                config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
+        Config relevantConfig = config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
         if (relevantConfig != null) {
             config.setDefaultClientSupportedCipherSuites(
                     config.getDefaultClientSupportedCipherSuites().stream()
                             .filter(
-                                    relevantConfig.getDefaultClientSupportedCipherSuites()
-                                            ::contains)
+                                    relevantConfig.getDefaultClientSupportedCipherSuites()::contains)
                             .collect(Collectors.toList()));
             config.setDefaultClientNamedGroups(
                     config.getDefaultClientNamedGroups().stream()
@@ -265,8 +257,7 @@ public class ConfigSelector {
                     config.getDefaultClientSupportedSignatureAndHashAlgorithms().stream()
                             .filter(
                                     relevantConfig
-                                                    .getDefaultClientSupportedSignatureAndHashAlgorithms()
-                                            ::contains)
+                                            .getDefaultClientSupportedSignatureAndHashAlgorithms()::contains)
                             .collect(Collectors.toList()));
         }
     }

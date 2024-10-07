@@ -129,18 +129,15 @@ public class NamedGroupsProbe extends TlsClientProbe {
             config.setAddSupportedVersionsExtension(true);
             WorkflowTrace workflowTrace;
             if (advertisedKeyShareGroups.contains(group)) {
-                workflowTrace =
-                        new WorkflowConfigurationFactory(config)
-                                .createDynamicHelloWorkflow(config.getDefaultServerConnection());
+                workflowTrace = new WorkflowConfigurationFactory(config)
+                        .createDynamicHelloWorkflow(config.getDefaultServerConnection());
                 workflowTrace.addTlsAction(new ReceiveAction(new FinishedMessage()));
             } else {
-                workflowTrace =
-                        new WorkflowConfigurationFactory(config)
-                                .createShortHelloWorkflow(config.getDefaultServerConnection());
-                ServerHelloMessage serverHello =
-                        (ServerHelloMessage)
-                                (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
-                                        workflowTrace, HandshakeMessageType.SERVER_HELLO));
+                workflowTrace = new WorkflowConfigurationFactory(config)
+                        .createShortHelloWorkflow(config.getDefaultServerConnection());
+                ServerHelloMessage serverHello = (ServerHelloMessage) (WorkflowTraceConfigurationUtil
+                        .getFirstStaticConfiguredSendMessage(
+                                workflowTrace, HandshakeMessageType.SERVER_HELLO));
                 serverHello.setAutoSetHelloRetryModeInKeyShare(true);
                 serverHello.setRandom(
                         Modifiable.explicit(ServerHelloMessage.getHelloRetryRequestRandom()));
@@ -156,16 +153,13 @@ public class NamedGroupsProbe extends TlsClientProbe {
                             executedState.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
                 supportedGroups.add(testedGroup);
             } else if (!advertisedKeyShareGroups.contains(testedGroup)) {
-                List<HandshakeMessage> handshakeMessages =
-                        WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(
-                                executedState.getWorkflowTrace());
-                if (handshakeMessages.stream().filter(ClientHelloMessage.class::isInstance).count()
-                        > 1) {
-                    ClientHelloMessage updatedClientHello =
-                            (ClientHelloMessage)
-                                    WorkflowTraceResultUtil.getLastReceivedMessage(
-                                            executedState.getWorkflowTrace(),
-                                            HandshakeMessageType.CLIENT_HELLO);
+                List<HandshakeMessage> handshakeMessages = WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(
+                        executedState.getWorkflowTrace());
+                if (handshakeMessages.stream().filter(ClientHelloMessage.class::isInstance).count() > 1) {
+                    ClientHelloMessage updatedClientHello = (ClientHelloMessage) WorkflowTraceResultUtil
+                            .getLastReceivedMessage(
+                                    executedState.getWorkflowTrace(),
+                                    HandshakeMessageType.CLIENT_HELLO);
                     if (updatedClientHello
                             .getExtension(KeyShareExtensionMessage.class)
                             .getKeyShareList()
@@ -195,16 +189,13 @@ public class NamedGroupsProbe extends TlsClientProbe {
                 .filter(NamedGroup::isDhGroup)
                 .forEach(ffdheToTest::add);
         report.getClientAdvertisedKeyShareNamedGroupsList().forEach(advertisedKeyShareGroups::add);
-        supportedTls13CipherSuites =
-                report.getSupportedCipherSuites().stream()
-                        .filter(CipherSuite::isTLS13)
-                        .collect(Collectors.toList());
-        supportedDheCipherSuites =
-                report.getSupportedCipherSuitesWithKeyExchange(
-                        KeyExchangeAlgorithm.DHE_DSS, KeyExchangeAlgorithm.DHE_RSA);
-        supportedEcdheCipherSuites =
-                report.getSupportedCipherSuitesWithKeyExchange(
-                        KeyExchangeAlgorithm.ECDHE_ECDSA, KeyExchangeAlgorithm.ECDHE_RSA);
+        supportedTls13CipherSuites = report.getSupportedCipherSuites().stream()
+                .filter(CipherSuite::isTls13)
+                .collect(Collectors.toList());
+        supportedDheCipherSuites = report.getSupportedCipherSuitesWithKeyExchange(
+                KeyExchangeAlgorithm.DHE_DSS, KeyExchangeAlgorithm.DHE_RSA);
+        supportedEcdheCipherSuites = report.getSupportedCipherSuitesWithKeyExchange(
+                KeyExchangeAlgorithm.ECDHE_ECDSA, KeyExchangeAlgorithm.ECDHE_RSA);
     }
 
     @Override
