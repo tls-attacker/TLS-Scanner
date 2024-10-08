@@ -319,7 +319,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_EVEN_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_MOD3_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_MODULUS_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_MODULUS_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_GENERATOR_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_GENERATOR_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
     WEAKEST_DH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
     /** DTLS */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
