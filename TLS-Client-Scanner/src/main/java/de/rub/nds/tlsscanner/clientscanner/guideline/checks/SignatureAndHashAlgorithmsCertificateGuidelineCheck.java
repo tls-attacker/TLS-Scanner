@@ -19,7 +19,6 @@ import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +51,8 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
         super(
                 name,
                 requirementLevel,
-                GuidelineCheckCondition.and(Arrays.asList(CertificateGuidelineCheck.PRECONDITION, condition)));
+                GuidelineCheckCondition.and(
+                        Arrays.asList(CertificateGuidelineCheck.PRECONDITION, condition)));
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 

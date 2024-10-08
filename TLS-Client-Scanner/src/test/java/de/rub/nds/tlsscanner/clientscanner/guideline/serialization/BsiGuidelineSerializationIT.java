@@ -22,7 +22,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ExtensionGuidelineCheck;
@@ -33,6 +32,7 @@ import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAlgorithmsG
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -131,7 +131,8 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,  TODO: Why commented out?
+                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,  TODO: Why
+                                // commented out?
                                 // CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384,
                                 // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA256,
@@ -144,7 +145,8 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA384,
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384)));
-        // TODO: Die Verwendung der „supported_groups“ Erweiterung für TLS_(EC)DHE_* Cipher-Suiten wird empfohlen (TLS 1.2).
+        // TODO: Die Verwendung der „supported_groups“ Erweiterung für TLS_(EC)DHE_* Cipher-Suiten
+        // wird empfohlen (TLS 1.2).
         checks.add(
                 new NamedGroupsGuidelineCheck(
                         "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
@@ -301,11 +303,13 @@ public class BsiGuidelineSerializationIT {
                                 X509SignatureAlgorithm.RSASSA_PSS,
                                 X509SignatureAlgorithm.ECDSA_WITH_SHA256,
                                 X509SignatureAlgorithm.ECDSA_WITH_SHA384,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA512  // TODO: What's about the remaining parameters, like the curve?
+                                X509SignatureAlgorithm
+                                        .ECDSA_WITH_SHA512 // TODO: What's about the remaining
+                                // parameters, like the curve?
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-                        )));
+                                )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
@@ -323,8 +327,7 @@ public class BsiGuidelineSerializationIT {
                         "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_DHE,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_DHE, TestResults.TRUE),
                         TlsAnalyzedProperty.REUSES_DH_PUBLICKEY,
                         TestResults.FALSE));
         checks.add(
@@ -332,8 +335,7 @@ public class BsiGuidelineSerializationIT {
                         "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_ECDHE,
-                                TestResults.TRUE),
+                                TlsAnalyzedProperty.SUPPORTS_ECDHE, TestResults.TRUE),
                         TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
                         TestResults.FALSE));
 
