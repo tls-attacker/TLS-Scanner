@@ -3,13 +3,13 @@
     <link>https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html</link>
     <analyzedPropertyGuidelineCheck>
         <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
-        <requirementLevel>MAY</requirementLevel>
+        <requirementLevel>SHOULD</requirementLevel>
         <property>SUPPORTS_TLS_1_2</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
-        <requirementLevel>MAY</requirementLevel>
+        <requirementLevel>SHOULD</requirementLevel>
         <property>SUPPORTS_TLS_1_3</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
@@ -99,7 +99,6 @@
         <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
-        <recommendedGroups>FFDHE2048</recommendedGroups>
         <recommendedGroups>FFDHE3072</recommendedGroups>
         <recommendedGroups>FFDHE4096</recommendedGroups>
         <tls13>false</tls13>
@@ -128,7 +127,7 @@
         <recommendedAlgorithms>SHA512</recommendedAlgorithms>
     </hashAlgorithmsGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Client abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -138,7 +137,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Client abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -148,7 +147,7 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Client abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -187,12 +186,8 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>Heartbeat sollte nicht unterstüzt werden.</name>
+        <name>Heartbeat sollte nicht unterstützt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_2</property>
-            <result>TRUE</result>
-        </condition>
         <requiredExtension>HEARTBEAT</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
@@ -224,7 +219,6 @@
         <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
-        <recommendedGroups>FFDHE2048</recommendedGroups>
         <recommendedGroups>FFDHE3072</recommendedGroups>
         <recommendedGroups>FFDHE4096</recommendedGroups>
         <tls13>true</tls13>
@@ -251,6 +245,29 @@
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
         <tls13>true</tls13>
     </signatureAndHashAlgorithmsGuidelineCheck>
+    <signatureAndHashAlgorithmsCertificateGuidelineCheck>
+        <name>Die folgenden Signaturverfahren werden empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <and>
+                <condition>
+                    <property>SUPPORTS_CCA</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <property>SUPPORTS_TLS_1_3</property>
+                    <result>TRUE</result>
+                </condition>
+            </and>
+        </condition>
+        <recommendedAlgorithms>SHA256_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA384_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA512_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>RSASSA_PSS</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA512</recommendedAlgorithms>
+    </signatureAndHashAlgorithmsCertificateGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -259,4 +276,37 @@
         <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
     </cipherSuiteGuidelineCheck>
+    <keySizeCertGuidelineCheck>
+        <name>Schlüssellängen</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <property>SUPPORTS_CCA</property>
+            <result>TRUE</result>
+        </condition>
+        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
+        <minimumDsaKeyLength>3000</minimumDsaKeyLength>
+        <minimumRsaKeyLength>3000</minimumRsaKeyLength>
+        <minimumEcKeyLength>250</minimumEcKeyLength>
+        <minimumDhKeyLength>3000</minimumDhKeyLength>
+    </keySizeCertGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <condition>
+            <property>SUPPORTS_DHE</property>
+            <result>TRUE</result>
+        </condition>
+        <property>REUSES_DH_PUBLICKEY</property>
+        <result>FALSE</result>
+    </analyzedPropertyGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <condition>
+            <property>SUPPORTS_ECDHE</property>
+            <result>TRUE</result>
+        </condition>
+        <property>REUSES_EC_PUBLICKEY</property>
+        <result>FALSE</result>
+    </analyzedPropertyGuidelineCheck>
 </guideline>
