@@ -19,16 +19,16 @@ import java.util.Objects;
 
 public class TripleVector extends PaddingVector {
 
-    private final VariableModification cleanModification;
-    private final VariableModification macModification;
-    private final VariableModification paddingModification;
+    private final VariableModification<byte[]> cleanModification;
+    private final VariableModification<byte[]> macModification;
+    private final VariableModification<byte[]> paddingModification;
 
     public TripleVector(
             String name,
             String identifier,
-            VariableModification cleanModification,
-            VariableModification macModification,
-            VariableModification paddingModification) {
+            VariableModification<byte[]> cleanModification,
+            VariableModification<byte[]> macModification,
+            VariableModification<byte[]> paddingModification) {
         super(name, identifier);
         this.cleanModification = cleanModification;
         this.macModification = macModification;
@@ -55,34 +55,31 @@ public class TripleVector extends PaddingVector {
     public int getRecordLength(
             CipherSuite testedSuite, ProtocolVersion testedVersion, int appDataLength) {
         Record r = createRecord();
-        int macLength =
-                AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getMacLength();
+        int macLength = AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getMacLength();
 
         r.setCleanProtocolMessageBytes(new byte[appDataLength]);
         r.getComputations().setMac(new byte[macLength]);
-        int paddingLength =
-                AlgorithmResolver.getCipher(testedSuite).getBlocksize()
-                        - ((r.getCleanProtocolMessageBytes().getValue().length
-                                        + r.getComputations().getMac().getValue().length)
-                                % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
+        int paddingLength = AlgorithmResolver.getCipher(testedSuite).getBlocksize()
+                - ((r.getCleanProtocolMessageBytes().getValue().length
+                        + r.getComputations().getMac().getValue().length)
+                        % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
 
         r.getComputations().setPadding(new byte[paddingLength]);
         return ArrayConverter.concatenate(
-                        r.getCleanProtocolMessageBytes().getValue(),
-                        r.getComputations().getMac().getValue(),
-                        r.getComputations().getPadding().getValue())
-                .length;
+                r.getCleanProtocolMessageBytes().getValue(),
+                r.getComputations().getMac().getValue(),
+                r.getComputations().getPadding().getValue()).length;
     }
 
-    public VariableModification getPaddingModification() {
+    public VariableModification<byte[]> getPaddingModification() {
         return paddingModification;
     }
 
-    public VariableModification getCleanModification() {
+    public VariableModification<byte[]> getCleanModification() {
         return cleanModification;
     }
 
-    public VariableModification getMacModification() {
+    public VariableModification<byte[]> getMacModification() {
         return macModification;
     }
 
