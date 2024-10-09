@@ -2495,6 +2495,12 @@
         <property>SUPPORTS_GENERATOR_ONE</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>SUPPORTS_MODULUS_ZERO</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_GENERATOR_ZERO</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>DTLS_FRAGMENTATION_REQUIRES_EXTENSION</property>
     </ratingInfluencer>
     <ratingInfluencer>
