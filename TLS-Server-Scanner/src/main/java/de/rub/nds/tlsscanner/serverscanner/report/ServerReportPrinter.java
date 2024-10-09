@@ -34,7 +34,6 @@ import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -481,11 +480,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         CipherSuite suite = simulatedClient.getSelectedCipherSuite();
         Integer param = simulatedClient.getServerPublicKeyParameter();
         if (suite != null && param != null) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeRsa()) {
+            if (suite.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
                 return param + " bit - RSA";
-            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDh()) {
+            } else if (suite.getKeyExchangeAlgorithm().isKeyExchangeDh()) {
                 return param + " bit - DH";
-            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
+            } else if (suite.getKeyExchangeAlgorithm().isKeyExchangeEcdh()) {
                 return param + " bit - ECDH - " + simulatedClient.getSelectedNamedGroup();
             }
         }

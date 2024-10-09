@@ -69,8 +69,7 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingEcdsaStaticCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTls13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.ECDH_ECDSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 return true;
             }
         }
@@ -80,8 +79,7 @@ public class NamedGroupWitness implements Serializable {
     public boolean isFoundUsingEcdsaEphemeralCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTls13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 return true;
             }
         }

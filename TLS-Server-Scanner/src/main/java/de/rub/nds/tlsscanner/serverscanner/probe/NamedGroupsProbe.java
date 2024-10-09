@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.EllipticCurveType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -136,7 +135,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                         .filter(
                                 group -> {
                                     if (useCurves) {
-                                        return group.isCurve();
+                                        return group.isEcGroup();
                                     } else {
                                         return group.isDhGroup();
                                     }
@@ -247,8 +246,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         for (CipherSuite cipherSuite : supportedCipherSuites) {
             if (cipherSuite.isRealCipherSuite()
                     && !cipherSuite.isTls13()
-                    && algorithmList.contains(
-                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite))) {
+                    && algorithmList.contains(cipherSuite.getKeyExchangeAlgorithm())) {
                 chosenCipherSuites.add(cipherSuite);
             }
         }
@@ -260,7 +258,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         for (CipherSuite suite : supportedCipherSuites) {
             if (suite.isRealCipherSuite()
                     && !suite.isTls13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
+                    && suite.getKeyExchangeAlgorithm().isKeyExchangeEcdh()) {
                 suiteList.add(suite);
             }
         }
@@ -395,7 +393,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 .keySet()
                 .forEach(
                         group -> {
-                            if (group.isCurve()) {
+                            if (group.isEcGroup()) {
                                 joinedCurveCipherSuites.addAll(
                                         overallSupported.get(group).getCipherSuites());
                             } else {
@@ -408,12 +406,12 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 overallSupported.keySet().stream()
                         .anyMatch(
                                 group -> {
-                                    return (group.isCurve()
+                                    return (group.isEcGroup()
                                                     && !overallSupported
                                                             .get(group)
                                                             .getCipherSuites()
                                                             .containsAll(joinedCurveCipherSuites))
-                                            || (!group.isCurve()
+                                            || (!group.isEcGroup()
                                                     && !overallSupported
                                                             .get(group)
                                                             .getCipherSuites()
