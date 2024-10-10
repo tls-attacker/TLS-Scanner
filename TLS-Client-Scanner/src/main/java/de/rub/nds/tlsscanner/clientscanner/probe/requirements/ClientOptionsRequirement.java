@@ -8,10 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe.requirements;
 
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.ALPN;
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.RESUMPTION;
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.SNI;
-
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
