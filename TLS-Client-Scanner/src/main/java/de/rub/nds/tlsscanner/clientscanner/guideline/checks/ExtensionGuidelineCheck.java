@@ -54,6 +54,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
             adherence =
                     GuidelineAdherence.of(
                             !report.getSupportedExtensions().contains(requiredExtension));
+        } else if (getRequirementLevel() == RequirementLevel.MAY) {
+            adherence = GuidelineAdherence.ADHERED;
         } else {
             adherence =
                     GuidelineAdherence.of(
