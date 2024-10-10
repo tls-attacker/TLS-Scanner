@@ -47,9 +47,17 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
+        GuidelineAdherence adherence;
+
+        if (getRequirementLevel() == RequirementLevel.MUST_NOT || getRequirementLevel() == RequirementLevel.SHOULD_NOT) {
+            adherence = GuidelineAdherence.of(!report.getSupportedExtensions().contains(requiredExtension));
+        } else {
+            adherence = GuidelineAdherence.of(report.getSupportedExtensions().contains(requiredExtension));
+        }
+
         return new ExtensionGuidelineCheckResult(
                 getName(),
-                GuidelineAdherence.of(report.getSupportedExtensions().contains(requiredExtension)),
+                adherence,
                 report.getSupportedExtensions().contains(requiredExtension),
                 requiredExtension);
     }
