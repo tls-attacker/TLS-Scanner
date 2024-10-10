@@ -390,13 +390,12 @@ public class NistGuidelineSerializationIT {
                         ExtensionType.EARLY_DATA));
         // TODO: Server Authentication and Path Validation
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "Therefore, clients using TLS 1.3 should not send 0-RTT data.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE));
+                        ExtensionType.EARLY_DATA));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients shall not use False Start.",

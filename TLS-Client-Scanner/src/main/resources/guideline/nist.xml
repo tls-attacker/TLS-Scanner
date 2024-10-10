@@ -389,16 +389,15 @@
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <requiredExtension>EARLY_DATA</requiredExtension>
     </extensionGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
+    <extensionGuidelineCheck>
         <name>Therefore, clients using TLS 1.3 should not send 0-RTT data.</name>
-        <requirementLevel>SHOULD</requirementLevel>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <property>SUPPORTS_TLS13_0_RTT</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
+        <requiredExtension>EARLY_DATA</requiredExtension>
+    </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>TLS 1.2 clients shall not use False Start.</name>
         <requirementLevel>MUST</requirementLevel>
