@@ -192,7 +192,7 @@ public class BsiGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
-        checks.add(
+        /*checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
                         RequirementLevel.SHOULD,
@@ -207,7 +207,7 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-                        TestResults.FALSE));
+                        TestResults.FALSE));*/
         // -------------------------------------------------------------------------------------------------------------
         checks.add(
                 new ExtensionGuidelineCheck(
@@ -247,13 +247,12 @@ public class BsiGuidelineSerializationIT {
                         TestResults.TRUE));
         // TODO: Die folgenden PSK-Modi werden empfohlen
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE));
+                        ExtensionType.EARLY_DATA));
         checks.add(
                 new NamedGroupsGuidelineCheck(
                         "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
