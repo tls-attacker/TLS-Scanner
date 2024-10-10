@@ -72,6 +72,37 @@ public class ExtensionProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, allSupportedExtensions);
+        if (allSupportedExtensions.isEmpty()) {
+            setPropertiesToCouldNotTest();
+            return;
+        }
 
+        for (ExtensionType type : allSupportedExtensions) {
+            if (type == ExtensionType.ENCRYPT_THEN_MAC) {
+                encryptThenMac = TestResults.TRUE;
+            }
+            if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
+                extendedMasterSecret = TestResults.TRUE;
+            }
+            if (type == ExtensionType.RENEGOTIATION_INFO) {
+                secureRenegotiation = TestResults.TRUE;
+            }
+            if (type == ExtensionType.SESSION_TICKET) {
+                sessionTickets = TestResults.TRUE;
+            }
+            if (type == ExtensionType.STATUS_REQUEST) {
+                certStatusRequest = TestResults.TRUE;
+            }
+            if (type == ExtensionType.STATUS_REQUEST_V2) {
+                certStatusRequestV2 = TestResults.TRUE;
+            }
+        }
+        put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
+        put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
+        put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+        put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, sessionTickets);
+        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
+        put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
     }
 }
