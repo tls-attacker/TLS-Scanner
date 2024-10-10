@@ -136,26 +136,6 @@
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
-        <requirementLevel>SHOULD</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_2</property>
-            <result>TRUE</result>
-        </condition>
-        <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
-        <requirementLevel>SHOULD</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_2</property>
-            <result>TRUE</result>
-        </condition>
-        <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
         <name>truncated_hmac sollte nicht unterstüzt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
@@ -200,16 +180,15 @@
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
+    <extensionGuidelineCheck>
         <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
-        <requirementLevel>SHOULD</requirementLevel>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <property>SUPPORTS_TLS13_0_RTT</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
+        <requiredExtension>EARLY_DATA</requiredExtension>
+    </extensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
