@@ -77,6 +77,7 @@ public class CipherSuiteEvaluationHelper {
     private TestResult supportsLegacyPrf = TestResults.FALSE;
     private TestResult supportsSha256Prf = TestResults.FALSE;
     private TestResult supportsSha384Prf = TestResults.FALSE;
+    private TestResult supportsCbc = TestResults.FALSE;
 
     public CipherSuiteEvaluationHelper(List<ProtocolVersion> protocolVersions) {
         this.protocolVersions = protocolVersions;
@@ -127,7 +128,8 @@ public class CipherSuiteEvaluationHelper {
             TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
             TlsAnalyzedProperty.SUPPORTS_ECDHE,
             TlsAnalyzedProperty.SUPPORTS_DHE,
-            TlsAnalyzedProperty.SUPPORTS_STATIC_DH
+            TlsAnalyzedProperty.SUPPORTS_STATIC_DH,
+            TlsAnalyzedProperty.SUPPORTS_CBC
         };
     }
 
@@ -197,6 +199,7 @@ public class CipherSuiteEvaluationHelper {
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
                 adjustCertificate(suite);
+                adjustModeOfOperation(suite);
             }
             probe.put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, allSupported);
             writeToReport(probe);
@@ -220,6 +223,12 @@ public class CipherSuiteEvaluationHelper {
                 break;
             default:
                 ;
+        }
+    }
+
+    public void adjustModeOfOperation(CipherSuite suite) {
+        if (suite.name().contains("_CBC_")) {
+            supportsCbc = TestResults.TRUE;
         }
     }
 
@@ -393,6 +402,7 @@ public class CipherSuiteEvaluationHelper {
         probe.put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         probe.put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         probe.put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
+        probe.put(TlsAnalyzedProperty.SUPPORTS_CBC, supportsCbc);
         probe.put(TlsAnalyzedProperty.VERSION_SUITE_PAIRS, getPairLists());
     }
 
