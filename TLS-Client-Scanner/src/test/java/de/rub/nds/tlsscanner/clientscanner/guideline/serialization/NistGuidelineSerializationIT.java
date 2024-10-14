@@ -35,13 +35,13 @@ public class NistGuidelineSerializationIT {
         List<GuidelineCheck<ClientReport>> checks = new ArrayList<>();
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client shall be configured to use TLS 1.2 and should be configured to use TLS 1.3.",
+                        "The client shall be configured to use TLS 1.2.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client shall be configured to use TLS 1.2 and should be configured to use TLS 1.3.",
+                        "The client should be configured to use TLS 1.3.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                         TestResults.TRUE));
@@ -49,13 +49,13 @@ public class NistGuidelineSerializationIT {
         // with private sector servers.
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client shall not be configured to use SSL 2.0 or SSL 3.0.",
+                        "The client shall not be configured to use SSL 2.0.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client shall not be configured to use SSL 2.0 or SSL 3.0.",
+                        "The client shall not be configured to use SSL 3.0.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
@@ -102,7 +102,7 @@ public class NistGuidelineSerializationIT {
         // TODO: Obtaining Revocation Status Information for the Server Certificate
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used",
+                        "Only listed Cipher Suites shall be used for TLS 1.2.",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
@@ -177,7 +177,7 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.3",
+                        "Only listed Cipher Suites shall be used for TLS 1.3.",
                         RequirementLevel.MUST,
                         List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
@@ -201,26 +201,64 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM,
                         TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck(
-                        "The client shall be configured to use the following extensions:",
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall be configured to use the Renegotiation Indication extension.",
                         RequirementLevel.MUST,
-                        ExtensionType.RENEGOTIATION_INFO));
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+                        TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The client shall be configured to use the following extensions:",
+                        "The client shall be configured to use the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
         checks.add(
-                new ExtensionGuidelineCheck(
-                        "The client shall be configured to use the following extensions:",
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall be configured to use the Extended Master Secret extension.",
                         RequirementLevel.MUST,
-                        ExtensionType.EXTENDED_MASTER_SECRET));
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
+                        TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The client shall be configured to use the following extensions:",
+                        "The client shall be configured to use the Signature Algorithms extension.",
                         RequirementLevel.MUST,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.TRUE))),
                         ExtensionType.SIGNATURE_AND_HASH_ALGORITHMS));
-        // TODO: Certificate Status Request
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall be configured to use the Certificate Status Request extension.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+                        TestResults.TRUE));
+        // TODO: Implement probe for SUPPORTS_TLS_FALLBACK_SCSV
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The Fallback Signaling Cipher Suite Value (SCSV) shall be supported if the client supports versions of TLS prior to TLS 1.2 and does not support TLS 1.3.",
@@ -242,6 +280,7 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.FALSE))),
                         TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                         TestResults.TRUE));
+        /* TODO: Find a way to check for the Supported Groups extension
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The Supported Groups extension shall be supported if the client supports ephemeral ECDH cipher suites or if the client supports TLS 1.3.",
@@ -254,8 +293,8 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
-                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, // TODO: Correct?
-                        TestResults.TRUE));
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                        TestResults.TRUE));*/
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the client supports TLS 1.3.",
@@ -284,7 +323,7 @@ public class NistGuidelineSerializationIT {
                                                                         .SUPPORTS_TLS_1_2,
                                                                 TestResults.TRUE))),
                                         new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
+                                                TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,  // TODO: Correct?
                                                 TestResults.TRUE))),
                         ExtensionType.EC_POINT_FORMATS));
         // TODO: Multiple Certificate Status
@@ -310,7 +349,7 @@ public class NistGuidelineSerializationIT {
                                                                         .SUPPORTS_TLS_1_2,
                                                                 TestResults.TRUE))),
                                         new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_CBC, // TODO: Correct?
+                                                TlsAnalyzedProperty.SUPPORTS_CBC,
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
@@ -322,6 +361,7 @@ public class NistGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.PRE_SHARED_KEY));
+        // TODO: Implement corresponding probes
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The Pre-Shared Key Exchange Modes extension shall be supported by TLS 1.3 clients that support the Pre-Shared Key extension.",
@@ -359,14 +399,14 @@ public class NistGuidelineSerializationIT {
                         ExtensionType.COOKIE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3 and should be supported for TLS 1.2.",
+                        "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3 and should be supported for TLS 1.2.",
+                        "The Certificate Signature Algorithms Extension should be supported for TLS 1.2.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -380,22 +420,25 @@ public class NistGuidelineSerializationIT {
                         ExtensionType.POST_HANDSHAKE_AUTH));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The following extensions should not be used:",
+                        "The Client Certificate URL extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
                         ExtensionType.CLIENT_CERTIFICATE_URL));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The following extensions should not be used:",
+                        "The Early Data Indication extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
                         ExtensionType.EARLY_DATA));
+        // TODO: The Raw Public Key extension shall not be supported.
         // TODO: Server Authentication and Path Validation
+        // TODO: Rework
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "Therefore, clients using TLS 1.3 should not send 0-RTT data.",
+                        "Clients using TLS 1.3 should not send 0-RTT data.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.EARLY_DATA));
+        // TODO: Implement proper probe
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients shall not use False Start.",
