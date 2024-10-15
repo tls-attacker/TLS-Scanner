@@ -98,6 +98,7 @@ public class CallbackDelegate extends Delegate {
         };
     }
 
+    @SafeVarargs
     public static Function<State, Integer> mergeCallbacks(Function<State, Integer>... callbacks) {
         return (State state) -> {
             for (Function<State, Integer> callback : callbacks) {

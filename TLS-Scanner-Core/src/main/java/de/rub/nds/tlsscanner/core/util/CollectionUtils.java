@@ -14,6 +14,7 @@ import java.util.Set;
 
 public class CollectionUtils {
 
+    @SafeVarargs
     public static <E> Set<E> mergeCollectionsIntoSet(Collection<E>... collections) {
         Set<E> mergeResult = new HashSet<>();
         for (Collection<E> currentCollection : collections) {
