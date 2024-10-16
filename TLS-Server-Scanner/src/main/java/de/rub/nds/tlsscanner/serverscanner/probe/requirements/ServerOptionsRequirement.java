@@ -8,9 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.HTTP_FALSE_START;
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.HTTP_HEADER;
-
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
