@@ -33,7 +33,6 @@ import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgo
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -171,7 +170,8 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(
-                                SignatureAlgorithm.RSA_PKCS1, // TODO correct?
+                                SignatureAlgorithm
+                                        .RSA_PKCS1, // TODO add RSA PSS respecting the conditions
                                 SignatureAlgorithm.DSA,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
@@ -297,19 +297,21 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Arrays.asList(
-                                X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.RSASSA_PSS,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA256,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA384,
-                                X509SignatureAlgorithm
-                                        .ECDSA_WITH_SHA512 // TODO: What's about the remaining
-                                // parameters, like the curve?
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-                                )));
+                                SignatureAndHashAlgorithm.RSA_SHA256,
+                                SignatureAndHashAlgorithm.RSA_SHA384,
+                                SignatureAndHashAlgorithm.RSA_SHA512,
+                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256,
+                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384,
+                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512,
+                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256,
+                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384,
+                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,
+                                SignatureAndHashAlgorithm.ECDSA_SHA256,
+                                SignatureAndHashAlgorithm.ECDSA_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_SHA512,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden für die Verwendung mit TLS 1.3 empfohlen.",

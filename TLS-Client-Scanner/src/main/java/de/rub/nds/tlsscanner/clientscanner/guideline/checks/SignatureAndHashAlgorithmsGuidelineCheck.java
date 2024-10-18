@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -22,7 +21,6 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,22 +67,11 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Cli
                                     SignatureAndHashAlgorithm.class)
                             .getList();
         } else {
-            algorithms = new LinkedList<>();
-            ListResult<SignatureAndHashAlgorithm> samResultCert =
-                    (ListResult<SignatureAndHashAlgorithm>)
-                            report.getListResult(
-                                    TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
-                                    SignatureAndHashAlgorithm.class);
-            if (samResultCert != null) {
-                algorithms.addAll(samResultCert.getList());
-            }
-            ListResult<SignatureAndHashAlgorithm> samResultSke =
+            algorithms =
                     report.getListResult(
-                            TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
-                            SignatureAndHashAlgorithm.class);
-            if (samResultSke != null) {
-                algorithms.addAll(samResultSke.getList());
-            }
+                                    TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                                    SignatureAndHashAlgorithm.class)
+                            .getList();
         }
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
