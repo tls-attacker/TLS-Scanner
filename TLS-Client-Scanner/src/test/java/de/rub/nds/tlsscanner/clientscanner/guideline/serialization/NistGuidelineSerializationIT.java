@@ -280,9 +280,8 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.FALSE))),
                         TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                         TestResults.TRUE));
-        /* TODO: Find a way to check for the Supported Groups extension
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "The Supported Groups extension shall be supported if the client supports ephemeral ECDH cipher suites or if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
@@ -293,8 +292,7 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
-                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
-                        TestResults.TRUE));*/
+                        ExtensionType.ELLIPTIC_CURVES));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the client supports TLS 1.3.",
