@@ -266,6 +266,23 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
+        <name>The Supported Groups extension shall be supported if the client supports ephemeral ECDH cipher suites or if the client supports TLS 1.3.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <condition>
+            <or>
+                <condition>
+                    <property>SUPPORTS_ECDHE</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <property>SUPPORTS_TLS_1_3</property>
+                    <result>TRUE</result>
+                </condition>
+            </or>
+        </condition>
+        <requiredExtension>ELLIPTIC_CURVES</requiredExtension>
+    </extensionGuidelineCheck>
+    <extensionGuidelineCheck>
         <name>The Key Share extension shall be supported if the client supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
