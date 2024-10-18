@@ -323,7 +323,8 @@ public class NistGuidelineSerializationIT {
                                                                         .SUPPORTS_TLS_1_2,
                                                                 TestResults.TRUE))),
                                         new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,  // TODO: Correct?
+                                                TlsAnalyzedProperty
+                                                        .SUPPORTS_STATIC_ECDH, // TODO: Correct?
                                                 TestResults.TRUE))),
                         ExtensionType.EC_POINT_FORMATS));
         // TODO: Multiple Certificate Status
