@@ -13,9 +13,10 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.clientscanner.guideline.results.X509SignatureAlgorithmGuidelineCheckResult;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.clientscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -29,7 +30,7 @@ import java.util.Set;
 public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
         extends GuidelineCheck<ClientReport> {
 
-    private List<X509SignatureAlgorithm> recommendedAlgorithms;
+    private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
 
     private SignatureAndHashAlgorithmsCertificateGuidelineCheck() {
         super(null, null);
@@ -38,7 +39,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
     public SignatureAndHashAlgorithmsCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<X509SignatureAlgorithm> recommendedAlgorithms) {
+            List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel, CertificateGuidelineCheck.PRECONDITION);
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
@@ -47,7 +48,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            List<X509SignatureAlgorithm> recommendedAlgorithms) {
+            List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
         super(
                 name,
                 requirementLevel,
@@ -58,13 +59,17 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
-        Set<X509SignatureAlgorithm> nonRecommended = new HashSet<>();
-        for (X509SignatureAlgorithm algorithm : report.getSupportedCertSignatureAlgorithms()) {
+        Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
+        for (SignatureAndHashAlgorithm algorithm :
+                report.getListResult(
+                                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                                SignatureAndHashAlgorithm.class)
+                        .getList()) {
             if (!recommendedAlgorithms.contains(algorithm)) {
                 nonRecommended.add(algorithm);
             }
         }
-        return new X509SignatureAlgorithmGuidelineCheckResult(
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
                 getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
@@ -76,7 +81,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
                 + recommendedAlgorithms;
     }
 
-    public List<X509SignatureAlgorithm> getRecommendedAlgorithms() {
+    public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
     }
 }

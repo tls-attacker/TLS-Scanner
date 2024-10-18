@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
@@ -26,12 +26,10 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         ClientReport report = new ClientReport();
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
-                Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
-                        null,
-                        null,
-                        Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));
+                        null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
@@ -41,12 +39,10 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         ClientReport report = new ClientReport();
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
-                Collections.singletonList(X509SignatureAlgorithm.DSA_WITH_SHA1));
+                Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
         SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
-                        null,
-                        null,
-                        Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));
+                        null, null, Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }

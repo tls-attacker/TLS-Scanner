@@ -169,6 +169,7 @@ public final class TlsClientScanner
         registerProbeForExecution(new AlpacaAfterProbe());
         registerProbeForExecution(new PaddingOracleIdentificationAfterProbe<>());
         registerProbeForExecution(new ExtensionProbe(parallelExecutor, config));
+        registerProbeForExecution(new SignatureAndHashAlgorithmProbe(parallelExecutor, config));
         // DTLS-specific
         registerProbeForExecution(new DtlsReorderingProbe(parallelExecutor, config));
         registerProbeForExecution(new DtlsFragmentationProbe(parallelExecutor, config));
