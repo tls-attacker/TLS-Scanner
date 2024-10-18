@@ -89,7 +89,6 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         boolean passFlag = false;
-        boolean uncertainFlag = false;
         boolean failedFlag = false;
         KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
         for (CertificateReport report : chain.getCertificateReportList()) {
@@ -182,7 +181,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         }
         if (failedFlag) {
             result.setAdherence(GuidelineAdherence.VIOLATED);
-        } else if (uncertainFlag || !passFlag) {
+        } else if (!passFlag) {
             result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         } else {
             result.setAdherence(GuidelineAdherence.ADHERED);
