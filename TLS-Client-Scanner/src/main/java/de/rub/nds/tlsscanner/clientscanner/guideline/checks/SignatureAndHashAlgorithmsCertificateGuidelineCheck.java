@@ -57,6 +57,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
+    // TODO: Check why it doesn't work
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
