@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -26,8 +27,8 @@ import de.rub.nds.tlsscanner.serverscanner.selector.DefaultConfigProfile;
 
 public class QuicTls12HandshakeProbe extends QuicServerProbe {
 
-    private boolean handshakeCompleted;
-    private ConnectionCloseFrame connectionCloseFrame;
+    private TestResults handshakeCompleted;
+    private ConnectionCloseFrame receivedConnectionCloseFrame;
 
     public QuicTls12HandshakeProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -41,28 +42,32 @@ public class QuicTls12HandshakeProbe extends QuicServerProbe {
     public void executeTest() {
         Config config =
                 configSelector.getConfigForProfile(
-                        ConfigSelector.DEFAULT_CONFIG,
-                        DefaultConfigProfile.HIGHLY_REDUCED_CIPHERSUITES);
-        config.setExpectHandshakeDoneQuicFrame(true);
+                        ConfigSelector.DEFAULT_CONFIG, DefaultConfigProfile.UNFILTERED);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS12);
+        config.setExpectHandshakeDoneQuicFrame(true);
+
         config.setSupportedVersions(ProtocolVersion.TLS12);
-        config.setDefaultLastRecordProtocolVersion(ProtocolVersion.TLS12);
+        config.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
 
         State state = new State(config);
         executeState(state);
-        this.handshakeCompleted = state.getWorkflowTrace().executedAsPlanned();
-        this.connectionCloseFrame =
-                state.getContext().getQuicContext().getReceivedConnectionCloseFrame();
+
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            handshakeCompleted = TestResults.TRUE;
+            receivedConnectionCloseFrame = null;
+        } else {
+            handshakeCompleted = TestResults.FALSE;
+            receivedConnectionCloseFrame =
+                    state.getContext().getQuicContext().getReceivedConnectionCloseFrame();
+        }
     }
 
     @Override
     protected void mergeData(ServerReport report) {
+        put(QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE, handshakeCompleted);
         put(
-                QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE,
-                handshakeCompleted ? TestResults.TRUE : TestResults.FALSE);
-        put(QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME, connectionCloseFrame);
+                QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
+                receivedConnectionCloseFrame);
     }
 
     @Override

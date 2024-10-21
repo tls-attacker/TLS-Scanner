@@ -40,7 +40,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
@@ -327,9 +326,8 @@ public class ServerReport extends TlsScanReport {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
     }
 
-    public synchronized List<QuicVersionProbe.Entry> getSupportedQuicVersions() {
-        ListResult<QuicVersionProbe.Entry> listResult =
-                getListResult(QuicAnalyzedProperty.VERSIONS, QuicVersionProbe.Entry.class);
+    public synchronized List<byte[]> getSupportedQuicVersions() {
+        ListResult<byte[]> listResult = getListResult(QuicAnalyzedProperty.VERSIONS, byte[].class);
         return listResult == null ? null : listResult.getList();
     }
 

@@ -98,6 +98,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAfterHandshakeProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAntiDosLimitProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicConnectionMigrationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicFragmentationProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicRetryPacketProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTls12HandshakeProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTransportParameterProbe;
@@ -123,7 +124,7 @@ public final class TlsServerScanner
     private final ConfigSelector configSelector;
     private final ParallelExecutor parallelExecutor;
     private final ServerScannerConfig config;
-    private boolean closeAfterFinishParallel;
+    private final boolean closeAfterFinishParallel;
 
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getExecutorConfig());
@@ -282,8 +283,8 @@ public final class TlsServerScanner
                 new QuicConnectionMigrationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicAfterHandshakeProbe(configSelector, parallelExecutor));
-        registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new QuicAntiDosLimitProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicFragmentationProbe(configSelector, parallelExecutor));
     }
 
     @Override

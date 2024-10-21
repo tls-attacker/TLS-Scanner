@@ -16,7 +16,7 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicPacketType;
 import de.rub.nds.tlsattacker.core.quic.packet.InitialPacket;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -25,8 +25,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TightReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -41,8 +41,8 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
 
     public static Integer RETRY_TOKEN_LENGTH_ERROR_VALUE = -1;
 
-    private TestResult hasRetryTokenRetransmissions = TestResults.COULD_NOT_TEST;
-    private TestResult checksRetryToken = TestResults.COULD_NOT_TEST;
+    private TestResult hasRetryTokenRetransmissions;
+    private TestResult checksRetryToken;
     private Integer retryTokenLength = RETRY_TOKEN_LENGTH_ERROR_VALUE;
 
     public QuicRetryPacketProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -62,13 +62,16 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
     private TestResult hasRetryPacketRetransmissions() {
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(false);
+
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
         trace.addTlsAction(new GenericReceiveAction());
+
         State state = new State(config, trace);
         executeState(state);
+
         int numberRetryPackets =
                 WorkflowTraceResultUtil.getAllReceivedQuicPacketsOfType(
                                 trace, QuicPacketType.RETRY_PACKET)
@@ -86,8 +89,11 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(false);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+
         State state = new State(config);
         executeState(state);
+
+        // Store length of the received token
         if (WorkflowTraceResultUtil.didReceiveQuicPacket(
                 state.getWorkflowTrace(), QuicPacketType.RETRY_PACKET)) {
             retryTokenLength = state.getContext().getQuicContext().getInitialPacketToken().length;
@@ -97,8 +103,10 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         } else {
             return TestResults.ERROR_DURING_TEST;
         }
+
         config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(false);
+
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -106,23 +114,21 @@ public class QuicRetryPacketProbe extends QuicServerProbe {
         byte[] token = new byte[retryTokenLength];
         Arrays.fill(token, (byte) 255);
         initialPacket.setToken(Modifiable.xor(token, 0));
-        SendAction sendAction = new SendAction(new ClientHelloMessage());
+        SendAction sendAction = new SendAction(new ClientHelloMessage(config));
         sendAction.setConfiguredQuicPackets(initialPacket);
         trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        trace.addTlsAction(new TightReceiveAction(new ServerHelloMessage()));
+
         state = new State(config, trace);
         executeState(state);
-        return serverHelloReceived(state, false);
-    }
 
-    private TestResult serverHelloReceived(State state, boolean checkForTrue) {
         if (WorkflowTraceResultUtil.didReceiveQuicPacket(
                 state.getWorkflowTrace(), QuicPacketType.RETRY_PACKET)) {
             if (WorkflowTraceResultUtil.didReceiveMessage(
                     state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
-                return checkForTrue ? TestResults.TRUE : TestResults.FALSE;
+                return TestResults.FALSE;
             } else {
-                return checkForTrue ? TestResults.FALSE : TestResults.TRUE;
+                return TestResults.TRUE;
             }
         } else {
             return TestResults.ERROR_DURING_TEST;

@@ -8,24 +8,14 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.quic.frame.CryptoFrame;
-import de.rub.nds.tlsattacker.core.quic.frame.HandshakeDoneFrame;
-import de.rub.nds.tlsattacker.core.quic.frame.StreamFrame;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveQuicTillAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -34,203 +24,41 @@ import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 
 public class QuicFragmentationProbe extends QuicServerProbe {
 
     private TestResult processesSplittedClientHello = TestResults.COULD_NOT_TEST;
-    private TestResult overwritesReceivedCryptoFrames = TestResults.COULD_NOT_TEST;
-    private TestResult overwritesReceivedStreamFrames = TestResults.COULD_NOT_TEST;
 
     public QuicFragmentationProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.FRAGMENTATION, configSelector);
-        register(
-                QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO,
-                QuicAnalyzedProperty.OVERWRITES_RECEIVED_CRYPTO_FRAMES,
-                QuicAnalyzedProperty.OVERWRITES_RECEIVED_STREAM_FRAMES);
+        register(QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO);
     }
 
     @Override
     public void executeTest() {
         processesSplittedClientHello = processesSplittedClientHello();
-        overwritesReceivedCryptoFrames = overwritesReceivedCryptoFrames();
-        overwritesReceivedStreamFrames = overwritesReceivedStreamFramesTestCase2();
     }
 
-    /** ClientHello message in two CRYPTO frames. */
+    /** First ClientHello message in two CRYPTO frames and two Initial packets. */
     private TestResult processesSplittedClientHello() {
         Config config = configSelector.getTls13BaseConfig();
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        SendAction sendAction = new SendAction();
-        sendAction.setConfiguredMessages(new ClientHelloMessage(config));
-        sendAction.setConfiguredQuicFrames(new CryptoFrame(50), new CryptoFrame(50));
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-
-        State state = new State(config, trace);
-        executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    /**
-     * ClientHello message in two CRYPTO frames. The second frame overlaps the last byte of the
-     * first frame. Overwrites the first cipher suite from TLS_NULL_WITH_NULL_NULL to
-     * TLS_AES_128_GCM_SHA256. (Our transcript contains TLS_AES_128_GCM_SHA256.)
-     */
-    private TestResult overwritesReceivedCryptoFrames() {
-        Config config = configSelector.getTls13BaseConfig();
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        SendAction sendAction = new SendAction();
-        sendAction.setConfiguredMessages(new ClientHelloMessage(config));
-        CryptoFrame frame1 = new CryptoFrame(43);
-        frame1.setCryptoData(Modifiable.xor(new byte[] {(byte) 0x13, (byte) 0x01}, 41));
-        CryptoFrame frame2 = new CryptoFrame(400);
-        frame2.setOffset(Modifiable.sub(Long.valueOf("2")));
-        frame2.setLength(Modifiable.add(Long.valueOf("2")));
-        frame2.setCryptoData(Modifiable.insert(new byte[] {(byte) 0x13, (byte) 0x01}, 0));
-        sendAction.setConfiguredQuicFrames(frame1, frame2);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new FinishedMessage()));
-        trace.addTlsAction(new ReceiveQuicTillAction(new HandshakeDoneFrame()));
-
-        State state = new State(config, trace);
-        executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    /**
-     * ClientHello message in two CRYPTO frames. The second frame overlaps the last byte of the
-     * first frame. Overwrites the first cipher suite from TLS_AES_128_GCM_SHA256 to
-     * TLS_NULL_WITH_NULL_NULL and enforce TLS_AES_128_GCM_SHA256 as the negotiated cipher suite.
-     * (Our transcript contains TLS_AES_128_GCM_SHA256.)
-     */
-    private TestResult overwritesReceivedCryptoFramesTestCase2() {
-        Config config = configSelector.getTls13BaseConfig();
-        config.setDefaultSelectedCipherSuite(CipherSuite.TLS_AES_128_GCM_SHA256);
-        config.setEnforceSettings(true);
 
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        SendAction sendAction = new SendAction();
-        sendAction.setConfiguredMessages(new ClientHelloMessage(config));
-        CryptoFrame frame1 = new CryptoFrame(43);
-        CryptoFrame frame2 = new CryptoFrame(400);
-        frame2.setOffset(Modifiable.sub(Long.valueOf("2")));
-        frame2.setLength(Modifiable.add(Long.valueOf("2")));
-        frame2.setCryptoData(Modifiable.insert(new byte[] {(byte) 0x00, (byte) 0x00}, 0));
-        sendAction.setConfiguredQuicFrames(frame1, frame2);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new FinishedMessage()));
-        trace.addTlsAction(new ReceiveQuicTillAction(new HandshakeDoneFrame()));
+                        .createDynamicHelloWorkflow(config.getDefaultClientConnection());
+        SendAction sendAction = (SendAction) trace.getFirstSendingAction();
+        sendAction.setConfiguredQuicFrames(new CryptoFrame(250), new CryptoFrame(250));
 
         State state = new State(config, trace);
         executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
 
-    /**
-     * ClientHello message in two CRYPTO frames. The second frame overlaps the last byte of the
-     * first frame. Overwrites the first cipher suite from TLS_AES_128_GCM_SHA256 to
-     * TLS_NULL_WITH_NULL_NULL and enforce TLS_AES_256_GCM_SHA384 as the negotiated cipher suite.
-     * (Our transcript contains TLS_AES_128_GCM_SHA256.)
-     */
-    private TestResult overwritesReceivedCryptoFramesTestCase3() {
-        Config config = configSelector.getTls13BaseConfig();
-        config.setDefaultSelectedCipherSuite(CipherSuite.TLS_AES_256_GCM_SHA384);
-        config.setEnforceSettings(true);
-
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        SendAction sendAction = new SendAction();
-        sendAction.setConfiguredMessages(new ClientHelloMessage(config));
-        CryptoFrame frame1 = new CryptoFrame(43);
-        CryptoFrame frame2 = new CryptoFrame(400);
-        frame2.setOffset(Modifiable.sub(Long.valueOf("2")));
-        frame2.setLength(Modifiable.add(Long.valueOf("2")));
-        frame2.setCryptoData(Modifiable.insert(new byte[] {(byte) 0x00, (byte) 0x00}, 0));
-        sendAction.setConfiguredQuicFrames(frame1, frame2);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
-        trace.addTlsAction(new SendAction(new FinishedMessage()));
-        trace.addTlsAction(new ReceiveQuicTillAction(new HandshakeDoneFrame()));
-
-        State state = new State(config, trace);
-        executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    /** HTTP SETTINGS message in two STREAM frames. No overlapping. */
-    private TestResult overwritesReceivedStreamFramesTestCase1() {
-        Config config = configSelector.getTls13BaseConfig();
-        config.setExpectHandshakeDoneQuicFrame(false);
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createDynamicHandshakeWorkflow(config.getDefaultClientConnection());
-        trace.addTlsAction(new GenericReceiveAction());
-        SendAction sendAction = new SendAction();
-        StreamFrame frame1 =
-                new StreamFrame(ArrayConverter.hexStringToByteArray("0004100150000710"), 2);
-        frame1.setOffset(0);
-        frame1.setFinalFrameConfig(true);
-        StreamFrame frame2 =
-                new StreamFrame(ArrayConverter.hexStringToByteArray("080121013301ab60374201"), 2);
-        frame2.setOffset(8);
-        frame2.setFinalFrameConfig(true);
-        sendAction.setConfiguredQuicFrames(frame1, frame2);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new GenericReceiveAction());
-
-        State state = new State(config, trace);
-        executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
-    }
-
-    /**
-     * HTTP SETTINGS message in two STREAM frames. The second frame overlaps the last byte of the
-     * first frame.
-     */
-    private TestResult overwritesReceivedStreamFramesTestCase2() {
-        Configurator.setAllLevels("de.rub.nds", Level.INFO);
-        Config config = configSelector.getTls13BaseConfig();
-        config.setWriteKeylogFile(true);
-        config.setExpectHandshakeDoneQuicFrame(false);
-        WorkflowTrace trace =
-                new WorkflowConfigurationFactory(config)
-                        .createDynamicHandshakeWorkflow(config.getDefaultClientConnection());
-        trace.addTlsAction(new GenericReceiveAction());
-        SendAction sendAction = new SendAction();
-        StreamFrame frame1 =
-                new StreamFrame(ArrayConverter.hexStringToByteArray("0004100150000710"), 2);
-        frame1.setOffset(0);
-        frame1.setFinalFrameConfig(false);
-        StreamFrame frame2 =
-                new StreamFrame(ArrayConverter.hexStringToByteArray("14080121013301ab60374201"), 2);
-        frame2.setOffset(7);
-        frame2.setFinalFrameConfig(true);
-        sendAction.setConfiguredQuicFrames(frame1, frame2);
-        trace.addTlsAction(sendAction);
-        trace.addTlsAction(new GenericReceiveAction());
-
-        State state = new State(config, trace);
-        executeState(state);
         return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         put(QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO, processesSplittedClientHello);
-        put(QuicAnalyzedProperty.OVERWRITES_RECEIVED_CRYPTO_FRAMES, overwritesReceivedCryptoFrames);
-        put(QuicAnalyzedProperty.OVERWRITES_RECEIVED_STREAM_FRAMES, overwritesReceivedStreamFrames);
     }
 
     @Override

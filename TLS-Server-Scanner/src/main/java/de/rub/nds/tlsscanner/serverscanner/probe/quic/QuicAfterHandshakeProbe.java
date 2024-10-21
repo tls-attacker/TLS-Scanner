@@ -16,8 +16,10 @@ import de.rub.nds.tlsattacker.core.quic.frame.NewTokenFrame;
 import de.rub.nds.tlsattacker.core.quic.frame.QuicFrame;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
@@ -28,65 +30,79 @@ import java.util.List;
 
 public class QuicAfterHandshakeProbe extends QuicServerProbe {
 
-    private TestResults isNewTokenSend = TestResults.FALSE;
-    private Integer numberOfNewTokens;
-    private Long newTokenLength;
-    private TestResults isNewConnectionIdSend = TestResults.FALSE;
-    private Integer numberOfNewConnectionIds;
+    private TestResults isNewTokenFrameSend;
+    private Integer numberOfNewTokenFrames;
+    private Long tokenLength;
+    private TestResults isNewConnectionIdFramesSend;
+    private Integer numberOfNewConnectionIdsFrames;
 
     public QuicAfterHandshakeProbe(
             ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.AFTER_HANDSHAKE, configSelector);
         register(
                 QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND,
-                QuicAnalyzedProperty.NUMBER_OF_NEW_TOKENS,
+                QuicAnalyzedProperty.NUMBER_OF_NEW_TOKEN_FRAMES,
                 QuicAnalyzedProperty.NEW_TOKEN_LENGTH,
                 QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND,
-                QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_IDS);
+                QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_ID_FRAMES);
     }
 
     @Override
     public void executeTest() {
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(true);
-        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
 
-        State state = new State(config);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createDynamicHandshakeWorkflow(config.getDefaultClientConnection());
+        trace.addTlsAction(new GenericReceiveAction());
+
+        State state = new State(config, trace);
         executeState(state);
+
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            List<QuicFrame> frames =
-                    WorkflowTraceResultUtil.getAllReceivedQuicFrames(state.getWorkflowTrace());
+            // NEW TOKEN analysis
             if (WorkflowTraceResultUtil.didReceiveQuicFrame(
                     state.getWorkflowTrace(), QuicFrameType.NEW_TOKEN_FRAME)) {
                 List<QuicFrame> newTokens =
                         WorkflowTraceResultUtil.getAllReceivedQuicFramesOfType(
                                 state.getWorkflowTrace(), QuicFrameType.NEW_TOKEN_FRAME);
                 if (newTokens.size() > 0) {
-                    isNewTokenSend = TestResults.TRUE;
-                    numberOfNewTokens = newTokens.size();
-                    newTokenLength = ((NewTokenFrame) newTokens.get(0)).getTokenLength().getValue();
+                    isNewTokenFrameSend = TestResults.TRUE;
+                    numberOfNewTokenFrames = newTokens.size();
+                    tokenLength = ((NewTokenFrame) newTokens.get(0)).getTokenLength().getValue();
                 }
+            } else {
+                isNewTokenFrameSend = TestResults.FALSE;
             }
+            // NEW CONNECTION ID analysis
             if (WorkflowTraceResultUtil.didReceiveQuicFrame(
                     state.getWorkflowTrace(), QuicFrameType.NEW_CONNECTION_ID_FRAME)) {
                 List<QuicFrame> newConnectionIds =
                         WorkflowTraceResultUtil.getAllReceivedQuicFramesOfType(
                                 state.getWorkflowTrace(), QuicFrameType.NEW_CONNECTION_ID_FRAME);
                 if (newConnectionIds.size() > 0) {
-                    isNewConnectionIdSend = TestResults.TRUE;
-                    numberOfNewConnectionIds = newConnectionIds.size();
+                    isNewConnectionIdFramesSend = TestResults.TRUE;
+                    numberOfNewConnectionIdsFrames = newConnectionIds.size();
                 }
+            } else {
+                isNewConnectionIdFramesSend = TestResults.FALSE;
             }
+        } else {
+            isNewTokenFrameSend = TestResults.ERROR_DURING_TEST;
+            isNewConnectionIdFramesSend = TestResults.ERROR_DURING_TEST;
         }
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        put(QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND, isNewTokenSend);
-        put(QuicAnalyzedProperty.NUMBER_OF_NEW_TOKENS, numberOfNewTokens);
-        put(QuicAnalyzedProperty.NEW_TOKEN_LENGTH, newTokenLength);
-        put(QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND, isNewConnectionIdSend);
-        put(QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_IDS, numberOfNewConnectionIds);
+        put(QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND, isNewTokenFrameSend);
+        put(QuicAnalyzedProperty.NUMBER_OF_NEW_TOKEN_FRAMES, numberOfNewTokenFrames);
+        put(QuicAnalyzedProperty.NEW_TOKEN_LENGTH, tokenLength);
+        put(QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND, isNewConnectionIdFramesSend);
+        put(
+                QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_ID_FRAMES,
+                numberOfNewConnectionIdsFrames);
     }
 
     @Override

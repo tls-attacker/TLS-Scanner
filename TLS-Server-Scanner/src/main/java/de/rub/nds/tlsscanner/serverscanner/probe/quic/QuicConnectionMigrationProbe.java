@@ -49,25 +49,29 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
     public void executeTest() {
         // Port Connection Migration
         Config config = configSelector.getTls13BaseConfig();
-        config.setExpectHandshakeDoneQuicFrame(true);
         config.setWorkflowTraceType(WorkflowTraceType.QUIC_PORT_CONNECTION_MIGRATION);
+        config.setExpectHandshakeDoneQuicFrame(true);
+
         State state = new State(config);
         executeState(state);
         portConnectionMigrationSuccessful = state.getWorkflowTrace().executedAsPlanned();
         portConnectionMigrationWithPathChallange =
                 WorkflowTraceResultUtil.didReceiveQuicFrame(
                         state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
+
         // IPV6 Handshake
         if (config.getDefaultClientConnection().getIpv6() != null) {
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             ipv6Address = config.getDefaultClientConnection().getIpv6();
-            config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
             OutboundConnection ipv6Connection =
                     new OutboundConnection(config.getDefaultClientConnection());
             ipv6Connection.setUseIpv6(true);
             config.setDefaultClientConnection(ipv6Connection);
+
             state = new State(config);
             executeState(state);
             ipv6HandshakeSuccessful = state.getWorkflowTrace().executedAsPlanned();
+
             // IPV4 To IPV6 Connection Migration
             if (ipv6HandshakeSuccessful) {
                 config.setWorkflowTraceType(WorkflowTraceType.QUIC_IPV6_CONNECTION_MIGRATION);
@@ -77,7 +81,6 @@ public class QuicConnectionMigrationProbe extends QuicServerProbe {
                 ipv6ConnectionMigrationWithPathChallange =
                         WorkflowTraceResultUtil.didReceiveQuicFrame(
                                 state.getWorkflowTrace(), QuicFrameType.PATH_CHALLENGE_FRAME);
-
             } else {
                 ipv6ConnectionMigrationSuccessful = false;
             }

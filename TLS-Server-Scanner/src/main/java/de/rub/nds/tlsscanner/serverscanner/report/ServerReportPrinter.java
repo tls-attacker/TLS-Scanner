@@ -47,6 +47,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameterEntry;
+import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
@@ -72,7 +73,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
@@ -317,94 +317,103 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     private void appendQuicSpecificResults(StringBuilder builder) {
-        appendQuicSupportedVersions(builder);
-        appendQuicTransportParameters(builder);
-        appendQuicTlsHandshakeProbe(builder);
-        appendQuicConnectionMigrationProbe(builder);
-        appendQuicRetryPacketProbe(builder);
-        appendQuicAntiDosLimitProbe(builder);
-        appendQuicAfterHandshakeProbe(builder);
-        appendQuicFragmentationProbe(builder);
+        appendQuicSupportedVersionsResults(builder);
+        appendQuicTransportParametersResults(builder);
+        appendQuicAfterHandshakeResults(builder);
+        appendQuicRetryPacketResults(builder);
+        appendQuicAntiDosLimitResults(builder);
+        appendQuicFragmentationResults(builder);
+        appendQuicConnectionMigrationResults(builder);
+        appendQuicTls12HandshakeResults(builder);
     }
 
-    private void appendQuicFragmentationProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC Fragmentation Probe");
+    private void appendQuicFragmentationResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Fragmentation Probe Results");
         prettyAppend(
                 builder,
                 "Server accepts splitted Client Hello messages ",
                 QuicAnalyzedProperty.PROCESSES_SPLITTED_CLIENT_HELLO);
-        prettyAppend(
-                builder,
-                "Server overwrites reiceived crypto frames ",
-                QuicAnalyzedProperty.OVERWRITES_RECEIVED_CRYPTO_FRAMES);
-        prettyAppend(
-                builder,
-                "Server overwrites reiceived stream frames ",
-                QuicAnalyzedProperty.OVERWRITES_RECEIVED_STREAM_FRAMES);
     }
 
-    private void appendQuicAntiDosLimitProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC Anti Dos Limit Probe");
-        prettyAppend(
-                builder, "Server holds anti DoS limit", QuicAnalyzedProperty.HOLDS_ANTI_DOS_LIMIT);
+    private void appendQuicAntiDosLimitResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Anti Dos Limit Probe Results");
+        TestResult holdsAntiDosLimit = report.getResult(QuicAnalyzedProperty.HOLDS_ANTI_DOS_LIMIT);
+        if (holdsAntiDosLimit == TestResults.TRUE) {
+            prettyAppend(builder, "Server holds anti DoS limit", true, AnsiColor.GREEN);
+        } else if (holdsAntiDosLimit == TestResults.FALSE) {
+            prettyAppend(builder, "Server holds anti DoS limit", false, AnsiColor.YELLOW);
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
+        }
     }
 
-    private void appendQuicAfterHandshakeProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC After Handshake Probe");
+    private void appendQuicAfterHandshakeResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC After Handshake Probe Results");
         prettyAppend(builder, "QUIC NEW_TOKEN Frame");
-        if (report.getResult(QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND) == TestResults.TRUE) {
-            prettyAppend(builder, "Server sends NEW_TOKEN frame", true);
+        TestResult isNewTokenFrameSend =
+                report.getResult(QuicAnalyzedProperty.IS_NEW_TOKEN_FRAME_SEND);
+        if (isNewTokenFrameSend == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends frame", true);
             prettyAppend(
                     builder,
                     "Number of Tokens",
                     ""
-                            + report.getIntegerResult(QuicAnalyzedProperty.NUMBER_OF_NEW_TOKENS)
+                            + report.getIntegerResult(
+                                            QuicAnalyzedProperty.NUMBER_OF_NEW_TOKEN_FRAMES)
                                     .getValue());
             prettyAppend(
                     builder,
                     "Token Length",
                     "" + report.getLongResult(QuicAnalyzedProperty.NEW_TOKEN_LENGTH).getValue());
-        } else {
+        } else if (isNewTokenFrameSend == TestResults.FALSE) {
             prettyAppend(builder, "Server sends NEW_TOKEN frame", false);
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
         }
         prettyAppend(builder, "\nQUIC NEW_CONNECTION_ID Frame");
-        if (report.getResult(QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND)
-                == TestResults.TRUE) {
-            prettyAppend(builder, "Server sends NEW_CONNECTION_ID frame", true);
+        TestResult isNewConnectionIdFramesSend =
+                report.getResult(QuicAnalyzedProperty.IS_NEW_CONNECTION_ID_FRAME_SEND);
+        if (isNewConnectionIdFramesSend == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends frame", true);
             prettyAppend(
                     builder,
-                    "Number of IDs",
+                    "Number of Conenction IDs",
                     ""
                             + report.getIntegerResult(
-                                            QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_IDS)
+                                            QuicAnalyzedProperty.NUMBER_OF_NEW_CONNECTION_ID_FRAMES)
                                     .getValue());
-        } else {
+        } else if (isNewConnectionIdFramesSend == TestResults.FALSE) {
             prettyAppend(builder, "Server sends NEW_CONNECTION_ID frame", false);
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
         }
     }
 
-    private void appendQuicRetryPacketProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC Retry Packet Probe");
+    private void appendQuicRetryPacketResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Retry Packet Probe Results");
         if (report.getResult(QuicAnalyzedProperty.RETRY_REQUIRED) == TestResults.TRUE) {
-            prettyAppend(builder, "Server sends RETRY packet", true);
+            prettyAppend(builder, "Server sends RETRY packet", true, AnsiColor.GREEN);
             prettyAppend(
                     builder,
                     "Token Length",
-                    ""
-                            + report.getIntegerResult(QuicAnalyzedProperty.RETRY_TOKEN_LENGTH)
-                                    .getValue());
-            prettyAppend(builder, "Checks Token", QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS);
+                    report.getIntegerResult(QuicAnalyzedProperty.RETRY_TOKEN_LENGTH)
+                            .getValue()
+                            .toString());
+            prettyAppend(
+                    builder,
+                    "Server checks received token",
+                    QuicAnalyzedProperty.HAS_RETRY_TOKEN_CHECKS);
             prettyAppend(
                     builder,
                     "Token Retransmissions",
                     QuicAnalyzedProperty.HAS_RETRY_TOKEN_RETRANSMISSIONS);
         } else {
-            prettyAppend(builder, "Server sends RETRY frame", false);
+            prettyAppend(builder, "Server sends RETRY packet", false, AnsiColor.YELLOW);
         }
     }
 
-    private void appendQuicConnectionMigrationProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC Connection Migration Probe");
+    private void appendQuicConnectionMigrationResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Connection Migration Probe Results");
         prettyAppend(
                 builder,
                 "Port Connection Migration Successful",
@@ -418,43 +427,64 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 QuicAnalyzedProperty.IPV6_CONNECTION_MIGRATION_SUCCESSFUL);
     }
 
-    private void appendQuicTlsHandshakeProbe(StringBuilder builder) {
-        prettyAppendHeading(builder, "QUIC TLS 1.2 Handshake Probe");
-        prettyAppend(builder, "Handshake Successful", QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE);
-        if (report.getResult(QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE) == TestResults.FALSE
-                && report.getQuicTls12HandshakeConnectionCloseFrame() != null) {
-            prettyAppend(builder, "Server closed connection with:");
-            prettyAppend(builder, report.getQuicTls12HandshakeConnectionCloseFrame().toString());
+    private void appendQuicTls12HandshakeResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC TLS 1.2 Handshake Probe Results");
+        TestResult tls12HandshakeDone = report.getResult(QuicAnalyzedProperty.TLS12_HANDSHAKE_DONE);
+        if (tls12HandshakeDone == TestResults.TRUE) {
+            prettyAppend(builder, "Handshake Successful", true, AnsiColor.RED);
+        } else if (tls12HandshakeDone == TestResults.FALSE) {
+            prettyAppend(builder, "Handshake Successful", false, AnsiColor.GREEN);
+            if (report.getQuicTls12HandshakeConnectionCloseFrame() != null) {
+                prettyAppend(builder, "Server closed connection with:");
+                prettyAppend(
+                        builder, report.getQuicTls12HandshakeConnectionCloseFrame().toString());
+            }
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
         }
     }
 
-    private void appendQuicTransportParameters(StringBuilder builder) {
+    private void appendQuicTransportParametersResults(StringBuilder builder) {
         prettyAppendHeading(builder, "QUIC Transport Parameters");
-        if (report.getQuicTransportParameters() != null) {
+        TestResult sendsTransportParameters =
+                report.getResult(QuicAnalyzedProperty.SENDS_TRANSPORT_PARAMETERS);
+        if (sendsTransportParameters == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends extension", true, AnsiColor.GREEN);
+            prettyAppend(builder, "Extension contains:");
             for (QuicTransportParameterEntry quicTransportParameter :
                     report.getQuicTransportParameters().toListOfEntries()) {
                 prettyAppend(
                         builder,
-                        quicTransportParameter.getEntryType().name(),
+                        " " + quicTransportParameter.getEntryType().name(),
                         quicTransportParameter.entryValueToString());
             }
+        } else if (sendsTransportParameters == TestResults.FALSE) {
+            prettyAppend(builder, "Server sends extension", false, AnsiColor.YELLOW);
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
         }
     }
 
-    private void appendQuicSupportedVersions(StringBuilder builder) {
-        prettyAppendHeading(builder, "Supported QUIC Versions");
-        if (report.getSupportedQuicVersions() != null) {
-            for (QuicVersionProbe.Entry version : report.getSupportedQuicVersions()) {
+    private void appendQuicSupportedVersionsResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "QUIC Supported Versions");
+        TestResult sendsTransportParameters =
+                report.getResult(QuicAnalyzedProperty.SENDS_VERSIONS_NEGOTIATION_PACKET);
+        if (sendsTransportParameters == TestResults.TRUE) {
+            prettyAppend(builder, "Server sends VN Packet", true, AnsiColor.GREEN);
+            prettyAppend(builder, "Supported Versions:");
+            for (byte[] version : report.getSupportedQuicVersions()) {
                 prettyAppend(
                         builder,
-                        version.getVersionName()
-                                + "(0x"
-                                + ArrayConverter.bytesToHexString(
-                                                version.getVersionBytes(), false, false)
-                                        .replace(" ", "")
-                                        .toLowerCase()
+                        " "
+                                + QuicVersion.getFromVersionBytes(version)
+                                + "("
+                                + ArrayConverter.bytesToHexString(version)
                                 + ")");
             }
+        } else if (sendsTransportParameters == TestResults.FALSE) {
+            prettyAppend(builder, "Server sends VN Packet", false, AnsiColor.YELLOW);
+        } else {
+            prettyAppend(builder, "testing failed", AnsiColor.RED);
         }
     }
 

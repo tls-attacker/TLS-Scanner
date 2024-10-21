@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 
 public class QuicAntiDosLimitProbe extends QuicServerProbe {
 
-    private TestResult holdsAntiDosLimit = TestResults.COULD_NOT_TEST;
+    private TestResult holdsAntiDosLimit;
 
     public QuicAntiDosLimitProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, QuicProbeType.ANTI_DOS_LIMIT, configSelector);
@@ -41,26 +41,33 @@ public class QuicAntiDosLimitProbe extends QuicServerProbe {
     public void executeTest() {
         Config config = configSelector.getTls13BaseConfig();
         config.setExpectHandshakeDoneQuicFrame(false);
+
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         GenericReceiveAction receiveAction = new GenericReceiveAction();
         trace.addTlsAction(receiveAction);
+
         State state = new State(config, trace);
         executeState(state);
 
-        if (WorkflowTraceResultUtil.didReceiveQuicPacket(trace, QuicPacketType.RETRY_PACKET)) {
-            holdsAntiDosLimit = TestResults.TRUE;
-            return;
+        if (WorkflowTraceResultUtil.getAllReceivedQuicPackets(trace).size() > 0) {
+            if (WorkflowTraceResultUtil.didReceiveQuicPacket(trace, QuicPacketType.RETRY_PACKET)) {
+                holdsAntiDosLimit = TestResults.TRUE;
+                return;
+            }
+            int receivedBytes = 0;
+            for (QuicPacket packet : WorkflowTraceResultUtil.getAllReceivedQuicPackets(trace)) {
+                receivedBytes += packet.getPacketLength().getValue();
+            }
+            int sentBytes = 0;
+            for (QuicPacket packet : WorkflowTraceResultUtil.getAllSentQuicPackets(trace)) {
+                sentBytes += packet.getPacketLength().getValue();
+            }
+            holdsAntiDosLimit =
+                    receivedBytes <= sentBytes * 3 ? TestResults.TRUE : TestResults.FALSE;
+        } else {
+            holdsAntiDosLimit = TestResults.ERROR_DURING_TEST;
         }
-        int receivedBytes = 0;
-        for (QuicPacket packet : WorkflowTraceResultUtil.getAllReceivedQuicPackets(trace)) {
-            receivedBytes += packet.getPacketLength().getValue();
-        }
-        int sentBytes = 0;
-        for (QuicPacket packet : WorkflowTraceResultUtil.getAllSentQuicPackets(trace)) {
-            sentBytes += packet.getPacketLength().getValue();
-        }
-        holdsAntiDosLimit = receivedBytes <= sentBytes * 3 ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
