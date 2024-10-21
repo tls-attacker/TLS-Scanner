@@ -4,12 +4,12 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>4.1.2</version>
+        <version>4.1.9</version>
     </parent>
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
@@ -48,7 +48,7 @@
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v6.1.1</tag>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
     </scm>
 
