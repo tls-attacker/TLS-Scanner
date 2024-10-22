@@ -8,15 +8,22 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.quic;
 
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicPacketType;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
+import de.rub.nds.tlsattacker.core.quic.packet.InitialPacket;
+import de.rub.nds.tlsattacker.core.quic.packet.VersionNegotiationPacket;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
@@ -40,10 +47,18 @@ public class QuicVersionProbe extends QuicServerProbe {
     @Override
     public void executeTest() {
         Config config = configSelector.getTls13BaseConfig();
-        config.setWorkflowTraceType(WorkflowTraceType.QUIC_VERSION_NEGOTIATION);
-        config.setQuicVersion(QuicVersion.NEGOTIATION_VERSION);
 
-        State state = new State(config);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        SendAction sendAction = new SendAction(new ClientHelloMessage());
+        InitialPacket packet = new InitialPacket();
+        packet.setQuicVersion(Modifiable.explicit(QuicVersion.NEGOTIATION_VERSION.getByteValue()));
+        sendAction.setConfiguredQuicPackets(packet);
+        trace.addTlsAction(sendAction);
+        trace.addTlsAction(new ReceiveAction(new VersionNegotiationPacket()));
+
+        State state = new State(config, trace);
         executeState(state);
 
         if (WorkflowTraceResultUtil.didReceiveQuicPacket(
