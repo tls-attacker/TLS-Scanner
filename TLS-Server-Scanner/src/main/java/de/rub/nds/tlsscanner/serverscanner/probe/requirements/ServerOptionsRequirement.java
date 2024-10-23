@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
@@ -19,7 +20,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 public class ServerOptionsRequirement
         extends OptionsRequirement<ServerReport, ServerScannerConfig> {
 
-    public ServerOptionsRequirement(ServerScannerConfig scannerConfig, TlsProbeType probeType) {
+    public ServerOptionsRequirement(ServerScannerConfig scannerConfig, ProbeType probeType) {
         super(scannerConfig, probeType);
     }
 
@@ -28,16 +29,19 @@ public class ServerOptionsRequirement
         if (scannerConfig == null) {
             return false;
         }
-        switch (probeType) {
-            case HTTP_HEADER:
-            case HTTP_FALSE_START:
-                return scannerConfig.getApplicationProtocol() == ApplicationProtocol.HTTP
-                        || scannerConfig.getApplicationProtocol() == ApplicationProtocol.UNKNOWN;
-            case DTLS_IP_ADDRESS_IN_COOKIE:
-                return scannerConfig.getProxyDelegate().getExtractedControlProxyIp() != null
-                        && scannerConfig.getProxyDelegate().getExtractedControlProxyPort() != -1
-                        && scannerConfig.getProxyDelegate().getExtractedDataProxyIp() != null
-                        && scannerConfig.getProxyDelegate().getExtractedDataProxyPort() != -1;
+        if (probeType instanceof TlsProbeType) {
+            switch ((TlsProbeType) probeType) {
+                case HTTP_HEADER:
+                case HTTP_FALSE_START:
+                    return scannerConfig.getApplicationProtocol() == ApplicationProtocol.HTTP
+                            || scannerConfig.getApplicationProtocol()
+                                    == ApplicationProtocol.UNKNOWN;
+                case DTLS_IP_ADDRESS_IN_COOKIE:
+                    return scannerConfig.getProxyDelegate().getExtractedControlProxyIp() != null
+                            && scannerConfig.getProxyDelegate().getExtractedControlProxyPort() != -1
+                            && scannerConfig.getProxyDelegate().getExtractedDataProxyIp() != null
+                            && scannerConfig.getProxyDelegate().getExtractedDataProxyPort() != -1;
+            }
         }
         throw new IllegalArgumentException(
                 String.format("Invalid probe (%s) set for ServerOptionsRequirement", probeType));

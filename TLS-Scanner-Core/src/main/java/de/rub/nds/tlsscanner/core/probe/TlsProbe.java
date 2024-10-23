@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.probe;
 
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +23,7 @@ public abstract class TlsProbe<ReportT extends TlsScanReport> extends ScannerPro
 
     private final ParallelExecutor parallelExecutor;
 
-    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type) {
+    protected TlsProbe(ParallelExecutor parallelExecutor, ProbeType type) {
         super(type);
         this.parallelExecutor = parallelExecutor;
     }
@@ -38,8 +38,8 @@ public abstract class TlsProbe<ReportT extends TlsScanReport> extends ScannerPro
     }
 
     @Override
-    public TlsProbeType getType() {
-        return (TlsProbeType) super.getType();
+    public ProbeType getType() {
+        return super.getType();
     }
 
     public ParallelExecutor getParallelExecutor() {
