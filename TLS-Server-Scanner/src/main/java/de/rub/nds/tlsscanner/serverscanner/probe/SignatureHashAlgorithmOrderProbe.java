@@ -70,7 +70,7 @@ public class SignatureHashAlgorithmOrderProbe extends TlsServerProbe {
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        return state.getTlsContext().getSelectedSignatureAndHashAlgorithm();
+        return state.getTlsContext().getServerSelectedSignatureAndHashAlgorithm();
     }
 
     @Override
