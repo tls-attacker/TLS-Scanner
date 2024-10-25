@@ -58,21 +58,11 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Cli
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
-        List<SignatureAndHashAlgorithm> algorithms;
-        if (tls13) {
-            algorithms =
-                    report.getListResult(
-                                    TlsAnalyzedProperty
-                                            .SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
-                                    SignatureAndHashAlgorithm.class)
-                            .getList();
-        } else {
-            algorithms =
-                    report.getListResult(
-                                    TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
-                                    SignatureAndHashAlgorithm.class)
-                            .getList();
-        }
+        List<SignatureAndHashAlgorithm> algorithms =
+                report.getListResult(
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                SignatureAndHashAlgorithm.class)
+                        .getList();
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, null);
