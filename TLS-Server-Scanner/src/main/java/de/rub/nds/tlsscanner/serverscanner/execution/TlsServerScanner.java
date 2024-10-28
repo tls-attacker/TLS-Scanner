@@ -26,6 +26,7 @@ import de.rub.nds.tlsscanner.core.afterprobe.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.CbcIvExtractor;
 import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
@@ -94,6 +95,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAfterHandshakeProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAntiDosLimitProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicConnectionMigrationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicRetryPacketProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTls12HandshakeProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicTransportParameterProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -115,7 +124,7 @@ public final class TlsServerScanner
     private final ConfigSelector configSelector;
     private final ParallelExecutor parallelExecutor;
     private final ServerScannerConfig config;
-    private boolean closeAfterFinishParallel;
+    private final boolean closeAfterFinishParallel;
 
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getExecutorConfig());
@@ -265,6 +274,17 @@ public final class TlsServerScanner
         registerProbeForExecution(
                 new SessionTicketCollectingProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new SessionTicketAfterProbe(configSelector));
+        // QUIC-specific
+        registerProbeForExecution(new QuicVersionProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new QuicTransportParameterProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicTls12HandshakeProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(
+                new QuicConnectionMigrationProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicRetryPacketProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicAfterHandshakeProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicAntiDosLimitProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new QuicFragmentationProbe(configSelector, parallelExecutor));
     }
 
     @Override
@@ -309,6 +329,7 @@ public final class TlsServerScanner
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
         report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
+        report.putResult(QuicAnalyzedProperty.RETRY_REQUIRED, configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }
 
@@ -361,6 +382,8 @@ public final class TlsServerScanner
     private ProtocolType getProtocolType() {
         if (config.getDtlsDelegate().isDTLS()) {
             return ProtocolType.DTLS;
+        } else if (config.getQuicDelegate().isQuic()) {
+            return ProtocolType.QUIC;
         } else if (config.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
             return ProtocolType.STARTTLS;
         } else {
