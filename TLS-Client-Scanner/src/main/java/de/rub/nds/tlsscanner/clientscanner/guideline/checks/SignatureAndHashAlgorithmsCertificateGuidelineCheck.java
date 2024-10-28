@@ -60,11 +60,12 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm algorithm :
-                report.getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
-                                SignatureAndHashAlgorithm.class)
-                        .getList()) {
+        List<SignatureAndHashAlgorithm> algorithms = report.getClientAdvertisedCertSignatureAndHashAlgorithms() == null ? report.getClientAdvertisedSignatureAndHashAlgorithms() : report.getClientAdvertisedCertSignatureAndHashAlgorithms();
+        if (algorithms == null || algorithms.isEmpty()) {
+            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+        }
+        for (SignatureAndHashAlgorithm algorithm : algorithms) {
             if (!recommendedAlgorithms.contains(algorithm)) {
                 nonRecommended.add(algorithm);
             }

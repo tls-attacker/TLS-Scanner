@@ -61,6 +61,15 @@ public class ClientReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    public synchronized List<SignatureAndHashAlgorithm>
+    getClientAdvertisedCertSignatureAndHashAlgorithms() {
+        ListResult<SignatureAndHashAlgorithm> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
+                        SignatureAndHashAlgorithm.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
     public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
         SetResult<ExtensionType> setResult =
                 getSetResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, ExtensionType.class);
