@@ -13,9 +13,10 @@ import de.rub.nds.scanner.core.probe.requirements.PropertyRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.*;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -81,29 +82,12 @@ public class ProtocolVersionProbe extends TlsClientProbe {
         executeState(statesToExecute);
         statesToExecute.forEach(
                 state -> {
-                    if (state.getConfig().getDefaultSelectedProtocolVersion()
-                            == ProtocolVersion.SSL2) {
-                        if (state.getWorkflowTrace().executedAsPlanned()) {
-                            supportedProtocolVersions.add(ProtocolVersion.SSL2);
-                        } else {
-                            unsupportedProtocolVersions.add(ProtocolVersion.SSL2);
-                        }
+                    if (state.getWorkflowTrace().executedAsPlanned()) {
+                        supportedProtocolVersions.add(
+                                state.getConfig().getDefaultSelectedProtocolVersion());
                     } else {
-                        List<ProtocolMessage> receivedAlertMessages =
-                                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
-                                        state.getWorkflowTrace(), ProtocolMessageType.ALERT);
-                        if (receivedAlertMessages.stream()
-                                .anyMatch(
-                                        msg ->
-                                                ((AlertMessage) msg).getDescription().getValue()
-                                                        == AlertDescription.PROTOCOL_VERSION
-                                                                .getValue())) {
-                            unsupportedProtocolVersions.add(
-                                    state.getConfig().getDefaultSelectedProtocolVersion());
-                        } else {
-                            supportedProtocolVersions.add(
-                                    state.getConfig().getDefaultSelectedProtocolVersion());
-                        }
+                        unsupportedProtocolVersions.add(
+                                state.getConfig().getDefaultSelectedProtocolVersion());
                     }
                 });
     }
