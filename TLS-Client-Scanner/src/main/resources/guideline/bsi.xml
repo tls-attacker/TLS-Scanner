@@ -90,6 +90,31 @@
         <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
     </cipherSuiteGuidelineCheck>
+    <extensionGuidelineCheck>
+        <name>Die Verwendung der „supported_groups“ Erweiterung für TLS_(EC)DHE_* Cipher-Suiten in TLS 1.2 wird empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <and>
+                <condition>
+                    <property>SUPPORTS_TLS_1_2</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <or>
+                        <condition>
+                            <property>SUPPORTS_DHE</property>
+                            <result>TRUE</result>
+                        </condition>
+                        <condition>
+                            <property>SUPPORTS_ECDHE</property>
+                            <result>TRUE</result>
+                        </condition>
+                    </or>
+                </condition>
+            </and>
+        </condition>
+        <requiredExtension>ELLIPTIC_CURVES</requiredExtension>
+    </extensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Die folgenden Diffie-Hellman Gruppen werden für die Verwendung mit TLS 1.2 empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -104,6 +129,15 @@
         <tls13>false</tls13>
         <minGroupCount>2</minGroupCount>
     </namedGroupsGuidelineCheck>
+    <extensionGuidelineCheck>
+        <name>Die Verwendung der „signature_algorithms“ Erweiterung wird in TLS 1.2 empfohlen.</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <property>SUPPORTS_TLS_1_2</property>
+            <result>TRUE</result>
+        </condition>
+        <requiredExtension>SIGNATURE_AND_HASH_ALGORITHMS</requiredExtension>
+    </extensionGuidelineCheck>
     <signatureAlgorithmsGuidelineCheck>
         <name>Die folgenden Signaturverfahren werden für die Verwendung mit TLS 1.2 empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -112,6 +146,8 @@
             <result>TRUE</result>
         </condition>
         <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PSS_RSAE</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_SSA_PSS</recommendedAlgorithms>
         <recommendedAlgorithms>DSA</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsGuidelineCheck>
@@ -137,7 +173,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>truncated_hmac sollte nicht unterstützt werden.</name>
+        <name>Die Extension „truncated_hmac“ sollte nicht unterstützt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -171,7 +207,7 @@
         <requiredExtension>HEARTBEAT</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.</name>
+        <name>Der Einsatz der TLS-Erweiterung „Extended Master Secret“ gemäß [RFC7627] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -180,15 +216,16 @@
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
         <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
-        <requirementLevel>SHOULD_NOT</requirementLevel>
+        <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>EARLY_DATA</requiredExtension>
-    </extensionGuidelineCheck>
+        <property>SUPPORTS_TLS13_0_RTT</property>
+        <result>FALSE</result>
+    </analyzedPropertyGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Die folgenden Diffie-Hellman Gruppen werden für die Verwendung mit TLS 1.3 empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
