@@ -16,7 +16,6 @@ import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -60,7 +59,10 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
-        List<SignatureAndHashAlgorithm> algorithms = report.getClientAdvertisedCertSignatureAndHashAlgorithms() == null ? report.getClientAdvertisedSignatureAndHashAlgorithms() : report.getClientAdvertisedCertSignatureAndHashAlgorithms();
+        List<SignatureAndHashAlgorithm> algorithms =
+                report.getClientAdvertisedCertSignatureAndHashAlgorithms() == null
+                        ? report.getClientAdvertisedSignatureAndHashAlgorithms()
+                        : report.getClientAdvertisedCertSignatureAndHashAlgorithms();
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, null);

@@ -74,7 +74,8 @@ public class BasicProbe extends TlsClientProbe {
             clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
             clientAdvertisedSignatureAndHashAlgorithms =
                     traceContext.getClientSupportedSignatureAndHashAlgorithms();
-            clientAdvertisedCertSignatureAndHashAlgorithms = traceContext.getClientSupportedCertificateSignAlgorithms();
+            clientAdvertisedCertSignatureAndHashAlgorithms =
+                    traceContext.getClientSupportedCertificateSignAlgorithms();
             clientAdvertisedExtensions = traceContext.getProposedExtensions();
             clientAdvertisedNamedGroupsList = traceContext.getClientNamedGroupsList();
             clientAdvertisedPointFormatsList = traceContext.getClientPointFormatsList();
@@ -113,7 +114,9 @@ public class BasicProbe extends TlsClientProbe {
         put(
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 clientAdvertisedSignatureAndHashAlgorithms);
-        put(TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS, clientAdvertisedCertSignatureAndHashAlgorithms);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
+                clientAdvertisedCertSignatureAndHashAlgorithms);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
         put(

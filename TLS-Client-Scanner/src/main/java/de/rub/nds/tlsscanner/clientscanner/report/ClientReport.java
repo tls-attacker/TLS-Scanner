@@ -62,7 +62,7 @@ public class ClientReport extends TlsScanReport {
     }
 
     public synchronized List<SignatureAndHashAlgorithm>
-    getClientAdvertisedCertSignatureAndHashAlgorithms() {
+            getClientAdvertisedCertSignatureAndHashAlgorithms() {
         ListResult<SignatureAndHashAlgorithm> listResult =
                 getListResult(
                         TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
