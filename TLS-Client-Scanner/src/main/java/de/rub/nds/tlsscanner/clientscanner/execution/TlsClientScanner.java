@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.afterprobe.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.clientscanner.afterprobe.ExtensionAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -160,6 +161,7 @@ public final class TlsClientScanner
         registerProbeForExecution(new ConnectionClosingProbe(parallelExecutor, config));
         registerProbeForExecution(new ECPointFormatProbe(parallelExecutor, config));
         registerProbeForExecution(new NamedGroupsProbe(parallelExecutor, config));
+        registerProbeForExecution(new ExtensionAfterProbe());
         registerProbeForExecution(new Sweet32AfterProbe<>());
         registerProbeForExecution(new FreakAfterProbe<>());
         registerProbeForExecution(new LogjamAfterProbe<>());
@@ -168,8 +170,6 @@ public final class TlsClientScanner
         registerProbeForExecution(new DhValueAfterProbe());
         registerProbeForExecution(new AlpacaAfterProbe());
         registerProbeForExecution(new PaddingOracleIdentificationAfterProbe<>());
-        registerProbeForExecution(new ExtensionProbe(parallelExecutor, config));
-        registerProbeForExecution(new SignatureAndHashAlgorithmProbe(parallelExecutor, config));
         // DTLS-specific
         registerProbeForExecution(new DtlsReorderingProbe(parallelExecutor, config));
         registerProbeForExecution(new DtlsFragmentationProbe(parallelExecutor, config));
