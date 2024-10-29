@@ -434,7 +434,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 report.getIntegerResult(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (lowestPossibleDheModulusSize != null) {
             String containerKey = "Lowest accepted modulus (>= 2 bits)";
-            String containerValue = lowestPossibleDheModulusSize + " bits";
+            String containerValue = lowestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
@@ -446,7 +446,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 report.getIntegerResult(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (highestPossibleDheModulusSize != null) {
             String containerKey = "Highest accepted modulus (<= 8192 bits)";
-            String containerValue = highestPossibleDheModulusSize + " bits";
+            String containerValue = highestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
