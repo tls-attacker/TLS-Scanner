@@ -55,7 +55,7 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ClientReport> {
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         List<SignatureAndHashAlgorithm> algorithms =
-                report.getSupportedSignatureAndHashAlgorithms();
+                report.getClientAdvertisedSignatureAndHashAlgorithms();
         if (algorithms != null) {
             Set<HashAlgorithm> nonRecommended = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : algorithms) {
