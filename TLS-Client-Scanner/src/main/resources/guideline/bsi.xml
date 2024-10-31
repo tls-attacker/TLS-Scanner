@@ -113,7 +113,7 @@
                 </condition>
             </and>
         </condition>
-        <requiredExtension>ELLIPTIC_CURVES</requiredExtension>
+        <affectedExtensions>ELLIPTIC_CURVES</affectedExtensions>
     </extensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Die folgenden Diffie-Hellman Gruppen werden für die Verwendung mit TLS 1.2 empfohlen.</name>
@@ -136,7 +136,7 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>SIGNATURE_AND_HASH_ALGORITHMS</requiredExtension>
+        <affectedExtensions>SIGNATURE_AND_HASH_ALGORITHMS</affectedExtensions>
     </extensionGuidelineCheck>
     <signatureAlgorithmsGuidelineCheck>
         <name>Die folgenden Signaturverfahren werden für die Verwendung mit TLS 1.2 empfohlen.</name>
@@ -179,7 +179,7 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>TRUNCATED_HMAC</requiredExtension>
+        <affectedExtensions>TRUNCATED_HMAC</affectedExtensions>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
@@ -204,7 +204,7 @@
     <extensionGuidelineCheck>
         <name>Heartbeat sollte nicht unterstützt werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
-        <requiredExtension>HEARTBEAT</requiredExtension>
+        <affectedExtensions>HEARTBEAT</affectedExtensions>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Der Einsatz der TLS-Erweiterung „Extended Master Secret“ gemäß [RFC7627] wird empfohlen.</name>

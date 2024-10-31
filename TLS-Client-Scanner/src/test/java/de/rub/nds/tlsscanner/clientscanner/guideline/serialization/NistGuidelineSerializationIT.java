@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,6 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                         TestResults.TRUE));
-        // TODO: The client may be configured to use TLS 1.1 and TLS 1.0 to facilitate communication
-        // with private sector servers.
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The client shall not be configured to use SSL 2.0.",
@@ -59,19 +58,6 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
-        // TODO: Agencies shall
-        // support TLS 1.3 by January 1, 2024. After this date, clients shall be configured to use
-        // TLS 1.3.
-        // In general, clients that support TLS 1.3 should be configured to use TLS 1.2 as well.
-        /*checks.add(
-        new AnalyzedPropertyGuidelineCheck(
-                "TLS 1.2 may be disabled on clients that support TLS 1.3 if TLS 1.2 is not needed for interoperability.",
-                RequirementLevel.MAY,
-                new GuidelineCheckCondition(
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                        TestResults.TRUE),
-                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
-                TestResults.FALSE));*/
         checks.add(
                 new CertificateVersionGuidelineCheck(
                         "The TLS client certificate shall be an X.509 version 3 certificate.",
@@ -98,16 +84,20 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                                                 TestResults.TRUE))),
                         false));
-        // TODO: extended key usage
-        // TODO: Obtaining Revocation Status Information for the Server Certificate
+        // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth key purpose OID should be included in the certificates to be used for TLS client authentication and should be omitted from any other certificates.
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall perform revocation checking of the server certificate.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.SUPPORTS_OCSP,
+                        TestResults.TRUE));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.2.",
+                        "Only listed Cipher Suites shall be used for TLS 1.0 and 1.1.",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11,
-                                ProtocolVersion.TLS12),
+                                ProtocolVersion.TLS11),
                         Arrays.asList(
                                 CipherSuite.TLS_RSA_WITH_AES_128_CCM,
                                 CipherSuite.TLS_RSA_WITH_AES_256_CCM,
@@ -177,6 +167,102 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
+                        "Only listed Cipher Suites shall be used for TLS 1.2.",
+                        RequirementLevel.MUST,
+                        Collections.singletonList(ProtocolVersion.TLS12),
+                        Arrays.asList(
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CCM,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CCM,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CCM,
+                                CipherSuite.TLS_PSK_DHE_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_PSK_DHE_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_PSK_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_PSK_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_PSK_WITH_AES_128_CCM,
+                                CipherSuite.TLS_PSK_WITH_AES_256_CCM,
+                                CipherSuite.TLS_PSK_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_PSK_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA384,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA)));
+        checks.add(
+                new CipherSuiteGuidelineCheck(
                         "Only listed Cipher Suites shall be used for TLS 1.3.",
                         RequirementLevel.MUST,
                         List.of(ProtocolVersion.TLS13),
@@ -191,9 +277,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                         TestResults.FALSE));
-        // TODO: Validated Cryptography for servers
-        // TODO: The validated random number generator shall be used to generate the random bytes
-        // (32 bytes in TLS 1.3; 28 bytes in prior TLS versions) of the client random value.
+        // TODO: Check randomness of RNG
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The validated random number generator should be used to generate the 4-byte timestamp of the client random value for TLS versions prior to TLS 1.3.",
@@ -258,7 +342,6 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
                         TestResults.TRUE));
-        // TODO: Implement probe for SUPPORTS_TLS_FALLBACK_SCSV
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The Fallback Signaling Cipher Suite Value (SCSV) shall be supported if the client supports versions of TLS prior to TLS 1.2 and does not support TLS 1.3.",
@@ -325,8 +408,23 @@ public class NistGuidelineSerializationIT {
                                                         .SUPPORTS_STATIC_ECDH, // TODO: Correct?
                                                 TestResults.TRUE))),
                         ExtensionType.EC_POINT_FORMATS));
-        // TODO: Multiple Certificate Status
-        // TODO: Trusted CA Indication
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The Multiple Certificate Status extension should be enabled if the extension is supported by the client implementation.",
+                        RequirementLevel.SHOULD,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The Encrypt-then-MAC extension shall be supported when CBC mode cipher suites are configured.",
@@ -352,7 +450,7 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
-        // TODO: Truncated HMAC
+        // TODO: The Truncated HMAC extension shall not be used in conjunction with variable-length padding.
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Pre-Shared Key extension may be supported by TLS 1.3 clients.",
@@ -407,8 +505,12 @@ public class NistGuidelineSerializationIT {
                 new ExtensionGuidelineCheck(
                         "The Certificate Signature Algorithms Extension should be supported for TLS 1.2.",
                         RequirementLevel.SHOULD,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                        GuidelineCheckCondition.and(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE))),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
                 new ExtensionGuidelineCheck(
@@ -427,17 +529,21 @@ public class NistGuidelineSerializationIT {
                         "The Early Data Indication extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
                         ExtensionType.EARLY_DATA));
-        // TODO: The Raw Public Key extension shall not be supported.
-        // TODO: Server Authentication and Path Validation
-        // TODO: Rework
         checks.add(
                 new ExtensionGuidelineCheck(
+                        "The Raw Public Key extension shall not be supported.",
+                        RequirementLevel.MUST_NOT,
+                        ExtensionType.CLIENT_CERTIFICATE_TYPE,
+                        ExtensionType.SERVER_CERTIFICATE_TYPE));
+        // TODO: Checking the Server Key Size
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
                         "Clients using TLS 1.3 should not send 0-RTT data.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        ExtensionType.EARLY_DATA));
-        // TODO: Implement proper probe
+                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients shall not use False Start.",
