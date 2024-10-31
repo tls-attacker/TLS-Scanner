@@ -84,7 +84,9 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                                                 TestResults.TRUE))),
                         false));
-        // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth key purpose OID should be included in the certificates to be used for TLS client authentication and should be omitted from any other certificates.
+        // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth
+        // key purpose OID should be included in the certificates to be used for TLS client
+        // authentication and should be omitted from any other certificates.
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The client shall perform revocation checking of the server certificate.",
@@ -95,9 +97,7 @@ public class NistGuidelineSerializationIT {
                 new CipherSuiteGuidelineCheck(
                         "Only listed Cipher Suites shall be used for TLS 1.0 and 1.1.",
                         RequirementLevel.MUST,
-                        Arrays.asList(
-                                ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11),
+                        Arrays.asList(ProtocolVersion.TLS10, ProtocolVersion.TLS11),
                         Arrays.asList(
                                 CipherSuite.TLS_RSA_WITH_AES_128_CCM,
                                 CipherSuite.TLS_RSA_WITH_AES_256_CCM,
@@ -450,7 +450,8 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
-        // TODO: The Truncated HMAC extension shall not be used in conjunction with variable-length padding.
+        // TODO: The Truncated HMAC extension shall not be used in conjunction with variable-length
+        // padding.
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Pre-Shared Key extension may be supported by TLS 1.3 clients.",
@@ -508,9 +509,11 @@ public class NistGuidelineSerializationIT {
                         GuidelineCheckCondition.and(
                                 Arrays.asList(
                                         new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE),
                                         new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.FALSE))),
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.FALSE))),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
                 new ExtensionGuidelineCheck(

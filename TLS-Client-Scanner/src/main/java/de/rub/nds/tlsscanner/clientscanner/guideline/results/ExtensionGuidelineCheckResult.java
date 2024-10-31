@@ -11,9 +11,6 @@ package de.rub.nds.tlsscanner.clientscanner.guideline.results;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
@@ -35,9 +32,12 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for (ExtensionType extension : affectedExtensions) {
-            builder.append(supportedExtensions.contains(extension)
-                    ? "The client supports "
-                    : "The client does not support ").append(extension).append("\n");
+            builder.append(
+                            supportedExtensions.contains(extension)
+                                    ? "The client supports "
+                                    : "The client does not support ")
+                    .append(extension)
+                    .append("\n");
         }
         return builder.toString().stripTrailing();
     }
