@@ -75,7 +75,7 @@ public abstract class AbstractProbeIT extends AbstractDockerbasedIT {
         // Preparing config, executor, config selector, and report
         ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
         config.getClientDelegate().setHost(getServerAddress());
-        parallelExecutor = new ParallelExecutor(1, 3);
+        parallelExecutor = ParallelExecutor.create(1, 3);
         configSelector = new ConfigSelector(config, parallelExecutor);
         configSelector.findWorkingConfigs();
         report = new ServerReport();
