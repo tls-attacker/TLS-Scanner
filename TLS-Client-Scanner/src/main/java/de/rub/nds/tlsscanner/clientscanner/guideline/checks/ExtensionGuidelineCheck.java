@@ -20,61 +20,68 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
 
-    private ExtensionType requiredExtension;
+    private List<ExtensionType> affectedExtensions;
 
     private ExtensionGuidelineCheck() {
         super(null, null);
     }
 
     public ExtensionGuidelineCheck(
-            String name, RequirementLevel requirementLevel, ExtensionType requiredExtension) {
+            String name, RequirementLevel requirementLevel, ExtensionType ...affectedExtensions) {
         super(name, requirementLevel);
-        this.requiredExtension = requiredExtension;
+        this.affectedExtensions = Arrays.asList(affectedExtensions);
     }
 
     public ExtensionGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            ExtensionType requiredExtension) {
+            ExtensionType ...affectedExtensions) {
         super(name, requirementLevel, condition);
-        this.requiredExtension = requiredExtension;
+        this.affectedExtensions = Arrays.asList(affectedExtensions);
     }
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         GuidelineAdherence adherence;
+        List<ExtensionType> supportedExtensions = affectedExtensions.stream().filter(report.getSupportedExtensions()::contains).collect(Collectors.toList());
 
         if (getRequirementLevel() == RequirementLevel.MUST_NOT
                 || getRequirementLevel() == RequirementLevel.SHOULD_NOT) {
             adherence =
-                    GuidelineAdherence.of(
-                            !report.getSupportedExtensions().contains(requiredExtension));
+                    GuidelineAdherence.of(supportedExtensions.isEmpty());
         } else if (getRequirementLevel() == RequirementLevel.MAY) {
             adherence = GuidelineAdherence.ADHERED;
         } else {
             adherence =
                     GuidelineAdherence.of(
-                            report.getSupportedExtensions().contains(requiredExtension));
+                            supportedExtensions.size() == affectedExtensions.size());
         }
 
         return new ExtensionGuidelineCheckResult(
                 getName(),
                 adherence,
-                report.getSupportedExtensions().contains(requiredExtension),
-                requiredExtension);
+                supportedExtensions,
+                affectedExtensions);
     }
 
     @Override
     public String toString() {
-        return "Extension_" + getRequirementLevel() + "_" + requiredExtension;
+        return "Extension_" + getRequirementLevel() + "_" + affectedExtensions;
     }
 
-    public ExtensionType getRequiredExtension() {
-        return requiredExtension;
+    public List<ExtensionType> getAffectedExtensions() {
+        return Collections.unmodifiableList(affectedExtensions);
     }
 }

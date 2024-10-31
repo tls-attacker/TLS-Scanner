@@ -12,33 +12,41 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final boolean supported;
-    private final ExtensionType requiredExtension;
+    private final List<ExtensionType> supportedExtensions;
+    private final List<ExtensionType> affectedExtensions;
 
     public ExtensionGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            boolean supported,
-            ExtensionType requiredExtension) {
+            List<ExtensionType> supportedExtensions,
+            List<ExtensionType> affectedExtensions) {
         super(checkName, adherence);
-        this.supported = supported;
-        this.requiredExtension = requiredExtension;
+        this.supportedExtensions = supportedExtensions;
+        this.affectedExtensions = affectedExtensions;
     }
 
     @Override
     public String toString() {
-        return supported
-                ? "The client supports " + this.requiredExtension
-                : "The client does not support " + this.requiredExtension;
+        StringBuilder builder = new StringBuilder();
+        for (ExtensionType extension : affectedExtensions) {
+            builder.append(supportedExtensions.contains(extension)
+                    ? "The client supports "
+                    : "The client does not support ").append(extension).append("\n");
+        }
+        return builder.toString().stripTrailing();
     }
 
-    public ExtensionType getRequiredExtension() {
-        return requiredExtension;
+    public List<ExtensionType> getAffectedExtensions() {
+        return affectedExtensions;
     }
 
-    public boolean isSupported() {
-        return supported;
+    public List<ExtensionType> getSupportedExtensions() {
+        return supportedExtensions;
     }
 }
