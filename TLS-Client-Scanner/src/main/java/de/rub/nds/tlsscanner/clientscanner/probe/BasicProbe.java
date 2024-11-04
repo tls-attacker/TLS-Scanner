@@ -94,7 +94,12 @@ public class BasicProbe extends TlsClientProbe {
             KeyShareExtensionMessage keyShareExtension =
                     clientHello.getExtension(KeyShareExtensionMessage.class);
             keyShareExtension.getKeyShareList().stream()
-                    .forEach(entry -> keyShareGroups.add(entry.getGroupConfig()));
+                    .forEach(
+                            entry -> {
+                                if (entry.getGroupConfig() != null) {
+                                    keyShareGroups.add(entry.getGroupConfig());
+                                }
+                            });
         }
         return keyShareGroups;
     }
