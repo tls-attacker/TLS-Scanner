@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.protocol.constants.MacAlgorithm;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.DetailedResult;
-import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.CryptoException;
 import de.rub.nds.tlsattacker.core.util.StaticTicketCrypto;
@@ -308,7 +308,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
             for (MacAlgorithm algo : getMacAlgorithms(detail)) {
                 for (SessionTicketMacFormat format :
                         SessionTicketMacFormat.generateFormats(
-                                detail, ticketBytes.length, algo.getSize())) {
+                                detail, ticketBytes.length, algo.getMacLength())) {
                     byte[] plaintext = format.getMacInput(ticketBytes);
                     byte[] prefix = format.getInputPrefix(ticketBytes);
                     byte[] suffix = format.getInputSuffix(ticketBytes);

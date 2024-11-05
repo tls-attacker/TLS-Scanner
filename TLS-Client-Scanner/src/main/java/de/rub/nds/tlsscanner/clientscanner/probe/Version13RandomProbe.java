@@ -72,7 +72,7 @@ public class Version13RandomProbe extends TlsClientProbe {
         config.setDefaultSelectedProtocolVersion(version);
         config.setDefaultServerSupportedCipherSuites(
                 CipherSuite.getImplemented().stream()
-                        .filter(suite -> !suite.isTLS13())
+                        .filter(suite -> !suite.isTls13())
                         .collect(Collectors.toList()));
 
         // patch randomness

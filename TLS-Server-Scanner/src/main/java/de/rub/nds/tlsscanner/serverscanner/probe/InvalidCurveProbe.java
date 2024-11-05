@@ -643,7 +643,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
                                 gotCBC = true;
                             }
 
-                            if (cipherSuite.isSHA() && gotSHA == false) {
+                            if (cipherSuite.isSHA1() && gotSHA == false) {
                                 addCandidate = true;
                                 gotSHA = true;
                             } else if (cipherSuite.isSHA256() && gotSHA256 == false) {
@@ -683,7 +683,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
     }
 
     private boolean groupQualifiedForCipherSuite(NamedGroup testGroup, CipherSuite testCipher) {
-        if (!testCipher.isTLS13()) {
+        if (!testCipher.isTls13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;
             } else if ((AlgorithmResolver.getSuiteableLeafCertificateKeyType(testCipher).length > 0
@@ -708,7 +708,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
 
     private List<NamedGroup> getRequiredGroups(NamedGroup testGroup, CipherSuite testCipher) {
         Set<NamedGroup> requiredGroups = new HashSet<>();
-        if (testCipher.isTLS13()) {
+        if (testCipher.isTls13()) {
             if (namedCurveWitnessesTls13.get(testGroup).getEcdhPublicKeyGroup() != null
                     && namedCurveWitnessesTls13.get(testGroup).getEcdhPublicKeyGroup()
                             != testGroup) {

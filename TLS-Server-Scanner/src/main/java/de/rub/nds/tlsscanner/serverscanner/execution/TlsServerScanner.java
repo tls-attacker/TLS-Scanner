@@ -131,7 +131,7 @@ public final class TlsServerScanner
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor =
-                new ParallelExecutor(
+                ParallelExecutor.create(
                         config.getExecutorConfig().getOverallThreads(),
                         3,
                         new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));

@@ -49,6 +49,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
@@ -349,7 +352,10 @@ public class SessionTicketPaddingOracleProbeTest {
         private final Field fingerprintField;
 
         public OracleExecutorBase(OracleParameters parameters) {
-            super(1, 0);
+            super(
+                    1,
+                    0,
+                    new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES, new LinkedBlockingDeque<>()));
             this.params = parameters;
 
             List<Record> recordList = new ArrayList<>();
