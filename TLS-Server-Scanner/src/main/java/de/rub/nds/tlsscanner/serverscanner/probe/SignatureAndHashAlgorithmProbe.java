@@ -58,10 +58,10 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         for (ProtocolVersion version : versions) {
             if (version.isTLS13()) {
-                supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
+                supportedTls13.addAll(testForVersion(version, CipherSuite::isTls13));
             } else {
                 supportedSke.addAll(
-                        testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
+                        testForVersion(version, suite -> !suite.isTls13() && suite.isEphemeral()));
             }
         }
         signatureAndHashAlgorithmListSke = new ArrayList<>(supportedSke);

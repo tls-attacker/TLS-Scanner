@@ -246,7 +246,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         List<KeyExchangeAlgorithm> algorithmList = Arrays.asList(algorithms);
         for (CipherSuite cipherSuite : supportedCipherSuites) {
             if (cipherSuite.isRealCipherSuite()
-                    && !cipherSuite.isTLS13()
+                    && !cipherSuite.isTls13()
                     && algorithmList.contains(
                             AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite))) {
                 chosenCipherSuites.add(cipherSuite);
@@ -259,7 +259,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : supportedCipherSuites) {
             if (suite.isRealCipherSuite()
-                    && !suite.isTLS13()
+                    && !suite.isTls13()
                     && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
                 suiteList.add(suite);
             }

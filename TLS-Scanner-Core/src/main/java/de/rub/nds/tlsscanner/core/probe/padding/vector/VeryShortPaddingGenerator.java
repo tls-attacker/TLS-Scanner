@@ -126,7 +126,7 @@ public class VeryShortPaddingGenerator extends PaddingVectorGenerator {
     }
 
     List<PaddingVector> createClassicModifiedPadding(CipherSuite suite, ProtocolVersion version) {
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         int paddingValue = DEFAULT_CIPHERTEXT_LENGTH - macSize - 1;
         int applicationLength = 0;
         List<PaddingVector> vectorList =

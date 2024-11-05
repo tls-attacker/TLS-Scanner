@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.MacAlgorithm;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
-import de.rub.nds.tlsattacker.core.constants.MacAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -245,7 +245,7 @@ public class DefaultKeys {
         if (scannerDetail.getLevelValue() >= ScannerDetail.QUICK.getLevelValue()) {
             // add key and output size (if they even differ)
             ret.add(algo.getKeySize());
-            ret.add(algo.getSize());
+            ret.add(algo.getMacLength());
         }
         ret.add(16);
         ret.add(32);
