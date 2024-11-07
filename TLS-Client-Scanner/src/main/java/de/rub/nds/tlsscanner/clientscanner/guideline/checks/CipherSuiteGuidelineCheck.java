@@ -62,7 +62,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     @Override
     public boolean passesCondition(ClientReport report) {
-        return this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains) && super.passesCondition(report);
+        return this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains)
+                && super.passesCondition(report);
     }
 
     @Override
