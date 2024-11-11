@@ -15,12 +15,11 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.util.Objects;
 import java.util.Set;
 
-public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
-        extends GuidelineCheckResult {
+public class SignatureAndHashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
 
-    public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+    public SignatureAndHashAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
             Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {

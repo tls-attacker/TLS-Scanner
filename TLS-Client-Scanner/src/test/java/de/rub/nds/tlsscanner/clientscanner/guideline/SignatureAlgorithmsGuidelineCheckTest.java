@@ -25,7 +25,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
     public void testPositive() {
         ClientReport report = new ClientReport();
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
         SignatureAlgorithmsGuidelineCheck check =
                 new SignatureAlgorithmsGuidelineCheck(
@@ -41,7 +41,7 @@ public class SignatureAlgorithmsGuidelineCheckTest {
     public void testNegative() {
         ClientReport report = new ClientReport();
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
         SignatureAlgorithmsGuidelineCheck check =
                 new SignatureAlgorithmsGuidelineCheck(

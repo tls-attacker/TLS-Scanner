@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.clientscanner.guideline.results.SignatureAndHashAlgorithmsCertificateGuidelineCheckResult;
+import de.rub.nds.tlsscanner.clientscanner.guideline.results.SignatureAndHashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -60,7 +60,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Cli
         List<SignatureAndHashAlgorithm> algorithms =
                 report.getClientAdvertisedSignatureAndHashAlgorithms();
         if (algorithms == null || algorithms.isEmpty()) {
-            return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+            return new SignatureAndHashAlgorithmsGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
@@ -69,7 +69,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Cli
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult( // TODO this needs to
+        return new SignatureAndHashAlgorithmsGuidelineCheckResult( // TODO this needs to
                 // be a new result now
                 getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
     }
