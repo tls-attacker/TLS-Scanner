@@ -13,12 +13,15 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.NamedGroupsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +38,18 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ClientReport> {
     private boolean tls13;
     private int minGroupCount = 0;
 
+    public static final GuidelineCheckCondition PRECONDITION_TLS_1_3 =
+            new GuidelineCheckCondition(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE);
+    public static final GuidelineCheckCondition PRECONDITION_NOT_TLS_1_3 =
+            GuidelineCheckCondition.or(
+                    Arrays.asList(
+                            new GuidelineCheckCondition(
+                                    TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE),
+                            new GuidelineCheckCondition(
+                                    TlsAnalyzedProperty.SUPPORTS_TLS_1_1, TestResults.TRUE),
+                            new GuidelineCheckCondition(
+                                    TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE)));
+
     private NamedGroupsGuidelineCheck() {
         super(null, null);
     }
@@ -46,7 +61,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ClientReport> {
             List<NamedGroup> requiredGroups,
             boolean tls13,
             int minGroupCount) {
-        super(name, requirementLevel);
+        super(name, requirementLevel, tls13 ? PRECONDITION_TLS_1_3 : PRECONDITION_NOT_TLS_1_3);
         this.recommendedGroups = recommendedGroups;
         this.requiredGroups = requiredGroups;
         this.tls13 = tls13;
@@ -61,7 +76,13 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ClientReport> {
             List<NamedGroup> requiredGroups,
             boolean tls13,
             int minGroupCount) {
-        super(name, requirementLevel, condition);
+        super(
+                name,
+                requirementLevel,
+                GuidelineCheckCondition.and(
+                        Arrays.asList(
+                                tls13 ? PRECONDITION_TLS_1_3 : PRECONDITION_NOT_TLS_1_3,
+                                condition)));
         this.recommendedGroups = recommendedGroups;
         this.requiredGroups = requiredGroups;
         this.tls13 = tls13;
