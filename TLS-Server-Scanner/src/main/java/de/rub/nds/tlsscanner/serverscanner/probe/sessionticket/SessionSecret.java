@@ -11,8 +11,12 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 import de.rub.nds.tlsscanner.core.util.ArrayUtil;
 import java.io.Serializable;
 import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SessionSecret implements Serializable {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public enum Secret {
         PREMASTER_SECRET,
         HANDSHAKE_SECRET,
@@ -27,9 +31,15 @@ public class SessionSecret implements Serializable {
     public SessionSecret(Secret secret, byte[] value) {
         this.secretType = secret;
         this.value = value;
+        if (value == null) {
+            LOGGER.warn("Created a SessionSecret of type {} with a null value", secret);
+        }
     }
 
     public Optional<Integer> findIn(byte[] haystack) {
+        if (value == null || haystack == null) {
+            return Optional.empty();
+        }
         return ArrayUtil.findSubarray(haystack, value);
     }
 }
