@@ -197,7 +197,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
         report.getClientAdvertisedKeyShareNamedGroupsList().forEach(advertisedKeyShareGroups::add);
         supportedTls13CipherSuites =
                 report.getSupportedCipherSuites().stream()
-                        .filter(CipherSuite::isTLS13)
+                        .filter(CipherSuite::isTls13)
                         .collect(Collectors.toList());
         supportedDheCipherSuites =
                 report.getSupportedCipherSuitesWithKeyExchange(

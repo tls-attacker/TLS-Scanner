@@ -336,7 +336,8 @@ public class MacProbe extends TlsServerProbe {
         CipherSuite suite = suiteList.get(0);
         // TODO: Protocol version not from report
         int macSize =
-                AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize(); // TODO
+                AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite)
+                        .getMacLength(); // TODO
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();
         Config config = configSelector.getBaseConfig();

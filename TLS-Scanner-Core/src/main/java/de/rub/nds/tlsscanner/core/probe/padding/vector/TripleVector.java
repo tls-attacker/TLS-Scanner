@@ -55,7 +55,8 @@ public class TripleVector extends PaddingVector {
     public int getRecordLength(
             CipherSuite testedSuite, ProtocolVersion testedVersion, int appDataLength) {
         Record r = createRecord();
-        int macLength = AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getSize();
+        int macLength =
+                AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getMacLength();
 
         r.setCleanProtocolMessageBytes(new byte[appDataLength]);
         r.getComputations().setMac(new byte[macLength]);

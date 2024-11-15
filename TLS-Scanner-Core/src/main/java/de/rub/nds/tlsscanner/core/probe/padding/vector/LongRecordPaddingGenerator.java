@@ -23,7 +23,7 @@ public class LongRecordPaddingGenerator extends PaddingVectorGenerator {
         // MAC + Plaintext
         List<PaddingVector> vectorList = new LinkedList<>();
         int blockSize = AlgorithmResolver.getCipher(suite).getBlocksize();
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         vectorList.add(
                 new TripleVector(
                         "ValidPlainData",
@@ -32,7 +32,7 @@ public class LongRecordPaddingGenerator extends PaddingVectorGenerator {
                         new ByteArrayExplicitValueModification(
                                 new byte
                                         [AlgorithmResolver.getMacAlgorithm(version, suite)
-                                                .getSize()]),
+                                                .getMacLength()]),
                         new ByteArrayExplicitValueModification(
                                 createPaddingBytes(
                                         calculateValidPaddingSize(blockSize, macSize)))));
@@ -44,7 +44,7 @@ public class LongRecordPaddingGenerator extends PaddingVectorGenerator {
                         new ByteArrayExplicitValueModification(
                                 new byte
                                         [AlgorithmResolver.getMacAlgorithm(version, suite)
-                                                .getSize()]),
+                                                .getMacLength()]),
                         new ByteArrayExplicitValueModification(
                                 createPaddingBytes(
                                         calculateInvalidPaddingSize(blockSize, macSize)))));

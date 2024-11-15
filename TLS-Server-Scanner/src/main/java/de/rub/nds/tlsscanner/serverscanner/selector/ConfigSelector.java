@@ -229,7 +229,7 @@ public class ConfigSelector {
         boolean containsEc =
                 config.getDefaultClientSupportedCipherSuites().stream()
                         .filter(CipherSuite::isRealCipherSuite)
-                        .filter(Predicate.not(CipherSuite::isTLS13))
+                        .filter(Predicate.not(CipherSuite::isTls13))
                         .anyMatch(
                                 cipherSuite ->
                                         AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)

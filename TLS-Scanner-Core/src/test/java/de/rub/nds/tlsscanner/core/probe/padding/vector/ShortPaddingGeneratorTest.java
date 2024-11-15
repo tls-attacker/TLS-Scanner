@@ -59,7 +59,7 @@ public class ShortPaddingGeneratorTest {
                 AlgorithmResolver.getMacAlgorithm(
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
-                        .getSize();
+                        .getMacLength();
         VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
         array.setModification(modification);
@@ -82,7 +82,7 @@ public class ShortPaddingGeneratorTest {
                 AlgorithmResolver.getMacAlgorithm(
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
-                        .getSize();
+                        .getMacLength();
         VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
         array.setModification(modification);

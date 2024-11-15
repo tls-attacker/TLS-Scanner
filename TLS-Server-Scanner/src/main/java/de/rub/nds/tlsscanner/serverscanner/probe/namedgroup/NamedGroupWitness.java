@@ -57,7 +57,7 @@ public class NamedGroupWitness implements Serializable {
 
     public boolean isFoundUsingRsaCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (!cipherSuite.isTLS13()
+            if (!cipherSuite.isTls13()
                     && AlgorithmResolver.getRequiredSignatureAlgorithm(cipherSuite)
                             == SignatureAlgorithm.RSA_PKCS1) {
                 return true;
@@ -68,7 +68,7 @@ public class NamedGroupWitness implements Serializable {
 
     public boolean isFoundUsingEcdsaStaticCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (!cipherSuite.isTLS13()
+            if (!cipherSuite.isTls13()
                     && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
                             == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 return true;
@@ -79,7 +79,7 @@ public class NamedGroupWitness implements Serializable {
 
     public boolean isFoundUsingEcdsaEphemeralCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (!cipherSuite.isTLS13()
+            if (!cipherSuite.isTls13()
                     && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
                             == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 return true;

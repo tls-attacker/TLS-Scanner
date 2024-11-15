@@ -80,7 +80,7 @@ public class ExtensionProbe extends TlsServerProbe {
             }
         }
         if (supportsTls13) {
-            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTls13);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }

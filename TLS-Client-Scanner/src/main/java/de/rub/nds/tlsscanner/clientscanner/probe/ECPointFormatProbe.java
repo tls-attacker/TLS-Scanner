@@ -129,7 +129,7 @@ public class ECPointFormatProbe extends TlsClientProbe {
             tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS13);
             tlsConfig.setDefaultServerSupportedCipherSuites(
                     CipherSuite.getImplemented().stream()
-                            .filter(suite -> !suite.isTLS13())
+                            .filter(suite -> !suite.isTls13())
                             .collect(Collectors.toList()));
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
             tlsConfig.setDefaultServerNamedGroups(secpGroups);
