@@ -413,8 +413,16 @@
                     </or>
                 </condition>
                 <condition>
-                    <property>SUPPORTS_STATIC_ECDH</property>
-                    <result>TRUE</result>
+                    <or>
+                        <condition>
+                            <property>SUPPORTS_STATIC_ECDH</property>
+                            <result>TRUE</result>
+                        </condition>
+                        <condition>
+                            <property>SUPPORTS_ECDHE</property>
+                            <result>TRUE</result>
+                        </condition>
+                    </or>
                 </condition>
             </and>
         </condition>

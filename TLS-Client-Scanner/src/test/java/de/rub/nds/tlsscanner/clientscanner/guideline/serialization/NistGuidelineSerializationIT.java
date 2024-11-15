@@ -403,10 +403,15 @@ public class NistGuidelineSerializationIT {
                                                                 TlsAnalyzedProperty
                                                                         .SUPPORTS_TLS_1_2,
                                                                 TestResults.TRUE))),
-                                        new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty
-                                                        .SUPPORTS_STATIC_ECDH, // TODO: Correct?
-                                                TestResults.TRUE))),
+                                        GuidelineCheckCondition.or(
+                                                Arrays.asList(
+                                                        new GuidelineCheckCondition(
+                                                                TlsAnalyzedProperty
+                                                                        .SUPPORTS_STATIC_ECDH,
+                                                                TestResults.TRUE),
+                                                        new GuidelineCheckCondition(
+                                                                TlsAnalyzedProperty.SUPPORTS_ECDHE,
+                                                                TestResults.TRUE))))),
                         ExtensionType.EC_POINT_FORMATS));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
