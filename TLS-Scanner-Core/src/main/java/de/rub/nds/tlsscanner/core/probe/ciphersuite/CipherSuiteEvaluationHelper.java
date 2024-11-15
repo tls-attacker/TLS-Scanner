@@ -227,9 +227,7 @@ public class CipherSuiteEvaluationHelper {
     }
 
     public void adjustModeOfOperation(CipherSuite suite) {
-        if (suite.name().contains("_CBC_")) {
-            supportsCbc = TestResults.TRUE;
-        }
+        supportsCbc = TestResults.of(suite.isCBC());
     }
 
     public void adjustKeyExchange(CipherSuite suite) {
@@ -251,7 +249,7 @@ public class CipherSuiteEvaluationHelper {
         if (suite.name().contains("ECDH_")) {
             supportsStaticEcdh = TestResults.TRUE;
         }
-        if (suite.name().contains("ECDH")) {
+        if (suite.name().contains("ECDH") && suite.isEphemeral()) {
             supportsEcdhe = TestResults.TRUE;
         }
         if (suite.name().contains("NULL")) {
