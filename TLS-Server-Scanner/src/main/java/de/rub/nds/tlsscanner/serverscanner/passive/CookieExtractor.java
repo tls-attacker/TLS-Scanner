@@ -15,11 +15,11 @@ import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import java.util.List;
 
-public class CookieExtractor extends StatExtractor<ComparableByteArray> {
+public class CookieExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public CookieExtractor() {
         super(TrackableValueType.COOKIE);
@@ -29,7 +29,8 @@ public class CookieExtractor extends StatExtractor<ComparableByteArray> {
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         List<ProtocolMessage> allReceivedMessages =
-                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
+                        trace, ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof HelloVerifyRequestMessage
                     && ((HelloVerifyRequestMessage) message).getCookie() != null) {

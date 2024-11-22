@@ -10,11 +10,11 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.guideline.Guideline;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -36,7 +35,7 @@ import org.junit.jupiter.api.io.TempDir;
 public class GuidelineIOIT {
     private Guideline<ServerReport> original, result;
 
-    private GuidelineIO<ServerReport> guidelineIO;
+    private GuidelineIO guidelineIO;
 
     @BeforeEach
     public void setUp() throws JAXBException {
@@ -52,9 +51,7 @@ public class GuidelineIOIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         this.original = new Guideline<>(testName, testLink, checks);
-        this.guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class, Set.of(AnalyzedPropertyGuidelineCheck.class));
+        this.guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
     }
 
     @Test
@@ -63,7 +60,9 @@ public class GuidelineIOIT {
             throws IOException, JAXBException, XMLStreamException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         guidelineIO.write(stream, this.original);
-        this.result = guidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
+        this.result =
+                (Guideline<ServerReport>)
+                        guidelineIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
         assertEquals(
                 this.original.getChecks().size(),
@@ -78,13 +77,13 @@ public class GuidelineIOIT {
                 result.getChecks().get(0).getName(),
                 "Influencer length check.");
         assertEquals(
-                this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId(),
+                this.original.getChecks().get(0).toString(),
+                result.getChecks().get(0).toString(),
                 "Influencer length check.");
 
         File tempFile = new File(tempDir, "serializarion_test_simple.xml");
         guidelineIO.write(tempFile, this.original);
-        this.result = guidelineIO.read(tempFile);
+        this.result = (Guideline<ServerReport>) guidelineIO.read(tempFile);
 
         assertEquals(
                 this.original.getChecks().size(),
@@ -99,8 +98,8 @@ public class GuidelineIOIT {
                 result.getChecks().get(0).getName(),
                 "Influencer length check.");
         assertEquals(
-                this.original.getChecks().get(0).getId(),
-                result.getChecks().get(0).getId(),
+                this.original.getChecks().get(0).toString(),
+                result.getChecks().get(0).toString(),
                 "Influencer length check.");
     }
 }

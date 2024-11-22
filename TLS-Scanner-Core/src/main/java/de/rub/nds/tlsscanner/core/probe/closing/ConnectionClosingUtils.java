@@ -8,12 +8,6 @@
  */
 package de.rub.nds.tlsscanner.core.probe.closing;
 
-import static de.rub.nds.tlsattacker.transport.socket.SocketState.CLOSED;
-import static de.rub.nds.tlsattacker.transport.socket.SocketState.IO_EXCEPTION;
-import static de.rub.nds.tlsattacker.transport.socket.SocketState.PEER_WRITE_CLOSED;
-import static de.rub.nds.tlsattacker.transport.socket.SocketState.SOCKET_EXCEPTION;
-import static de.rub.nds.tlsattacker.transport.socket.SocketState.TIMEOUT;
-
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -58,7 +52,9 @@ public abstract class ConnectionClosingUtils {
                 }
                 Thread.sleep(10);
                 delta += 10;
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Was interrupted - aborting", e);
             }
         } while (delta < LIMIT);
         closeSocket(runningState);

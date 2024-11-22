@@ -8,17 +8,32 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.Guideline;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.scanner.core.probe.result.TestResults;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -26,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -137,6 +151,7 @@ public class BsiGuidelineSerializationIT {
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
                                 NamedGroup.SECP384R1,
+                                NamedGroup.SECP521R1,
                                 NamedGroup.BRAINPOOLP256R1,
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
@@ -153,7 +168,7 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(
-                                SignatureAlgorithm.RSA,
+                                SignatureAlgorithm.RSA_PKCS1, // TODO correct?
                                 SignatureAlgorithm.DSA,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
@@ -241,9 +256,10 @@ public class BsiGuidelineSerializationIT {
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
                                 NamedGroup.SECP384R1,
-                                // NamedGroup.BRAINPOOLP256R1TLS13,
-                                // NamedGroup.BRAINPOOLP384R1TLS13,
-                                // NamedGroup.BRAINPOOLP512R1TLS13,
+                                NamedGroup.SECP521R1,
+                                NamedGroup.BRAINPOOLP256R1,
+                                NamedGroup.BRAINPOOLP384R1,
+                                NamedGroup.BRAINPOOLP512R1,
                                 NamedGroup.FFDHE2048,
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096),
@@ -264,11 +280,11 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384,
                                 SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,
                                 SignatureAndHashAlgorithm.ECDSA_SHA256,
-                                SignatureAndHashAlgorithm.ECDSA_SHA384
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-                                ),
+                                SignatureAndHashAlgorithm.ECDSA_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_SHA512,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
+                                SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         checks.add(
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
@@ -277,17 +293,13 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Arrays.asList(
-                                SignatureAndHashAlgorithm.RSA_SHA256,
-                                SignatureAndHashAlgorithm.RSA_SHA384,
-                                SignatureAndHashAlgorithm.RSA_SHA512,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384,
-                                SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384,
-                                SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512,
-                                SignatureAndHashAlgorithm.ECDSA_SHA256,
-                                SignatureAndHashAlgorithm.ECDSA_SHA384
+                                X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
+                                X509SignatureAlgorithm.RSASSA_PSS,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA256,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA384,
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA512
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
                                 // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
@@ -310,15 +322,7 @@ public class BsiGuidelineSerializationIT {
                         "BSI TR-02102-2",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
-        GuidelineIO<ServerReport> guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class,
-                        checks.stream()
-                                .map(
-                                        check ->
-                                                (Class<? extends GuidelineCheck<ServerReport>>)
-                                                        check.getClass())
-                                .collect(Collectors.toSet()));
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
     }
 }

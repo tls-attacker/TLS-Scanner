@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
@@ -73,7 +73,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
         List<NamedGroup> supportedGroups =
                 tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.UNCERTAIN);
+            return new NamedGroupsGuidelineCheckResult(getName(), GuidelineAdherence.CHECK_FAILED);
         }
         if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
@@ -84,11 +84,13 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 }
             }
             if (!found) {
-                return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, requiredGroups);
+                return new NamedGroupsGuidelineCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, requiredGroups);
             }
         }
         if (supportedGroups.size() < minGroupCount) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, supportedGroups.size());
+            return new NamedGroupsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, supportedGroups.size());
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
@@ -97,14 +99,15 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
             }
         }
         if (nonRecommended.isEmpty()) {
-            return new NamedGroupsGuidelineCheckResult(TestResults.TRUE);
+            return new NamedGroupsGuidelineCheckResult(getName(), GuidelineAdherence.ADHERED);
         } else {
-            return new NamedGroupsGuidelineCheckResult(TestResults.FALSE, nonRecommended);
+            return new NamedGroupsGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, nonRecommended);
         }
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "NamedGroups_"
                 + getRequirementLevel()
                 + "_"

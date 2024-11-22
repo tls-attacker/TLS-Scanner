@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientAuthenticationDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
@@ -22,7 +22,7 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
     @ParametersDelegate private ClientDelegate clientDelegate;
 
-    @ParametersDelegate private CcaDelegate ccaDelegate;
+    @ParametersDelegate private ClientAuthenticationDelegate clientAuthenticationDelegate;
 
     @ParametersDelegate private ProxyDelegate proxyDelegate;
 
@@ -64,11 +64,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
         super(delegate);
 
         this.clientDelegate = new ClientDelegate();
-        this.ccaDelegate = new CcaDelegate();
+        this.clientAuthenticationDelegate = new ClientAuthenticationDelegate();
         this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
-        addDelegate(ccaDelegate);
+        addDelegate(clientAuthenticationDelegate);
         addDelegate(proxyDelegate);
     }
 
@@ -76,11 +76,11 @@ public class ServerScannerConfig extends TlsScannerConfig {
         super(delegate);
 
         this.clientDelegate = clientDelegate;
-        this.ccaDelegate = new CcaDelegate();
+        this.clientAuthenticationDelegate = new ClientAuthenticationDelegate();
         this.proxyDelegate = new ProxyDelegate();
 
         addDelegate(clientDelegate);
-        addDelegate(ccaDelegate);
+        addDelegate(clientAuthenticationDelegate);
         addDelegate(proxyDelegate);
     }
 
@@ -96,8 +96,8 @@ public class ServerScannerConfig extends TlsScannerConfig {
         return clientDelegate;
     }
 
-    public CcaDelegate getCcaDelegate() {
-        return ccaDelegate;
+    public ClientAuthenticationDelegate getClientAuthenticationDelegate() {
+        return clientAuthenticationDelegate;
     }
 
     public ProxyDelegate getProxyDelegate() {

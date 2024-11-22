@@ -8,13 +8,22 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
+import de.rub.nds.scanner.core.probe.result.DetailedResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -25,28 +34,22 @@ import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
@@ -55,7 +58,6 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
-import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -63,34 +65,41 @@ import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentTestResults;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultHmacKey;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundDefaultStek;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.SessionTicketAfterStats;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketManipulationResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleOffsetResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.TicketPaddingOracleResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
-import java.security.PublicKey;
 import java.text.DecimalFormat;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -142,21 +151,16 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
-        // appendSessionTicketZeroKeyDetails(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
-        // appendGcm(builder);
-        // appendRfc(builder);
         appendCertificates(builder);
-        appendOcsp(builder);
-        appendCertificateTransparency(builder);
         appendSession(builder);
+        appendSessionTicketEval(builder);
         appendRenegotiation(builder);
         appendHttps(builder);
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
-        appendClientAuthentication(builder);
         if (report.getProtocolType() == ProtocolType.DTLS) {
             appendDtlsSpecificResults(builder);
         }
@@ -175,16 +179,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendHeading(
                     builder, "Unexecuted Probes and the respectively missing Requirements");
-            for (ScannerProbe<ServerReport, ?> unexecutedProbe : report.getUnexecutedProbes())
+            for (ScannerProbe<?, ?> unexecutedProbe : report.getUnexecutedProbes())
+                // noinspection unchecked
                 prettyAppend(
                         builder,
                         unexecutedProbe.getProbeName(),
-                        unexecutedProbe
-                                .getRequirements()
-                                .getUnfulfilledRequirements(report)
-                                .stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(";")));
+                        ((ScannerProbe<ServerReport, ?>) unexecutedProbe)
+                                .getRequirements().getUnfulfilledRequirements(report).stream()
+                                        .map(Object::toString)
+                                        .collect(Collectors.joining(";")));
         }
     }
 
@@ -575,7 +578,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
             prettyAppend(
                     builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
+            // prettyAppend(builder, "Alpn Protocols",
+            // simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -621,7 +625,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         int certCtr = 1;
         if (report.getCertificateChainList() != null
                 && !report.getCertificateChainList().isEmpty()) {
-            for (CertificateChain chain : report.getCertificateChainList()) {
+            for (CertificateChainReport chainReport : report.getCertificateChainList()) {
                 prettyAppendHeading(
                         builder,
                         "Certificate Chain (Certificate "
@@ -629,36 +633,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                 + " of "
                                 + report.getCertificateChainList().size()
                                 + ")");
-                appendCertificate(builder, chain);
+                appendCertificate(builder, chainReport);
                 certCtr++;
             }
         }
         return builder;
     }
 
-    private StringBuilder appendCertificate(StringBuilder builder, CertificateChain chain) {
+    private StringBuilder appendCertificate(StringBuilder builder, CertificateChainReport chain) {
         prettyAppend(
                 builder,
                 "Chain ordered",
                 chain.getChainIsOrdered(),
-                chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+                Objects.equals(chain.getChainIsOrdered(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.YELLOW);
         prettyAppend(
                 builder,
                 "Contains Trust Anchor",
                 chain.getContainsTrustAnchor(),
-                chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
+                Objects.equals(chain.getContainsTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.RED
+                        : AnsiColor.GREEN);
         prettyAppend(
                 builder,
                 "Generally Trusted",
                 chain.getGenerallyTrusted(),
-                chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
-        if (TrustAnchorManager.getInstance().hasCustomTrustAnchros()) {
-            prettyAppend(
-                    builder,
-                    "Custom Trusted",
-                    chain.getContainsCustomTrustAnchor(),
-                    chain.getContainsCustomTrustAnchor() ? AnsiColor.GREEN : AnsiColor.RED);
-        }
+                Objects.equals(chain.getGenerallyTrusted(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
+        prettyAppend(
+                builder,
+                "Custom Trusted",
+                chain.getContainsCustomTrustAnchor(),
+                Objects.equals(chain.getContainsCustomTrustAnchor(), Boolean.TRUE)
+                        ? AnsiColor.GREEN
+                        : AnsiColor.RED);
+
         if (chain.getCertificateIssues().size() > 0) {
             prettyAppendSubheading(builder, "Certificate Issues");
             for (CertificateIssue issue : chain.getCertificateIssues()) {
@@ -677,41 +688,40 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 if (certReport.getIssuer() != null) {
                     prettyAppend(builder, "Issuer", certReport.getIssuer());
                 }
-                if (certReport.getValidFrom() != null) {
-                    if (certReport.getValidFrom().before(new Date())) {
+                if (certReport.getNotBefore() != null) {
+                    if (certReport.getNotBefore().isBeforeNow()) {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString(),
+                                certReport.getNotBefore().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid From",
-                                certReport.getValidFrom().toString() + " - NOT YET VALID",
+                                certReport.getNotBefore().toString() + " - NOT YET VALID",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidTo() != null) {
-                    if (certReport.getValidTo().after(new Date())) {
+                if (certReport.getNotAfter() != null) {
+                    if (certReport.getNotAfter().isAfterNow()) {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString(),
+                                certReport.getNotAfter().toString(),
                                 AnsiColor.GREEN);
                     } else {
                         prettyAppend(
                                 builder,
                                 "Valid Till",
-                                certReport.getValidTo().toString() + " - EXPIRED",
+                                certReport.getNotAfter().toString() + " - EXPIRED",
                                 AnsiColor.RED);
                     }
                 }
-                if (certReport.getValidFrom() != null
-                        && certReport.getValidTo() != null
-                        && certReport.getValidTo().after(new Date())) {
-                    long time = certReport.getValidTo().getTime() - System.currentTimeMillis();
-                    long days = TimeUnit.MILLISECONDS.toDays(time);
+                if (certReport.getNotBefore() != null
+                        && certReport.getNotAfter() != null
+                        && certReport.getNotAfter().isAfterNow()) {
+                    int days = Days.daysBetween(DateTime.now(), certReport.getNotAfter()).getDays();
                     if (days < 1) {
                         prettyAppend(
                                 builder,
@@ -755,44 +765,32 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             certReport.getWeakDebianKey(),
                             certReport.getWeakDebianKey() ? AnsiColor.RED : AnsiColor.GREEN);
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
+                if (certReport.getSignatureAlgorithm() != null) {
                     prettyAppend(
                             builder,
                             "Signature Algorithm",
-                            certReport
-                                    .getSignatureAndHashAlgorithm()
-                                    .getSignatureAlgorithm()
-                                    .name());
+                            certReport.getSignatureAlgorithm().name());
                 }
-                if (certReport.getSignatureAndHashAlgorithm() != null) {
-                    if (certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.SHA1
-                            || certReport.getSignatureAndHashAlgorithm().getHashAlgorithm()
-                                    == HashAlgorithm.MD5) {
+                if (certReport.getSignatureAlgorithm() != null) {
+                    if (certReport.getHashAlgorithm() == HashAlgorithm.SHA1
+                            || certReport.getHashAlgorithm() == HashAlgorithm.MD5) {
                         if (!certReport.isTrustAnchor() && !certReport.getSelfSigned()) {
                             prettyAppend(
                                     builder,
                                     "Hash Algorithm",
-                                    certReport
-                                            .getSignatureAndHashAlgorithm()
-                                            .getHashAlgorithm()
-                                            .name(),
+                                    certReport.getHashAlgorithm().name(),
                                     AnsiColor.RED);
                         } else {
                             prettyAppend(
                                     builder,
                                     "Hash Algorithm",
-                                    certReport
-                                                    .getSignatureAndHashAlgorithm()
-                                                    .getHashAlgorithm()
-                                                    .name()
-                                            + " - Not critical");
+                                    certReport.getHashAlgorithm().name() + " - Not critical");
                         }
                     } else {
                         prettyAppend(
                                 builder,
                                 "Hash Algorithm",
-                                certReport.getSignatureAndHashAlgorithm().getHashAlgorithm().name(),
+                                certReport.getHashAlgorithm().name(),
                                 AnsiColor.GREEN);
                     }
                 }
@@ -858,284 +856,52 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     builder.append("ROCA (simple): not tested");
                 }
                 prettyAppendHexString(
-                        builder, "Fingerprint (SHA256)", certReport.getSHA256Fingerprint());
+                        builder,
+                        "Fingerprint (SHA256)",
+                        ArrayConverter.bytesToHexString(
+                                certReport.getSHA256Fingerprint(), false, false));
             }
         }
         return builder;
     }
 
-    private String prettyAppendPublicKey(StringBuilder builder, PublicKey publicKey) {
-        if (publicKey instanceof CustomDhPublicKey) {
-            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+    private String prettyAppendPublicKey(StringBuilder builder, PublicKeyContainer publicKey) {
+        if (publicKey instanceof DhPublicKey) {
+            DhPublicKey dhPublicKey = (DhPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "Static Diffie Hellman");
 
             prettyAppendHexString(builder, "Modulus", dhPublicKey.getModulus().toString(16));
-            prettyAppendHexString(builder, "Generator", dhPublicKey.getModulus().toString(16));
-            prettyAppendHexString(builder, "Y", dhPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomDsaPublicKey) {
-            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            prettyAppendHexString(builder, "Generator", dhPublicKey.getGenerator().toString(16));
+            prettyAppendHexString(builder, "Y", dhPublicKey.getPublicKey().toString(16));
+        } else if (publicKey instanceof DsaPublicKey) {
+            DsaPublicKey dsaPublicKey = (DsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "DSA");
-            prettyAppendHexString(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
-            prettyAppendHexString(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
-            prettyAppendHexString(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            prettyAppendHexString(builder, "Modulus", dsaPublicKey.getModulus().toString(16));
+            prettyAppendHexString(builder, "Generator", dsaPublicKey.getGenerator().toString(16));
+            prettyAppendHexString(builder, "Q", dsaPublicKey.getQ().toString(16));
             prettyAppendHexString(builder, "X", dsaPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomRsaPublicKey) {
-            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+        } else if (publicKey instanceof RsaPublicKey) {
+            RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
             prettyAppend(builder, "PublicKey Type:", "RSA");
             prettyAppendHexString(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
             prettyAppendHexString(
                     builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
-        } else if (publicKey instanceof CustomEcPublicKey) {
-            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
-            prettyAppend(builder, "PublicKey Type:", "EC");
-            if (ecPublicKey.getGroup() == null) {
-                prettyAppend(builder, "Group (GOST)", ecPublicKey.getGostCurve().name());
-            } else {
-                prettyAppend(builder, "Group", ecPublicKey.getGroup().name());
-            }
-            prettyAppendHexString(builder, "Public Point", ecPublicKey.getPoint().toString(16));
+        } else if (publicKey instanceof EcdhPublicKey) {
+            EcdhPublicKey ecdhPublicKey = (EcdhPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "ECDH");
+            prettyAppend(builder, "Group", ecdhPublicKey.getParameters().name());
+            prettyAppendHexString(
+                    builder, "Public Point", ecdhPublicKey.getPublicPoint().toString());
+        } else if (publicKey instanceof EcdsaPublicKey) {
+            EcdsaPublicKey ecdsaPublicKey = (EcdsaPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "ECDH/ECDSA");
+            prettyAppend(builder, "Group", ecdsaPublicKey.getParameters().name());
+            prettyAppendHexString(
+                    builder, "Public Point", ecdsaPublicKey.getPublicPoint().toString());
         } else {
             builder.append(publicKey.toString()).append("\n");
         }
         return builder.toString();
-    }
-
-    private StringBuilder appendOcsp(StringBuilder builder) {
-        prettyAppendHeading(builder, "OCSP");
-        appendOcspOverview(builder);
-        @SuppressWarnings("unchecked")
-        ListResult<OcspCertificateResult> ocspResult =
-                (ListResult<OcspCertificateResult>)
-                        report.getListResult(TlsAnalyzedProperty.OCSP_RESULTS);
-        if (ocspResult != null) {
-            int certCtr = 1;
-            for (OcspCertificateResult result : report.getOcspResults()) {
-                prettyAppendSubheading(
-                        builder,
-                        "Detailed OCSP results for certificate "
-                                + certCtr
-                                + " of "
-                                + report.getOcspResults().size());
-                appendOcspForCertificate(builder, result);
-                certCtr++;
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder appendOcspOverview(StringBuilder builder) {
-        prettyAppend(builder, "Supports OCSP ", TlsAnalyzedProperty.SUPPORTS_OCSP);
-        // In case extension probe & OCSP probe differ, report stapling as
-        // unreliable.
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST)
-                        == TestResults.TRUE
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.FALSE) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
-                    AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "The results are likely incomplete. Maybe rescan for more information? \n",
-                    AnsiColor.RED);
-            report.putResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
-        } else if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST)
-                        == TestResults.FALSE
-                && report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.TRUE) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
-            prettyAppend(
-                    builder,
-                    "Extension scan reported no OCSP support, but OCSP scan does. \n",
-                    AnsiColor.YELLOW);
-            report.putResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE, TestResults.TRUE);
-        }
-
-        // Print stapling support & 'must-staple'
-        if (report.getResult(TlsAnalyzedProperty.STAPLING_UNRELIABLE) == TestResults.TRUE) {
-            prettyAppend(builder, "OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
-            if (report.getResult(TlsAnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
-                prettyAppend(builder, "Must Staple", "true", AnsiColor.RED);
-            } else {
-                prettyAppend(builder, "Must Staple", TlsAnalyzedProperty.MUST_STAPLE);
-            }
-        } else {
-            if (report.getResult(TlsAnalyzedProperty.MUST_STAPLE) == TestResults.TRUE) {
-                if (report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING)
-                        == TestResults.TRUE) {
-                    prettyAppend(builder, "OCSP Stapling", "true", AnsiColor.GREEN);
-                } else {
-                    prettyAppend(builder, "OCSP Stapling", "false", AnsiColor.RED);
-                }
-                prettyAppend(builder, "Must Staple", "true", AnsiColor.GREEN);
-            } else {
-                prettyAppend(builder, "OCSP Stapling", TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING);
-                prettyAppend(builder, "Must Staple", TlsAnalyzedProperty.MUST_STAPLE);
-            }
-        }
-
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13)
-                != TestResults.COULD_NOT_TEST) {
-            prettyAppend(
-                    builder,
-                    "OCSP Stapling (TLS 1.3)",
-                    TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
-            prettyAppend(
-                    builder,
-                    "Multi Stapling (TLS 1.3)",
-                    TlsAnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
-        }
-        if (Boolean.TRUE.equals(
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
-            prettyAppend(
-                    builder, "Nonce Mismatch / Cached Nonce", TlsAnalyzedProperty.NONCE_MISMATCH);
-        }
-
-        // Is stapling supported, but a CertificateStatus message is missing?
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResults.TRUE) {
-            prettyAppend(
-                    builder,
-                    "Includes Stapled Response",
-                    TlsAnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
-            prettyAppend(
-                    builder,
-                    "Stapled Response Expired",
-                    TlsAnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
-        }
-
-        // Are nonces used? If so, do they match?
-        prettyAppend(builder, "Supports Nonce", TlsAnalyzedProperty.SUPPORTS_NONCE);
-        if (Boolean.TRUE.equals(
-                report.getResult(TlsAnalyzedProperty.SUPPORTS_NONCE) == TestResults.TRUE)) {
-            prettyAppend(
-                    builder, "Nonce Mismatch / Cached Nonce", TlsAnalyzedProperty.NONCE_MISMATCH);
-        }
-
-        return builder;
-    }
-
-    private StringBuilder appendOcspForCertificate(
-            StringBuilder builder, OcspCertificateResult result) {
-        if (result.isSupportsStapling()) {
-            if (result.getStapledResponse() != null) {
-                prettyAppend(builder, "Includes Stapled Response", true);
-                if (result.getFirstResponse().getResponseStatus() == 0) {
-                    long differenceHoursStapled = result.getDifferenceHoursStapled();
-                    if (differenceHoursStapled < 24) {
-                        prettyAppend(
-                                builder,
-                                "Stapled Response Cached",
-                                differenceHoursStapled + " hours",
-                                AnsiColor.GREEN);
-                    } else {
-                        prettyAppend(
-                                builder,
-                                "Stapled Response Cached",
-                                differenceHoursStapled / 24 + " days",
-                                AnsiColor.YELLOW);
-                    }
-                    prettyAppend(
-                            builder, "Stapled Response Expired", result.isStapledResponseExpired());
-                }
-                prettyAppend(builder, "Supports Stapled Nonce", result.isSupportsStapledNonce());
-            } else {
-                prettyAppend(builder, "Includes Stapled Response", false);
-            }
-        }
-
-        prettyAppend(builder, "Supports Nonce", result.isSupportsNonce());
-        prettyAppend(builder, "Nonce Mismatch / Cached Nonce", result.isNonceMismatch());
-
-        if (result.getStapledResponse() != null) {
-            prettyAppendSubheading(builder, "Stapled OCSP Response");
-            if (result.getStapledResponse().getResponseStatus() > 0) {
-                prettyAppend(
-                        builder, "Server stapled an erroneous OCSP response. \n", AnsiColor.RED);
-            }
-            prettyAppend(builder, result.getStapledResponse().toString(false));
-        }
-
-        if (result.getFirstResponse() != null) {
-            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP POST)");
-            if (result.getFirstResponse().getResponseStatus() > 0) {
-                prettyAppend(
-                        builder,
-                        "OCSP Request was not accepted by the OCSP Responder.",
-                        AnsiColor.RED);
-
-                // Check if certificate chain was unordered. This will make the
-                // request fail very likely.
-                CertificateChain chain = result.getCertificate();
-                if (Boolean.FALSE.equals(chain.getChainIsOrdered())) {
-                    prettyAppend(
-                            builder,
-                            "This likely happened due the certificate chain being unordered. This is not supported yet by this scan.",
-                            AnsiColor.RED);
-                }
-                prettyAppend(builder, result.getFirstResponse().toString(false));
-            }
-        } else if (result.getFirstResponse() == null && result.getHttpGetResponse() != null) {
-            prettyAppend(
-                    builder,
-                    "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.",
-                    AnsiColor.YELLOW);
-        }
-
-        // Print requested HTTP GET response
-        if (result.getHttpGetResponse() != null) {
-            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP GET)");
-            prettyAppend(builder, result.getHttpGetResponse().toString(false));
-        } else if (result.getHttpGetResponse() == null && result.getFirstResponse() != null) {
-            prettyAppend(
-                    builder,
-                    "Retrieved an OCSP response via HTTP POST, but not via HTTP GET.",
-                    AnsiColor.YELLOW);
-        }
-
-        return builder;
-    }
-
-    private StringBuilder appendCertificateTransparency(StringBuilder builder) {
-        prettyAppendHeading(builder, "Certificate Transparency");
-        prettyAppend(
-                builder,
-                "Supports Precertificate SCTs",
-                TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
-        prettyAppend(
-                builder,
-                "Supports TLS Handshake SCTs",
-                TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
-        prettyAppend(
-                builder, "Supports OCSP Response SCTs", TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP);
-        prettyAppend(
-                builder, "Meets Chrome's CT Policy", TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
-
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE)
-                == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "Precertificate SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getPrecertificateSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "TLS Handshake SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getHandshakeSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResults.TRUE) {
-            prettyAppendSubheading(builder, "OCSP Response SCTs");
-            for (SignedCertificateTimestamp sct :
-                    report.getOcspSctList().getCertificateTimestampList()) {
-                prettyAppend(builder, sct.toString() + "\n");
-            }
-        }
-
-        return builder;
     }
 
     public StringBuilder appendSession(StringBuilder builder) {
@@ -1151,7 +917,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
         }
         prettyAppend(
-                builder, "Issues Session Tickets", TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+                builder,
+                "Issues Session Tickets",
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION);
         prettyAppend(
                 builder,
                 "Supports Session Ticket Resumption",
@@ -1164,18 +932,397 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         prettyAppend(
                 builder,
-                "Issues TLS 1.3 Session Tickets",
-                TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+                "Issues TLS 1.3 Session Tickets directly after handshake",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
+        prettyAppend(
+                builder,
+                "Issues TLS 1.3 Session Tickets with Application Data",
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA);
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
-        // prettyAppend(builder, "Session Ticket Hint",
-        // report.getSessionTicketLengthHint());
-        // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
-        // report.getSessionTicketGetsRotated());
-        // prettyAppendRedOnFailure(builder, "Ticketbleed",
-        // report.getVulnerableTicketBleed());
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval(StringBuilder builder) {
+        prettyAppendHeading(builder, "SessionTicketEval");
+
+        prettyAppendSubheading(builder, "Summary");
+        prettyAppend(
+                builder, "Ticket contains plain secret", TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK (enc)",
+                TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        prettyAppend(
+                builder,
+                "Ticket use default STEK (MAC)",
+                TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
+        prettyAppend(builder, "No (full) MAC check", TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+        prettyAppend(
+                builder, "Vulnerable to Padding Oracle", TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
+        prettyAppend(builder, "Tickets can be reused", TlsAnalyzedProperty.REUSABLE_TICKET);
+
+        prettyAppend(
+                builder,
+                "Allows ciphersuite change",
+                TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        prettyAppend(
+                builder,
+                "Tickets resumable in different version",
+                TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+
+        prettyAppendSubheading(builder, "Details");
+        // TODO use tables
+        // once we have support for tables, most of the data below can be put into
+        // tables
+        // the columns would be the protocol version
+        appendSessionTicketEval_VersionChange(builder);
+        appendSessionTicketEval_CipherSuiteChange(builder);
+        appendSessionTicketEval_ReusableTicket(builder);
+        appendSessionTicketEval_Manipulation(builder);
+        appendSessionTicketEval_PaddingOracle(builder);
+        appendSessionTicketEval_Statistics(builder);
+        appendSessionTicketEval_Unencrypted(builder);
+        appendSessionTicketEval_ReusedKeystream(builder);
+        appendSessionTicketEval_DefaultStek(builder);
+        appendSessionTicketEval_DefaultMacStek(builder);
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_VersionChange(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var allowsVersionChange =
+                    (VersionDependentSummarizableResult<VersionDependentTestResults>) result;
+            for (Entry<ProtocolVersion, VersionDependentTestResults> versionResults :
+                    allowsVersionChange.getResultMap().entrySet()) {
+                VersionDependentTestResults versionResult = versionResults.getValue();
+                prettyAppend(builder, "Resuming " + versionResults.getKey() + " Ticket in");
+                if (versionResult.isExplicitSummary()) {
+                    prettyAppend(builder, "\t" + versionResult.getSummarizedResult().toString());
+                } else {
+                    for (Entry<ProtocolVersion, TestResults> changeResult :
+                            versionResult.getResultMap().entrySet()) {
+                        prettyAppend(
+                                builder,
+                                "\t" + changeResult.getKey() + ": ",
+                                changeResult.getValue().toString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_CipherSuiteChange(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET);
+        if (result instanceof VersionDependentTestResults) {
+            var allowsCipherSuiteChange = (VersionDependentTestResults) result;
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsCipherSuiteChange.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Allows ciphersuite change [" + versionResults.getKey() + "]",
+                        versionResults.getValue().toString());
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_ReusableTicket(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.REUSABLE_TICKET);
+        if (result instanceof VersionDependentTestResults) {
+            var allowsReplayingTickets = (VersionDependentTestResults) result;
+
+            for (Entry<ProtocolVersion, TestResults> versionResults :
+                    allowsReplayingTickets.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Tickets can be reused [" + versionResults.getKey() + "]",
+                        versionResults.getValue().toString());
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Manipulation(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.NO_MAC_CHECK_TICKET);
+
+        if (result instanceof VersionDependentResult) {
+            var mainManipulationResult = (VersionDependentResult<TicketManipulationResult>) result;
+            // have one map, such that the classes stay the same
+            Map<ResponseFingerprint, Integer> manipulationClassifications = new HashMap<>();
+
+            prettyAppendSubheading(builder, "Manipulation");
+            // print brief overview
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        "Manipulation Overview "
+                                + manipulationResult.getKey()
+                                + ": "
+                                + manipulationResult
+                                        .getValue()
+                                        .getResultsAsShortString(
+                                                manipulationClassifications, true));
+            }
+
+            if (detail.getLevelValue() >= ScannerDetail.DETAILED.getLevelValue()) {
+                for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                        mainManipulationResult.getResultMap().entrySet()) {
+                    prettyAppend(
+                            builder,
+                            "Manipulation Details "
+                                    + manipulationResult.getKey()
+                                    + ": "
+                                    + manipulationResult
+                                            .getValue()
+                                            .getResultsAsShortString(
+                                                    manipulationClassifications, false));
+                }
+            }
+
+            // print legend
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getValue().getAcceptFingerprint());
+            }
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_ACCEPT_DIFFERENT_SECRET
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult
+                                        .getValue()
+                                        .getAcceptDifferentSecretFingerprint());
+            }
+            for (Entry<ProtocolVersion, TicketManipulationResult> manipulationResult :
+                    mainManipulationResult.getResultMap().entrySet()) {
+                prettyAppend(
+                        builder,
+                        padToLength(
+                                        TicketManipulationResult.CHR_REJECT
+                                                + " ["
+                                                + manipulationResult.getKey()
+                                                + "]",
+                                        10)
+                                + "\t: "
+                                + manipulationResult.getValue().getRejectFingerprint());
+            }
+
+            for (Entry<ResponseFingerprint, Integer> entry :
+                    manipulationClassifications.entrySet().stream()
+                            .sorted((a, b) -> Integer.compare(a.getValue(), b.getValue()))
+                            .toArray(Entry[]::new)) {
+                String key;
+                if (entry.getValue() < TicketManipulationResult.CHR_CLASSIFICATIONS.length()) {
+                    key =
+                            ""
+                                    + TicketManipulationResult.CHR_CLASSIFICATIONS.charAt(
+                                            entry.getValue());
+                } else {
+                    key = "" + entry.getValue();
+                }
+                prettyAppend(builder, padToLength(key, 10) + "\t: " + entry.getKey());
+            }
+
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_NO_RESULT + "", 10)
+                            + "\t: *not tested/no result*");
+            prettyAppend(
+                    builder,
+                    padToLength(TicketManipulationResult.CHR_UNKNOWN + "", 10)
+                            + "\t: *multiple classifications/no more chars left to classify*");
+        }
+
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_PaddingOracle(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.PADDING_ORACLE_TICKET);
+
+        if (result instanceof VersionDependentResult) {
+            prettyAppendSubSubheading(builder, "Padding Oracle");
+            var mainPaddingOracleResult =
+                    (VersionDependentResult<TicketPaddingOracleResult>) result;
+
+            for (Entry<ProtocolVersion, TicketPaddingOracleResult> paddingResult :
+                    mainPaddingOracleResult.getResultMap().entrySet()) {
+                prettyAppendSubSubSubheading(builder, paddingResult.getKey().toString());
+                prettyAppend(
+                        builder,
+                        "Overall Result",
+                        paddingResult.getValue().getOverallResult().toString());
+                if (paddingResult.getValue().getSecondVectorsWithRareResponses() != null) {
+                    for (TicketPaddingOracleVectorSecond vector :
+                            paddingResult.getValue().getSecondVectorsWithRareResponses()) {
+                        prettyAppend(
+                                builder,
+                                "Possible Plaintext:",
+                                String.format(
+                                        "%02x%02x (XOR %02x%02x@%d)",
+                                        vector.secondAssumedPlaintext,
+                                        vector.lastAssumedPlaintext,
+                                        vector.secondXorValue,
+                                        vector.lastXorValue,
+                                        vector.offset));
+                    }
+                }
+
+                if (paddingResult.getValue().getPositionResults() != null) {
+                    appendInformationLeakTestList(
+                            builder,
+                            paddingResult.getValue().getPositionResults().stream()
+                                    .map(TicketPaddingOracleOffsetResult::getLastByteLeakTest)
+                                    .collect(Collectors.toList()),
+                            "Padding Oracle Details");
+                }
+            }
+        }
+
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Statistics(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.STATISTICS_TICKET);
+        if (result instanceof VersionDependentResult) {
+            var statistics = (VersionDependentResult<SessionTicketAfterStats>) result;
+            prettyAppendSubSubheading(builder, "Statistics");
+            for (Entry<ProtocolVersion, SessionTicketAfterStats> afterResultEntry :
+                    statistics.getResultMap().entrySet()) {
+                ProtocolVersion version = afterResultEntry.getKey();
+                SessionTicketAfterStats afterResult = afterResultEntry.getValue();
+                prettyAppendSubSubSubheading(builder, version.toString());
+                prettyAppend(builder, "Ticket length", afterResult.getTicketLengths());
+                prettyAppend(
+                        builder,
+                        "Keyname/Prefix length",
+                        String.valueOf(afterResult.getKeyNameLength()));
+                prettyAppend(builder, "Found ASCII Strings", "");
+                for (String found : afterResult.getAsciiStringsFound()) {
+                    prettyAppend(builder, "", "[" + found.length() + " Bytes] \"" + found + "\"");
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_Unencrypted(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.UNENCRYPTED_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var unencrypted =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            if (unencrypted.getSummarizedResult() == TestResults.TRUE) {
+                for (var entry : unencrypted.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        prettyAppendSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder,
+                                "Found Plain Secret",
+                                entry.getValue().getDetails().toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_ReusedKeystream(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var reusedKeystream =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundSecret>>) result;
+            if (reusedKeystream.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Reused Keystream");
+                for (var entry : reusedKeystream.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        prettyAppendSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder,
+                                "Found Reused Keystream - Found Secret",
+                                entry.getValue().getDetails().toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_DefaultStek(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var defaultStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultStek>>) result;
+            if (defaultStek.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Default STEK");
+                for (var entry : defaultStek.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        FoundDefaultStek foundDefaultStek = entry.getValue().getDetails();
+                        prettyAppendSubSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(builder, "Found Format", foundDefaultStek.format.toString());
+                        prettyAppend(
+                                builder, "Found Algorithm", foundDefaultStek.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultStek.key, false, false));
+                        prettyAppend(
+                                builder, "Found Secret", foundDefaultStek.secret.toReportString());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    public StringBuilder appendSessionTicketEval_DefaultMacStek(StringBuilder builder) {
+        TestResult result = report.getResult(TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET);
+        if (result instanceof VersionDependentSummarizableResult) {
+            var defaultMacStek =
+                    (VersionDependentSummarizableResult<DetailedResult<FoundDefaultHmacKey>>)
+                            result;
+            if (defaultMacStek.getSummarizedResult() == TestResults.TRUE) {
+                prettyAppendSubSubheading(builder, "Default MAC STEK");
+                for (var entry : defaultMacStek.getResultMap().entrySet()) {
+                    if (entry.getValue().getSummarizedResult() == TestResults.TRUE) {
+                        FoundDefaultHmacKey foundDefaultHmacKey = entry.getValue().getDetails();
+                        prettyAppendSubSubSubheading(builder, entry.getKey().toString());
+                        prettyAppend(
+                                builder, "Found Format", foundDefaultHmacKey.format.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Algorithm",
+                                foundDefaultHmacKey.algorithm.toString());
+                        prettyAppend(
+                                builder,
+                                "Found Key",
+                                ArrayConverter.bytesToHexString(
+                                        foundDefaultHmacKey.key, false, false));
+                    }
+                }
+            }
+        }
         return builder;
     }
 
@@ -1337,10 +1484,6 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(
-                builder,
-                "CVE-2020-13777 (Zero key)",
-                TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
@@ -2150,7 +2293,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         }
         appendTls13Groups(builder);
-        appendCurves(builder);
+        appendGroups(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
     }
@@ -2360,43 +2503,42 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
         prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
-        prettyAppend(builder, "Passed: " + guidelineReport.getPassed().size(), AnsiColor.GREEN);
-        prettyAppend(builder, "Skipped: " + guidelineReport.getSkipped().size());
-        prettyAppend(builder, "Failed: " + guidelineReport.getFailed().size(), AnsiColor.RED);
+        prettyAppend(builder, "Adhered: " + guidelineReport.getAdhered().size(), AnsiColor.GREEN);
+        prettyAppend(builder, "Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED);
         prettyAppend(
-                builder, "Uncertain: " + guidelineReport.getUncertain().size(), AnsiColor.YELLOW);
+                builder, "Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW);
+        prettyAppend(builder, "Condition Not Met: " + guidelineReport.getConditionNotMet().size());
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
 
             if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
                 prettyAppendSubSubheading(builder, "Passed Checks:");
-                for (GuidelineCheckResult result : guidelineReport.getPassed()) {
-                    prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
+                    prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.GREEN);
                     prettyAppend(
                             builder,
-                            "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                            "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
                 }
             }
-            prettyAppendSubSubheading(builder, "Failed Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getFailed()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
+
+            prettyAppendSubSubheading(builder, "Violated Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getViolated()) {
+                prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.RED);
                 prettyAppend(
-                        builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                        builder, "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
             }
-            prettyAppendSubSubheading(builder, "Uncertain Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+
+            prettyAppendSubSubheading(builder, "Failed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
+                prettyAppend(builder, StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW);
                 prettyAppend(
-                        builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                        builder, "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t"));
             }
 
             if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                prettyAppendSubSubheading(builder, "Skipped Checks:");
-                for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
-                    prettyAppend(builder, StringUtils.trim(result.getName()));
-                    prettyAppend(
-                            builder,
-                            "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                prettyAppendSubSubheading(builder, "Condition Not Met Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getConditionNotMet()) {
+                    prettyAppend(builder, StringUtils.trim(result.getCheckName()));
                 }
             }
         }
@@ -2414,7 +2556,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             ScoreReport scoreReport = report.getScoreReport();
             Recommendations recommendations = rater.getRecommendations();
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
-                    scoreReport.getInfluencers();
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(
@@ -2543,40 +2686,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
     }
 
-    public StringBuilder appendCurves(StringBuilder builder) {
+    public StringBuilder appendGroups(StringBuilder builder) {
         List<NamedGroup> namedGroups = report.getSupportedNamedGroups();
         if (namedGroups != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (namedGroups.size() > 0) {
                 for (NamedGroup group : namedGroups) {
                     builder.append(group.name());
-                    if (detail == ScannerDetail.ALL) {
-                        builder.append("\n  Found using:");
-                        NamedGroupWitness witness =
-                                report.getSupportedNamedGroupsWitnesses().get(group);
-                        for (CipherSuite cipher : witness.getCipherSuites()) {
-                            builder.append("\n    ").append(cipher.toString());
-                        }
-                        builder.append("\n  ECDSA Required Groups:");
-                        if (witness.getEcdsaPkGroupEphemeral() != null
-                                && witness.getEcdsaPkGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaPkGroupEphemeral())
-                                    .append(" (Certificate Public Key - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupEphemeral() != null
-                                && witness.getEcdsaSigGroupEphemeral() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupEphemeral())
-                                    .append(" (Certificate Signature  - Ephemeral Cipher Suite)");
-                        }
-                        if (witness.getEcdsaSigGroupStatic() != null
-                                && witness.getEcdsaSigGroupStatic() != group) {
-                            builder.append("\n    ")
-                                    .append(witness.getEcdsaSigGroupStatic())
-                                    .append(" (Certificate Signature  - Static Cipher Suite)");
-                        }
-                    }
                     builder.append("\n");
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
@@ -2589,6 +2705,20 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             builder,
                             "Groups required for ECDSA validation are not enforced",
                             AnsiColor.YELLOW);
+                }
+                if (detail == ScannerDetail.ALL) {
+                    prettyAppendHeading(builder, "Witnesses");
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
+                        builder.append(
+                                "SKE: "
+                                        + witness.getEcdhPublicKeyGroup()
+                                        + " Cert:"
+                                        + witness.getCertificateGroup()
+                                        + " CS:"
+                                        + witness.getCipherSuites()
+                                        + "\n");
+                    }
                 }
                 prettyAppendHeading(builder, "NamedGroups General");
                 prettyAppend(
@@ -2670,10 +2800,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             try {
                 if (report.getProtocolType() == ProtocolType.TLS) {
                     prettyAppend(
-                            builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                            builder,
+                            "TCP connections",
+                            String.valueOf(report.getPerformedConnections()));
                 }
                 prettyAppendSubheading(builder, "Probe execution performance");
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     prettyAppend(
                             builder,
@@ -2687,87 +2819,5 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         } else {
             LOGGER.debug("Not printing performance data.");
         }
-    }
-
-    private void appendClientAuthentication(StringBuilder builder) {
-        prettyAppendHeading(builder, "Client authentication");
-        prettyAppend(builder, "Supported", report.getCcaSupported());
-        prettyAppend(builder, "Required", report.getCcaRequired());
-
-        if (report.getCcaTestResultList() != null) {
-            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
-            ccaTestResults.sort(
-                    new Comparator<CcaTestResult>() {
-                        @Override
-                        public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
-                            int c;
-                            c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c =
-                                    ccaTestResult
-                                            .getCertificateType()
-                                            .compareTo(t1.getCertificateType());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c =
-                                    ccaTestResult
-                                            .getProtocolVersion()
-                                            .compareTo(t1.getProtocolVersion());
-                            if (c != 0) {
-                                return c;
-                            }
-
-                            c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
-                            return c;
-                        }
-                    });
-            CcaWorkflowType lastCcaWorkflowType = null;
-            CcaCertificateType lastCcaCertificateType = null;
-            ProtocolVersion lastProtocolVersion = null;
-            for (CcaTestResult ccaTestResult : ccaTestResults) {
-                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
-                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
-                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
-                }
-                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
-                    lastCcaCertificateType = ccaTestResult.getCertificateType();
-                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
-                }
-                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
-                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
-                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
-                }
-                prettyAppend(
-                        builder,
-                        ccaTestResult
-                                .getWorkflowType()
-                                .name()
-                                .concat("--")
-                                .concat(ccaTestResult.getCertificateType().name())
-                                .concat("--")
-                                .concat(ccaTestResult.getProtocolVersion().name())
-                                .concat("--")
-                                .concat(ccaTestResult.getCipherSuite().name()),
-                        ccaTestResult.getSucceeded(),
-                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
-            }
-        }
-    }
-
-    private StringBuilder appendSessionTicketZeroKeyDetails(StringBuilder builder) {
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY)
-                == TestResults.TRUE) {
-            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
-            prettyAppend(
-                    builder,
-                    "Has GnuTls magic bytes:",
-                    TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
-        }
-        return builder;
     }
 }

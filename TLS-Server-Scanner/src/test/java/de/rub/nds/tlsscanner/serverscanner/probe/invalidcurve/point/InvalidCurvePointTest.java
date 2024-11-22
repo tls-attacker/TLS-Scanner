@@ -11,11 +11,11 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
+import de.rub.nds.protocol.crypto.ec.EllipticCurve;
+import de.rub.nds.protocol.crypto.ec.FieldElementFp;
+import de.rub.nds.protocol.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
-import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurve;
-import de.rub.nds.tlsattacker.core.crypto.ec.FieldElementFp;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +67,9 @@ public class InvalidCurvePointTest {
     }
 
     private boolean isOrderCorrect(InvalidCurvePoint invP) {
-        EllipticCurve curve = CurveFactory.getCurve(invP.getNamedGroup());
+        EllipticCurve curve =
+                (((NamedEllipticCurveParameters) invP.getNamedGroup().getGroupParameters()))
+                        .getGroup();
         FieldElementFp bX = new FieldElementFp(invP.getPublicPointBaseX(), curve.getModulus());
         FieldElementFp bY = new FieldElementFp(invP.getPublicPointBaseY(), curve.getModulus());
         Point point = new Point(bX, bY);
@@ -95,7 +97,9 @@ public class InvalidCurvePointTest {
             return false;
         } else if (invP2 == null && invP3 != null) {
             return false;
-        } else if (invP2 != null && invP1.getOrder().compareTo(invP2.getOrder()) >= 0) {
+        } else if (invP2 != null
+                && invP1 != null
+                && invP1.getOrder().compareTo(invP2.getOrder()) >= 0) {
             return false;
         } else if (invP3 != null
                 && invP2 != null

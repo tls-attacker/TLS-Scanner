@@ -9,10 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,14 +20,16 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
     private final Set<HashAlgorithm> notRecommendedAlgorithms;
 
     public HashAlgorithmsGuidelineCheckResult(
-            TestResult result, Set<HashAlgorithm> notRecommendedAlgorithms) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<HashAlgorithm> notRecommendedAlgorithms) {
+        super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
-    public String display() {
-        if (Objects.equals(TestResults.UNCERTAIN, getResult())) {
+    public String toString() {
+        if (Objects.equals(GuidelineAdherence.CHECK_FAILED, getAdherence())) {
             return "Missing Information";
         }
         if (notRecommendedAlgorithms.isEmpty()) {

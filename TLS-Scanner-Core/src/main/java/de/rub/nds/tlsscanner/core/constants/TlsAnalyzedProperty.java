@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.constants;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -17,6 +17,10 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
+    PROTOCOL_TYPE(TlsAnalyzedPropertyCategory.CONNECTION),
+    CLOSED_AFTER_FINISHED_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
+    CLOSED_AFTER_APP_DATA_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
+    KNOWN_PADDING_ORACLE_VULNERABILITY(TlsAnalyzedPropertyCategory.ATTACKS),
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -29,7 +33,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTED_NAMED_GROUPS_WITNESSES(TlsAnalyzedPropertyCategory.EC),
     SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13(TlsAnalyzedPropertyCategory.EC),
     SUPPORTED_TLS13_GROUPS(TlsAnalyzedPropertyCategory.EC),
-    SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTED_CERT_SIGNATURE_ALGORITHMS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTED_CERT_SIGNATURE_ALGORITHM_OIDS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE(TlsAnalyzedPropertyCategory.CERTIFICATE),
     SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13(TlsAnalyzedPropertyCategory.CERTIFICATE),
     SUPPORTED_TOKENBINDING_VERSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
@@ -43,12 +48,16 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     STATIC_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     EPHEMERAL_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     TLS13_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    MINIMUM_RSA_CERT_KEY_SIZE(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    MINIMUM_DSS_CERT_KEY_SIZE(TlsAnalyzedPropertyCategory.CERTIFICATE),
     OCSP_RESULTS(TlsAnalyzedPropertyCategory.OCSP),
     VERSION_SUITE_PAIRS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     HTTPS_HEADER(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     NORMAL_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     REPORT_ONLY_HPKP_PINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    HSTS_MAX_AGE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+    HPKP_MAX_AGE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     ENTROPY_REPORTS(TlsAnalyzedPropertyCategory.QUIRKS),
     MAP_RETRANSMISSION_COUNTERS(TlsAnalyzedPropertyCategory.QUIRKS),
     COMMON_DH_VALUES(TlsAnalyzedPropertyCategory.FFDHE),
@@ -68,6 +77,11 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     HPKP_INCLUDES_SUBDOMAINS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     HSTS_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     HPKP_NOT_PARSEABLE(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
+
+    GCM_PATTERN(TlsAnalyzedPropertyCategory.QUIRKS),
+    MAC_CHECK_PATTERN_FIN(TlsAnalyzedPropertyCategory.MAC),
+    MAC_CHECK_PATTERN_APP_DATA(TlsAnalyzedPropertyCategory.MAC),
+    VERIFY_CHECK_PATTERN(TlsAnalyzedPropertyCategory.MAC),
 
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(TlsAnalyzedPropertyCategory.VERSIONS),
@@ -149,8 +163,10 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_SCTS_OCSP(TlsAnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
     SUPPORTS_CHROME_CT_POLICY(TlsAnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
     SUPPORTS_MONTGOMERY_CURVES(TlsAnalyzedPropertyCategory.EC),
-    SUPPORTS_SESSION_TICKETS(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
-    SUPPORTS_TLS13_SESSION_TICKETS(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_SESSION_TICKET_EXTENSION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA(
+            TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_EXCHANGE_MODES(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -237,9 +253,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_EC_POINT_FORMAT_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     USES_UNIX_TIMESTAMPS_IN_RANDOM(TlsAnalyzedPropertyCategory.QUIRKS),
-    SENDS_HELLO_RETRY_REQUEST(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
+    SENDS_HELLO_RETRY_REQUEST(TlsAnalyzedPropertyCategory.HELLO_RETRY_REQUEST),
     ISSUES_COOKIE_IN_HELLO_RETRY(TlsAnalyzedPropertyCategory.EXTENSIONS),
-    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(TlsAnalyzedPropertyCategory.ATTACKS),
+    HRR_SELECTED_GROUP(TlsAnalyzedPropertyCategory.HELLO_RETRY_REQUEST),
     VULNERABLE_TO_DIRECT_RACCOON(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -292,7 +308,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     REUSES_DH_PUBLICKEY(TlsAnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(TlsAnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(TlsAnalyzedPropertyCategory.SNI),
-    HAS_GNU_TLS_MAGIC_BYTES(TlsAnalyzedPropertyCategory.SESSION_TICKET),
     /** CCA Properties */
     SUPPORTS_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
@@ -304,7 +319,10 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_EVEN_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_MOD3_MODULUS(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_MODULUS_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_MODULUS_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_GENERATOR_ONE(TlsAnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_GENERATOR_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
+    WEAKEST_DH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
     /** DTLS */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
     DTLS_FRAGMENTATION_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),
@@ -323,6 +341,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     USES_SESSION_ID_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_CIPHERSUITES_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     USES_COMPRESSIONS_FOR_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    COOKIE_LENGTH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     ACCEPTS_UNENCRYPTED_FINISHED(TlsAnalyzedPropertyCategory.QUIRKS),
     ACCEPTS_UNENCRYPTED_APP_DATA(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_EARLY_FINISHED_BUG(TlsAnalyzedPropertyCategory.QUIRKS),
@@ -341,10 +360,28 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
             TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     HAS_CLIENT_HELLO_MISMATCH(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
     ACCEPTS_EMPTY_COOKIE(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    TOTAL_RECEIVED_RETRANSMISSIONS(TlsAnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    /** SessionTicket */
+    UNENCRYPTED_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    NO_MAC_CHECK_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    DEFAULT_ENCRYPTION_KEY_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    REUSED_KEYSTREAM_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    DEFAULT_HMAC_KEY_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    PADDING_ORACLE_TICKET(TlsAnalyzedPropertyCategory.ATTACKS),
+    ALLOW_CIPHERSUITE_CHANGE_TICKET(TlsAnalyzedPropertyCategory.QUIRKS),
+    ALLOW_VERSION_CHANGE_TICKET(TlsAnalyzedPropertyCategory.QUIRKS),
+    REUSABLE_TICKET(TlsAnalyzedPropertyCategory.QUIRKS),
+    STATISTICS_TICKET(TlsAnalyzedPropertyCategory.QUIRKS),
     /** Client Specific Properties */
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
     FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS),
-    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS);
+    SENDS_APPLICATION_MESSAGE(TlsAnalyzedPropertyCategory.QUIRKS),
+    LOWEST_POSSIBLE_DHE_MODULUS_SIZE(TlsAnalyzedPropertyCategory.FFDHE),
+    HIGHEST_POSSIBLE_DHE_MODULUS_SIZE(TlsAnalyzedPropertyCategory.FFDHE),
+    /** Handshakes */
+    HANDSHAKE_SUCCESFUL_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
+    HANDSHAKE_FAILED_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
+    CONNECTION_INSECURE_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS);
 
     private final TlsAnalyzedPropertyCategory category;
 

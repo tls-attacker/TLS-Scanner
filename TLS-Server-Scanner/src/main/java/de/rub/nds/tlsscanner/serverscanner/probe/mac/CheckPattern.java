@@ -22,6 +22,8 @@ public class CheckPattern {
 
     private List<ResponseFingerprint> responseFingerprintList = null;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private CheckPattern() {}
 
     public CheckPattern(

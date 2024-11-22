@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.core.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.x509attacker.signatureengine.keyparsers.PemUtil;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;

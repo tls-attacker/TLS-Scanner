@@ -10,8 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -30,17 +29,14 @@ public class CipherSuiteGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
                 TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
-                new ListResult<>(
-                        Arrays.asList(
-                                new VersionSuiteListPair(
-                                        ProtocolVersion.TLS12,
-                                        Collections.singletonList(
-                                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
-                                new VersionSuiteListPair(
-                                        ProtocolVersion.TLS13,
-                                        Collections.singletonList(
-                                                CipherSuite.TLS_AES_128_GCM_SHA256))),
-                        "VERSION_SUITE_PAIRS"));
+                Arrays.asList(
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS12,
+                                Collections.singletonList(
+                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS13,
+                                Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256))));
         CipherSuiteGuidelineCheck check =
                 new CipherSuiteGuidelineCheck(
                         null,
@@ -48,7 +44,7 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(ProtocolVersion.TLS12),
                         Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
 
         check =
                 new CipherSuiteGuidelineCheck(
@@ -58,7 +54,7 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
 
         result = check.evaluate(report);
-        assertEquals(TestResults.TRUE, result.getResult());
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
     @Test
@@ -66,14 +62,12 @@ public class CipherSuiteGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
                 TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
-                new ListResult<>(
-                        Collections.singletonList(
-                                new VersionSuiteListPair(
-                                        ProtocolVersion.TLS12,
-                                        Arrays.asList(
-                                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))),
-                        "VERSION_SUITE_PAIRS"));
+                Collections.singletonList(
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS12,
+                                Arrays.asList(
+                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                                        CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))));
 
         CipherSuiteGuidelineCheck check =
                 new CipherSuiteGuidelineCheck(
@@ -82,6 +76,6 @@ public class CipherSuiteGuidelineCheckTest {
                         Collections.singletonList(ProtocolVersion.TLS12),
                         Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
         GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(TestResults.FALSE, result.getResult());
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }

@@ -8,22 +8,21 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.CcaCertificateManager;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.trace.CcaWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.requirements.WorkingConfigRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -38,21 +37,18 @@ public class CcaRequiredProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
-        tlsConfig.setAutoSelectCertificate(false);
-        CcaCertificateManager ccaCertificateManager =
-                new CcaCertificateManager(configSelector.getScannerConfig().getCcaDelegate());
+        tlsConfig.setAutoAdjustCertificate(false);
+
         WorkflowTrace trace =
-                CcaWorkflowGenerator.generateWorkflow(
-                        tlsConfig,
-                        ccaCertificateManager,
-                        CcaWorkflowType.CRT_CKE_CCS_FIN,
-                        CcaCertificateType.EMPTY);
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         State state = new State(tlsConfig, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             requiresCca = TestResults.FALSE;
         } else {
             requiresCca = TestResults.TRUE;

@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsServerProbe extends TlsProbe<ServerReport, TlsServerProbe> {
+public abstract class TlsServerProbe extends TlsProbe<ServerReport> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -40,22 +40,23 @@ public abstract class TlsServerProbe extends TlsProbe<ServerReport, TlsServerPro
      */
     protected <T extends ExtensionMessage> T getNegotiatedExtension(
             WorkflowTrace workflowTrace, Class<T> extensionClass) {
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, workflowTrace)) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                workflowTrace, HandshakeMessageType.SERVER_HELLO)) {
             ServerHelloMessage serverHello =
                     (ServerHelloMessage)
-                            WorkflowTraceUtil.getLastReceivedMessage(
-                                    HandshakeMessageType.SERVER_HELLO, workflowTrace);
+                            WorkflowTraceResultUtil.getLastReceivedMessage(
+                                    workflowTrace, HandshakeMessageType.SERVER_HELLO);
             if (serverHello.getExtension(extensionClass) != null) {
                 return serverHello.getExtension(extensionClass);
             }
         }
 
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.ENCRYPTED_EXTENSIONS, workflowTrace)) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                workflowTrace, HandshakeMessageType.ENCRYPTED_EXTENSIONS)) {
             EncryptedExtensionsMessage encryptedExtensions =
                     (EncryptedExtensionsMessage)
-                            WorkflowTraceUtil.getLastReceivedMessage(
-                                    HandshakeMessageType.ENCRYPTED_EXTENSIONS, workflowTrace);
+                            WorkflowTraceResultUtil.getLastReceivedMessage(
+                                    workflowTrace, HandshakeMessageType.ENCRYPTED_EXTENSIONS);
             if (encryptedExtensions.getExtension(extensionClass) != null) {
                 return encryptedExtensions.getExtension(extensionClass);
             }

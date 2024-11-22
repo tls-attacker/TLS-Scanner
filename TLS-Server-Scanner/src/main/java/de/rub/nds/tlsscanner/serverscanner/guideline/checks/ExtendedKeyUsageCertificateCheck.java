@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -45,15 +45,16 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         return new GuidelineCheckResult(
-                TestResults.of(
+                getName(),
+                GuidelineAdherence.of(
                         Boolean.TRUE.equals(report.getExtendedKeyUsageServerAuth())
                                 && Boolean.FALSE.equals(report.getExtendedKeyUsagePresent()))) {
             @Override
-            public String display() {
-                return Objects.equals(TestResults.TRUE, getResult())
+            public String toString() {
+                return Objects.equals(GuidelineAdherence.ADHERED, getAdherence())
                         ? "Certificate has extended key usage for server auth."
                         : "Certificate is missing extended key usage for server auth.";
             }
@@ -61,7 +62,7 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "ExtendedKeyUsage_" + getRequirementLevel();
     }
 }

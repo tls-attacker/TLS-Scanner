@@ -9,20 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
-import de.rub.nds.tlsscanner.core.converter.Asn1CertificateSerializer;
-import de.rub.nds.tlsscanner.core.converter.Asn1FieldSerializer;
-import de.rub.nds.tlsscanner.core.converter.CertificateSerializer;
-import de.rub.nds.tlsscanner.core.converter.CustomDhPublicKeySerializer;
-import de.rub.nds.tlsscanner.core.converter.CustomDsaPublicKeySerializer;
-import de.rub.nds.tlsscanner.core.converter.CustomEcPublicKeySerializer;
-import de.rub.nds.tlsscanner.core.converter.CustomRsaPublicKeySerializer;
-import de.rub.nds.tlsscanner.core.converter.PointSerializer;
-import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
-import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -33,24 +22,16 @@ public class ClientReportSerializer {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private ClientReportSerializer() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void serialize(File outputFile, ClientReport scanReport) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-
-            SimpleModule module = new SimpleModule();
-            module.addSerializer(new ByteArraySerializer());
-            module.addSerializer(new ResponseFingerprintSerializer());
-            module.addSerializer(new CertificateSerializer());
-            module.addSerializer(new Asn1CertificateSerializer());
-            module.addSerializer(new Asn1FieldSerializer());
-            module.addSerializer(new CustomDhPublicKeySerializer());
-            module.addSerializer(new CustomEcPublicKeySerializer());
-            module.addSerializer(new CustomRsaPublicKeySerializer());
-            module.addSerializer(new CustomDsaPublicKeySerializer());
-            module.addSerializer(new VectorSerializer());
-            module.addSerializer(new PointSerializer());
-
-            mapper.registerModule(module);
+            for (Module modules : ClientReport.getSerializerModules()) {
+                mapper.registerModule(modules);
+            }
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.configOverride(BigDecimal.class)
                     .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));

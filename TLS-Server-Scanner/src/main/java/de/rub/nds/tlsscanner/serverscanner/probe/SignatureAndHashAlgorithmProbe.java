@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -53,7 +53,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         for (ProtocolVersion version : versions) {
@@ -132,11 +132,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmCV(State state) {
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE_VERIFY)) {
             HandshakeMessage message =
-                    WorkflowTraceUtil.getLastReceivedMessage(
-                            HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace());
+                    WorkflowTraceResultUtil.getLastReceivedMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE_VERIFY);
             if (message instanceof CertificateVerifyMessage) {
                 CertificateVerifyMessage msg = (CertificateVerifyMessage) message;
                 ModifiableByteArray algByte = msg.getSignatureHashAlgorithm();
@@ -150,11 +150,11 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmSke(State state) {
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE)) {
             HandshakeMessage message =
-                    WorkflowTraceUtil.getLastReceivedMessage(
-                            HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+                    WorkflowTraceResultUtil.getLastReceivedMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE);
             if (message instanceof ServerKeyExchangeMessage) {
                 ServerKeyExchangeMessage msg = (ServerKeyExchangeMessage) message;
                 ModifiableByteArray algByte = msg.getSignatureAndHashAlgorithm();

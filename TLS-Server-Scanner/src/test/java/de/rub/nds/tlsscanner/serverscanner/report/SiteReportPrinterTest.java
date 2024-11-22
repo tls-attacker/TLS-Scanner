@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import org.junit.jupiter.api.Test;
 

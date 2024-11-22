@@ -20,6 +20,8 @@ public class CommonDhValues implements Serializable {
     private boolean safePrime;
     private String name;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private CommonDhValues() {}
 
     public CommonDhValues(

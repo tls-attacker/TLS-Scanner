@@ -8,21 +8,27 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.SniType;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.sni.ServerNamePair;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AlpacaProbe extends TlsServerProbe {
 
@@ -39,7 +45,7 @@ public class AlpacaProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         strictSni = isSupportingStrictSni();
         if (!alpnSupported) {
             strictAlpn = TestResults.FALSE;
@@ -52,12 +58,17 @@ public class AlpacaProbe extends TlsServerProbe {
         Config tlsConfig = configSelector.getAnyWorkingBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.getDefaultClientConnection().setHostname("notarealtls-attackerhost.com");
+        tlsConfig.setDefaultSniHostnames(
+                new LinkedList<>(
+                        List.of(
+                                new ServerNamePair(
+                                        SniType.HOST_NAME.getValue(),
+                                        "notarealtls-attackerhost.com".getBytes(US_ASCII)))));
         tlsConfig.setAddAlpnExtension(false);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.FALSE;
         } else {
             return TestResults.TRUE;
@@ -72,8 +83,8 @@ public class AlpacaProbe extends TlsServerProbe {
         tlsConfig.setDefaultProposedAlpnProtocols("NOT an ALPN protocol");
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return TestResults.FALSE;
         } else {
             return TestResults.TRUE;

@@ -8,12 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -64,15 +64,15 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 }
             }
             return new HashAlgorithmsGuidelineCheckResult(
-                    TestResults.of(nonRecommended.isEmpty()), nonRecommended);
+                    getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
         } else {
             return new HashAlgorithmsGuidelineCheckResult(
-                    TestResults.UNCERTAIN, Collections.emptySet());
+                    getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
         }
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "HashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 

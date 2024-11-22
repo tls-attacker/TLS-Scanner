@@ -8,12 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -67,16 +68,20 @@ public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck<ServerReport>
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(
-                        reportResult, property, result, reportResult);
+                        getName(), GuidelineAdherence.CHECK_FAILED, property, result, reportResult);
             default:
                 break;
         }
         return new AnalyzedPropertyGuidelineCheckResult(
-                TestResults.of(reportResult.equals(this.result)), property, result, reportResult);
+                getName(),
+                GuidelineAdherence.of(reportResult.equals(this.result)),
+                property,
+                result,
+                reportResult);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "AnalyzedProperty_" + getRequirementLevel() + "_" + property + "_" + result;
     }
 

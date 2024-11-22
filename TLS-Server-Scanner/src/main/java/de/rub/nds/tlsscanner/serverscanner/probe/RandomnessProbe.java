@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -17,14 +16,10 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.http.HttpRequestMessage;
-import de.rub.nds.tlsattacker.core.http.HttpResponseMessage;
-import de.rub.nds.tlsattacker.core.layer.constant.LayerConfiguration;
+import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -57,7 +52,7 @@ public class RandomnessProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         collectData(configSelector.getScannerConfig().getAdditionalRandomnessHandshakes());
     }
 
@@ -70,10 +65,9 @@ public class RandomnessProbe extends TlsServerProbe {
 
     private void chooseBestCipherAndVersion(ServerReport report) {
         int bestScore = 0;
-        @SuppressWarnings("unchecked")
         List<VersionSuiteListPair> versionSuitePairs =
-                ((ListResult<VersionSuiteListPair>)
-                                report.getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS))
+                report.getListResult(
+                                TlsAnalyzedProperty.VERSION_SUITE_PAIRS, VersionSuiteListPair.class)
                         .getList();
         for (VersionSuiteListPair pair : versionSuitePairs) {
             for (CipherSuite suite : pair.getCipherSuiteList()) {
@@ -118,14 +112,23 @@ public class RandomnessProbe extends TlsServerProbe {
                     new WorkflowConfigurationFactory(config)
                             .createWorkflowTrace(
                                     WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            if (configSelector.getScannerConfig().getApplicationProtocol()
-                    == ApplicationProtocol.HTTP) {
-                config.setDefaultLayerConfiguration(LayerConfiguration.HTTPS);
-                workflowTrace.addTlsAction(new SendAction(new HttpRequestMessage(config)));
-                workflowTrace.addTlsAction(new ReceiveAction(new HttpResponseMessage(config)));
-            } else {
-                // TODO: Add application specific app data to provoke data transmission
+
+            ApplicationProtocol applicationProtocol =
+                    configSelector.getScannerConfig().getApplicationProtocol();
+            StackConfiguration expLayerConfiguration =
+                    applicationProtocol.getExpectedStackConfiguration();
+            if (expLayerConfiguration != null) {
+                config.setDefaultLayerConfiguration(expLayerConfiguration);
             }
+            try {
+                workflowTrace.addTlsActions(applicationProtocol.createDummyActions(config));
+            } catch (UnsupportedOperationException e) {
+                // TODO: Add application specific app data to provoke data transmission
+                LOGGER.warn(
+                        "No application specific actions for {} available; could not provoke data transmission.",
+                        applicationProtocol);
+            }
+
             State state = new State(config, workflowTrace);
             stateList.add(state);
         }

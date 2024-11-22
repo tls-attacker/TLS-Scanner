@@ -8,9 +8,10 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -31,7 +32,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,9 +58,13 @@ public class DheParameterProbe extends TlsClientProbe {
         super(parallelExecutor, TlsProbeType.DHE_PARAMETERS, scannerConfig);
         register(
                 TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
+                TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO,
                 TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
+                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO,
                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
-                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS);
+                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
+                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
+                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE);
 
         random = new Random(0);
         primeModuli = Arrays.asList(PrimeModulus.values());
@@ -69,7 +73,7 @@ public class DheParameterProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         PrimeModulus.sort(primeModuli, SortOrder.ASCENDING);
         lowestDheModulusLength = getFirstAcceptedModulus(primeModuli);
         PrimeModulus.sort(primeModuli, SortOrder.DESCENDING);
@@ -82,7 +86,7 @@ public class DheParameterProbe extends TlsClientProbe {
         for (PrimeModulus modulus : primeModuli) {
             Config config = scannerConfig.createConfig();
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
-            config.setDefaultServerDhModulus(modulus.getModulus());
+            config.setDefaultServerEphemeralDhModulus(modulus.getModulus());
             if (testConfig(config)) {
                 return modulus.getBitLength();
             }
@@ -108,10 +112,12 @@ public class DheParameterProbe extends TlsClientProbe {
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
             switch (compositeType) {
                 case EVEN:
-                    config.setDefaultServerDhModulus(createEvenModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createEvenModulus(lowestDheModulusLength));
                     break;
                 case MOD3:
-                    config.setDefaultServerDhModulus(createModThreeModulus(lowestDheModulusLength));
+                    config.setDefaultServerEphemeralDhModulus(
+                            createModThreeModulus(lowestDheModulusLength));
                     break;
                 default:
                     break;
@@ -150,10 +156,10 @@ public class DheParameterProbe extends TlsClientProbe {
             config.setDefaultServerSupportedCipherSuites(supportedDheCipherSuites);
             switch (smallSubgroupType) {
                 case GENERATOR_ONE:
-                    config.setDefaultServerDhGenerator(BigInteger.ONE);
+                    config.setDefaultServerEphemeralDhGenerator(BigInteger.ONE);
                     break;
                 case MODULUS_ONE:
-                    config.setDefaultServerDhModulus(BigInteger.ONE);
+                    config.setDefaultServerEphemeralDhModulus(BigInteger.ONE);
                     break;
                 default:
                     break;
@@ -171,8 +177,8 @@ public class DheParameterProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.setLowestPossibleDheModulusSize(lowestDheModulusLength);
-        report.setHighestPossibleDheModulusSize(highestDheModulusLength);
+        put(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE, lowestDheModulusLength);
+        put(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE, highestDheModulusLength);
         mergeCompositeModulusResult(report);
         mergeSmallSubgroupResult(report);
     }
@@ -209,7 +215,11 @@ public class DheParameterProbe extends TlsClientProbe {
         smallSubgroupTypeMap.put(
                 SmallSubgroupType.MODULUS_ONE, TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE);
         smallSubgroupTypeMap.put(
+                SmallSubgroupType.MODULUS_ZERO, TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO);
+        smallSubgroupTypeMap.put(
                 SmallSubgroupType.GENERATOR_ONE, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE);
+        smallSubgroupTypeMap.put(
+                SmallSubgroupType.GENERATOR_ZERO, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO);
         return smallSubgroupTypeMap;
     }
 

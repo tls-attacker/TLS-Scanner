@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
@@ -20,15 +20,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class InfluencersSerializationIT {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private RatingInfluencers original;
 

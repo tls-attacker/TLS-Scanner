@@ -41,19 +41,20 @@
         <name>Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility</name>
         <requirementLevel>SHOULD</requirementLevel>
     </certificateAgilityGuidelineCheck>
-    <signatureAlgorithmsCertificateGuidelineCheck>
+    <signatureAlgorithmsTypeCertificateGuidelineCheck>
         <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>true</atLeastOneCertificateShallPass>
-        <recommendedAlgorithms>RSA</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_SSA_PSS</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
-    </signatureAlgorithmsCertificateGuidelineCheck>
+    </signatureAlgorithmsTypeCertificateGuidelineCheck>
     <certificateCurveGuidelineCheck>
         <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
-        <recommendedGroups>SECP256R1</recommendedGroups>
-        <recommendedGroups>SECP384R1</recommendedGroups>
+        <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
+        <recommendedNamedParameters>SECP384R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Certificates shall be issued by CA that publishes revocation information in OCSP responses</name>
@@ -65,7 +66,7 @@
         <name>Server certificate shall be an X.509 version 3 certificate</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
-        <version>3</version>
+        <version>V3</version>
     </certificateVersionGuidelineCheck>
     <keySizeCertGuidelineCheck>
         <name>All server and client certificates shall contain public keys that offer at least 112 bits of security.</name>
@@ -514,8 +515,8 @@
             <property>SUPPORTS_TLS13_0_RTT</property>
             <result>TRUE</result>
         </condition>
-        <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
-        <result>TRUE</result>
+        <property>REUSABLE_TICKET</property>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The null compression method shall be enabled, and all other compression methods shall be disabled.</name>

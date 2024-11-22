@@ -8,12 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
@@ -59,7 +58,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
 
         if (publicKeyContainer != null && !publicKeyContainer.getExtractedValueList().isEmpty()) {
             for (Object o : publicKeyContainer.getExtractedValueList()) {
-                CustomDhPublicKey publicKey = (CustomDhPublicKey) o;
+                DhPublicKey publicKey = (DhPublicKey) o;
                 if (onlyPrime == TestResults.TRUE && !publicKey.getModulus().isProbablePrime(30)) {
                     onlyPrime = TestResults.FALSE;
                 }
@@ -98,12 +97,10 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, usesCommonDhPrimes);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, onlySafePrime);
-        report.putResult(
-                TlsAnalyzedProperty.COMMON_DH_VALUES,
-                new SetResult<>(usedCommonValues, TlsAnalyzedProperty.COMMON_DH_VALUES.name()));
+        report.putResult(TlsAnalyzedProperty.COMMON_DH_VALUES, usedCommonValues);
         report.putResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
-            report.setWeakestDhStrength(shortestBitLength);
+            report.putResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH, shortestBitLength);
         }
     }
 

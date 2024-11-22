@@ -8,29 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.probe.ciphersuite;
 
-import static de.rub.nds.scanner.core.constants.ScannerDetail.ALL;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.DETAILED;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.NORMAL;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.QUICK;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.AES;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.ARIA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.CAMELLIA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.CHACHA20_POLY1305;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DES;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DES40;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DESede;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.FORTEZZA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.IDEA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.NULL;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.RC2;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.RC4;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.SEED;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.AEAD;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.BLOCK;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.STREAM;
-
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -205,10 +184,10 @@ public class CipherSuiteEvaluationHelper {
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA256) {
                         supportsSha256Prf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA384) {
                         supportsSha384Prf = TestResults.TRUE;
                     }
                 }

@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
+import de.rub.nds.protocol.crypto.ec.Point;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.FingerprintSecretPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.constants.InvalidCurveScanType;
@@ -35,6 +35,8 @@ public class InvalidCurveResponse {
     private TestResult hadDistinctFps = TestResults.FALSE;
     private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private InvalidCurveResponse() {}
 
     public InvalidCurveResponse(

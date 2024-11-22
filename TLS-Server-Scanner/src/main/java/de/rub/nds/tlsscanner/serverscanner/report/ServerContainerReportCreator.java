@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -24,12 +24,9 @@ import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
@@ -39,13 +36,9 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaCertificateType;
-import de.rub.nds.tlsscanner.serverscanner.probe.cca.constans.CcaWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,13 +92,12 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createAlpacaContainer(report));
         // container.add(createBleichenbacherOracleContainer(report));
         // container.add(createPaddingOracleContainer(report));
-        container.add(createSessionTicketZeroKeyContainer(report));
         // container.add(createDirectRaccoonResultsContainer(report));
         // container.add(createInvalidCurveResultsContainer(report));
         // container.add(createRaccoonResultsContainer(report));
         container.add(createCertificateContainer(report));
         // container.add(createOcspContainer(report));
-        container.add(createCertificateTransparencyContainer(report));
+        // container.add(createCertificateTransparencyContainer(report));
         // container.add(createSessionContainer(report));
         // container.add(createRenegotiationContainer(report));
         container.add(createHttpsContainer(report));
@@ -227,38 +219,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             if (!report.getSupportedNamedGroups().isEmpty()) {
                 for (NamedGroup group : report.getSupportedNamedGroups()) {
                     container.add(new TextContainer(group.name(), AnsiColor.DEFAULT_COLOR));
-                    if (detail == ScannerDetail.ALL) {
-                        ListContainer curveDetails = new ListContainer(1);
-                        container.add(curveDetails);
-                        curveDetails.add(new HeadlineContainer("Found using"));
-                        NamedGroupWitness witness =
-                                report.getSupportedNamedGroupsWitnesses().get(group);
-                        for (CipherSuite cipher : witness.getCipherSuites()) {
-                            curveDetails.add(createDefaultTextContainer(cipher.toString()));
-                        }
-                        curveDetails.add(new HeadlineContainer("ECDSA Required Groups"));
-                        if (witness.getEcdsaPkGroupEphemeral() != null
-                                && witness.getEcdsaPkGroupEphemeral() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaPkGroupEphemeral()
-                                                    + " (Certificate Public Key - Ephemeral Cipher Suite)"));
-                        }
-                        if (witness.getEcdsaSigGroupEphemeral() != null
-                                && witness.getEcdsaSigGroupEphemeral() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaSigGroupEphemeral()
-                                                    + " (Certificate Signature  - Ephemeral Cipher Suite)"));
-                        }
-                        if (witness.getEcdsaSigGroupStatic() != null
-                                && witness.getEcdsaSigGroupStatic() != group) {
-                            curveDetails.add(
-                                    createDefaultTextContainer(
-                                            witness.getEcdsaSigGroupStatic()
-                                                    + " (Certificate Signature  - Static Cipher Suite)"));
-                        }
-                    }
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
                         == TestResults.TRUE) {
@@ -273,6 +233,22 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                             new TextContainer(
                                     "Groups required for ECDSA validation are not enforced",
                                     AnsiColor.YELLOW));
+                }
+                if (detail == ScannerDetail.ALL) {
+                    ListContainer curveDetails = new ListContainer(1);
+                    container.add(curveDetails);
+                    curveDetails.add(new HeadlineContainer("Witnesses"));
+                    for (NamedGroupWitness witness :
+                            report.getSupportedNamedGroupsWitnesses().values()) {
+                        curveDetails.add(
+                                createDefaultTextContainer(
+                                        "SKE: "
+                                                + witness.getEcdhPublicKeyGroup()
+                                                + " Cert:"
+                                                + witness.getCertificateGroup()
+                                                + " CS:"
+                                                + witness.getCipherSuites()));
+                    }
                 }
             } else {
                 container.add(new TextContainer("none", AnsiColor.DEFAULT_COLOR));
@@ -417,9 +393,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, report));
-        container.add(
-                createKeyValueContainer(
-                        TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
         container.add(
                 createKeyValueContainer(
@@ -469,57 +442,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             }
         }
 
-        return container;
-    }
-
-    private ReportContainer createSessionTicketZeroKeyContainer(ServerReport report) {
-        ListContainer container = new ListContainer();
-        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY)
-                == TestResults.TRUE) {
-            container.add(new HeadlineContainer("Session Ticket Zero Key Attack Details"));
-            container.add(
-                    createKeyValueContainer(TlsAnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, report));
-        }
-        return container;
-    }
-
-    private ReportContainer createCertificateTransparencyContainer(ServerReport report) {
-        ListContainer container = new ListContainer();
-        container.add(new HeadlineContainer("Certificate Transparency"));
-        container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP, report));
-        container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, report));
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE)
-                == TestResults.TRUE) {
-            ListContainer precertificateSctContainer = new ListContainer(1);
-            container.add(precertificateSctContainer);
-            precertificateSctContainer.add(new HeadlineContainer("Precertificate SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getPrecertificateSctList().getCertificateTimestampList()) {
-                precertificateSctContainer.add(createDefaultTextContainer(sct.toString()));
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResults.TRUE) {
-            ListContainer handshakeSctcontainer = new ListContainer(1);
-            container.add(handshakeSctcontainer);
-            handshakeSctcontainer.add(new HeadlineContainer("TLS Handshake SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getHandshakeSctList().getCertificateTimestampList()) {
-                handshakeSctcontainer.add(createDefaultTextContainer(sct.toString()));
-            }
-        }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResults.TRUE) {
-            ListContainer ocspResponseSctContainer = new ListContainer(1);
-            container.add(ocspResponseSctContainer);
-            ocspResponseSctContainer.add(new HeadlineContainer("OCSP Response SCTs"));
-            for (SignedCertificateTimestamp sct :
-                    report.getOcspSctList().getCertificateTimestampList()) {
-                ocspResponseSctContainer.add(createDefaultTextContainer(sct.toString()));
-            }
-        }
         return container;
     }
 
@@ -652,61 +574,6 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 createDefaultKeyValueContainer(
                         "Required", String.valueOf(report.getCcaRequired())));
 
-        if (report.getCcaTestResultList() != null) {
-            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
-            ccaTestResults.sort(
-                    (ccaTestResult, t1) -> {
-                        int c;
-                        c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
-                        if (c != 0) {
-                            return c;
-                        }
-                        c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
-                        return c;
-                    });
-            CcaWorkflowType lastCcaWorkflowType = null;
-            CcaCertificateType lastCcaCertificateType = null;
-            ProtocolVersion lastProtocolVersion = null;
-            ListContainer ccaTestResultsContainer = new ListContainer();
-            container.add(ccaTestResultsContainer);
-            for (CcaTestResult ccaTestResult : ccaTestResults) {
-                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
-                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
-                    ccaTestResultsContainer.add(new HeadlineContainer(lastCcaWorkflowType.name()));
-                }
-                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
-                    lastCcaCertificateType = ccaTestResult.getCertificateType();
-                    ccaTestResultsContainer.add(
-                            new HeadlineContainer(lastCcaCertificateType.name()));
-                }
-                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
-                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
-                    ccaTestResultsContainer.add(new HeadlineContainer(lastProtocolVersion.name()));
-                }
-                container.add(
-                        new KeyValueContainer(
-                                ccaTestResult
-                                        .getWorkflowType()
-                                        .name()
-                                        .concat("--")
-                                        .concat(ccaTestResult.getCertificateType().name())
-                                        .concat("--")
-                                        .concat(ccaTestResult.getProtocolVersion().name())
-                                        .concat("--")
-                                        .concat(ccaTestResult.getCipherSuite().name()),
-                                AnsiColor.DEFAULT_COLOR,
-                                String.valueOf(ccaTestResult.getSucceeded()),
-                                ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN));
-            }
-        }
         return container;
     }
 
@@ -777,7 +644,8 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             rater = DefaultRatingLoader.getServerReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers =
-                    scoreReport.getInfluencers();
+                    (LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer>)
+                            scoreReport.getInfluencers();
             influencers.entrySet().stream()
                     .sorted(Map.Entry.comparingByValue())
                     .forEach(
@@ -824,7 +692,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 new KeyValueContainer(
                         recommendation.getShortName(),
                         AnsiColor.DEFAULT_COLOR,
-                        influencer.getResult().name(),
+                        influencer.getResult().getName(),
                         color));
         int scoreInfluence = 0;
         String additionalInfo = "";
@@ -888,11 +756,11 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 container.add(
                         createDefaultKeyValueContainer(
                                 "TCP connections",
-                                String.valueOf(report.getPerformedTcpConnections())));
+                                String.valueOf(report.getPerformedConnections())));
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(

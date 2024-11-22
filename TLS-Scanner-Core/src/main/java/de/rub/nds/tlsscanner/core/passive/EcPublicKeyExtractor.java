@@ -8,21 +8,22 @@
  */
 package de.rub.nds.tlsscanner.core.passive;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
+import de.rub.nds.protocol.crypto.ec.Point;
+import de.rub.nds.protocol.crypto.ec.PointFormatter;
 import de.rub.nds.scanner.core.passive.StatExtractor;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
-import de.rub.nds.tlsattacker.core.crypto.ec.PointFormatter;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHClientKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import java.util.List;
 
-public class EcPublicKeyExtractor extends StatExtractor<Point> {
+public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
 
     public EcPublicKeyExtractor() {
         super(TrackableValueType.ECDHE_PUBKEY);
@@ -32,7 +33,8 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         List<ProtocolMessage> allReceivedMessages =
-                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
+                        trace, ProtocolMessageType.HANDSHAKE);
         if (state.getRunningMode() == RunningModeType.CLIENT) {
             for (ProtocolMessage message : allReceivedMessages) {
                 if (message instanceof ECDHEServerKeyExchangeMessage) {
@@ -43,7 +45,10 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
                                             .getValue());
                     byte[] pointBytes =
                             ((ECDHEServerKeyExchangeMessage) message).getPublicKey().getValue();
-                    put(PointFormatter.formatFromByteArray(group, pointBytes));
+                    put(
+                            PointFormatter.formatFromByteArray(
+                                    (NamedEllipticCurveParameters) group.getGroupParameters(),
+                                    pointBytes));
                 }
             }
         } else {
@@ -52,7 +57,10 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
                     NamedGroup group = state.getTlsContext().getChooser().getSelectedNamedGroup();
                     byte[] pointBytes =
                             ((ECDHClientKeyExchangeMessage) message).getPublicKey().getValue();
-                    put(PointFormatter.formatFromByteArray(group, pointBytes));
+                    put(
+                            PointFormatter.formatFromByteArray(
+                                    (NamedEllipticCurveParameters) group.getGroupParameters(),
+                                    pointBytes));
                 }
             }
         }

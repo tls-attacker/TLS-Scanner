@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import java.util.List;
@@ -19,13 +19,15 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
     private final List<CipherSuite> notRecommendedSuites;
 
     public CipherSuiteGuidelineCheckResult(
-            TestResult result, List<CipherSuite> notRecommendedSuites) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            List<CipherSuite> notRecommendedSuites) {
+        super(checkName, adherence);
         this.notRecommendedSuites = notRecommendedSuites;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         if (notRecommendedSuites.isEmpty()) {
             return "Only listed Cipher Suites are supported.";
         } else {

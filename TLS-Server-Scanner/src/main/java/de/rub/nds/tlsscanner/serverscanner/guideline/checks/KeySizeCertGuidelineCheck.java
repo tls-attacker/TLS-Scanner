@@ -8,12 +8,18 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
@@ -21,7 +27,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.util.Locale;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -82,40 +87,58 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+    public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         boolean passFlag = false;
         boolean uncertainFlag = false;
         boolean failedFlag = false;
-        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult();
+        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
         for (CertificateReport report : chain.getCertificateReportList()) {
-            if (!(report.getPublicKey() instanceof CustomPublicKey)) {
-                uncertainFlag = true;
-                continue;
+
+            PublicKeyContainer publicKey = report.getPublicKey();
+            int keySize = publicKey.length();
+            Integer minimumKeySize = null;
+            if (publicKey instanceof DsaPublicKey) {
+                minimumKeySize = this.minimumDsaKeyLength;
+            } else if (publicKey instanceof RsaPublicKey) {
+                minimumKeySize = this.minimumRsaKeyLength;
+            } else if (publicKey instanceof EcdhPublicKey || publicKey instanceof EcdsaPublicKey) {
+                minimumKeySize = this.minimumEcKeyLength;
+            } else if (publicKey instanceof DhPublicKey) {
+                minimumKeySize = this.minimumDhKeyLength;
             }
-            CustomPublicKey key = (CustomPublicKey) report.getPublicKey();
-            switch (report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH)) {
-                case "DSA":
+            if (minimumKeySize != null) {
+                result.addKeySize(
+                        new KeySizeData(publicKey.getAlgorithmType(), minimumKeySize, keySize));
+                if (publicKey.length() < minimumKeySize) {
+                    failedFlag = true;
+                } else {
+                    passFlag = true;
+                }
+            }
+            AsymmetricAlgorithmType algorithmType = report.getPublicKey().getAlgorithmType();
+            switch (algorithmType) {
+                case DSA:
                     if (this.minimumDsaKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumDsaKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumDsaKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumDsaKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
                     break;
-                case "RSA":
+                case RSA:
                     if (this.minimumRsaKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumRsaKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumRsaKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumRsaKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
@@ -123,42 +146,46 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
                     }
 
                     break;
-                case "EC":
+                case ECDH: // Intentional fall through
+                case ECDSA:
                     if (this.minimumEcKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumEcKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumEcKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumEcKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
                     break;
-                case "DH":
+                case DH:
                     if (this.minimumDhKeyLength != null) {
                         result.addKeySize(
                                 new KeySizeData(
-                                        report.getPublicKey().getAlgorithm(),
+                                        algorithmType,
                                         this.minimumDhKeyLength,
-                                        key.keySize()));
-                        if (key.keySize() < this.minimumDhKeyLength) {
+                                        publicKey.length()));
+                        if (publicKey.length() < this.minimumDhKeyLength) {
                             failedFlag = true;
                         } else {
                             passFlag = true;
                         }
                     }
+                    break;
+                case EDDSA:
+                    // TODO
                     break;
             }
         }
         if (failedFlag) {
-            result.setResult(TestResults.FALSE);
+            result.setAdherence(GuidelineAdherence.VIOLATED);
         } else if (uncertainFlag || !passFlag) {
-            result.setResult(TestResults.UNCERTAIN);
+            result.setAdherence(GuidelineAdherence.CHECK_FAILED);
         } else {
-            result.setResult(TestResults.TRUE);
+            result.setAdherence(GuidelineAdherence.ADHERED);
         }
         return result;
     }
@@ -167,9 +194,9 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(TestResults.FALSE) {
+                return new GuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED) {
                     @Override
-                    public String display() {
+                    public String toString() {
                         return String.format(
                                 "Weakest DH size %d<%d",
                                 report.getWeakestDhStrength(), minimumDhKeyLength);
@@ -181,7 +208,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "KeySizeCert_"
                 + getRequirementLevel()
                 + "_"

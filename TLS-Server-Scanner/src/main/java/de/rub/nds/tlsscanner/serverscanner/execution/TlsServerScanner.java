@@ -9,18 +9,14 @@
 package de.rub.nds.tlsscanner.serverscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.Scanner;
-import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineChecker;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.passive.StatsWriter;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
@@ -43,29 +39,76 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
-import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ConnectionClosingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsApplicationFingerprintProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsBugsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsHelloVerifyRequestProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsIpAddressInCookieProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsMessageSequenceProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsReorderingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DtlsRetransmissionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HelloRetryProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedGroupsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RandomnessProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketCollectingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketManipulationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureHashAlgorithmOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class TlsServerScanner
-        extends Scanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> {
+        extends Scanner<ServerReport, TlsServerProbe, AfterProbe<ServerReport>, State> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -76,7 +119,7 @@ public final class TlsServerScanner
     private final String vulns;
 
     public TlsServerScanner(ServerScannerConfig config) {
-        super(config.getExecutorConfig().getProbes());
+        super(config.getExecutorConfig());
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor =
@@ -91,14 +134,13 @@ public final class TlsServerScanner
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(config.getExecutorConfig().getProbes());
+        super(config.getExecutorConfig());
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         this.vulns = config.getVulns();
         setCallbacks();
-        fillProbeLists();
     }
 
     public TlsServerScanner(
@@ -106,15 +148,12 @@ public final class TlsServerScanner
             ParallelExecutor parallelExecutor,
             List<TlsServerProbe> probeList,
             List<AfterProbe<ServerReport>> afterList) {
-        super(probeList.stream().map(ScannerProbe::getType).collect(Collectors.toList()));
-        this.probeList.addAll(probeList);
-        this.afterList.addAll(afterList);
+        super(config.getExecutorConfig(), probeList, afterList);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
         this.vulns = config.getVulns();
         closeAfterFinishParallel = false;
-        setDefaultProbeWriter();
         setCallbacks();
     }
 
@@ -142,9 +181,24 @@ public final class TlsServerScanner
     }
 
     @Override
+    protected StatsWriter<State> getDefaultProbeWriter() {
+        StatsWriter<State> statsWriter = new StatsWriter<>();
+        statsWriter.addExtractor(new CookieExtractor());
+        statsWriter.addExtractor(new RandomExtractor());
+        statsWriter.addExtractor(new DhPublicKeyExtractor());
+        statsWriter.addExtractor(new EcPublicKeyExtractor());
+        statsWriter.addExtractor(new CbcIvExtractor());
+        statsWriter.addExtractor(new SessionIdExtractor());
+        statsWriter.addExtractor(new SessionTicketExtractor());
+        statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
+        statsWriter.addExtractor(new DestinationPortExtractor());
+        return statsWriter;
+    }
+
+    @Override
     protected void fillProbeLists() {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
-            addProbeToProbeList(new RandomnessProbe(configSelector, parallelExecutor));
+            registerProbeForExecution(new RandomnessProbe(configSelector, parallelExecutor));
         }
         if (vulns == "") {
             addProbeToProbeList(new AlpnProbe(configSelector, parallelExecutor));
@@ -377,143 +431,92 @@ public final class TlsServerScanner
         setDefaultProbeWriter();
     }
 
-    private void setDefaultProbeWriter() {
-        for (TlsServerProbe probe : probeList) {
-            StatsWriter statsWriter = new StatsWriter();
-            statsWriter.addExtractor(new CookieExtractor());
-            statsWriter.addExtractor(new RandomExtractor());
-            statsWriter.addExtractor(new DhPublicKeyExtractor());
-            statsWriter.addExtractor(new EcPublicKeyExtractor());
-            statsWriter.addExtractor(new CbcIvExtractor());
-            statsWriter.addExtractor(new SessionIdExtractor());
-            statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
-            statsWriter.addExtractor(new DestinationPortExtractor());
-            probe.setWriter(statsWriter);
-        }
+    @Override
+    protected ServerReport getEmptyReport() {
+        return new ServerReport(
+                config.getClientDelegate().getSniHostname(),
+                config.getClientDelegate().getExtractedHost(),
+                config.getClientDelegate().getExtractedPort());
     }
 
-    public ServerReport scan() {
+    @Override
+    protected void onScanStart() {
         LOGGER.debug("Initializing TrustAnchorManager");
         TrustAnchorManager.getInstance();
         LOGGER.debug("Finished TrustAnchorManager initialization");
+    }
 
+    @Override
+    protected boolean checkScanPrerequisites(ServerReport report) {
         boolean isConnectable = false;
         boolean speaksProtocol = false;
         boolean isHandshaking = false;
-        ProtocolType protocolType = getProtocolType();
-        ThreadedScanJobExecutor<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> executor =
-                null;
-        // TODO Kind of hacky - this extracts the hosts from the client delegate - otherwise its not
-        // initialized
-        ServerReport serverReport =
-                new ServerReport(
-                        config.getClientDelegate().getExtractedHost(),
-                        config.getClientDelegate().getExtractedPort());
-        serverReport.setProtocolType(protocolType);
 
         if (isConnectable()) {
             isConnectable = true;
             LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
             configSelector.findWorkingConfigs();
-            serverReport.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
-            serverReport.setConfigProfileIdentifierTls13(
+            report.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
+            report.setConfigProfileIdentifierTls13(
                     configSelector.getConfigProfileIdentifierTls13());
             if (configSelector.isSpeaksProtocol()) {
                 speaksProtocol = true;
-                LOGGER.debug(
-                        config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
+                LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + getProtocolType());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
                     LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
-
-                    ScanJob<ServerReport, TlsServerProbe, AfterProbe<ServerReport>> job =
-                            new ScanJob<>(probeList, afterList);
-                    executor =
-                            new ThreadedScanJobExecutor<>(
-                                    config.getExecutorConfig(),
-                                    job,
-                                    config.getExecutorConfig().getParallelProbes(),
-                                    config.getClientDelegate().getHost());
-                    long scanStartTime = System.currentTimeMillis();
-                    serverReport = executor.execute(serverReport);
-                    SiteReportRater rater;
-                    try {
-                        rater = DefaultRatingLoader.getServerReportRater("en");
-                        ScoreReport scoreReport = rater.getScoreReport(serverReport.getResultMap());
-                        serverReport.setScore(scoreReport.getScore());
-                        serverReport.setScoreReport(scoreReport);
-                    } catch (IOException | JAXBException | XMLStreamException ex) {
-                        LOGGER.error("Could not retrieve scoring results");
-                    }
-                    if (protocolType != ProtocolType.DTLS) {
-                        executeGuidelineEvaluation(serverReport);
-                    }
-                    long scanEndTime = System.currentTimeMillis();
-                    serverReport.setScanStartTime(scanStartTime);
-                    serverReport.setScanEndTime(scanEndTime);
                 }
             }
         }
 
-        serverReport.setServerIsAlive(isConnectable);
-        serverReport.setSpeaksProtocol(speaksProtocol);
-        serverReport.setIsHandshaking(isHandshaking);
-
-        if (executor != null) {
-            executor.shutdown();
-        }
-        closeParallelExecutorIfNeeded();
-
-        return serverReport;
+        report.setServerIsAlive(isConnectable);
+        report.setSpeaksProtocol(speaksProtocol);
+        report.setIsHandshaking(isHandshaking);
+        report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
+        return isConnectable && speaksProtocol && isHandshaking;
     }
 
-    private void executeGuidelineEvaluation(ServerReport report) {
-        LOGGER.debug("Evaluating guidelines...");
-        List<String> guidelines = Arrays.asList("bsi.xml", "nist.xml");
-        GuidelineIO<ServerReport> guidelineIO;
+    @Override
+    protected SiteReportRater getSiteReportRater() {
         try {
-            guidelineIO =
-                    new GuidelineIO<>(
-                            TlsAnalyzedProperty.class,
-                            Set.of(
-                                    AnalyzedPropertyGuidelineCheck.class,
-                                    CertificateAgilityGuidelineCheck.class,
-                                    CertificateCurveGuidelineCheck.class,
-                                    CertificateSignatureCheck.class,
-                                    CertificateValidityGuidelineCheck.class,
-                                    CertificateVersionGuidelineCheck.class,
-                                    CipherSuiteGuidelineCheck.class,
-                                    ExtendedKeyUsageCertificateCheck.class,
-                                    ExtensionGuidelineCheck.class,
-                                    HashAlgorithmsGuidelineCheck.class,
-                                    HashAlgorithmStrengthCheck.class,
-                                    KeySizeCertGuidelineCheck.class,
-                                    KeyUsageCertificateCheck.class,
-                                    NamedGroupsGuidelineCheck.class,
-                                    SignatureAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAlgorithmsGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsCertificateGuidelineCheck.class,
-                                    SignatureAndHashAlgorithmsGuidelineCheck.class));
+            return DefaultRatingLoader.getServerReportRater("en");
+        } catch (JAXBException | IOException | XMLStreamException e) {
+            LOGGER.error("Failed to load server report rater, continuing without scoring");
+            return null;
+        }
+    }
+
+    @Override
+    protected List<Guideline<ServerReport>> getGuidelines() {
+        if (getProtocolType() == ProtocolType.DTLS) {
+            return List.of();
+        }
+
+        LOGGER.debug("Loading guidelines from files...");
+        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
+        GuidelineIO guidelineIO;
+        try {
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
-            return;
+            return null;
         }
-        for (String guidelineName : guidelines) {
+        List<Guideline<ServerReport>> guidelines = new ArrayList<>();
+        for (String guidelineName : guidelineFiles) {
             try {
                 InputStream guideLineStream =
                         TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                Guideline<ServerReport> guideline = guidelineIO.read(guideLineStream);
-                LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
-                GuidelineChecker<ServerReport> checker = new GuidelineChecker<>(guideline);
-                checker.fillReport(report);
-            } catch (JAXBException | IOException | XMLStreamException ex) {
-                LOGGER.error("Could not read guideline", ex);
+                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
+            } catch (JAXBException | XMLStreamException ex) {
+                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
+                return null;
             }
         }
-        LOGGER.debug("Finished evaluating guidelines");
+        return guidelines;
     }
 
-    private void closeParallelExecutorIfNeeded() {
+    @Override
+    public void close() {
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }
@@ -539,13 +542,5 @@ public final class TlsServerScanner
             LOGGER.warn("Could not test if we can connect to the server", e);
             return false;
         }
-    }
-
-    public void setCloseAfterFinishParallel(boolean closeAfterFinishParallel) {
-        this.closeAfterFinishParallel = closeAfterFinishParallel;
-    }
-
-    public boolean isCloseAfterFinishParallel() {
-        return closeAfterFinishParallel;
     }
 }

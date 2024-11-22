@@ -8,24 +8,26 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.x509attacker.constants.X509Version;
 
 public class CertificateVersionGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final int version;
+    private final X509Version version;
 
-    public CertificateVersionGuidelineCheckResult(TestResult result, int version) {
-        super(result);
+    public CertificateVersionGuidelineCheckResult(
+            String checkName, GuidelineAdherence adherence, X509Version version) {
+        super(checkName, adherence);
         this.version = version;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return "Certificate has Version " + version;
     }
 
-    public int getVersion() {
+    public X509Version getVersion() {
         return version;
     }
 }

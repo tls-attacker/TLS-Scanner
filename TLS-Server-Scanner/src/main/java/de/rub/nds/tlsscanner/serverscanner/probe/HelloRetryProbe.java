@@ -8,10 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -19,12 +20,11 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -41,11 +41,12 @@ public class HelloRetryProbe extends TlsServerProbe {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, configSelector);
         register(
                 TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY,
-                TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+                TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST,
+                TlsAnalyzedProperty.HRR_SELECTED_GROUP);
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         testHelloRetry();
     }
 
@@ -68,18 +69,18 @@ public class HelloRetryProbe extends TlsServerProbe {
         executeState(state);
         sendsHelloRetryRequest = TestResults.FALSE;
         issuesCookie = TestResults.FALSE;
-        if (WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)
                 && ((ServerHelloMessage)
-                                WorkflowTraceUtil.getFirstReceivedMessage(
-                                        HandshakeMessageType.SERVER_HELLO,
-                                        state.getWorkflowTrace()))
+                                WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                        state.getWorkflowTrace(),
+                                        HandshakeMessageType.SERVER_HELLO))
                         .isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()))
+                            WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO))
                     .containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResults.TRUE;
             }
@@ -98,6 +99,6 @@ public class HelloRetryProbe extends TlsServerProbe {
         } else {
             put(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.ERROR_DURING_TEST);
         }
-        report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
+        put(TlsAnalyzedProperty.HRR_SELECTED_GROUP, serversChosenGroup);
     }
 }

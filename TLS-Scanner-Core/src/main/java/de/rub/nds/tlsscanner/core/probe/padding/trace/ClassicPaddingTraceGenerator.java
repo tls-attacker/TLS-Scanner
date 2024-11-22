@@ -47,8 +47,8 @@ public class ClassicPaddingTraceGenerator extends PaddingTraceGenerator {
         }
         ApplicationMessage applicationMessage = new ApplicationMessage();
         SendAction sendAction = new SendAction(applicationMessage);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

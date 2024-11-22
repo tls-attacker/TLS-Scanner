@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.EarlyCcsAction;
@@ -46,7 +46,7 @@ public class EarlyCcsProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
             earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
@@ -62,12 +62,12 @@ public class EarlyCcsProbe extends TlsServerProbe {
 
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), ProtocolMessageType.ALERT)) {
             LOGGER.debug("Not vulnerable (definitely), Alert message found");
             return TestResults.FALSE;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             LOGGER.debug("Vulnerable (definitely), Finished message found");
             return TestResults.TRUE;
         } else {

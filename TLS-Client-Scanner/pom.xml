@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tls.scanner</groupId>
         <artifactId>tls-scanner</artifactId>
-        <version>5.3.1</version>
+        <version>6.1.1</version>
     </parent>
     <artifactId>tls-client-scanner</artifactId>
 
@@ -13,7 +13,7 @@
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
-        <tag>v5.3.1</tag>
+        <tag>v6.1.1</tag>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
     </scm>
 
@@ -25,11 +25,11 @@
         <!-- scope: compile -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>scanner-core</artifactId>
+            <artifactId>tls-scanner-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tls-scanner-core</artifactId>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
         </dependency>
     </dependencies>
 
@@ -83,10 +83,22 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
-            <!-- Copy artifacts to apps folder -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Execute integration tests -->
             <plugin>

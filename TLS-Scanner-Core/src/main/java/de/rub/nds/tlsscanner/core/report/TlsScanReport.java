@@ -8,10 +8,12 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.MapResult;
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.ObjectResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -28,78 +30,42 @@ import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.leak.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class TlsScanReport<R extends TlsScanReport<R>> extends ScanReport<R> {
-
-    private ProtocolType protocolType = null;
-
-    private KnownPaddingOracleVulnerability knownPaddingOracleVulnerability = null;
-
-    // DTLS
-    private Integer totalReceivedRetransmissions = 0;
-
-    // Scan Timestamps
-    private long scanStartTime;
-    private long scanEndTime;
-
-    // If the peer closes the connection by itself if nothing gets sent
-    private Long closedAfterFinishedDelta;
-    private Long closedAfterAppDataDelta;
+public abstract class TlsScanReport extends ScanReport {
 
     public TlsScanReport() {
         super();
     }
 
     public synchronized ProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    public synchronized void setProtocolType(ProtocolType protocolType) {
-        this.protocolType = protocolType;
+        ObjectResult<ProtocolType> objectResult =
+                getObjectResult(TlsAnalyzedProperty.PROTOCOL_TYPE, ProtocolType.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized KnownPaddingOracleVulnerability getKnownPaddingOracleVulnerability() {
-        return knownPaddingOracleVulnerability;
-    }
-
-    public synchronized void setKnownPaddingOracleVulnerability(
-            KnownPaddingOracleVulnerability knownPaddingOracleVulnerability) {
-        this.knownPaddingOracleVulnerability = knownPaddingOracleVulnerability;
+        ObjectResult<KnownPaddingOracleVulnerability> objectResult =
+                getObjectResult(
+                        TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY,
+                        KnownPaddingOracleVulnerability.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Integer getTotalReceivedRetransmissions() {
-        return totalReceivedRetransmissions;
-    }
-
-    public synchronized void setTotalReceivedRetransmissions(Integer totalReceivedRetransmissions) {
-        this.totalReceivedRetransmissions = totalReceivedRetransmissions;
-    }
-
-    public synchronized long getScanStartTime() {
-        return scanStartTime;
-    }
-
-    public synchronized void setScanStartTime(long scanStartTime) {
-        this.scanStartTime = scanStartTime;
-    }
-
-    public synchronized long getScanEndTime() {
-        return scanEndTime;
-    }
-
-    public synchronized void setScanEndTime(long scanEndTime) {
-        this.scanEndTime = scanEndTime;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Boolean getCcaSupported() {
@@ -111,218 +77,174 @@ public abstract class TlsScanReport<R extends TlsScanReport<R>> extends ScanRepo
     }
 
     public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
-        @SuppressWarnings("unchecked")
         MapResult<HandshakeMessageType, Integer> mapResult =
-                (MapResult<HandshakeMessageType, Integer>)
-                        getMapResult(TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS);
+                getMapResult(
+                        TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS,
+                        HandshakeMessageType.class,
+                        Integer.class);
         return mapResult == null ? null : mapResult.getMap();
     }
 
     public synchronized Set<CipherSuite> getSupportedCipherSuites() {
-        @SuppressWarnings("unchecked")
         SetResult<CipherSuite> setResult =
-                (SetResult<CipherSuite>) getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES);
+                getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, CipherSuite.class);
         return setResult == null ? null : setResult.getSet();
     }
 
     public synchronized List<EntropyReport> getEntropyReports() {
-        @SuppressWarnings("unchecked")
         ListResult<EntropyReport> listResult =
-                (ListResult<EntropyReport>) getListResult(TlsAnalyzedProperty.ENTROPY_REPORTS);
+                getListResult(TlsAnalyzedProperty.ENTROPY_REPORTS, EntropyReport.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>>
             getPaddingOracleTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult =
                 (ListResult<InformationLeakTest<PaddingOracleTestInfo>>)
                         getListResult(TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT);
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<CertificateChain> getCertificateChainList() {
-        @SuppressWarnings("unchecked")
-        ListResult<CertificateChain> listResult =
-                (ListResult<CertificateChain>)
-                        getListResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS);
+    public synchronized List<CertificateChainReport> getCertificateChainList() {
+        ListResult<CertificateChainReport> listResult =
+                (ListResult<CertificateChainReport>)
+                        getListResult(
+                                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                                CertificateChainReport.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
-        @SuppressWarnings("unchecked")
         ListResult<VersionSuiteListPair> listResult =
-                (ListResult<VersionSuiteListPair>)
-                        getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS);
+                getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS, VersionSuiteListPair.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<ProtocolVersion> getSupportedProtocolVersions() {
-        @SuppressWarnings("unchecked")
         ListResult<ProtocolVersion> listResult =
-                (ListResult<ProtocolVersion>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, ProtocolVersion.class);
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
-        @SuppressWarnings("unchecked")
-        ListResult<SignatureAndHashAlgorithm> listResult =
-                (ListResult<SignatureAndHashAlgorithm>)
-                        getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT);
+    public List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
+        ListResult<X509SignatureAlgorithm> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                        X509SignatureAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
-        @SuppressWarnings("unchecked")
         ListResult<SignatureAndHashAlgorithm> listResult =
-                (ListResult<SignatureAndHashAlgorithm>)
-                        getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                        SignatureAndHashAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
-        @SuppressWarnings("unchecked")
         ListResult<SignatureAndHashAlgorithm> listResult =
-                (ListResult<SignatureAndHashAlgorithm>)
-                        getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                        SignatureAndHashAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        if (getSupportedSignatureAndHashAlgorithmsCert() == null
+        if (getSupportedCertSignatureAlgorithms() == null
                 && getSupportedSignatureAndHashAlgorithmsSke() == null) {
             return null;
         }
-        Set<SignatureAndHashAlgorithm> combined = new HashSet<>();
-        if (getSupportedSignatureAndHashAlgorithmsCert() != null) {
-            combined.addAll(getSupportedSignatureAndHashAlgorithmsCert());
-        }
-        if (getSupportedSignatureAndHashAlgorithmsSke() != null) {
-            combined.addAll(getSupportedSignatureAndHashAlgorithmsSke());
-        }
-        return new LinkedList<>(combined);
+        return getSupportedSignatureAndHashAlgorithmsSke();
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {
-        @SuppressWarnings("unchecked")
         ListResult<ExtensionType> listResult =
-                (ListResult<ExtensionType>) getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
+                getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, ExtensionType.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<CompressionMethod> getSupportedCompressionMethods() {
-        @SuppressWarnings("unchecked")
         ListResult<CompressionMethod> listResult =
-                (ListResult<CompressionMethod>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS, CompressionMethod.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getSupportedTls13Groups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS);
+                getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS);
+                getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getStaticEcdsaPkgGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS);
+                getListResult(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>)
-                        getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS);
+                getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getTls13EcdsaPkgGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS);
+                getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getStaticEcdsaSigGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS);
+                getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getEphemeralEcdsaSigGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>)
-                        getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS);
+                getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<NamedGroup> getTls13EcdsaSigGroups() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>) getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
+                getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<HttpHeader> getHttpHeader() {
-        @SuppressWarnings("unchecked")
         ListResult<HttpHeader> listResult =
-                (ListResult<HttpHeader>) getListResult(TlsAnalyzedProperty.HTTPS_HEADER);
+                getListResult(TlsAnalyzedProperty.HTTPS_HEADER, HttpHeader.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<TokenBindingVersion> getSupportedTokenbindingVersions() {
-        @SuppressWarnings("unchecked")
         ListResult<TokenBindingVersion> listResult =
-                (ListResult<TokenBindingVersion>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS,
+                        TokenBindingVersion.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<TokenBindingKeyParameters> getSupportedTokenbindingKeyParameters() {
-        @SuppressWarnings("unchecked")
         ListResult<TokenBindingKeyParameters> listResult =
-                (ListResult<TokenBindingKeyParameters>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS,
+                        TokenBindingKeyParameters.class);
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized Long getClosedAfterFinishedDelta() {
-        return closedAfterFinishedDelta;
-    }
-
-    public synchronized void setClosedAfterFinishedDelta(Long closedAfterFinishedDelta) {
-        this.closedAfterFinishedDelta = closedAfterFinishedDelta;
-    }
-
-    public synchronized Long getClosedAfterAppDataDelta() {
-        return closedAfterAppDataDelta;
-    }
-
-    public synchronized void setClosedAfterAppDataDelta(Long closedAfterAppDataDelta) {
-        this.closedAfterAppDataDelta = closedAfterAppDataDelta;
-    }
-
     public synchronized List<String> getSupportedAlpnConstans() {
-        @SuppressWarnings("unchecked")
         ListResult<String> listResult =
-                (ListResult<String>) getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS);
+                getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS, String.class);
         return listResult == null ? null : listResult.getList();
     }
 

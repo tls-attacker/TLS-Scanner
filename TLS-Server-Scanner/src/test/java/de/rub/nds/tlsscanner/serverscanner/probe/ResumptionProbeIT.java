@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
@@ -42,7 +42,8 @@ public class ResumptionProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION, TestResults.TRUE)
                 && verifyProperty(
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, TestResults.TRUE)
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
+                        TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, TestResults.FALSE)

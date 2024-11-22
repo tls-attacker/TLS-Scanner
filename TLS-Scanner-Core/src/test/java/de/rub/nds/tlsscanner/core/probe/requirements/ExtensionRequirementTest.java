@@ -10,11 +10,10 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -22,10 +21,10 @@ public class ExtensionRequirementTest {
 
     @Test
     public void testExtensionRequirement() {
-        TestReport report = new TestReport();
+        TlsCoreTestReport report = new TlsCoreTestReport();
         ExtensionType[] extension = new ExtensionType[] {ExtensionType.ALPN};
 
-        ExtensionRequirement<TestReport> requirement = new ExtensionRequirement<>();
+        ExtensionRequirement<TlsCoreTestReport> requirement = new ExtensionRequirement<>();
         assertTrue(requirement.evaluate(report));
 
         requirement = new ExtensionRequirement<>();
@@ -35,15 +34,13 @@ public class ExtensionRequirementTest {
         assertArrayEquals(requirement.getParameters().toArray(), extension);
         assertFalse(requirement.evaluate(report));
 
-        List<Requirement<TestReport>> unfulfilled = requirement.getUnfulfilledRequirements(report);
+        List<Requirement<TlsCoreTestReport>> unfulfilled =
+                requirement.getUnfulfilledRequirements(report);
         assertFalse(requirement.evaluate(report));
         assertEquals(1, unfulfilled.size());
         assertEquals(requirement, unfulfilled.get(0));
 
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                new ListResult<>(
-                        Arrays.asList(extension), TlsAnalyzedProperty.SUPPORTED_EXTENSIONS.name()));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, List.of(extension));
         assertTrue(requirement.evaluate(report));
     }
 }

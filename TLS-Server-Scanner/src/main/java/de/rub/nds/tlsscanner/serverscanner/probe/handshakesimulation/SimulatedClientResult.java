@@ -53,6 +53,8 @@ public class SimulatedClientResult {
     private List<HandshakeFailureReasons> failureReasons = null;
     private List<String> insecureReasons = null;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private SimulatedClientResult() {
         // tlsClientConfig = null;
     }

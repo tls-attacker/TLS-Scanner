@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
@@ -18,7 +20,11 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -763,7 +769,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
+                        TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
@@ -808,8 +814,18 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY,
+                        TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -1000, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.PADDING_ORACLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900, 500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
@@ -999,6 +1015,209 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.UNENCRYPTED_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.NO_MAC_CHECK_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSED_KEYSTREAM_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -900),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_CIPHERSUITE_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.REUSABLE_TICKET,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+
+        // no impact on rating
+        List<TlsAnalyzedProperty> neutralProperties =
+                new LinkedList<>(
+                        Arrays.asList(
+                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                                TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
+                                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                                TlsAnalyzedProperty.BLEICHENBACHER_TEST_RESULT,
+                                TlsAnalyzedProperty.PADDING_ORACLE_TEST_RESULT,
+                                TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT,
+                                TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT,
+                                TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
+                                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
+                                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+                                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
+                                TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
+                                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHM_OIDS,
+                                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
+                                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                                TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_VERSIONS,
+                                TlsAnalyzedProperty.SUPPORTED_TOKENBINDING_KEY_PARAMETERS,
+                                TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS,
+                                TlsAnalyzedProperty.SUPPORTED_COMPRESSION_METHODS,
+                                TlsAnalyzedProperty.CERTIFICATE_CHAINS,
+                                TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS,
+                                TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS,
+                                TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS,
+                                TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS,
+                                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS,
+                                TlsAnalyzedProperty.OCSP_RESULTS,
+                                TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS,
+                                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                                TlsAnalyzedProperty.HTTPS_HEADER,
+                                TlsAnalyzedProperty.NORMAL_HPKP_PINS,
+                                TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS,
+                                TlsAnalyzedProperty.ENTROPY_REPORTS,
+                                TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS,
+                                TlsAnalyzedProperty.COMMON_DH_VALUES,
+                                TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS,
+                                TlsAnalyzedProperty.CCA_TEST_RESULTS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS,
+                                TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS,
+                                TlsAnalyzedProperty
+                                        .ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
+                                TlsAnalyzedProperty.STATISTICS_TICKET,
+                                TlsAnalyzedProperty.PROTOCOL_TYPE,
+                                TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
+                                TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA,
+                                TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY,
+                                TlsAnalyzedProperty.MINIMUM_RSA_CERT_KEY_SIZE,
+                                TlsAnalyzedProperty.MINIMUM_DSS_CERT_KEY_SIZE,
+                                TlsAnalyzedProperty.HSTS_MAX_AGE,
+                                TlsAnalyzedProperty.HPKP_MAX_AGE,
+                                TlsAnalyzedProperty.GCM_PATTERN,
+                                TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN,
+                                TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA,
+                                TlsAnalyzedProperty.VERIFY_CHECK_PATTERN,
+                                TlsAnalyzedProperty.HRR_SELECTED_GROUP,
+                                TlsAnalyzedProperty.WEAKEST_DH_STRENGTH,
+                                TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
+                                TlsAnalyzedProperty.COOKIE_LENGTH,
+                                TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
+                                TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE,
+                                TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
+                                TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
+                                TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
+
+                                // TODO: decide on rating
+                                TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
+                                TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA,
+                                TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS,
+                                TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH,
+                                TlsAnalyzedProperty.HSTS_INCLUDES_SUBDOMAINS,
+                                TlsAnalyzedProperty.HPKP_INCLUDES_SUBDOMAINS,
+                                TlsAnalyzedProperty.HSTS_NOT_PARSEABLE,
+                                TlsAnalyzedProperty.HPKP_NOT_PARSEABLE,
+                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT,
+                                TlsAnalyzedProperty.SUPPORTS_CBC,
+                                TlsAnalyzedProperty.SUPPORTS_RSA_SIG,
+                                TlsAnalyzedProperty.SUPPORTS_KERBEROS,
+                                TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
+                                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
+                                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+                                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
+                                TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+                                TlsAnalyzedProperty
+                                        .SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+                                TlsAnalyzedProperty
+                                        .SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+                                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+                                TlsAnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
+                                TlsAnalyzedProperty.SUPPORTS_RENEGOTIATION,
+                                TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
+                                TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION,
+                                TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+                                TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+                                TlsAnalyzedProperty
+                                        .HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+                                TlsAnalyzedProperty.HAS_EC_POINT_FORMAT_INTOLERANCE,
+                                TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM,
+                                TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST,
+                                TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY,
+                                TlsAnalyzedProperty.VULNERABLE_TO_FREAK_DOWNGRADE,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS,
+                                TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH,
+                                TlsAnalyzedProperty.VULNERABLE_TO_CCA_BYPASS,
+                                TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
+                                TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
+                                TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
+                                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
+                                TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO,
+                                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO,
+                                TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
+                                TlsAnalyzedProperty
+                                        .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                                TlsAnalyzedProperty.SUPPORTS_RECORD_REORDERING,
+                                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE,
+                                TlsAnalyzedProperty.HAS_HVR_RETRANSMISSIONS,
+                                TlsAnalyzedProperty.USES_IP_ADDRESS_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_PORT_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_VERSION_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+                                TlsAnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
+                                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+                                TlsAnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
+                                TlsAnalyzedProperty.HAS_EARLY_FINISHED_BUG,
+                                TlsAnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+                                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+                                TlsAnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+                                TlsAnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+                                TlsAnalyzedProperty.SENDS_RETRANSMISSIONS,
+                                TlsAnalyzedProperty.CHANGES_PORT,
+                                TlsAnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS,
+                                TlsAnalyzedProperty.ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH,
+                                TlsAnalyzedProperty.ACCEPTS_HVR_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                                TlsAnalyzedProperty
+                                        .ACCEPTS_SERVER_HELLO_RECORD_SEQUENCE_NUMBER_MISMATCH,
+                                TlsAnalyzedProperty.HAS_CLIENT_HELLO_MISMATCH,
+                                TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE,
+                                TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION,
+                                TlsAnalyzedProperty.FORCED_COMPRESSION,
+                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE));
+
+        influencers.addAll(
+                neutralProperties.stream().map(RatingInfluencer::new).collect(Collectors.toList()));
+
+        List<String> missingProperties = new ArrayList<>();
+        for (TlsAnalyzedProperty tlsAnalyzedProperty : TlsAnalyzedProperty.values()) {
+            if (influencers.stream()
+                    .noneMatch(
+                            influencer ->
+                                    influencer.getAnalyzedProperty() == tlsAnalyzedProperty)) {
+                missingProperties.add(tlsAnalyzedProperty.name());
+            }
+        }
+
+        assertTrue(
+                missingProperties.isEmpty(),
+                "Missing rating influencers for: " + missingProperties);
+
         new RatingInfluencersIO(TlsAnalyzedProperty.class)
                 .write(
                         new File(

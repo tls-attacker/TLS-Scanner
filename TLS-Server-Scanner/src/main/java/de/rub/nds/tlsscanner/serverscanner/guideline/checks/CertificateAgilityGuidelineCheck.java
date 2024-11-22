@@ -8,14 +8,14 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.asn1.oid.ObjectIdentifier;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -48,33 +48,34 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         @SuppressWarnings("unchecked")
-        List<CertificateChain> chains = report.getCertificateChainList();
+        List<CertificateChainReport> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+            return new CertificateAgilityGuidelineCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
-        SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
-        Integer firstKey = null;
-        if (firstReport.getPublicKey() instanceof CustomPublicKey) {
-            firstKey = ((CustomPublicKey) firstReport.getPublicKey()).keySize();
-        }
+        ObjectIdentifier firstAlg = firstReport.getSignatureAndHashAlgorithmOid();
+        Integer firstKey = firstReport.getPublicKey().length();
+
         for (int i = 1; i < chains.size(); i++) {
-            CertificateChain chain = chains.get(i);
+            CertificateChainReport chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
-            if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+            if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithmOid())) {
+                return new CertificateAgilityGuidelineCheckResult(
+                        getName(), GuidelineAdherence.ADHERED);
             }
-            if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
-                if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    return new CertificateAgilityGuidelineCheckResult(TestResults.TRUE);
+            if (firstKey != certReport.getPublicKey().length()) {
+                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
+                    return new CertificateAgilityGuidelineCheckResult(
+                            getName(), GuidelineAdherence.ADHERED);
                 }
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(TestResults.FALSE);
+        return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);
     }
 
     @Override
-    public String getId() {
+    public String toString() {
         return "CertificateAgility_" + getRequirementLevel();
     }
 }

@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
@@ -30,7 +29,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
+        extends AfterProbe<ReportT> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -47,8 +47,6 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
     private static final byte[] TLS_1_3_TO_TLS_1_1_DOWNGRADE_CONST =
             ArrayConverter.hexStringToByteArray("444F574E47524400");
 
-    // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
-    private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
     private final double MINIMUM_P_VALUE = 0.01;
@@ -86,7 +84,7 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
     }
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
 
         ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
                 report.getExtractedValueContainer(
@@ -117,9 +115,7 @@ public abstract class RandomnessAfterProbe<R extends TlsScanReport<R>> extends A
         entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(
-                TlsAnalyzedProperty.ENTROPY_REPORTS,
-                new ListResult<>(entropyReport, TlsAnalyzedProperty.ENTROPY_REPORTS.name()));
+        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
     }
 
     public EntropyReport createEntropyReport(

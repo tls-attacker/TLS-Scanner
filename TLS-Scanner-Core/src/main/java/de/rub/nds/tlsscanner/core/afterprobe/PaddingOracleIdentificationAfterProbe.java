@@ -9,15 +9,15 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleAttributor;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.Objects;
 
-public class PaddingOracleIdentificationAfterProbe<R extends TlsScanReport<R>>
-        extends AfterProbe<R> {
+public class PaddingOracleIdentificationAfterProbe<ReportT extends TlsScanReport>
+        extends AfterProbe<ReportT> {
 
     private PaddingOracleAttributor attributor;
 
@@ -26,13 +26,14 @@ public class PaddingOracleIdentificationAfterProbe<R extends TlsScanReport<R>>
     }
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         if (Objects.equals(
                 report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE),
                 TestResults.TRUE)) {
             KnownPaddingOracleVulnerability knownVulnerability =
                     attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
-            report.setKnownPaddingOracleVulnerability(knownVulnerability);
+            report.putResult(
+                    TlsAnalyzedProperty.KNOWN_PADDING_ORACLE_VULNERABILITY, knownVulnerability);
         }
     }
 }

@@ -13,9 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -24,9 +23,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -41,8 +38,6 @@ public class ServerRandomnessAfterProbeTest {
     private ExtractedValueContainer<ComparableByteArray> cookieContainer;
     private ExtractedValueContainer<ComparableByteArray> sessionIdContainer;
     private ExtractedValueContainer<ComparableByteArray> cbcIVContainer;
-
-    private Map<TrackableValue, ExtractedValueContainer<?>> extractedValueContainerMap;
 
     // generates "cryptographically strong random numbers" with constant seed for deterministic
     // tests
@@ -64,12 +59,10 @@ public class ServerRandomnessAfterProbeTest {
         sessionIdContainer = new ExtractedValueContainer<>(TrackableValueType.SESSION_ID);
         cbcIVContainer = new ExtractedValueContainer<>(TrackableValueType.CBC_IV);
 
-        extractedValueContainerMap = new HashMap<>();
-        extractedValueContainerMap.put(TrackableValueType.RANDOM, serverRandomContainer);
-        extractedValueContainerMap.put(TrackableValueType.COOKIE, cookieContainer);
-        extractedValueContainerMap.put(TrackableValueType.SESSION_ID, sessionIdContainer);
-        extractedValueContainerMap.put(TrackableValueType.CBC_IV, cbcIVContainer);
-        report.setExtractedValueContainerMap(extractedValueContainerMap);
+        report.putExtractedValueContainer(TrackableValueType.RANDOM, serverRandomContainer);
+        report.putExtractedValueContainer(TrackableValueType.COOKIE, cookieContainer);
+        report.putExtractedValueContainer(TrackableValueType.SESSION_ID, sessionIdContainer);
+        report.putExtractedValueContainer(TrackableValueType.CBC_IV, cbcIVContainer);
     }
 
     @Test
@@ -115,7 +108,6 @@ public class ServerRandomnessAfterProbeTest {
             sessionIdContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
             cbcIVContainer.put(new ComparableByteArray(secureRandom.generateSeed(32)));
         }
-        report.setExtractedValueContainerMap(extractedValueContainerMap);
         probe.analyze(report);
 
         for (EntropyReport entropyReport : report.getEntropyReports()) {

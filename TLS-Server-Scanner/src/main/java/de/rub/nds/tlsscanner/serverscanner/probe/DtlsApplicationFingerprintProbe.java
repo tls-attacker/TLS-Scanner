@@ -11,9 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.primitives.Bytes;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -54,7 +54,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         supportedApplications = new ArrayList<>();
         isAcceptingUnencryptedAppData = TestResults.NOT_TESTED_YET;
         if (!isEchoServer()) {
@@ -181,8 +181,8 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         State state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessage =
-                WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        ProtocolMessage receivedMessage =
+                WorkflowTraceResultUtil.getLastReceivedMessage(state.getWorkflowTrace());
 
         trace =
                 new WorkflowConfigurationFactory(config)
@@ -191,13 +191,13 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
         SendAction sendAction = new SendAction(new ApplicationMessage(data));
         Record record = new Record(config);
         record.setEpoch(Modifiable.explicit(0));
-        sendAction.setRecords(record);
+        sendAction.setConfiguredRecords(List.of(record));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         state = new State(config, trace);
         executeState(state);
-        ProtocolMessage<?> receivedMessageModified =
-                WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+        ProtocolMessage receivedMessageModified =
+                WorkflowTraceResultUtil.getLastReceivedMessage(state.getWorkflowTrace());
         if (receivedMessage != null
                 && receivedMessageModified != null
                 && receivedMessage

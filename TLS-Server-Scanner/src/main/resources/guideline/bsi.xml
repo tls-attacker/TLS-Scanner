@@ -95,6 +95,7 @@
         <requirementLevel>SHOULD</requirementLevel>
         <recommendedGroups>SECP256R1</recommendedGroups>
         <recommendedGroups>SECP384R1</recommendedGroups>
+        <recommendedGroups>SECP521R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
@@ -111,7 +112,7 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>RSA</recommendedAlgorithms>
+        <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
         <recommendedAlgorithms>DSA</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsGuidelineCheck>
@@ -219,6 +220,10 @@
         <requirementLevel>SHOULD</requirementLevel>
         <recommendedGroups>SECP256R1</recommendedGroups>
         <recommendedGroups>SECP384R1</recommendedGroups>
+        <recommendedGroups>SECP521R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
+        <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
         <recommendedGroups>FFDHE2048</recommendedGroups>
         <recommendedGroups>FFDHE3072</recommendedGroups>
         <recommendedGroups>FFDHE4096</recommendedGroups>
@@ -240,6 +245,10 @@
         <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_SHA512</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_BRAINPOOL_P256R1_TLS13_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_BRAINPOOL_P384R1_TLS13_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
         <tls13>true</tls13>
     </signatureAndHashAlgorithmsGuidelineCheck>
     <signatureAndHashAlgorithmsCertificateGuidelineCheck>
@@ -249,17 +258,13 @@
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>RSA_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_RSAE_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA384</recommendedAlgorithms>
-        <recommendedAlgorithms>RSA_PSS_PSS_SHA512</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
-        <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA256_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA384_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>SHA512_WITH_RSA_ENCRYPTION</recommendedAlgorithms>
+        <recommendedAlgorithms>RSASSA_PSS</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA256</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA384</recommendedAlgorithms>
+        <recommendedAlgorithms>ECDSA_WITH_SHA512</recommendedAlgorithms>
     </signatureAndHashAlgorithmsCertificateGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>

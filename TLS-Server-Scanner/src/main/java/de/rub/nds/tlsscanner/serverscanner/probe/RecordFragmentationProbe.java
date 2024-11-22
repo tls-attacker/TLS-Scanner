@@ -8,15 +8,15 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -36,7 +36,7 @@ public class RecordFragmentationProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config config = configSelector.getAnyWorkingBaseConfig();
         config.setDefaultMaxRecordData(50);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -47,7 +47,8 @@ public class RecordFragmentationProbe extends TlsServerProbe {
                         ? HandshakeMessageType.FINISHED
                         : HandshakeMessageType.SERVER_HELLO_DONE;
         supported =
-                WorkflowTraceUtil.didReceiveMessage(expectedFinalMessage, state.getWorkflowTrace())
+                WorkflowTraceResultUtil.didReceiveMessage(
+                                state.getWorkflowTrace(), expectedFinalMessage)
                         ? TestResults.TRUE
                         : TestResults.FALSE;
     }

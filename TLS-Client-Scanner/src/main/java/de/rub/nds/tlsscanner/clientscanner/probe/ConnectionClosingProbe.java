@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
+import de.rub.nds.scanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -19,8 +19,12 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.closing.ConnectionClosingUtils;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
+import java.util.List;
 
 public class ConnectionClosingProbe extends TlsClientProbe {
 
@@ -30,16 +34,19 @@ public class ConnectionClosingProbe extends TlsClientProbe {
     public ConnectionClosingProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.CONNECTION_CLOSING_DELTA, scannerConfig);
+        register(
+                TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA,
+                TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA);
     }
 
     @Override
     protected void mergeData(ClientReport report) {
-        report.setClosedAfterAppDataDelta(closedAfterAppDataDelta);
-        report.setClosedAfterFinishedDelta(closedAfterFinishedDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_APP_DATA_DELTA, closedAfterAppDataDelta);
+        put(TlsAnalyzedProperty.CLOSED_AFTER_FINISHED_DELTA, closedAfterFinishedDelta);
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         // TODO extend with HTTP app data
         Config tlsConfig = scannerConfig.createConfig();
         WorkflowTrace handshakeOnly =
@@ -57,7 +64,10 @@ public class ConnectionClosingProbe extends TlsClientProbe {
 
     @Override
     public Requirement<ClientReport> getRequirements() {
-        return new FulfilledRequirement<>();
+        return new OrRequirement<ClientReport>(
+                List.of(
+                        new ProtocolTypeTrueRequirement<>(ProtocolType.TLS),
+                        new ProtocolTypeTrueRequirement<>(ProtocolType.STARTTLS)));
     }
 
     @Override

@@ -9,12 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
@@ -69,11 +68,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
             BigInteger modulo = smallestByteSizeModuloMap.get(i);
             attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
         }
-        report.putResult(
-                TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
-                new ListResult<>(
-                        attackProbabilityList,
-                        TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES.name()));
+        report.putResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES, attackProbabilityList);
 
         TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
         if (reusesDhPublicKey == TestResults.TRUE) {
@@ -92,7 +87,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
     public Map<Integer, BigInteger> generateSmallestByteSizeModuloMap(List<?> extractedValueList) {
         Map<Integer, BigInteger> smallestByteSizeModuloMap = new HashMap<>();
         for (Object o : extractedValueList) {
-            CustomDhPublicKey publicKey = (CustomDhPublicKey) o;
+            DhPublicKey publicKey = (DhPublicKey) o;
             byte[] modulo = ArrayConverter.bigIntegerToByteArray(publicKey.getModulus());
             if (smallestByteSizeModuloMap.containsKey(modulo.length)) {
                 if (smallestByteSizeModuloMap.get(modulo.length).compareTo(publicKey.getModulus())

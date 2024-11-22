@@ -10,14 +10,13 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.math.BigInteger;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +24,7 @@ public class DhValueAfterProbeTest {
 
     private ServerReport report;
     private DhValueAfterProbe probe;
-    private ExtractedValueContainer<CustomDhPublicKey> publicKeyContainer;
+    private ExtractedValueContainer<DhPublicKey> publicKeyContainer;
 
     @BeforeEach
     public void setup() {
@@ -48,9 +47,8 @@ public class DhValueAfterProbeTest {
                                 + "1013f71167cbf78aa65f3",
                         16);
 
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(
@@ -71,9 +69,8 @@ public class DhValueAfterProbeTest {
         BigInteger publicKey = new BigInteger("12");
         BigInteger modulus = new BigInteger("18");
 
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(
@@ -103,11 +100,10 @@ public class DhValueAfterProbeTest {
                                 + "81c4bf8032259bc1a3d7ee4d03",
                         16);
 
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        publicKeyContainer.put(new CustomDhPublicKey(modulus, generator, publicKey));
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
+        publicKeyContainer.put(new DhPublicKey(publicKey, generator, modulus));
+        report.putExtractedValueContainer(TrackableValueType.DHE_PUBLICKEY, publicKeyContainer);
         probe.analyze(report);
 
         assertEquals(

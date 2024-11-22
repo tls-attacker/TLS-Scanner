@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -20,7 +19,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
@@ -134,7 +133,9 @@ public class ConfigSelector {
     private void pauseSearch() {
         try {
             Thread.sleep(COOLDOWN_TIMEOUT_MULTIPLIER * scannerConfig.getTimeout());
-        } catch (InterruptedException ignored) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Was interrupted - aborting", e);
         }
     }
 
@@ -151,11 +152,12 @@ public class ConfigSelector {
         if ((reveicedRecords != null
                         && !reveicedRecords.isEmpty()
                         && reveicedRecords.get(0) instanceof Record)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.HELLO_VERIFY_REQUEST, trace)
-                || WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)
-                || WorkflowTraceUtil.didReceiveMessage(
-                        HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.HELLO_VERIFY_REQUEST)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO)
+                || WorkflowTraceResultUtil.didReceiveMessage(
+                        trace, HandshakeMessageType.SERVER_HELLO_DONE)) {
             speaksProtocol = true;
         }
         return trace.executedAsPlanned();
@@ -187,9 +189,6 @@ public class ConfigSelector {
 
         int timeout = scannerConfig.getTimeout();
         config.getDefaultClientConnection().setTimeout(timeout);
-        if (timeout > AliasedConnection.DEFAULT_FIRST_TIMEOUT) {
-            config.getDefaultClientConnection().setFirstTimeout(timeout);
-        }
     }
 
     private void repairSni(Config config) {

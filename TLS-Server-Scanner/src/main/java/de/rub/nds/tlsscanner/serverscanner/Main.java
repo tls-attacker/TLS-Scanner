@@ -13,9 +13,11 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportSerializer;
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +38,7 @@ public class Main {
                 return;
             }
             // Cmd was parsable
-            try {
-                TlsServerScanner scanner = new TlsServerScanner(config);
+            try (TlsServerScanner scanner = new TlsServerScanner(config)) {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 ServerReport report = scanner.scan();
@@ -46,9 +47,12 @@ public class Main {
                                 + "Scanned in: "
                                 + ((System.currentTimeMillis() - time) / 1000)
                                 + "s\n"
-                                + report.getFullReport(
-                                        config.getExecutorConfig().getReportDetail(),
-                                        !config.getExecutorConfig().isNoColor()));
+                                + new ServerReportPrinter(
+                                                report,
+                                                config.getExecutorConfig().getReportDetail(),
+                                                DefaultPrintingScheme.getDefaultPrintingScheme(),
+                                                !config.getExecutorConfig().isNoColor())
+                                        .getFullReport());
                 if (config.getExecutorConfig().isWriteReportToFile()) {
                     File outputFile = new File(config.getExecutorConfig().getOutputFile());
                     ServerReportSerializer.serialize(outputFile, report);

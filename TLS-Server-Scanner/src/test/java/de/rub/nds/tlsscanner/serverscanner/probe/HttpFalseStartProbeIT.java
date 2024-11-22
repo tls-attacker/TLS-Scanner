@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -31,6 +31,6 @@ public class HttpFalseStartProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, TestResults.UNCERTAIN);
+        return verifyProperty(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, TestResults.TRUE);
     }
 }

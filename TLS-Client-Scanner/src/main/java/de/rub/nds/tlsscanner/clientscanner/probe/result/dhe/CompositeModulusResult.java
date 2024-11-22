@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe.result.dhe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.tlsscanner.clientscanner.constants.CompositeModulusType;
 
 public class CompositeModulusResult {

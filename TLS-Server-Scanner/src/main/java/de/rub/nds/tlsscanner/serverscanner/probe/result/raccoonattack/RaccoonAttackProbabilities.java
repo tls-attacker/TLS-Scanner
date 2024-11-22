@@ -24,6 +24,8 @@ public class RaccoonAttackProbabilities {
 
     private BigInteger modulus;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private RaccoonAttackProbabilities() {}
 
     public RaccoonAttackProbabilities(

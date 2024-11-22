@@ -48,14 +48,14 @@ public class FinishedResumptionPaddingTraceGenerator extends PaddingTraceGenerat
         }
         SendAction sendAction = (SendAction) trace.getLastSendingAction();
         LinkedList<Record> recordList = new LinkedList<>();
-        for (ProtocolMessage msg : sendAction.getMessages()) {
+        for (ProtocolMessage msg : sendAction.getConfiguredMessages()) {
             if (msg instanceof FinishedMessage) {
                 recordList.add(vector.createRecord());
             } else {
                 recordList.add(new Record(config));
             }
         }
-        sendAction.setRecords(recordList);
+        sendAction.setConfiguredRecords(recordList);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
     }

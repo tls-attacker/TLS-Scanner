@@ -2,13 +2,13 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%-5level: %c{1} - %msg%n%throwable}"/>
+            <ExtendedPatternLayout pattern="%highlight{%-5level: %c{1} - %msg%n%throwable}"/>
         </Console>
         <Console name="Info" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+            <ExtendedPatternLayout pattern="%highlight{%-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
         </Console>
         <Console name="Direct" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%msg}%n"/>
+            <ExtendedPatternLayout pattern="%highlight{%msg}%n"/>
         </Console>
     </Appenders>
     <Loggers>
@@ -27,7 +27,7 @@
         <Logger name="DirectLogger" level="OFF" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Root level="WARN">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

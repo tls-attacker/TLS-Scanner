@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -25,7 +25,8 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.RenegotiationInfoExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -67,7 +68,7 @@ public class ECPointFormatProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         completesHandshakeWithUndefined = TestResults.COULD_NOT_TEST;
         if (shouldTestPointFormats) {
             supportedFormats = getSupportedPointFormats();
@@ -104,13 +105,14 @@ public class ECPointFormatProbe extends TlsClientProbe {
         if (shouldAddRenegotiationInfo) {
             extensionList.add(new RenegotiationInfoExtensionMessage());
         }
-
-        state.getWorkflowTrace()
-                .getFirstSendMessage(ServerHelloMessage.class)
-                .setExtensions(extensionList);
+        ServerHelloMessage serverHello =
+                (ServerHelloMessage)
+                        (WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO));
+        serverHello.setExtensions(extensionList);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         }
         return TestResults.FALSE;
@@ -137,8 +139,8 @@ public class ECPointFormatProbe extends TlsClientProbe {
             State state = new State(tlsConfig);
 
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
                 return TestResults.TRUE;
             }
             return TestResults.FALSE;
@@ -163,8 +165,8 @@ public class ECPointFormatProbe extends TlsClientProbe {
                 ECPointFormatUtils.getState(
                         ourECDHCipherSuites, format, groups, scannerConfig.createConfig());
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             supportedFormats.add(format);
         }
     }

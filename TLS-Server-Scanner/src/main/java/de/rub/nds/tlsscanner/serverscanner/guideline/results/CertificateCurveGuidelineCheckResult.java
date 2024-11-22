@@ -8,33 +8,36 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     private boolean supported;
-    private NamedGroup namedGroup;
+    private X509NamedCurve namedCurve;
 
     public CertificateCurveGuidelineCheckResult(
-            TestResult result, boolean supported, NamedGroup namedGroup) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            boolean supported,
+            X509NamedCurve namedEllipticCurveParameters) {
+        super(checkName, adherence);
         this.supported = supported;
-        this.namedGroup = namedGroup;
+        this.namedCurve = namedEllipticCurveParameters;
     }
 
-    public CertificateCurveGuidelineCheckResult(TestResult result) {
-        super(result);
+    public CertificateCurveGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
+        super(checkName, adherence);
     }
 
     @Override
-    public String display() {
-        return supported ? namedGroup + " is recommended." : namedGroup + " is not recommended.";
+    public String toString() {
+        return supported ? namedCurve + " is recommended." : namedCurve + " is not recommended.";
     }
 
-    public NamedGroup getNamedGroup() {
-        return namedGroup;
+    public X509NamedCurve getNamedCurve() {
+        return namedCurve;
     }
 
     public boolean isSupported() {

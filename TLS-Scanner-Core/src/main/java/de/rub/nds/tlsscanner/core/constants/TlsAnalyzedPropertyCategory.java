@@ -8,14 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.constants;
 
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
+    CONNECTION,
     ESNI,
     VERSIONS,
-    SESSION_TICKET,
     CIPHER_SUITES,
     EXTENSIONS,
     SESSION_RESUMPTION,
@@ -35,6 +35,8 @@ public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     BEST_PRACTICES,
     DTLS,
     HELLO_VERIFY_REQUEST,
+    MAC,
+    HELLO_RETRY_REQUEST,
     APPLICATION_LAYER,
     CLIENT_ADVERTISED
 }

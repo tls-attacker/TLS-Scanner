@@ -15,10 +15,10 @@ import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import java.util.List;
 
-public class RandomExtractor extends StatExtractor<ComparableByteArray> {
+public class RandomExtractor extends StatExtractor<State, ComparableByteArray> {
 
     public RandomExtractor() {
         super(TrackableValueType.RANDOM);
@@ -29,7 +29,8 @@ public class RandomExtractor extends StatExtractor<ComparableByteArray> {
         WorkflowTrace trace = state.getWorkflowTrace();
 
         List<ProtocolMessage> allReceivedHandshakeMessages =
-                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
+                        trace, ProtocolMessageType.HANDSHAKE);
 
         for (ProtocolMessage message : allReceivedHandshakeMessages) {
             if (message instanceof ServerHelloMessage

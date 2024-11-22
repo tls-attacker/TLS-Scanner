@@ -18,7 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.ciphersuite.CipherSuiteEvaluationHelper;
@@ -41,7 +41,7 @@ public class CipherSuiteProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         evaluationHelper.setPairLists(new LinkedList<>());
         for (ProtocolVersion version : evaluationHelper.getProtocolVersions()) {
             LOGGER.debug("Testing:" + version.name());
@@ -104,8 +104,8 @@ public class CipherSuiteProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -130,8 +130,8 @@ public class CipherSuiteProbe extends TlsServerProbe {
             configSelector.repairConfig(config);
             State state = new State(config);
             executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
                 if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
@@ -154,8 +154,8 @@ public class CipherSuiteProbe extends TlsServerProbe {
                     LOGGER.debug("Received Fatal Alert");
                     AlertMessage alert =
                             (AlertMessage)
-                                    WorkflowTraceUtil.getFirstReceivedMessage(
-                                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                                    WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                            state.getWorkflowTrace(), ProtocolMessageType.ALERT);
                     LOGGER.debug("Type:" + alert.toString());
                 }
             }

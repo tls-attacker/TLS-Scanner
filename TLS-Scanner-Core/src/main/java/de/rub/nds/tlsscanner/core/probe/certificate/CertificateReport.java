@@ -8,35 +8,43 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
-import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
-import java.security.PublicKey;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
-import java.util.Date;
+import de.rub.nds.asn1.oid.ObjectIdentifier;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
+import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.DsaPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.x509attacker.constants.KeyUsage;
+import de.rub.nds.x509attacker.constants.X509ExtensionType;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
+import de.rub.nds.x509attacker.constants.X509Version;
+import java.util.List;
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x509.Certificate;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.jce.provider.X509CertificateObject;
+import java.util.Set;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 public class CertificateReport {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-
+    private X509Version version;
     private String subject;
-    private String commonNames;
-    private String alternativeNames;
-    private Date validFrom;
-    private Date validTo;
-    private PublicKey publicKey;
+    private String commonName;
+    private List<String> alternativeNames;
+    private DateTime notBefore;
+    private DateTime notAfter;
+    private Duration remainingDuration;
+    private Duration originalFullDuration;
+    private PublicKeyContainer publicKey;
     private Boolean weakDebianKey;
     private String issuer;
-    private SignatureAndHashAlgorithm signatureAndHashAlgorithm;
+    private X509SignatureAlgorithm x509SignatureAlgorithm;
+    private SignatureAlgorithm signatureAlgorithm;
+    private X509NamedCurve namedCurve;
+    private HashAlgorithm hashAlgorithm;
     private Boolean extendedValidation;
     private Boolean certificateTransparency;
     private Boolean ocspMustStaple;
@@ -45,8 +53,7 @@ public class CertificateReport {
     private Boolean revoked;
     private Boolean dnsCAA;
     private Boolean trusted;
-    private Certificate certificate;
-    private String sha256Fingerprint;
+    private byte[] sha256Fingerprint;
     private Boolean rocaVulnerable;
     private Boolean trustAnchor;
     private Boolean customTrustAnchor;
@@ -55,24 +62,74 @@ public class CertificateReport {
     private Boolean extendedKeyUsageServerAuth;
     private Boolean extendedKeyUsagePresent;
     private String sha256Pin;
+    private ObjectIdentifier signatureAndHashAlgorithmOid;
+    private List<X509ExtensionType> supportedExtensionTypes;
+    private Set<KeyUsage> keyUsageSet;
 
     public CertificateReport() {}
 
-    public Certificate getCertificate() {
-        return certificate;
+    public X509NamedCurve getNamedCurve() {
+        return namedCurve;
     }
 
-    public X509CertificateHolder convertToCertificateHolder() {
-        return new X509CertificateHolder(certificate);
+    public void setNamedCurve(X509NamedCurve namedCurve) {
+        this.namedCurve = namedCurve;
     }
 
-    public X509Certificate convertToX509Certificate() {
-        try {
-            return new X509CertificateObject(certificate);
-        } catch (CertificateParsingException ex) {
-            LOGGER.error("Certificate Parsing Error", ex);
-            return null;
-        }
+    public X509SignatureAlgorithm getX509SignatureAlgorithm() {
+        return x509SignatureAlgorithm;
+    }
+
+    public void setX509SignatureAlgorithm(X509SignatureAlgorithm x509SignatureAlgorithm) {
+        this.x509SignatureAlgorithm = x509SignatureAlgorithm;
+    }
+
+    public Duration getRemainingDuration() {
+        return remainingDuration;
+    }
+
+    public void setRemainingDuration(Duration remainingDuration) {
+        this.remainingDuration = remainingDuration;
+    }
+
+    public Duration getOriginalFullDuration() {
+        return originalFullDuration;
+    }
+
+    public void setOriginalFullDuration(Duration originalFullDuration) {
+        this.originalFullDuration = originalFullDuration;
+    }
+
+    public Set<KeyUsage> getKeyUsageSet() {
+        return keyUsageSet;
+    }
+
+    public void setKeyUsageSet(Set<KeyUsage> keyUsageSet) {
+        this.keyUsageSet = keyUsageSet;
+    }
+
+    public List<X509ExtensionType> getSupportedExtensionTypes() {
+        return supportedExtensionTypes;
+    }
+
+    public void setSupportedExtensionTypes(List<X509ExtensionType> supportedExtensionTypes) {
+        this.supportedExtensionTypes = supportedExtensionTypes;
+    }
+
+    public X509Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(X509Version version) {
+        this.version = version;
+    }
+
+    public ObjectIdentifier getSignatureAndHashAlgorithmOid() {
+        return signatureAndHashAlgorithmOid;
+    }
+
+    public void setSignatureAndHashAlgorithmOid(ObjectIdentifier signatureAndHashAlgorithmOid) {
+        this.signatureAndHashAlgorithmOid = signatureAndHashAlgorithmOid;
     }
 
     public Boolean getExtendedKeyUsagePresent() {
@@ -91,39 +148,35 @@ public class CertificateReport {
         this.extendedKeyUsageServerAuth = extendedKeyUsageServerAuth;
     }
 
-    public String getSHA256Fingerprint() {
+    public byte[] getSHA256Fingerprint() {
         return sha256Fingerprint;
     }
 
-    public void setSha256Fingerprint(String sha256Fingerprint) {
+    public void setSha256Fingerprint(byte[] sha256Fingerprint) {
         this.sha256Fingerprint = sha256Fingerprint;
-    }
-
-    public void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public String getCommonNames() {
-        return commonNames;
+    public String getCommonName() {
+        return commonName;
     }
 
-    public String getAlternativeNames() {
+    public List<String> getAlternativeNames() {
         return alternativeNames;
     }
 
-    public Date getValidFrom() {
-        return validFrom;
+    public DateTime getNotBefore() {
+        return notBefore;
     }
 
-    public Date getValidTo() {
-        return validTo;
+    public DateTime getNotAfter() {
+        return notAfter;
     }
 
-    public PublicKey getPublicKey() {
+    public PublicKeyContainer getPublicKey() {
         return publicKey;
     }
 
@@ -133,10 +186,6 @@ public class CertificateReport {
 
     public String getIssuer() {
         return issuer;
-    }
-
-    public SignatureAndHashAlgorithm getSignatureAndHashAlgorithm() {
-        return signatureAndHashAlgorithm;
     }
 
     public Boolean getExtendedValidation() {
@@ -175,23 +224,23 @@ public class CertificateReport {
         this.subject = subject;
     }
 
-    public void setCommonNames(String commonNames) {
-        this.commonNames = commonNames;
+    public void setCommonName(String commonNames) {
+        this.commonName = commonNames;
     }
 
-    public void setAlternativeNames(String alternativeNames) {
+    public void setAlternativeNames(List<String> alternativeNames) {
         this.alternativeNames = alternativeNames;
     }
 
-    public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
+    public void setNotBefore(DateTime notBefore) {
+        this.notBefore = notBefore;
     }
 
-    public void setValidTo(Date validTo) {
-        this.validTo = validTo;
+    public void setNotAfter(DateTime notAfter) {
+        this.notAfter = notAfter;
     }
 
-    public void setPublicKey(PublicKey publicKey) {
+    public void setPublicKey(PublicKeyContainer publicKey) {
         this.publicKey = publicKey;
     }
 
@@ -203,8 +252,20 @@ public class CertificateReport {
         this.issuer = issuer;
     }
 
-    public void setSignatureAndHashAlgorithm(SignatureAndHashAlgorithm signatureAndHashAlgorithm) {
-        this.signatureAndHashAlgorithm = signatureAndHashAlgorithm;
+    public SignatureAlgorithm getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    public void setSignatureAlgorithm(SignatureAlgorithm signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+    }
+
+    public HashAlgorithm getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(HashAlgorithm hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
     }
 
     public void setExtendedValidation(Boolean extendedValidation) {
@@ -246,17 +307,17 @@ public class CertificateReport {
         if (subject != null) {
             builder.append("Subject: ").append(subject).append("\n");
         }
-        if (commonNames != null) {
-            builder.append("CommonNames: ").append(commonNames).append("\n");
+        if (commonName != null) {
+            builder.append("CommonNames: ").append(commonName).append("\n");
         }
         if (alternativeNames != null) {
             builder.append("AltNames   : ").append(alternativeNames).append("\n");
         }
-        if (validFrom != null) {
-            builder.append("Valid From : ").append(validFrom.toString()).append("\n");
+        if (notBefore != null) {
+            builder.append("Valid From : ").append(notBefore.toString()).append("\n");
         }
-        if (validTo != null) {
-            builder.append("Valid Till : ").append(validTo.toString()).append("\n");
+        if (notAfter != null) {
+            builder.append("Valid Till : ").append(notAfter.toString()).append("\n");
         }
         if (publicKey != null) {
             builder.append("PublicKey  : ").append(printPublicKey(publicKey)).append("\n");
@@ -267,15 +328,13 @@ public class CertificateReport {
         if (issuer != null) {
             builder.append("Issuer\t\t   : ").append(issuer).append("\n");
         }
-        if (signatureAndHashAlgorithm != null) {
+        if (signatureAlgorithm != null) {
             builder.append("Signature Algorithm: ")
-                    .append(signatureAndHashAlgorithm.getSignatureAlgorithm().name())
+                    .append(signatureAlgorithm.getHumanReadable())
                     .append("\n");
         }
-        if (signatureAndHashAlgorithm != null) {
-            builder.append("Hash Algorithm     : ")
-                    .append(signatureAndHashAlgorithm.getHashAlgorithm().name())
-                    .append("\n");
+        if (hashAlgorithm != null) {
+            builder.append("Hash Algorithm     : ").append(hashAlgorithm.name()).append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");
@@ -373,15 +432,15 @@ public class CertificateReport {
 
         final CertificateReport otherReport = (CertificateReport) obj;
         if (!Objects.equals(subject, otherReport.getSubject())
-                || !Objects.equals(commonNames, otherReport.getCommonNames())
+                || !Objects.equals(commonName, otherReport.getCommonName())
                 || !Objects.equals(alternativeNames, otherReport.getAlternativeNames())
-                || !Objects.equals(validFrom, otherReport.getValidFrom())
-                || !Objects.equals(validTo, otherReport.getValidTo())
+                || !Objects.equals(notBefore, otherReport.getNotBefore())
+                || !Objects.equals(notAfter, otherReport.getNotAfter())
                 || !Objects.equals(publicKey, otherReport.getPublicKey())
                 || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
                 || !Objects.equals(issuer, otherReport.getIssuer())
-                || !Objects.equals(
-                        signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
+                || !Objects.equals(signatureAlgorithm, otherReport.getSignatureAlgorithm())
+                || !Objects.equals(hashAlgorithm, otherReport.getHashAlgorithm())
                 || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
                 || !Objects.equals(
                         certificateTransparency, otherReport.getCertificateTransparency())
@@ -396,13 +455,9 @@ public class CertificateReport {
                 || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
                 || !Objects.equals(selfSigned, otherReport.getSelfSigned())
                 || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
-                || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
-                || !Objects.equals(
-                        certificate.getSerialNumber(),
-                        otherReport.getCertificate().getSerialNumber())) {
+                || !Objects.equals(sha256Pin, otherReport.getSha256Pin())) {
             return false;
         }
-
         return true;
     }
 
@@ -410,14 +465,15 @@ public class CertificateReport {
     public int hashCode() {
         int hash = 5;
         hash = 71 * hash + Objects.hashCode(this.subject);
-        hash = 71 * hash + Objects.hashCode(this.commonNames);
+        hash = 71 * hash + Objects.hashCode(this.commonName);
         hash = 71 * hash + Objects.hashCode(this.alternativeNames);
-        hash = 71 * hash + Objects.hashCode(this.validFrom);
-        hash = 71 * hash + Objects.hashCode(this.validTo);
+        hash = 71 * hash + Objects.hashCode(this.notBefore);
+        hash = 71 * hash + Objects.hashCode(this.notAfter);
         hash = 71 * hash + Objects.hashCode(this.publicKey);
         hash = 71 * hash + Objects.hashCode(this.weakDebianKey);
         hash = 71 * hash + Objects.hashCode(this.issuer);
-        hash = 71 * hash + Objects.hashCode(this.signatureAndHashAlgorithm);
+        hash = 71 * hash + Objects.hashCode(this.signatureAlgorithm);
+        hash = 71 * hash + Objects.hashCode(this.hashAlgorithm);
         hash = 71 * hash + Objects.hashCode(this.extendedValidation);
         hash = 71 * hash + Objects.hashCode(this.certificateTransparency);
         hash = 71 * hash + Objects.hashCode(this.ocspMustStaple);
@@ -435,38 +491,41 @@ public class CertificateReport {
         return hash;
     }
 
-    private String printPublicKey(PublicKey publicKey) {
+    private String printPublicKey(PublicKeyContainer publicKey) {
         StringBuilder builder = new StringBuilder();
-        if (publicKey instanceof CustomDhPublicKey) {
-            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+        if (publicKey instanceof DhPublicKey) {
+            DhPublicKey dhPublicKey = (DhPublicKey) publicKey;
             builder.append("Static Diffie Hellman\n");
             appendHexString(builder, "Modulus", dhPublicKey.getModulus().toString(16));
             appendHexString(builder, "Generator", dhPublicKey.getModulus().toString(16));
-            appendHexString(builder, "Y", dhPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomDsaPublicKey) {
-            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            appendHexString(builder, "PublicKey", dhPublicKey.getPublicKey().toString(16));
+        } else if (publicKey instanceof DsaPublicKey) {
+            DsaPublicKey dsaPublicKey = (DsaPublicKey) publicKey;
             builder.append("DSA\n");
-            appendHexString(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
-            appendHexString(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
-            appendHexString(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            appendHexString(builder, "Modulus", dsaPublicKey.getModulus().toString(16));
+            appendHexString(builder, "Generator", dsaPublicKey.getGenerator().toString(16));
+            appendHexString(builder, "Q", dsaPublicKey.getQ().toString(16));
             appendHexString(builder, "X", dsaPublicKey.getY().toString(16));
-        } else if (publicKey instanceof CustomRsaPublicKey) {
-            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+        } else if (publicKey instanceof RsaPublicKey) {
+            RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
             builder.append("RSA\n");
             appendHexString(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
             appendHexString(builder, "Generator", rsaPublicKey.getModulus().toString(16));
             appendHexString(
                     builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
-        } else if (publicKey instanceof CustomEcPublicKey) {
-            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
-            builder.append("Elliptic Curve\n");
-            if (ecPublicKey.getGroup() == null) {
-                builder.append("\t Group (GOST):").append(ecPublicKey.getGostCurve()).append("\n");
-            } else {
-                builder.append("\t Group:").append(ecPublicKey.getGroup()).append("\n");
-            }
+        } else if (publicKey instanceof EcdhPublicKey) {
+            EcdhPublicKey ecPublicKey = (EcdhPublicKey) publicKey;
+            builder.append("ECDH\n");
+            builder.append("\t Group:").append(ecPublicKey.getParameters().getName()).append("\n");
             builder.append("\t Public Point:")
-                    .append(ecPublicKey.getPoint().toString())
+                    .append(ecPublicKey.getPublicPoint().toString())
+                    .append("\n");
+        } else if (publicKey instanceof EcdsaPublicKey) {
+            EcdsaPublicKey ecPublicKey = (EcdsaPublicKey) publicKey;
+            builder.append("ECDSA\n");
+            builder.append("\t Group:").append(ecPublicKey.getParameters().getName()).append("\n");
+            builder.append("\t Public Point:")
+                    .append(ecPublicKey.getPublicPoint().toString())
                     .append("\n");
 
         } else {

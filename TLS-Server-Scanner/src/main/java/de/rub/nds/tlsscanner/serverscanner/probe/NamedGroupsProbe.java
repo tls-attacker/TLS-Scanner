@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -25,13 +25,14 @@ import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessag
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,70 +78,37 @@ public class NamedGroupsProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         namedGroupsMap = new HashMap<>();
         ignoresEcdsaGroupDisparity = TestResults.FALSE;
-        addGroupsFound(
-                namedGroupsMap,
-                getSupportedNamedGroups(
-                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-                KeyExchangeAlgorithm.DHE_RSA);
-        addGroupsFound(
-                namedGroupsMap,
-                getSupportedNamedGroups(
-                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-                KeyExchangeAlgorithm.DHE_DSS);
-        addGroupsFound(
-                namedGroupsMap,
-                getSupportedNamedGroups(
-                        getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-                KeyExchangeAlgorithm.DH_ANON);
 
         supportsExplicitPrime = TestResults.CANNOT_BE_TESTED;
         supportsExplicitChar2 = TestResults.CANNOT_BE_TESTED;
         if (configSelector.foundWorkingConfig()) {
-            addGroupsFound(
-                    namedGroupsMap,
+            namedGroupsMap.putAll(
                     getSupportedNamedGroups(
-                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-                    KeyExchangeAlgorithm.DHE_RSA);
-            addGroupsFound(
-                    namedGroupsMap,
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false));
+            namedGroupsMap.putAll(
                     getSupportedNamedGroups(
-                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-                    KeyExchangeAlgorithm.DHE_DSS);
-            addGroupsFound(
-                    namedGroupsMap,
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false));
+            namedGroupsMap.putAll(
                     getSupportedNamedGroups(
-                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-                    KeyExchangeAlgorithm.DH_ANON);
-
-            addGroupsFound(
-                    namedGroupsMap,
-                    getSupportedNamedGroups(
-                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-                    KeyExchangeAlgorithm.ECDH_ANON);
-            addGroupsFound(
-                    namedGroupsMap,
+                            getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false));
+            namedGroupsMap.putAll(
                     getSupportedNamedGroups(
                             getCipherSuiteByKeyExchange(
                                     KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA),
-                            true),
-                    KeyExchangeAlgorithm.ECDHE_RSA);
-            addGroupsFound(
-                    namedGroupsMap,
+                            true));
+            namedGroupsMap.putAll(
                     getSupportedNamedCurvesEcdsa(
                             getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
                             ecdsaPkGroupsEphemeral,
-                            ecdsaCertSigGroupsEphemeral),
-                    KeyExchangeAlgorithm.ECDHE_ECDSA);
-            addGroupsFound(
-                    namedGroupsMap,
+                            ecdsaCertSigGroupsEphemeral));
+            namedGroupsMap.putAll(
                     getSupportedNamedCurvesEcdsa(
                             getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA),
                             null,
-                            ecdsaCertSigGroupsStatic),
-                    KeyExchangeAlgorithm.ECDH_ECDSA);
+                            ecdsaCertSigGroupsStatic));
             supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
             supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
         }
@@ -211,8 +179,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
 
         TlsContext context;
         NamedGroup selectedGroup = null;
-        NamedGroup certificateGroup = null;
-        NamedGroup certificateSigGroup = null;
+        X509NamedCurve certificateGroup = null;
         // place signing groups at the bottom of the list, the server should
         // choose
         // all other first
@@ -229,20 +196,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
             if (context != null) {
 
                 selectedGroup = context.getSelectedGroup();
-                certificateGroup = context.getEcCertificateCurve();
-                certificateSigGroup = context.getEcCertificateSignatureCurve();
-
-                // remove groups that are not required by the server even
-                // if they are used for the certificate or KEX signature
-                if (!toTestList.contains(certificateGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
-                    certificateGroup = null;
-                }
-                if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
-                    certificateSigGroup = null;
-                }
-
+                certificateGroup = context.getServerX509Context().getSubjectNamedCurve();
                 if (!toTestList.contains(selectedGroup)) {
                     LOGGER.debug("Server chose a Curve we did not offer!");
                     break;
@@ -251,18 +205,14 @@ public class NamedGroupsProbe extends TlsServerProbe {
                     namedCurveMap.put(
                             selectedGroup,
                             new NamedGroupWitness(
+                                    selectedGroup,
                                     certificateGroup,
-                                    null,
-                                    certificateSigGroup,
                                     context.getSelectedCipherSuite()));
                 } else {
                     namedCurveMap.put(
                             selectedGroup,
                             new NamedGroupWitness(
-                                    null,
-                                    certificateSigGroup,
-                                    null,
-                                    context.getSelectedCipherSuite()));
+                                    null, certificateGroup, context.getSelectedCipherSuite()));
                 }
 
                 toTestList.remove(selectedGroup);
@@ -281,8 +231,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
         }
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return state.getTlsContext();
         } else {
             LOGGER.debug(
@@ -349,14 +299,14 @@ public class NamedGroupsProbe extends TlsServerProbe {
         State state = new State(tlsConfig);
         executeState(state);
 
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), ProtocolMessageType.UNKNOWN)) {
             return TestResults.UNCERTAIN;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE)) {
             HandshakeMessage skeMsg =
-                    WorkflowTraceUtil.getFirstReceivedMessage(
-                            HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+                    WorkflowTraceResultUtil.getFirstReceivedMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.SERVER_KEY_EXCHANGE);
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
@@ -386,8 +336,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
     private Map<NamedGroup, NamedGroupWitness> getTls13SupportedGroups() {
         Map<NamedGroup, NamedGroupWitness> namedGroupMap = new HashMap<>();
         NamedGroup selectedGroup = null;
-        NamedGroup certificateGroup = null;
-        NamedGroup certificateSigGroup = null;
+        X509NamedCurve certificateGroup = null;
         TlsContext context = null;
         List<NamedGroup> toTestList = NamedGroup.getImplemented();
         List<NamedGroup> supportedGroups = new LinkedList<>();
@@ -402,18 +351,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
 
             if (context != null) {
                 selectedGroup = context.getSelectedGroup();
-                certificateGroup = context.getEcCertificateCurve();
-                certificateSigGroup = context.getEcCertificateSignatureCurve();
-
-                if (!toTestList.contains(certificateGroup) && certificateGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
-                    certificateGroup = null;
-                }
-
-                if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
-                    ignoresEcdsaGroupDisparity = TestResults.TRUE;
-                    certificateSigGroup = null;
-                }
+                certificateGroup = context.getServerX509Context().getSubjectNamedCurve();
 
                 if (!toTestList.contains(selectedGroup)) {
                     LOGGER.warn("Server chose a group we did not offer:" + selectedGroup);
@@ -424,10 +362,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 namedGroupMap.put(
                         selectedGroup,
                         new NamedGroupWitness(
-                                certificateGroup,
-                                null,
-                                certificateSigGroup,
-                                context.getSelectedCipherSuite()));
+                                selectedGroup, certificateGroup, context.getSelectedCipherSuite()));
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && !toTestList.isEmpty());
@@ -442,44 +377,13 @@ public class NamedGroupsProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return state.getTlsContext();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());
             return null;
-        }
-    }
-
-    private void addGroupsFound(
-            Map<NamedGroup, NamedGroupWitness> supportedMap,
-            Map<NamedGroup, NamedGroupWitness> newlyFoundGroups,
-            KeyExchangeAlgorithm keyExchangeAlgorithm) {
-
-        for (NamedGroup group : newlyFoundGroups.keySet()) {
-            NamedGroupWitness witness;
-            if (supportedMap.containsKey(group)) {
-                witness = supportedMap.get(group);
-            } else {
-                witness = new NamedGroupWitness();
-                supportedMap.put(group, witness);
-            }
-
-            witness.getCipherSuites().addAll(newlyFoundGroups.get(group).getCipherSuites());
-            switch (keyExchangeAlgorithm) {
-                case ECDH_ECDSA:
-                    witness.setEcdsaSigGroupStatic(
-                            newlyFoundGroups.get(group).getEcdsaSigGroupStatic());
-                    break;
-                case ECDHE_ECDSA:
-                    witness.setEcdsaPkGroupEphemeral(
-                            newlyFoundGroups.get(group).getEcdsaPkGroupEphemeral());
-                    witness.setEcdsaSigGroupEphemeral(
-                            newlyFoundGroups.get(group).getEcdsaSigGroupEphemeral());
-                default:
-                    break;
-            }
         }
     }
 

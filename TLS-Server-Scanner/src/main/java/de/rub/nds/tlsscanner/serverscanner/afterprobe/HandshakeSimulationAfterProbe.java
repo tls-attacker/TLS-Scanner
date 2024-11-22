@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -65,10 +65,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
                     simulatedClient.setHandshakeSuccessful(false);
                 }
             }
-            report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
-            report.setHandshakeFailedCounter(
+            report.putResult(TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER, isSuccessfulCounter);
+            report.putResult(
+                    TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                     report.getSimulatedClientsResultList().size() - isSuccessfulCounter);
-            report.setConnectionInsecureCounter(isInsecureCounter);
+            report.putResult(TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER, isInsecureCounter);
         } else {
             LOGGER.debug(
                     "property "

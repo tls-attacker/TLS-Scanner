@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.vector;
 
+import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
+import de.rub.nds.protocol.crypto.ec.EllipticCurve;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -27,6 +29,8 @@ public class InvalidCurveVector implements Vector {
     private boolean attackInRenegotiation;
     private List<NamedGroup> ecdsaRequiredGroups;
 
+    /** Private no-arg constructor to please JAXB */
+    @SuppressWarnings("unused")
     private InvalidCurveVector() {}
 
     public InvalidCurveVector(
@@ -73,6 +77,10 @@ public class InvalidCurveVector implements Vector {
      */
     public NamedGroup getNamedGroup() {
         return namedGroup;
+    }
+
+    public EllipticCurve getTargetedCurve() {
+        return ((NamedEllipticCurveParameters) namedGroup.getGroupParameters()).getGroup();
     }
 
     /**

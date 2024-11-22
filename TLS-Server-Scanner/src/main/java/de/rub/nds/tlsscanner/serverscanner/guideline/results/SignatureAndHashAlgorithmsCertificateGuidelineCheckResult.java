@@ -9,8 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.util.Objects;
@@ -22,14 +21,16 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
     private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
 
     public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-            TestResult result, Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {
+        super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
-    public String display() {
-        if (Objects.equals(TestResults.UNCERTAIN, getResult())) {
+    public String toString() {
+        if (Objects.equals(GuidelineAdherence.CHECK_FAILED, getAdherence())) {
             return "Missing Information";
         }
         if (notRecommendedAlgorithms.isEmpty()) {

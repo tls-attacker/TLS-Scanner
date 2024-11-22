@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 
 public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResult {
@@ -17,14 +17,14 @@ public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResul
     private final long actualValidity;
 
     public CertificateValidityGuidelineCheckResult(
-            TestResult result, int expectedResult, long actualResult) {
-        super(result);
+            String checkName, GuidelineAdherence adherence, int expectedResult, long actualResult) {
+        super(checkName, adherence);
         this.maximumValidity = expectedResult;
         this.actualValidity = actualResult;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return String.format(
                 "Certificate Validity is %d. (Max %d days.)", actualValidity, maximumValidity);
     }

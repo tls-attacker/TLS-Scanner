@@ -54,10 +54,6 @@ public class PaddingOracleAttacker {
     private long additionalTimeout = 1000;
     private long additionalTcpTimeout = 5000;
     private List<VectorResponse> fullResponseMap;
-    private EqualityError resultError;
-
-    private boolean shakyScans = false;
-    private boolean erroneousScans = false;
 
     public PaddingOracleAttacker(
             Config baseConfig,
@@ -109,7 +105,6 @@ public class PaddingOracleAttacker {
             }
         }
 
-        resultError = referenceError;
         return referenceError != EqualityError.NONE;
     }
 
@@ -143,7 +138,6 @@ public class PaddingOracleAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                erroneousScans = true;
                 LOGGER.warn("Could not extract fingerprint for " + pair.toString());
             } else {
                 testedSuite =

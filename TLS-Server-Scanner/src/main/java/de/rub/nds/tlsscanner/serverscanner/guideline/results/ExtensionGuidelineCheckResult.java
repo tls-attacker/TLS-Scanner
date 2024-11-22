@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
-import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 
@@ -18,14 +18,17 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
     private final ExtensionType requiredExtension;
 
     public ExtensionGuidelineCheckResult(
-            TestResult result, boolean supported, ExtensionType requiredExtension) {
-        super(result);
+            String checkName,
+            GuidelineAdherence adherence,
+            boolean supported,
+            ExtensionType requiredExtension) {
+        super(checkName, adherence);
         this.supported = supported;
         this.requiredExtension = requiredExtension;
     }
 
     @Override
-    public String display() {
+    public String toString() {
         return supported
                 ? "The server supports " + this.requiredExtension
                 : "The server does not support " + this.requiredExtension;

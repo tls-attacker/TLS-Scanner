@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.MapResult;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.MapResult;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
@@ -18,10 +18,11 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DtlsRetransmissionAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public class DtlsRetransmissionAfterProbe<ReportT extends TlsScanReport>
+        extends AfterProbe<ReportT> {
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         ExtractedValueContainer<HandshakeMessageType> container =
                 report.getExtractedValueContainer(
                         TrackableValueType.DTLS_RETRANSMISSIONS, HandshakeMessageType.class);
@@ -37,8 +38,9 @@ public class DtlsRetransmissionAfterProbe<R extends TlsScanReport<R>> extends Af
         report.putResult(
                 TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS,
                 new MapResult<>(
-                        retransmissionCounters,
-                        TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS.name()));
-        report.setTotalReceivedRetransmissions(container.getNumberOfExtractedValues());
+                        TlsAnalyzedProperty.MAP_RETRANSMISSION_COUNTERS, retransmissionCounters));
+        report.putResult(
+                TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
+                container.getNumberOfExtractedValues());
     }
 }

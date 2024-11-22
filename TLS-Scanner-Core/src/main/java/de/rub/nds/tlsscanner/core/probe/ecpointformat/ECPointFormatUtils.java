@@ -8,14 +8,11 @@
  */
 package de.rub.nds.tlsscanner.core.probe.ecpointformat;
 
-import static de.rub.nds.tlsattacker.core.constants.ECPointFormat.ANSIX962_COMPRESSED_CHAR2;
-import static de.rub.nds.tlsattacker.core.constants.ECPointFormat.ANSIX962_COMPRESSED_PRIME;
-import static de.rub.nds.tlsattacker.core.constants.ECPointFormat.UNCOMPRESSED;
-
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -25,7 +22,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,16 +99,17 @@ public abstract class ECPointFormatUtils {
         return secpGroups;
     }
 
-    public static <T extends TlsScanReport<T>> Requirement<T> getRequirements() {
-        return new ProbeRequirement<T>(TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE)
+    public static <ReportT extends TlsScanReport> Requirement<ReportT> getRequirements() {
+        return new ProbeRequirement<ReportT>(
+                        TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE)
                 .and(
-                        new PropertyTrueRequirement<T>(TlsAnalyzedProperty.SUPPORTS_ECDHE)
+                        new PropertyTrueRequirement<ReportT>(TlsAnalyzedProperty.SUPPORTS_ECDHE)
                                 .or(
                                         new PropertyTrueRequirement<>(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3)));
     }
 
-    public static boolean testInPreTLS13(TlsScanReport<?> report) {
+    public static boolean testInPreTLS13(TlsScanReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_2) == TestResults.TRUE
@@ -120,13 +117,13 @@ public abstract class ECPointFormatUtils {
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE;
     }
 
-    public static boolean testInTLS13(TlsScanReport<?> report) {
+    public static boolean testInTLS13(TlsScanReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
     public static void mergeInProbe(
             List<ECPointFormat> supportedFormats,
-            TlsProbe<?, ?> callingProbe,
+            TlsProbe<?> callingProbe,
             TestResult completesHandshakeWithUndefined,
             TestResult tls13SecpCompression) {
         TestResult supportsUncompressedPoint = TestResults.FALSE;

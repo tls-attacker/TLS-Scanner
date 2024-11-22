@@ -8,15 +8,22 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.MapResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.LongResult;
+import de.rub.nds.scanner.core.probe.result.MapResult;
+import de.rub.nds.scanner.core.probe.result.ObjectResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.converter.*;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -29,62 +36,33 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ServerReport extends TlsScanReport<ServerReport> {
+public class ServerReport extends TlsScanReport {
 
+    public static Module[] getSerializerModules() {
+        return new Module[] {
+            new SimpleModule()
+                    .addSerializer(new ByteArraySerializer())
+                    .addSerializer(new ResponseFingerprintSerializer())
+                    .addSerializer(new VectorSerializer())
+                    .addSerializer(new PointSerializer())
+                    .addSerializer(new HttpsHeaderSerializer()),
+            new JodaModule()
+        };
+    }
+
+    private final String sniHostname;
     private final String host;
     private final Integer port;
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
-
-    // Attacks
-    private NamedGroup helloRetryRequestSelectedNamedGroup = null;
-
-    // RFC
-    private CheckPattern macCheckPatternAppData = null;
-    private CheckPattern macCheckPatternFinished = null;
-    private CheckPattern verifyCheckPattern = null;
-
-    // Certificate
-    private int minimumRsaCertKeySize;
-    private int minimumDssCertKeySize;
-
-    // Certificate Transparency
-    private SignedCertificateTimestampList precertificateSctList = null;
-    private SignedCertificateTimestampList handshakeSctList = null;
-    private SignedCertificateTimestampList ocspSctList = null;
-
-    // Session
-    private Long sessionTicketLengthHint = null;
-
-    // Renegotiation + SCSV
-    // GCM Nonces
-    private GcmPattern gcmPattern = null;
-
-    // HTTPS Header
-    private Long hstsMaxAge = null;
-    private Integer hpkpMaxAge = null; //
-
-    // DTLS
-    private Integer cookieLength = null;
-
-    // PublicKey Params
-    private Integer weakestDhStrength = null;
-
-    // Handshake Simulation
-    private Integer handshakeSuccessfulCounter = null;
-    private Integer handshakeFailedCounter = null;
-    private Integer connectionRfc7918SecureCounter = null;
-    private Integer connectionInsecureCounter = null;
 
     // Rating
     private int score;
@@ -95,23 +73,27 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     private String configProfileIdentifierTls13;
 
     public ServerReport() {
-        super();
-        host = null;
-        port = null;
+        this(null, null, null);
     }
 
-    public ServerReport(String host, int port) {
+    public ServerReport(String host, Integer port) {
+        this(null, host, port);
+    }
+
+    public ServerReport(String sniHostname, String host, Integer port) {
         super();
+        this.sniHostname = sniHostname;
         this.host = host;
         this.port = port;
     }
 
-    public synchronized Long getSessionTicketLengthHint() {
-        return sessionTicketLengthHint;
-    }
-
-    public synchronized void setSessionTicketLengthHint(Long sessionTicketLengthHint) {
-        this.sessionTicketLengthHint = sessionTicketLengthHint;
+    @Override
+    public String getRemoteName() {
+        if (sniHostname != null) {
+            return sniHostname + "(" + host + "):" + port;
+        } else {
+            return host + ":" + port;
+        }
     }
 
     public synchronized String getHost() {
@@ -131,19 +113,15 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     }
 
     public synchronized CheckPattern getMacCheckPatternAppData() {
-        return macCheckPatternAppData;
-    }
-
-    public synchronized void setMacCheckPatternAppData(CheckPattern macCheckPatternAppData) {
-        this.macCheckPatternAppData = macCheckPatternAppData;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.MAC_CHECK_PATTERN_APP_DATA, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized CheckPattern getVerifyCheckPattern() {
-        return verifyCheckPattern;
-    }
-
-    public synchronized void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
-        this.verifyCheckPattern = verifyCheckPattern;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.VERIFY_CHECK_PATTERN, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Boolean getSpeaksProtocol() {
@@ -163,127 +141,82 @@ public class ServerReport extends TlsScanReport<ServerReport> {
     }
 
     public synchronized Integer getCookieLength() {
-        return cookieLength;
-    }
-
-    public synchronized void setCookieLength(Integer cookieLength) {
-        this.cookieLength = cookieLength;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.COOKIE_LENGTH);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized GcmPattern getGcmPattern() {
-        return gcmPattern;
-    }
-
-    public synchronized void setGcmPattern(GcmPattern gcmPattern) {
-        this.gcmPattern = gcmPattern;
+        ObjectResult<GcmPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.GCM_PATTERN, GcmPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Integer getHandshakeSuccessfulCounter() {
-        return handshakeSuccessfulCounter;
-    }
-
-    public synchronized void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
-        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getHandshakeFailedCounter() {
-        return handshakeFailedCounter;
-    }
-
-    public synchronized void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
-        this.handshakeFailedCounter = handshakeFailedCounter;
-    }
-
-    public synchronized Integer getConnectionRfc7918SecureCounter() {
-        return connectionRfc7918SecureCounter;
-    }
-
-    public synchronized void setConnectionRfc7918SecureCounter(
-            Integer connectionRfc7918SecureCounter) {
-        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getConnectionInsecureCounter() {
-        return connectionInsecureCounter;
-    }
-
-    public synchronized void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
-        this.connectionInsecureCounter = connectionInsecureCounter;
-    }
-
-    @Override
-    public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new ServerReportPrinter(
-                        this,
-                        detail,
-                        DefaultPrintingScheme.getDefaultPrintingScheme(),
-                        printColorful)
-                .getFullReport();
+        IntegerResult integerResult =
+                getIntegerResult(TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     @Override
     public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
+        return new ServerReportPrinter(
+                        this,
+                        ScannerDetail.NORMAL,
+                        DefaultPrintingScheme.getDefaultPrintingScheme(),
+                        false)
+                .getFullReport();
     }
 
     public synchronized CheckPattern getMacCheckPatternFinished() {
-        return macCheckPatternFinished;
-    }
-
-    public synchronized void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
-        this.macCheckPatternFinished = macCheckPatternFinished;
+        ObjectResult<CheckPattern> objectResult =
+                getObjectResult(TlsAnalyzedProperty.MAC_CHECK_PATTERN_FIN, CheckPattern.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized Long getHstsMaxAge() {
-        return hstsMaxAge;
-    }
-
-    public synchronized void setHstsMaxAge(Long hstsMaxAge) {
-        this.hstsMaxAge = hstsMaxAge;
+        LongResult longResult = getLongResult(TlsAnalyzedProperty.HSTS_MAX_AGE);
+        return longResult == null ? null : longResult.getValue();
     }
 
     public synchronized Integer getHpkpMaxAge() {
-        return hpkpMaxAge;
-    }
-
-    public synchronized void setHpkpMaxAge(Integer hpkpMaxAge) {
-        this.hpkpMaxAge = hpkpMaxAge;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.HPKP_MAX_AGE);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized Integer getWeakestDhStrength() {
-        return weakestDhStrength;
-    }
-
-    public synchronized void setWeakestDhStrength(Integer weakestDhStrength) {
-        this.weakestDhStrength = weakestDhStrength;
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
+        return integerResult == null ? null : integerResult.getValue();
     }
 
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<InvalidCurveResponse> listResult =
-                (ListResult<InvalidCurveResponse>)
-                        getListResult(TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT);
+                getListResult(
+                        TlsAnalyzedProperty.INVALID_CURVE_TEST_RESULT, InvalidCurveResponse.class);
         return listResult == null ? null : listResult.getList();
     }
 
     // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
-        if (this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
+        if (getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
                 == TestResults.NOT_TESTED_YET) {
             return null;
         }
-        @SuppressWarnings("unchecked")
         ListResult<RaccoonAttackProbabilities> listResult =
-                (ListResult<RaccoonAttackProbabilities>)
-                        this.getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES);
-        return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized List<OcspCertificateResult> getOcspResults() {
-        @SuppressWarnings("unchecked")
-        ListResult<OcspCertificateResult> listResult =
-                (ListResult<OcspCertificateResult>)
-                        this.getResult(TlsAnalyzedProperty.OCSP_RESULTS);
+                getListResult(
+                        TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES,
+                        RaccoonAttackProbabilities.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -305,89 +238,56 @@ public class ServerReport extends TlsScanReport<ServerReport> {
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized List<CcaTestResult> getCcaTestResultList() {
-        @SuppressWarnings("unchecked")
-        ListResult<CcaTestResult> listResult =
-                (ListResult<CcaTestResult>) getListResult(TlsAnalyzedProperty.CCA_TEST_RESULTS);
-        return listResult == null ? null : listResult.getList();
-    }
-
     public synchronized List<HpkpPin> getNormalHpkpPins() {
-        @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult =
-                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS);
+                getListResult(TlsAnalyzedProperty.NORMAL_HPKP_PINS, HpkpPin.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
-        @SuppressWarnings("unchecked")
         ListResult<HpkpPin> listResult =
-                (ListResult<HpkpPin>) getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS);
+                getListResult(TlsAnalyzedProperty.REPORT_ONLY_HPKP_PINS, HpkpPin.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<SimulatedClientResult> getSimulatedClientsResultList() {
-        @SuppressWarnings("unchecked")
         ListResult<SimulatedClientResult> listResult =
-                (ListResult<SimulatedClientResult>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_SIMULATION_RESULTS, SimulatedClientResult.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
-        @SuppressWarnings("unchecked")
         ListResult<ApplicationProtocol> listResult =
                 (ListResult<ApplicationProtocol>)
-                        getListResult(TlsAnalyzedProperty.SUPPORTED_APPLICATIONS);
+                        getListResult(
+                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
+                                ApplicationProtocol.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized Set<CommonDhValues> getCommonDhValues() {
-        @SuppressWarnings("unchecked")
         SetResult<CommonDhValues> setResult =
-                (SetResult<CommonDhValues>) getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES);
+                getSetResult(TlsAnalyzedProperty.COMMON_DH_VALUES, CommonDhValues.class);
         return setResult == null ? null : setResult.getSet();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
-        @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult =
-                (MapResult<NamedGroup, NamedGroupWitness>)
-                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES);
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
     }
 
     public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
-        @SuppressWarnings("unchecked")
         MapResult<NamedGroup, NamedGroupWitness> mapResult =
-                (MapResult<NamedGroup, NamedGroupWitness>)
-                        getMapResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+                getMapResult(
+                        TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
+                        NamedGroup.class,
+                        NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
-    }
-
-    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
-        return precertificateSctList;
-    }
-
-    public synchronized void setPrecertificateSctList(
-            SignedCertificateTimestampList precertificateSctList) {
-        this.precertificateSctList = precertificateSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
-        return handshakeSctList;
-    }
-
-    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
-        this.handshakeSctList = handshakeSctList;
-    }
-
-    public synchronized SignedCertificateTimestampList getOcspSctList() {
-        return ocspSctList;
-    }
-
-    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
-        this.ocspSctList = ocspSctList;
     }
 
     public synchronized int getScore() {
@@ -404,31 +304,6 @@ public class ServerReport extends TlsScanReport<ServerReport> {
 
     public synchronized void setScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
-    }
-
-    public synchronized int getMinimumRsaCertKeySize() {
-        return minimumRsaCertKeySize;
-    }
-
-    public synchronized void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
-        this.minimumRsaCertKeySize = minimumRsaCertKeySize;
-    }
-
-    public synchronized int getMinimumDssCertKeySize() {
-        return minimumDssCertKeySize;
-    }
-
-    public synchronized void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
-        this.minimumDssCertKeySize = minimumDssCertKeySize;
-    }
-
-    public synchronized NamedGroup getHelloRetryRequestSelectedNamedGroup() {
-        return helloRetryRequestSelectedNamedGroup;
-    }
-
-    public synchronized void setHelloRetryRequestSelectedNamedGroup(
-            NamedGroup helloRetryRequestSelectedNamedGroup) {
-        this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
     }
 
     public synchronized String getConfigProfileIdentifier() {

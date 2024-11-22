@@ -9,16 +9,16 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public class LogjamAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+public class LogjamAfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             if (report.getSupportedCipherSuites() != null) {

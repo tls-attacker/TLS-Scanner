@@ -14,6 +14,7 @@ public enum TrackableValueType implements TrackableValue {
     COOKIE,
     RANDOM,
     SESSION_ID,
+    SESSION_TICKET,
     DHE_PUBLICKEY,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,

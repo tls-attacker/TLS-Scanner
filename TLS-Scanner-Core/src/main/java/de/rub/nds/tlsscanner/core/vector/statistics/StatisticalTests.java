@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
-import de.rub.nds.scanner.core.constants.RandomnessConstants;
+import de.rub.nds.tlsscanner.core.constants.RandomnessConstants;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -453,11 +453,6 @@ public class StatisticalTests {
         LOGGER.debug("Failed Tests : " + failedTests);
 
         double failurePercent = (double) failedTests / RandomnessConstants.TEMPLATE_NINE.length;
-        // Use 0 and 1 to represent False and True to use the Map
-        double testPassed = 0;
-        if (pValue >= minimum_p_value) {
-            testPassed = 1;
-        }
         return failurePercent;
     }
 

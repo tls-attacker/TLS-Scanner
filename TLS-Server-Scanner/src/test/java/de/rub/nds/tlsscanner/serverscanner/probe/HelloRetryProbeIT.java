@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
@@ -32,7 +32,9 @@ public class HelloRetryProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return report.getHelloRetryRequestSelectedNamedGroup() == NamedGroup.ECDH_X25519
+        return report.getObjectResult(TlsAnalyzedProperty.HRR_SELECTED_GROUP, NamedGroup.class)
+                                .getValue()
+                        == NamedGroup.ECDH_X25519
                 && verifyProperty(
                         TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResults.TRUE);

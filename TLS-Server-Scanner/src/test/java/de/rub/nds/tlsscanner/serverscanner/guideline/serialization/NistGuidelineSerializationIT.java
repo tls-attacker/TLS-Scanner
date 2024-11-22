@@ -8,24 +8,43 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.Guideline;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.scanner.core.probe.result.TestResults;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsTypeCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
+import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -76,16 +95,19 @@ public class NistGuidelineSerializationIT {
                         "Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility",
                         RequirementLevel.SHOULD));
         checks.add(
-                new SignatureAlgorithmsCertificateGuidelineCheck(
+                new SignatureAlgorithmsTypeCertificateGuidelineCheck(
                         "Shall be configured with an RSA signature certificate or an ECDSA signature certificate",
                         RequirementLevel.MUST,
                         true,
-                        Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.ECDSA)));
+                        Arrays.asList(
+                                SignatureAlgorithm.RSA_PKCS1,
+                                SignatureAlgorithm.RSA_SSA_PSS,
+                                SignatureAlgorithm.ECDSA)));
         checks.add(
                 new CertificateCurveGuidelineCheck(
                         "For ECDSA: Curve P-256 or curve P-384 should be used in the public key",
                         RequirementLevel.SHOULD,
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1)));
+                        Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Certificates shall be issued by CA that publishes revocation information in OCSP responses",
@@ -96,7 +118,7 @@ public class NistGuidelineSerializationIT {
                 new CertificateVersionGuidelineCheck(
                         "Server certificate shall be an X.509 version 3 certificate",
                         RequirementLevel.MUST,
-                        3));
+                        X509Version.V3));
         checks.add(
                 new KeySizeCertGuidelineCheck(
                         "All server and client certificates shall contain public keys that offer at least 112 bits of security.",
@@ -486,8 +508,8 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS,
-                        TestResults.TRUE));
+                        TlsAnalyzedProperty.REUSABLE_TICKET,
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",
@@ -498,15 +520,7 @@ public class NistGuidelineSerializationIT {
         Guideline<ServerReport> guideline =
                 new Guideline<>(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
-        GuidelineIO<ServerReport> guidelineIO =
-                new GuidelineIO<>(
-                        TlsAnalyzedProperty.class,
-                        checks.stream()
-                                .map(
-                                        check ->
-                                                (Class<? extends GuidelineCheck<ServerReport>>)
-                                                        check.getClass())
-                                .collect(Collectors.toSet()));
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
     }
 }

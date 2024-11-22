@@ -9,8 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import com.google.common.base.Joiner;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import java.util.List;
@@ -23,32 +22,34 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
 
-    public NamedGroupsGuidelineCheckResult(TestResult result) {
-        super(result);
+    public NamedGroupsGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
+        super(checkName, adherence);
     }
 
     public NamedGroupsGuidelineCheckResult(
-            TestResult result, Set<NamedGroup> notRecommendedGroups) {
-        super(result);
+            String checkName, GuidelineAdherence adherence, Set<NamedGroup> notRecommendedGroups) {
+        super(checkName, adherence);
         this.notRecommendedGroups = notRecommendedGroups;
     }
 
-    public NamedGroupsGuidelineCheckResult(TestResult result, List<NamedGroup> missingRequired) {
-        super(result);
+    public NamedGroupsGuidelineCheckResult(
+            String checkName, GuidelineAdherence adherence, List<NamedGroup> missingRequired) {
+        super(checkName, adherence);
         this.missingRequired = missingRequired;
     }
 
-    public NamedGroupsGuidelineCheckResult(TestResult result, Integer groupCount) {
-        super(result);
+    public NamedGroupsGuidelineCheckResult(
+            String checkName, GuidelineAdherence adherence, Integer groupCount) {
+        super(checkName, adherence);
         this.groupCount = groupCount;
     }
 
     @Override
-    public String display() {
-        if (Objects.equals(TestResults.UNCERTAIN, getResult())) {
+    public String toString() {
+        if (Objects.equals(GuidelineAdherence.CHECK_FAILED, getAdherence())) {
             return "Missing information.";
         }
-        if (Objects.equals(TestResults.TRUE, getResult())) {
+        if (Objects.equals(GuidelineAdherence.ADHERED, getAdherence())) {
             return "Server passed the named groups check.";
         }
         if (notRecommendedGroups != null && !notRecommendedGroups.isEmpty()) {

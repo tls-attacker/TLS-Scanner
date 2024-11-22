@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.List;
 
 public class DtlsFragmentationProbe extends TlsServerProbe {
 
@@ -56,7 +57,7 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         supportsDirectly = supportsFragmentationDirectly(false);
         supportsDirectlyIndPackets = supportsFragmentationDirectly(true);
         supportsAfterCookieExchange = supportsFragmentationAfterCookieExchange(false);
@@ -76,8 +77,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
 
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO_DONE)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -97,16 +98,17 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(
-                new DtlsHandshakeMessageFragment(config, 20),
-                new DtlsHandshakeMessageFragment(config, 20));
+        action.setConfiguredFragmentList(
+                List.of(
+                        new DtlsHandshakeMessageFragment(config, 20),
+                        new DtlsHandshakeMessageFragment(config, 20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -127,16 +129,17 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                         .createWorkflowTrace(
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
-        action.setFragments(
-                new DtlsHandshakeMessageFragment(config, 20),
-                new DtlsHandshakeMessageFragment(config, 20));
+        action.setConfiguredFragmentList(
+                List.of(
+                        new DtlsHandshakeMessageFragment(config, 20),
+                        new DtlsHandshakeMessageFragment(config, 20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             return TestResults.TRUE;
         } else {
             return TestResults.FALSE;
@@ -162,9 +165,16 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
         } else if (supportsWithExtension == TestResults.TRUE) {
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.PARTIALLY);
             put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.TRUE);
-        } else {
+        } else if (supportsDirectly == TestResults.FALSE
+                && supportsAfterCookieExchange == TestResults.FALSE
+                && supportsWithExtension == TestResults.FALSE) {
             put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.FALSE);
             put(TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION, TestResults.FALSE);
+        } else {
+            put(TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
+                    TestResults.COULD_NOT_TEST);
         }
 
         if (supportsDirectlyIndPackets == TestResults.TRUE) {
@@ -191,7 +201,9 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                     TlsAnalyzedProperty
                             .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
                     TestResults.TRUE);
-        } else {
+        } else if (supportsDirectlyIndPackets == TestResults.FALSE
+                && supportsAfterCookieExchangeIndPackets == TestResults.FALSE
+                && supportsWithExtensionIndPackets == TestResults.FALSE) {
             put(
                     TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
                     TestResults.FALSE);
@@ -199,6 +211,14 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
                     TlsAnalyzedProperty
                             .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
                     TestResults.FALSE);
+        } else {
+            put(
+                    TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS,
+                    TestResults.COULD_NOT_TEST);
+            put(
+                    TlsAnalyzedProperty
+                            .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,
+                    TestResults.COULD_NOT_TEST);
         }
     }
 }

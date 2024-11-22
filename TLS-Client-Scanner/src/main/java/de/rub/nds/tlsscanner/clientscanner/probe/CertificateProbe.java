@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -28,18 +29,16 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
+import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateProbe extends TlsClientProbe {
 
-    private Set<CertificateChain> clientCertificates = null;
+    private Set<X509CertificateChain> clientCertificates = null;
 
     public CertificateProbe(ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.CERTIFICATE, scannerConfig);
@@ -47,24 +46,21 @@ public class CertificateProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         clientCertificates = new HashSet<>();
         for (ClientCertificateType certType : getTestableCertTypes()) {
             Config config = getConfig(certType);
             if (config == null) {
                 continue;
             }
-            Certificate clientCert = getClientCertificate(config, certType);
-            if (clientCert == null || clientCert.isEmpty()) {
+            X509CertificateChain x509clientCertChain = getClientCertificateChain(config, certType);
+            if (x509clientCertChain == null || x509clientCertChain.getCertificateList().isEmpty()) {
                 continue;
             }
-            CertificateChain clientCertChain =
-                    new CertificateChain(
-                            clientCert, config.getDefaultServerConnection().getHostname());
-            if (isCertificateAlreadyIncluded(clientCertificates, clientCertChain)) {
+            if (isCertificateAlreadyIncluded(clientCertificates, x509clientCertChain)) {
                 continue;
             }
-            clientCertificates.add(clientCertChain);
+            clientCertificates.add(x509clientCertChain);
         }
     }
 
@@ -124,33 +120,34 @@ public class CertificateProbe extends TlsClientProbe {
         }
     }
 
-    private Certificate getClientCertificate(Config config, ClientCertificateType certType) {
+    private X509CertificateChain getClientCertificateChain(
+            Config config, ClientCertificateType certType) {
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
         CertificateRequestMessage message = new CertificateRequestMessage(config);
         message.setClientCertificateTypesCount(Modifiable.explicit(1));
         message.setClientCertificateTypes(Modifiable.explicit(new byte[] {certType.getValue()}));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.CERTIFICATE_REQUEST, message);
 
         State state = new State(config, trace);
         executeState(state);
         if (state.getWorkflowTrace().executedAsPlanned()) {
-            return state.getTlsContext().getClientCertificate();
+            return state.getTlsContext().getClientCertificateChain();
         } else {
             return null;
         }
     }
 
     private boolean isCertificateAlreadyIncluded(
-            Set<CertificateChain> recordedCertificates, CertificateChain certificate) {
+            Set<X509CertificateChain> recordedCertificates, X509CertificateChain certificate) {
         return recordedCertificates.stream()
                 .anyMatch(
                         currCertChain ->
                                 currCertChain
-                                        .getCertificateReportList()
-                                        .containsAll(certificate.getCertificateReportList()));
+                                        .getCertificateList()
+                                        .containsAll(certificate.getCertificateList()));
     }
 
     @Override

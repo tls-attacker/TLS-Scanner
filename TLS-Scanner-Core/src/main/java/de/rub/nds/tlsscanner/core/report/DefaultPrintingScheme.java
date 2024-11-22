@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -258,7 +258,7 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
@@ -547,15 +547,13 @@ public class DefaultPrintingScheme {
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, "TLS 1.2");
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, "TLS 1.3");
 
-        PrintingScheme scheme =
-                new PrintingScheme(
-                        colorMap,
-                        textMap,
-                        defaultTextEncoding,
-                        defaultColorEncoding,
-                        specialTextMap,
-                        new HashMap<>());
-        return scheme;
+        return new PrintingScheme(
+                colorMap,
+                textMap,
+                defaultTextEncoding,
+                defaultColorEncoding,
+                specialTextMap,
+                new HashMap<>());
     }
 
     private static TestResultTextEncoder getAlpacaTextEncoding() {
