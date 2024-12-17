@@ -151,7 +151,7 @@ public class TlsClientConfig implements Serializable {
                 ((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0))
                         .getExtensions());
         State s = new State(config);
-        hello.getPreparator(s.getTlsContext()).prepare();
+        hello.getPreparator(s.getContext()).prepare();
         return hello;
     }
 }

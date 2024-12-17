@@ -49,7 +49,7 @@ public class ProbeResultTest {
                                 (TlsProbe)
                                         c.newInstance(
                                                 new ServerScannerConfig(new GeneralDelegate()),
-                                                new ParallelExecutor(1, 1));
+                                                ParallelExecutor.create(1, 1));
                         ServerReport report = new ServerReport("somehost", 443);
                         probe.merge(report);
                         LOGGER.info("--Success");

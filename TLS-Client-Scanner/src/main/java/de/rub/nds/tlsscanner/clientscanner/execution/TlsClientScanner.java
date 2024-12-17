@@ -74,7 +74,8 @@ public final class TlsClientScanner
     public TlsClientScanner(ClientScannerConfig config) {
         super(config.getExecutorConfig());
         this.config = config;
-        parallelExecutor = new ParallelExecutor(config.getExecutorConfig().getOverallThreads(), 3);
+        parallelExecutor =
+                ParallelExecutor.create(config.getExecutorConfig().getOverallThreads(), 3);
         closeAfterFinishParallel = true;
         setCallbacks();
     }

@@ -60,16 +60,12 @@ public class CertificateReportGenerator {
 
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
-            report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+            report.setTrustAnchor(anchorManger.isTrustAnchor(report.getSHA256Fingerprint()));
             report.setCustomTrustAnchor(anchorManger.isCustomTrustAnchor(report));
         } else {
             report.setTrustAnchor(null);
         }
-        if (report.getIssuer().equals(report.getSubject())) {
-            report.setSelfSigned(true);
-        } else {
-            report.setSelfSigned(false);
-        }
+        report.setSelfSigned(report.getIssuer().equals(report.getSubject()));
         return report;
     }
 

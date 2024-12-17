@@ -183,7 +183,8 @@ public class ConfigSelector {
 
     private void applyScannerConfigParameters(Config config) {
         if (scannerConfig.getCustomCAPathList() != null) {
-            TrustAnchorManager.getInstance().addCustomCA(scannerConfig.getCustomCAPathList());
+            TrustAnchorManager.getInstance()
+                    .loadTrustAnchorsFromFiles(scannerConfig.getCustomCAPathList());
         }
 
         int timeout = scannerConfig.getTimeout();

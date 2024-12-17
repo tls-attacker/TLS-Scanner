@@ -349,7 +349,7 @@ public class SessionTicketPaddingOracleProbeTest {
         private final Field fingerprintField;
 
         public OracleExecutorBase(OracleParameters parameters) {
-            super(1, 0);
+            super(1, 0, null);
             this.params = parameters;
 
             List<Record> recordList = new ArrayList<>();
