@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.x509attacker.signatureengine.keyparsers.PemUtil;
 import java.io.BufferedInputStream;
@@ -29,6 +30,7 @@ import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -50,15 +52,12 @@ public class TrustAnchorManager {
 
     private HashMap<String, CertificateEntry> customTrustAnchors;
 
-    private static TrustAnchorManager INSTANCE = null;
+    private static final TrustAnchorManager INSTANCE = new TrustAnchorManager();
 
     private Set<TrustAnchor> trustAnchorSet;
     private Set<Certificate> asn1CaCertificateSet;
 
     public static synchronized TrustAnchorManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TrustAnchorManager();
-        }
         return INSTANCE;
     }
 
@@ -121,9 +120,11 @@ public class TrustAnchorManager {
 
     public boolean isTrustAnchor(CertificateReport report) {
         if (trustAnchors.containsKey(report.getIssuer())) {
-            LOGGER.debug("Found a trustAnchor for Issuer report");
+            LOGGER.debug("Found a trustAnchor for issuer report");
             CertificateEntry entry = trustAnchors.get(report.getIssuer());
-            if (entry.getFingerprint().equals(report.getSHA256Fingerprint())) {
+            if (Arrays.equals(
+                    ArrayConverter.hexStringToByteArray(entry.getFingerprint()),
+                    report.getSHA256Fingerprint())) {
                 return true;
             } else {
                 LOGGER.warn("TrustAnchor hash does not match stored fingerprint");
@@ -222,8 +223,7 @@ public class TrustAnchorManager {
                             .getClassLoader()
                             .getResourceAsStream("trust/" + entry.getFingerprint() + ".pem");
             try {
-                org.bouncycastle.crypto.tls.Certificate cert =
-                        PemUtil.readCertificate(resourceAsStream);
+                org.bouncycastle.tls.Certificate cert = PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));
             } catch (IOException | CertificateException ex) {
                 LOGGER.error(
@@ -237,13 +237,13 @@ public class TrustAnchorManager {
         return certificateSet;
     }
 
-    private List<org.bouncycastle.crypto.tls.Certificate> getCustomCA(List<String> customCAPaths) {
-        List<org.bouncycastle.crypto.tls.Certificate> certX509List = new ArrayList<>();
+    private List<org.bouncycastle.tls.Certificate> getCustomCA(List<String> customCAPaths) {
+        List<org.bouncycastle.tls.Certificate> certX509List = new ArrayList<>();
         for (String filepath : customCAPaths) {
             try {
                 certX509List.add(PemUtil.readCertificate(new File(filepath)));
             } catch (CertificateException | IOException ex) {
-                LOGGER.error("Could't load the CA: " + filepath, ex);
+                LOGGER.error("Could't load the CA: {}", filepath, ex);
             }
         }
         return certX509List;
@@ -265,7 +265,7 @@ public class TrustAnchorManager {
         }
 
         for (int i = 0; i < customCAList.size(); i++) {
-            org.bouncycastle.crypto.tls.Certificate cert = customCAList.get(i);
+            org.bouncycastle.tls.Certificate cert = customCAList.get(i);
             // Converts each certificate in customCAList to a x.509 formatted certificate and adds
             // it to the keystore.
             try {
@@ -327,7 +327,9 @@ public class TrustAnchorManager {
         if (customTrustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a customTrustAnchor for Issuer report");
             CertificateEntry entry = customTrustAnchors.get(report.getIssuer());
-            if (entry.getFingerprint().equals(report.getSHA256Fingerprint())) {
+            if (Arrays.equals(
+                    ArrayConverter.hexStringToByteArray(entry.getFingerprint()),
+                    report.getSHA256Fingerprint())) {
                 return true;
             } else {
                 LOGGER.warn("CustomTrustAnchor hash does not match stored fingerprint");
