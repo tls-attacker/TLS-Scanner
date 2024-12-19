@@ -227,7 +227,9 @@ public class CipherSuiteEvaluationHelper {
     }
 
     public void adjustModeOfOperation(CipherSuite suite) {
-        supportsCbc = TestResults.of(suite.isCBC());
+        if (suite.isCBC()) {
+            supportsCbc = TestResults.TRUE;
+        }
     }
 
     public void adjustKeyExchange(CipherSuite suite) {
