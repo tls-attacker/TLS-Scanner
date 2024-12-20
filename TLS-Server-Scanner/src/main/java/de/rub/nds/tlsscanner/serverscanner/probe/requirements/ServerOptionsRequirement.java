@@ -8,9 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.requirements;
 
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.HTTP_FALSE_START;
-import static de.rub.nds.tlsscanner.core.constants.TlsProbeType.HTTP_HEADER;
-
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.OptionsRequirement;
@@ -41,9 +38,11 @@ public class ServerOptionsRequirement
                         && scannerConfig.getProxyDelegate().getExtractedControlProxyPort() != -1
                         && scannerConfig.getProxyDelegate().getExtractedDataProxyIp() != null
                         && scannerConfig.getProxyDelegate().getExtractedDataProxyPort() != -1;
+            default:
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Invalid probe (%s) set for ServerOptionsRequirement", probeType));
         }
-        throw new IllegalArgumentException(
-                String.format("Invalid probe (%s) set for ServerOptionsRequirement", probeType));
     }
 
     @Override
