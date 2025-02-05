@@ -132,6 +132,33 @@ pipeline {
                 }
             }
         }
+        stage('Make Github Release') {
+            when {
+                tag 'v*'
+            }
+            steps {
+                writeFile file: 'release_description.md', text: 'A new version of TLS-Scanner was released. You can download the artifacts (executable .jar) below. \n\n## Changelog:\n  - TODO'
+                sh "zip -r TLS-Scanner-${TAG_NAME}.zip apps"
+                script {
+                    def draftRelease = createGitHubRelease(
+                        credentialId: '1522a497-e78a-47ee-aac5-70f071fa6714',
+                        repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
+                        draft: true,
+                        tag: TAG_NAME,
+                        name: TAG_NAME,
+                        bodyFile: 'release_description.md',
+                        commitish: GIT_COMMIT)
+                    uploadGithubReleaseAsset(
+                        credentialId: '1522a497-e78a-47ee-aac5-70f071fa6714',
+                        repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
+                        tagName: draftRelease.htmlUrl.tokenize("/")[-1], 
+                        uploadAssets: [
+                            [filePath: "${env.WORKSPACE}/TLS-Scanner-${TAG_NAME}.zip"]
+                        ]
+                    )
+                }
+            }
+        }
     }
     post {
         always {
