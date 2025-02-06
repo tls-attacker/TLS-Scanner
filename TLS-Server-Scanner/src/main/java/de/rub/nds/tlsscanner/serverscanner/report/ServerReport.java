@@ -42,6 +42,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,6 +90,11 @@ public class ServerReport extends TlsScanReport {
         this.sniHostname = sniHostname;
         this.host = host;
         this.port = port;
+    }
+
+    @Override
+    public void serializeToJson(OutputStream outputStream) {
+        ServerReportSerializer.serialize(outputStream, this);
     }
 
     @Override
