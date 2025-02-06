@@ -45,7 +45,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalStateException("Parallel executor already initialized");
         }
         parallelExecutor =
-                new ParallelExecutor(
+                ParallelExecutor.create(
                         parallelConnectionThreads,
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
