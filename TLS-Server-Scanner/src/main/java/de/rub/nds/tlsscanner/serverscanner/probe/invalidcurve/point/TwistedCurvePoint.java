@@ -134,7 +134,7 @@ public class TwistedCurvePoint {
                         new BigInteger(
                                 "B609C031AA531AA580CB2239D8DC7968F7F91391D780DBCBCF753FAF716E196E",
                                 16));
-                // case SECP384R1:
+            // case SECP384R1:
             case SECP521R1:
                 return new TwistedCurvePoint(
                         new BigInteger(
@@ -319,7 +319,7 @@ public class TwistedCurvePoint {
                         new BigInteger(
                                 "2803473FA06D6328C641EFFB5BF6467F10B12682750184F105FC9858033AD62F",
                                 16));
-                // case SECP384R1:
+            // case SECP384R1:
             case SECP521R1:
                 return new TwistedCurvePoint(
                         new BigInteger(
@@ -469,7 +469,7 @@ public class TwistedCurvePoint {
                         new BigInteger(
                                 "7F6AA529230D50EBCCF980D5A9D5C6AB2A18C65A4E3C692CCA22B7FA45EC4BB1",
                                 16));
-                // case SECP384R1:
+            // case SECP384R1:
             case SECP521R1:
                 return new TwistedCurvePoint(
                         new BigInteger(
