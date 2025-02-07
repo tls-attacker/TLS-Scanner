@@ -90,6 +90,7 @@ public class SessionTicketMacFormat {
 
     /** Number of bytes in front of the input */
     private final int inputOffset;
+
     /** Number of bytes after the input */
     private final int inputSuffixLength;
 
