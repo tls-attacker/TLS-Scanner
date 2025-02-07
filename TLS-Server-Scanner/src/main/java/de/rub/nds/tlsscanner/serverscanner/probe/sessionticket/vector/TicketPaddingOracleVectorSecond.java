@@ -19,12 +19,16 @@ public class TicketPaddingOracleVectorSecond implements TicketPaddingOracleVecto
      * padding. 1 means the last byte is something else, but the second to last byte is padding.
      */
     public final Integer offset;
+
     /** Value to xor onto the last padding byte */
     public final Byte lastXorValue;
+
     /** Assumed plaintext for the last padding byte */
     public final Byte lastAssumedPlaintext;
+
     /** Value to xor onto the second to last padding byte */
     public final Byte secondXorValue;
+
     /** Assumed plaintext for the second to last padding byte */
     public final Byte secondAssumedPlaintext;
 

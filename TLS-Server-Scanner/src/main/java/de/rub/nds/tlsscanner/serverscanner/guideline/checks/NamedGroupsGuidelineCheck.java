@@ -29,6 +29,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     /** Only these are allowed. */
     private List<NamedGroup> recommendedGroups;
+
     /** At least one of these has to be present. */
     private List<NamedGroup> requiredGroups;
 
