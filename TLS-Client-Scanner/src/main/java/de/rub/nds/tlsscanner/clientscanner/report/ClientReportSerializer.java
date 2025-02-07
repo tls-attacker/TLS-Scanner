@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -35,6 +37,8 @@ public class ClientReportSerializer {
                 mapper.registerModule(modules);
             }
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            mapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
             mapper.configOverride(BigDecimal.class)
                     .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
             mapper.writeValue(stream, scanReport);

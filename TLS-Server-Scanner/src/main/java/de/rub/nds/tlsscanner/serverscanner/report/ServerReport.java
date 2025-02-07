@@ -217,7 +217,6 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
         if (getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
                 == TestResults.NOT_TESTED_YET) {
@@ -269,10 +268,8 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
         ListResult<ApplicationProtocol> listResult =
-                (ListResult<ApplicationProtocol>)
-                        getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
-                                ApplicationProtocol.class);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, ApplicationProtocol.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -300,18 +297,22 @@ public class ServerReport extends TlsScanReport {
         return mapResult == null ? null : mapResult.getMap();
     }
 
+    @Override
     public synchronized int getScore() {
         return score;
     }
 
+    @Override
     public synchronized void setScore(int score) {
         this.score = score;
     }
 
+    @Override
     public synchronized ScoreReport getScoreReport() {
         return scoreReport;
     }
 
+    @Override
     public synchronized void setScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
     }
