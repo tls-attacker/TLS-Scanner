@@ -39,6 +39,7 @@ public class ClientOptionsRequirement
                             != null;
             }
         }
+        return false;
     }
 
     @Override

@@ -43,6 +43,7 @@ public class ServerOptionsRequirement
                             && scannerConfig.getProxyDelegate().getExtractedDataProxyPort() != -1;
             }
         }
+        return false;
     }
 
     @Override
