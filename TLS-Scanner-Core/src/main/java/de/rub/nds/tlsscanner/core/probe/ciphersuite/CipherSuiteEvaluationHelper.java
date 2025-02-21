@@ -184,10 +184,10 @@ public class CipherSuiteEvaluationHelper {
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA256) {
                         supportsSha256Prf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA384) {
                         supportsSha384Prf = TestResults.TRUE;
                     }
                 }

@@ -18,8 +18,6 @@ import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReportSerializer;
-import java.io.File;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,10 +51,6 @@ public class Main {
                                                 DefaultPrintingScheme.getDefaultPrintingScheme(),
                                                 !config.getExecutorConfig().isNoColor())
                                         .getFullReport());
-                if (config.getExecutorConfig().isWriteReportToFile()) {
-                    File outputFile = new File(config.getExecutorConfig().getOutputFile());
-                    ServerReportSerializer.serialize(outputFile, report);
-                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }

@@ -60,8 +60,7 @@ public class ShortPaddingGeneratorTest {
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
                         .getMacLength();
-        VariableModification<byte[]> modification =
-                ((TripleVector) vectors.get(0)).getCleanModification();
+        VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
         array.setModification(modification);
         byte[] expectedPlain =
@@ -84,8 +83,7 @@ public class ShortPaddingGeneratorTest {
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
                         .getMacLength();
-        VariableModification<byte[]> modification =
-                ((TripleVector) vectors.get(0)).getCleanModification();
+        VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
         array.setModification(modification);
         assertArrayEquals(new byte[0], array.getValue(), "Validation of clean bytes");

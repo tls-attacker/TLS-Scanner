@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        JDK_TOOL_NAME = 'JDK 11'
-        MAVEN_TOOL_NAME = 'Maven 3.8.6'
+        JDK_TOOL_NAME = 'JDK 21'
+        MAVEN_TOOL_NAME = 'Maven 3.9.9'
     }
 
     options {
@@ -111,7 +111,10 @@ pipeline {
                     junit testResults: '**/target/failsafe-reports/TEST-*.xml', allowEmptyResults: true
                 }
                 success {
-                    publishCoverage adapters: [jacoco(mergeToOneReport: true, path: '**/target/site/jacoco/jacoco.xml')]
+                    discoverReferenceBuild()
+                    recordCoverage(tools: [[ parser: 'JACOCO' ]],
+                            id: 'jacoco', name: 'JaCoCo Coverage',
+                            sourceCodeRetention: 'LAST_BUILD')
                 }
             }
         }
@@ -126,6 +129,33 @@ pipeline {
                 withMaven(jdk: env.JDK_TOOL_NAME, maven: env.MAVEN_TOOL_NAME) {
                     // Tests were already executed separately, so disable tests within this step
                     sh 'mvn -DskipTests=true deploy'
+                }
+            }
+        }
+        stage('Make Github Release') {
+            when {
+                tag 'v*'
+            }
+            steps {
+                writeFile file: 'release_description.md', text: 'A new version of TLS-Scanner was released. You can download the artifacts (executable .jar) below. \n\n## Changelog:\n  - TODO'
+                sh "zip -r TLS-Scanner-${TAG_NAME}.zip apps"
+                script {
+                    def draftRelease = createGitHubRelease(
+                        credentialId: '1522a497-e78a-47ee-aac5-70f071fa6714',
+                        repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
+                        draft: true,
+                        tag: TAG_NAME,
+                        name: TAG_NAME,
+                        bodyFile: 'release_description.md',
+                        commitish: GIT_COMMIT)
+                    uploadGithubReleaseAsset(
+                        credentialId: '1522a497-e78a-47ee-aac5-70f071fa6714',
+                        repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
+                        tagName: draftRelease.htmlUrl.tokenize("/")[-1], 
+                        uploadAssets: [
+                            [filePath: "${env.WORKSPACE}/TLS-Scanner-${TAG_NAME}.zip"]
+                        ]
+                    )
                 }
             }
         }

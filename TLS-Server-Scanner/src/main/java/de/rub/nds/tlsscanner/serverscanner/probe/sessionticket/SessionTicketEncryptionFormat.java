@@ -24,6 +24,7 @@ public class SessionTicketEncryptionFormat implements Serializable {
      * field. But many implementations ignore this.
      */
     private static final Integer[] STANDARD_CIPHERTEXT_OFFSETS = {0, 2};
+
     /**
      * minimum secret size is 32 byte. The ticket should at least be large enough to contain this
      */
@@ -95,10 +96,13 @@ public class SessionTicketEncryptionFormat implements Serializable {
 
     /** Offset where the IV/Nonce start (from the left) */
     private final int ivNonceOffset;
+
     /** Length of the IV/Nonce */
     private final int ivNonceLength;
+
     /** Offset of the ciphertext from the IV */
     private final int ciphertextOffset;
+
     /** Whether to assume a zero IV which is not included in the format itself */
     private final boolean zeroIvNonce;
 

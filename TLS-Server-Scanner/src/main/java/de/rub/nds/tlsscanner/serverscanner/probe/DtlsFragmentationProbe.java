@@ -100,8 +100,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
         action.setConfiguredFragmentList(
                 List.of(
-                        new DtlsHandshakeMessageFragment(config, 20),
-                        new DtlsHandshakeMessageFragment(config, 20)));
+                        new DtlsHandshakeMessageFragment(20),
+                        new DtlsHandshakeMessageFragment(20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
@@ -131,8 +131,8 @@ public class DtlsFragmentationProbe extends TlsServerProbe {
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
         action.setConfiguredFragmentList(
                 List.of(
-                        new DtlsHandshakeMessageFragment(config, 20),
-                        new DtlsHandshakeMessageFragment(config, 20)));
+                        new DtlsHandshakeMessageFragment(20),
+                        new DtlsHandshakeMessageFragment(20)));
         trace.addTlsAction(action);
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));

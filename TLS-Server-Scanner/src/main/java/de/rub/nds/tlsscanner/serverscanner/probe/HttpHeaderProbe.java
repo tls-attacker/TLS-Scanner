@@ -110,19 +110,18 @@ public class HttpHeaderProbe extends TlsServerProbe {
             for (HttpHeader header : headerList) {
                 if (header.getHeaderName()
                         .getValue()
-                        .toLowerCase()
-                        .equals("strict-transport-security")) {
+                        .equalsIgnoreCase("strict-transport-security")) {
                     supportsHsts = TestResults.TRUE;
                     boolean preload = false;
                     String[] values = header.getHeaderValue().getValue().split(";");
                     for (String value : values) {
-                        if (value.trim().startsWith("preload")) {
+                        if (value.trim().toLowerCase().startsWith("preload")) {
                             preload = true;
                         }
-                        if (value.trim().startsWith("includeSubDomains")) {
+                        if (value.trim().toLowerCase().startsWith("includesubdomains")) {
                             hstsIncludesSubdomains = TestResults.TRUE;
                         }
-                        if (value.trim().startsWith("max-age")) {
+                        if (value.trim().toLowerCase().startsWith("max-age")) {
                             String[] maxAge = value.split("=");
                             if (maxAge.length == 2) {
                                 try {
@@ -138,14 +137,14 @@ public class HttpHeaderProbe extends TlsServerProbe {
                     }
                     supportsHstsPreloading = preload == true ? TestResults.TRUE : TestResults.FALSE;
                 }
-                if (header.getHeaderName().getValue().equals("Public-Key-Pins")) {
+                if (header.getHeaderName().getValue().equalsIgnoreCase("Public-Key-Pins")) {
                     supportsHpkp = TestResults.TRUE;
                     String[] values = header.getHeaderValue().getValue().split(";");
                     for (String value : values) {
-                        if (value.trim().startsWith("includeSubDomains")) {
+                        if (value.trim().toLowerCase().startsWith("includesubdomains")) {
                             hpkpIncludesSubdomains = TestResults.TRUE;
                         }
-                        if (value.trim().startsWith("max-age")) {
+                        if (value.trim().toLowerCase().startsWith("max-age")) {
                             String[] maxAge = value.split("=");
                             if (maxAge.length == 2) {
                                 try {
@@ -172,14 +171,16 @@ public class HttpHeaderProbe extends TlsServerProbe {
                         }
                     }
                 }
-                if (header.getHeaderName().getValue().equals("Public-Key-Pins-Report-Only")) {
+                if (header.getHeaderName()
+                        .getValue()
+                        .equalsIgnoreCase("Public-Key-Pins-Report-Only")) {
                     supportsHpkpReportOnly = TestResults.TRUE;
                     String[] values = header.getHeaderValue().getValue().split(";");
                     for (String value : values) {
-                        if (value.trim().startsWith("includeSubDomains")) {
+                        if (value.trim().toLowerCase().startsWith("includesubdomains")) {
                             hpkpIncludesSubdomains = TestResults.TRUE;
                         }
-                        if (value.trim().startsWith("max-age")) {
+                        if (value.trim().toLowerCase().startsWith("max-age")) {
                             String[] maxAge = value.split("=");
                             if (maxAge.length == 2) {
                                 try {
@@ -192,7 +193,7 @@ public class HttpHeaderProbe extends TlsServerProbe {
                                 hpkpNotParseable = TestResults.FALSE;
                             }
                         }
-                        if (value.trim().startsWith("pin-")) {
+                        if (value.trim().toLowerCase().startsWith("pin-")) {
                             try {
                                 String[] pinString = value.split("=");
                                 HpkpPin pin =
@@ -208,14 +209,15 @@ public class HttpHeaderProbe extends TlsServerProbe {
                         }
                     }
                 }
-                if (header.getHeaderName().getValue().equals("Content-Encoding")) {
+                if (header.getHeaderName().getValue().equalsIgnoreCase("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
                     String[] compressionAlgorithms = {
                         "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz"
                     };
                     for (String compression : compressionAlgorithms) {
-                        if (compressionHeaderValue.contains(compression)) {
+                        if (compressionHeaderValue.toLowerCase().contains(compression)) {
                             vulnerableBreach = TestResults.TRUE;
+                            break;
                         }
                     }
                 }

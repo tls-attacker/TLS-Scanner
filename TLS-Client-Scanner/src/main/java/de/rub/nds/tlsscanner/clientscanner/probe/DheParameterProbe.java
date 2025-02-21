@@ -58,7 +58,9 @@ public class DheParameterProbe extends TlsClientProbe {
         super(parallelExecutor, TlsProbeType.DHE_PARAMETERS, scannerConfig);
         register(
                 TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
+                TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO,
                 TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
+                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO,
                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
                 TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS,
                 TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
@@ -213,7 +215,11 @@ public class DheParameterProbe extends TlsClientProbe {
         smallSubgroupTypeMap.put(
                 SmallSubgroupType.MODULUS_ONE, TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE);
         smallSubgroupTypeMap.put(
+                SmallSubgroupType.MODULUS_ZERO, TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO);
+        smallSubgroupTypeMap.put(
                 SmallSubgroupType.GENERATOR_ONE, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE);
+        smallSubgroupTypeMap.put(
+                SmallSubgroupType.GENERATOR_ZERO, TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO);
         return smallSubgroupTypeMap;
     }
 

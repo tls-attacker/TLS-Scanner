@@ -11,7 +11,8 @@ package de.rub.nds.tlsscanner.core.constants;
 public enum ProtocolType {
     TLS("TLS"),
     DTLS("DTLS"),
-    STARTTLS("STARTTLS");
+    STARTTLS("STARTTLS"),
+    QUIC("QUIC");
 
     private String name;
 

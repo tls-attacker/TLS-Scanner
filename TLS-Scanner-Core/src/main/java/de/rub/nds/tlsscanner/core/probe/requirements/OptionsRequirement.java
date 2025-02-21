@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.core.probe.requirements;
 
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsscanner.core.config.TlsScannerConfig;
-import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /** Represents a {@link Requirement} for additional, optional flags in commands. */
@@ -21,13 +21,13 @@ public abstract class OptionsRequirement<
     protected final ConfigT scannerConfig;
 
     /* ProbeType of the respective option. */
-    protected final TlsProbeType probeType;
+    protected final ProbeType probeType;
 
     /**
      * @param scannerConfig the {@link TlsScannerConfig}.
-     * @param probeType the {@link TlsProbeType} of the option.
+     * @param probeType the {@link ProbeType} of the option.
      */
-    public OptionsRequirement(ConfigT scannerConfig, TlsProbeType probeType) {
+    public OptionsRequirement(ConfigT scannerConfig, ProbeType probeType) {
         this.scannerConfig = scannerConfig;
         this.probeType = probeType;
     }

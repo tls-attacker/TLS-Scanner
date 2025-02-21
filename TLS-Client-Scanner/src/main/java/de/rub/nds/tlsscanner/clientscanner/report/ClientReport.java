@@ -14,13 +14,21 @@ import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
-import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.converter.*;
+import de.rub.nds.tlsscanner.core.converter.PointSerializer;
+import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
+import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +49,11 @@ public class ClientReport extends TlsScanReport {
 
     public ClientReport() {
         super();
+    }
+
+    @Override
+    public void serializeToJson(OutputStream outputStream) {
+        ClientReportSerializer.serialize(outputStream, this);
     }
 
     public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {

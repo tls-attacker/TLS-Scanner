@@ -19,9 +19,13 @@ import de.rub.nds.scanner.core.probe.result.LongResult;
 import de.rub.nds.scanner.core.probe.result.MapResult;
 import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
+import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
+import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.converter.*;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -38,6 +42,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,6 +90,11 @@ public class ServerReport extends TlsScanReport {
         this.sniHostname = sniHostname;
         this.host = host;
         this.port = port;
+    }
+
+    @Override
+    public void serializeToJson(OutputStream outputStream) {
+        ServerReportSerializer.serialize(outputStream, this);
     }
 
     @Override
@@ -207,7 +217,6 @@ public class ServerReport extends TlsScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    // TODO when is this NOTTESTEDYET set???
     public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
         if (getResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES)
                 == TestResults.NOT_TESTED_YET) {
@@ -259,10 +268,8 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized List<ApplicationProtocol> getSupportedApplicationProtocols() {
         ListResult<ApplicationProtocol> listResult =
-                (ListResult<ApplicationProtocol>)
-                        getListResult(
-                                TlsAnalyzedProperty.SUPPORTED_APPLICATIONS,
-                                ApplicationProtocol.class);
+                getListResult(
+                        TlsAnalyzedProperty.SUPPORTED_APPLICATIONS, ApplicationProtocol.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -290,18 +297,22 @@ public class ServerReport extends TlsScanReport {
         return mapResult == null ? null : mapResult.getMap();
     }
 
+    @Override
     public synchronized int getScore() {
         return score;
     }
 
+    @Override
     public synchronized void setScore(int score) {
         this.score = score;
     }
 
+    @Override
     public synchronized ScoreReport getScoreReport() {
         return scoreReport;
     }
 
+    @Override
     public synchronized void setScoreReport(ScoreReport scoreReport) {
         this.scoreReport = scoreReport;
     }
@@ -320,5 +331,30 @@ public class ServerReport extends TlsScanReport {
 
     public synchronized void setConfigProfileIdentifierTls13(String configProfileIdentifierTls13) {
         this.configProfileIdentifierTls13 = configProfileIdentifierTls13;
+    }
+
+    public synchronized List<byte[]> getSupportedQuicVersions() {
+        ListResult<byte[]> listResult = getListResult(QuicAnalyzedProperty.VERSIONS, byte[].class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized QuicTransportParameters getQuicTransportParameters() {
+        ObjectResult<QuicTransportParameters> objectResult =
+                getObjectResult(
+                        QuicAnalyzedProperty.TRANSPORT_PARAMETERS, QuicTransportParameters.class);
+        return objectResult == null ? null : objectResult.getValue();
+    }
+
+    public synchronized ConnectionCloseFrame getQuicTls12HandshakeConnectionCloseFrame() {
+        ObjectResult<ConnectionCloseFrame> objectResult =
+                getObjectResult(
+                        QuicAnalyzedProperty.TLS12_HANDSHAKE_CONNECTION_CLOSE_FRAME,
+                        ConnectionCloseFrame.class);
+        return objectResult == null ? null : objectResult.getValue();
+    }
+
+    public synchronized String getIpv6Address() {
+        StringResult stringResult = getStringResult(QuicAnalyzedProperty.IPV6_ADDRESS);
+        return stringResult == null ? null : stringResult.getValue();
     }
 }

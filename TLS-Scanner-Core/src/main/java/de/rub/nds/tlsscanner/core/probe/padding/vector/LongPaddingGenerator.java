@@ -27,6 +27,7 @@ public class LongPaddingGenerator extends PaddingVectorGenerator {
      * two full padding blocks can be inserted.
      */
     static final int DEFAULT_CIPHERTEXT_LENGTH = 80;
+
     /** Default padding length for the construction of modified encrypted plaintexts */
     static final int DEFAULT_PADDING_LENGTH = 4;
 

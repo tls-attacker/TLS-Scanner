@@ -13,7 +13,7 @@
     </Appenders>
     <Loggers>
         <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
-            <AppenderRef ref="Direct"/>
+            <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="de.rub.nds.tlsscanner" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>

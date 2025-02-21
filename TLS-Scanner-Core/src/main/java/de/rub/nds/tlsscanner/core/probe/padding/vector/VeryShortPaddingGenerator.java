@@ -21,6 +21,7 @@ public class VeryShortPaddingGenerator extends PaddingVectorGenerator {
 
     /** Default length of the encrypted data (app + mac + padding) */
     static final int DEFAULT_CIPHERTEXT_LENGTH = 80;
+
     /** Default padding length for the construction of modified encrypted plaintexts */
     static final int DEFAULT_PADDING_LENGTH = 4;
 

@@ -70,11 +70,13 @@ public class InvalidCurveAttacker {
     private BigInteger premasterSecret;
     private List<FingerprintSecretPair> responsePairs;
     private List<Point> receivedEcPublicKeys;
+
     /**
      * All keys we received from a server in handshakes that lead to a ServerFinished - we can use
      * these to mitigate the impact of false positives in scans.
      */
     private List<Point> finishedKeys;
+
     /**
      * Indicates if there is a higher chance that the keys we extracted might have been sent by a
      * TLS accelerator and a TLS server behind it at the same time. (See evaluateExecutedTask)

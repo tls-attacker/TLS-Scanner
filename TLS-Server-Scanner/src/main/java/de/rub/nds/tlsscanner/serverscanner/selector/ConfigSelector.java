@@ -58,6 +58,7 @@ public class ConfigSelector {
 
     private boolean speaksProtocol = false;
     private boolean isHandshaking = false;
+    private boolean quicRetryRequired = false;
 
     public ConfigSelector(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         this.scannerConfig = scannerConfig;
@@ -65,7 +66,9 @@ public class ConfigSelector {
     }
 
     public boolean findWorkingConfigs() {
-        findWorkingConfig();
+        if (!scannerConfig.getQuicDelegate().isQuic()) {
+            findWorkingConfig();
+        }
         if (!scannerConfig.getDtlsDelegate().isDTLS()) {
             findWorkingTls13Config();
         }
@@ -110,12 +113,23 @@ public class ConfigSelector {
     public boolean findWorkingTls13Config() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
             Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
+            baseConfig.setQuicRetryFlowRequired(false);
             if (configWorks(baseConfig)) {
                 configProfileIdentifierTls13 = configProfile.getIdentifier();
                 reportLimitation(configProfile, "TLS 1.3");
                 workingTl13Config = baseConfig.createCopy();
                 isHandshaking = true;
                 return true;
+            } else if (scannerConfig.getQuicDelegate().isQuic()) {
+                baseConfig.setQuicRetryFlowRequired(true);
+                if (configWorks(baseConfig)) {
+                    configProfileIdentifierTls13 = configProfile.getIdentifier();
+                    reportLimitation(configProfile, "TLS 1.3");
+                    workingTl13Config = baseConfig.createCopy();
+                    isHandshaking = true;
+                    quicRetryRequired = true;
+                    return true;
+                }
             }
         }
         return false;
@@ -291,6 +305,10 @@ public class ConfigSelector {
 
     public boolean isSpeaksProtocol() {
         return speaksProtocol;
+    }
+
+    public boolean isQuicRetryRequired() {
+        return quicRetryRequired;
     }
 
     public ServerScannerConfig getScannerConfig() {

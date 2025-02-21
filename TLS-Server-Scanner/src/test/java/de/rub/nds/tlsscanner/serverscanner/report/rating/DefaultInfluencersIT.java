@@ -1166,6 +1166,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS,
                                 TlsAnalyzedProperty.SUPPORTS_MODULUS_ONE,
                                 TlsAnalyzedProperty.SUPPORTS_GENERATOR_ONE,
+                                TlsAnalyzedProperty.SUPPORTS_MODULUS_ZERO,
+                                TlsAnalyzedProperty.SUPPORTS_GENERATOR_ZERO,
                                 TlsAnalyzedProperty.DTLS_FRAGMENTATION_REQUIRES_EXTENSION,
                                 TlsAnalyzedProperty
                                         .DTLS_FRAGMENTATION_WITH_INDIVIDUAL_PACKETS_REQUIRES_EXTENSION,

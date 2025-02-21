@@ -502,7 +502,7 @@ public class CertificateProbe extends TlsServerProbe {
                         new CertificateChainReport(
                                 chain,
                                 configSelector
-                                        .getBaseConfig()
+                                        .getAnyWorkingBaseConfig()
                                         .getDefaultClientConnection()
                                         .getHostname()));
             }

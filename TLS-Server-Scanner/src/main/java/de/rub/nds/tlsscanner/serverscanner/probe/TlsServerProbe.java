@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
+import de.rub.nds.tlsscanner.core.constants.QuicProbeType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -67,6 +68,12 @@ public abstract class TlsServerProbe extends TlsProbe<ServerReport> {
 
     protected TlsServerProbe(
             ParallelExecutor parallelExecutor, TlsProbeType type, ConfigSelector configSelector) {
+        super(parallelExecutor, type);
+        this.configSelector = configSelector;
+    }
+
+    protected TlsServerProbe(
+            ParallelExecutor parallelExecutor, QuicProbeType type, ConfigSelector configSelector) {
         super(parallelExecutor, type);
         this.configSelector = configSelector;
     }

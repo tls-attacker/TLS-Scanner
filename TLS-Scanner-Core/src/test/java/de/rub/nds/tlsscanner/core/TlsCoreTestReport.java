@@ -9,5 +9,9 @@
 package de.rub.nds.tlsscanner.core;
 
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import java.io.OutputStream;
 
-public class TlsCoreTestReport extends TlsScanReport {}
+public class TlsCoreTestReport extends TlsScanReport {
+    @Override
+    public void serializeToJson(OutputStream stream) {}
+}

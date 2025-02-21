@@ -17,8 +17,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientContainerReportCreator;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReportSerializer;
-import java.io.File;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,10 +52,6 @@ public class Main {
                                 + ((System.currentTimeMillis() - time) / 1000)
                                 + "s\n"
                                 + builder);
-                if (config.getExecutorConfig().isWriteReportToFile()) {
-                    File outputFile = new File(config.getExecutorConfig().getOutputFile());
-                    ClientReportSerializer.serialize(outputFile, report);
-                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }
