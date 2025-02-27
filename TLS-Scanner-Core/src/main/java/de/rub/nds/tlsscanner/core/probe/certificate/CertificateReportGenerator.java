@@ -103,7 +103,7 @@ public class CertificateReportGenerator {
     }
 
     private static void setCommonNames(CertificateReport report, X509Certificate cert) {
-        report.setCommonName(cert.getCommonName());
+        report.setCommonName(cert.getSubjectCommonName());
     }
 
     private static void setAlternativeNames(CertificateReport report, X509Certificate cert) {
