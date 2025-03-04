@@ -217,13 +217,14 @@ public class InvalidCurveAttacker {
                             basepoint,
                             pointCompressionFormat.getFormat());
         }
-        serializedPublicKey.setModification(ByteArrayModificationFactory.explicitValue(serialized));
+        serializedPublicKey.setModifications(
+                ByteArrayModificationFactory.explicitValue(serialized));
         ModifiableByteArray pms = ModifiableVariableFactory.createByteArrayModifiableVariable();
         byte[] explicitPMS =
                 BigIntegers.asUnsignedByteArray(
                         ArrayConverter.bigIntegerToByteArray(curve.getModulus()).length,
                         premasterSecret);
-        pms.setModification(ByteArrayModificationFactory.explicitValue(explicitPMS));
+        pms.setModifications(ByteArrayModificationFactory.explicitValue(explicitPMS));
 
         WorkflowTrace trace;
         tlsConfig.setWorkflowExecutorShouldClose(false);

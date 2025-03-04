@@ -34,7 +34,7 @@ public class BleichenbacherWorkflowGenerator {
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         RSAClientKeyExchangeMessage cke = new RSAClientKeyExchangeMessage();
         ModifiableByteArray epms = new ModifiableByteArray();
-        epms.setModification(ByteArrayModificationFactory.explicitValue(encryptedPMS));
+        epms.setModifications(ByteArrayModificationFactory.explicitValue(encryptedPMS));
         cke.setPublicKey(epms);
         if (null != type) {
             switch (type) {

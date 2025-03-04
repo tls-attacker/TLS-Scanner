@@ -40,13 +40,13 @@ public class TripleVector extends PaddingVector {
         Record r = new Record();
         r.prepareComputations();
         ModifiableByteArray byteArray = new ModifiableByteArray();
-        byteArray.setModification(paddingModification);
+        byteArray.setModifications(paddingModification);
         r.getComputations().setPadding(byteArray);
         byteArray = new ModifiableByteArray();
-        byteArray.setModification(cleanModification);
+        byteArray.setModifications(cleanModification);
         r.setCleanProtocolMessageBytes(byteArray);
         byteArray = new ModifiableByteArray();
-        byteArray.setModification(macModification);
+        byteArray.setModifications(macModification);
         r.getComputations().setMac(byteArray);
         return r;
     }

@@ -215,7 +215,7 @@ public class MacProbe extends TlsServerProbe {
 
         VariableModification<byte[]> xor =
                 ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
-        modMac.setModification(xor);
+        modMac.setModifications(xor);
         lastSendingAction.setConfiguredRecords(List.of(r));
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
@@ -246,7 +246,7 @@ public class MacProbe extends TlsServerProbe {
         r.prepareComputations();
         ModifiableByteArray modMac = new ModifiableByteArray();
         r.getComputations().setMac(modMac);
-        modMac.setModification(xor);
+        modMac.setModifications(xor);
         lastSendingAction.setConfiguredRecords(List.of(new Record(), new Record(), r));
         return trace;
     }
