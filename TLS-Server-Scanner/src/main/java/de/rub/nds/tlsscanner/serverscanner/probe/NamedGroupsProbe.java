@@ -136,7 +136,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                         .filter(
                                 group -> {
                                     if (useCurves) {
-                                        return group.isCurve();
+                                        return group.isEcGroup();
                                     } else {
                                         return group.isDhGroup();
                                     }
@@ -395,7 +395,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 .keySet()
                 .forEach(
                         group -> {
-                            if (group.isCurve()) {
+                            if (group.isEcGroup()) {
                                 joinedCurveCipherSuites.addAll(
                                         overallSupported.get(group).getCipherSuites());
                             } else {
@@ -408,12 +408,12 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 overallSupported.keySet().stream()
                         .anyMatch(
                                 group -> {
-                                    return (group.isCurve()
+                                    return (group.isEcGroup()
                                                     && !overallSupported
                                                             .get(group)
                                                             .getCipherSuites()
                                                             .containsAll(joinedCurveCipherSuites))
-                                            || (!group.isCurve()
+                                            || (!group.isEcGroup()
                                                     && !overallSupported
                                                             .get(group)
                                                             .getCipherSuites()

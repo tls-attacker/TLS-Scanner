@@ -85,7 +85,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
 
     private List<NamedGroup> getCurvesToTest() {
         return NamedGroup.getImplemented().stream()
-                .filter(NamedGroup::isCurve)
+                .filter(NamedGroup::isEcGroup)
                 .filter(Predicate.not(NamedGroup::isGost))
                 .collect(Collectors.toList());
     }
