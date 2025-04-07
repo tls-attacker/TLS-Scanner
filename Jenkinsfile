@@ -151,7 +151,7 @@ pipeline {
                     uploadGithubReleaseAsset(
                         credentialId: '1522a497-e78a-47ee-aac5-70f071fa6714',
                         repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
-                        tagName: draftRelease.htmlUrl.tokenize("/")[-1], 
+                        tagName: draftRelease.htmlUrl.tokenize("/")[-1],
                         uploadAssets: [
                             [filePath: "${env.WORKSPACE}/TLS-Scanner-${TAG_NAME}.zip"]
                         ]
@@ -159,6 +159,36 @@ pipeline {
                 }
             }
         }
+        stage('Public Docker Images') {
+            when {
+                tag 'v*'
+                environment name: 'GIT_URL', value: 'https://github.com/tls-attacker/TLS-Scanner.git'
+            }
+            steps {
+                script {
+                    docker.withRegistry('https://ghcr.io','github-docker-token') {
+                        def image = docker.build("ghcr.io/tls-attacker/tlsscanner:${TAG_NAME}", "-f Dockerfile_Jenkins .")
+                        image.push()
+                        image.push('latest')
+                    }
+                }
+            }
+        }
+        stage('Internal Docker Images') {
+                    when {
+                        tag 'v*'
+                        environment name: 'GIT_URL', value: 'https://github.com/tls-attacker/TLS-Scanner-Development.git'
+                    }
+                    steps {
+                        script {
+                            docker.withRegistry('https://hydrogen.cloud.nds.rub.de','Jenkins-User-Nexus-Repository') {
+                                def image = docker.build("hydrogen.cloud.nds.rub.de/tls-attacker/tlsscanner:${TAG_NAME}", "-f Dockerfile_Jenkins .")
+                                image.push()
+                                image.push('latest')
+                            }
+                        }
+                    }
+                }
     }
     post {
         always {
