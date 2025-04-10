@@ -1,4 +1,4 @@
-FROM jelastic/maven:3.9.5-openjdk-21 AS build-image
+FROM maven:3.9.9-eclipse-temurin-21-jammy AS build-image
 WORKDIR /build
 RUN git clone https://github.com/RUB-NDS/TLS-Scanner.git
 
@@ -7,7 +7,7 @@ RUN git submodule update --init --recursive
 RUN mvn clean package
 
 #############
-FROM openjdk:21
+FROM eclipse-temurin:21
 
 COPY --from=build-image /build/TLS-Scanner/apps /apps
 
