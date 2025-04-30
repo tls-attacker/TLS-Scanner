@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeDefaultPreMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -72,7 +72,7 @@ public class InvalidCurveWorkflowGenerator {
 
             ClientHelloMessage clientHello =
                     (ClientHelloMessage)
-                            WorkflowTraceResultUtil.getFirstSentMessage(
+                            WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
                                     trace, HandshakeMessageType.CLIENT_HELLO);
             KeyShareExtensionMessage ksExt;
             for (ExtensionMessage ext : clientHello.getExtensions()) {
@@ -96,7 +96,7 @@ public class InvalidCurveWorkflowGenerator {
 
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceResultUtil.getFirstSentMessage(
+                            WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
                                     trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
@@ -155,7 +155,7 @@ public class InvalidCurveWorkflowGenerator {
                                     RunningModeType.CLIENT);
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceResultUtil.getLastSentMessage(
+                            WorkflowTraceConfigurationUtil.getLastStaticConfiguredSendMessage(
                                     trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();

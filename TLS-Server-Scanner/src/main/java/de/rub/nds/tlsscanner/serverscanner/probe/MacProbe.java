@@ -34,6 +34,7 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -228,7 +229,7 @@ public class MacProbe extends TlsServerProbe {
                                 WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         FinishedMessage lastSendMessage =
                 (FinishedMessage)
-                        WorkflowTraceResultUtil.getLastSentMessage(
+                        WorkflowTraceConfigurationUtil.getLastStaticConfiguredSendMessage(
                                 trace, HandshakeMessageType.FINISHED);
         lastSendMessage.setVerifyData(Modifiable.xor(new byte[] {01}, xorPosition));
         return trace;
