@@ -125,7 +125,7 @@
                             <filesets>
                                 <fileset>
                                     <!--suppress UnresolvedMavenProperty -->
-                                    <directory>${maven.multiModuleProjectDirectory}/apps</directory>
+                                    <directory>${basedir}/apps</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
@@ -141,7 +141,7 @@
                             <filesets>
                                 <fileset>
                                     <!--suppress UnresolvedMavenProperty -->
-                                    <directory>${maven.multiModuleProjectDirectory}/apps</directory>
+                                    <directory>${basedir}/apps</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
