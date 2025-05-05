@@ -138,4 +138,24 @@ pipeline {
             recordIssues enabledForFailure: true, tools: [mavenConsole(), java(), javaDoc()]
         }
     }
+    stage('Build & Deploy Docker Image to Internal Nexus Repository') {
+        when {
+            anyOf {
+                branch 'main'
+                 tag 'v*'
+             }
+         }
+         environment {
+             DOCKER_PUSH = credentials('Jenkins-User-Nexus-Repository')
+             DOCKER_PUSH_URL = 'hydrogen.cloud.nds.rub.de'
+         }
+         steps {
+             unstash 'jar'
+             unstash 'lib'
+             sh 'docker build -f ci.Dockerfile -t ${DOCKER_PUSH_URL}/tls-crawler:latest -t ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER} .'
+             sh 'docker login -u $DOCKER_PUSH_USR -p $DOCKER_PUSH_PSW $DOCKER_PUSH_URL'
+             sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:latest'
+             sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
+         }
+     }
 }
