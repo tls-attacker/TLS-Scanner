@@ -9,11 +9,9 @@
 package de.rub.nds.tlscrawler.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
-import de.rub.nds.tlscrawler.core.TlsScanWorker;
 import org.junit.jupiter.api.Test;
 
 public class TlsScanConfigTest {

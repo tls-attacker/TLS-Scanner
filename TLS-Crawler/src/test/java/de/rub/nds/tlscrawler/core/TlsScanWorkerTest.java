@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
