@@ -25,6 +25,7 @@ import org.bson.Document;
 public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
     /** Executor passed to TLS-Scanner. It is used to execute the States, i.e. the connections. */
     private ParallelExecutor parallelExecutor;
 
