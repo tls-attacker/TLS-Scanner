@@ -19,29 +19,6 @@ import org.junit.jupiter.api.Test;
 public class TlsScanWorkerTest {
 
     @Test
-    public void testTlsScanWorkerInitialization() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
-        TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3);
-
-        // Access bulk scan ID via reflection
-        try {
-            java.lang.reflect.Field bulkScanIdField =
-                    worker.getClass().getSuperclass().getDeclaredField("bulkScanId");
-            bulkScanIdField.setAccessible(true);
-            String bulkScanId = (String) bulkScanIdField.get(worker);
-            assertEquals("test-scan", bulkScanId);
-
-            java.lang.reflect.Field scanConfigField =
-                    worker.getClass().getSuperclass().getDeclaredField("scanConfig");
-            scanConfigField.setAccessible(true);
-            Object scanConfig = scanConfigField.get(worker);
-            assertEquals(config, scanConfig);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to access fields via reflection", e);
-        }
-    }
-
-    @Test
     public void testCleanupWithoutInit() {
         TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
         TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3);

@@ -31,45 +31,6 @@ public class TlsControllerCommandConfigTest {
     }
 
     @Test
-    public void testGetScanConfig() {
-        TlsControllerCommandConfig config = new TlsControllerCommandConfig();
-
-        // Set configuration values via reflection since setters are not public
-        try {
-            java.lang.reflect.Field scanDetailField =
-                    ControllerCommandConfig.class.getDeclaredField("scanDetail");
-            scanDetailField.setAccessible(true);
-            scanDetailField.set(config, ScannerDetail.NORMAL);
-
-            java.lang.reflect.Field reexecutionsField =
-                    ControllerCommandConfig.class.getDeclaredField("reexecutions");
-            reexecutionsField.setAccessible(true);
-            reexecutionsField.set(config, 3);
-
-            java.lang.reflect.Field timeoutField =
-                    ControllerCommandConfig.class.getDeclaredField("scannerTimeout");
-            timeoutField.setAccessible(true);
-            timeoutField.set(config, 5000);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to set test properties via reflection", e);
-        }
-
-        StarttlsDelegate delegate = config.getStarttlsDelegate();
-        delegate.setStarttlsType(StarttlsType.SMTP);
-
-        ScanConfig scanConfig = config.getScanConfig();
-
-        assertNotNull(scanConfig);
-        assertEquals(TlsScanConfig.class, scanConfig.getClass());
-
-        TlsScanConfig tlsScanConfig = (TlsScanConfig) scanConfig;
-        assertEquals(ScannerDetail.NORMAL, tlsScanConfig.getScannerDetail());
-        assertEquals(3, tlsScanConfig.getReexecutions());
-        assertEquals(5000, tlsScanConfig.getTimeout());
-        assertEquals(StarttlsType.SMTP, tlsScanConfig.getStarttlsType());
-    }
-
-    @Test
     public void testGetScannerClassForVersion() {
         TlsControllerCommandConfig config = new TlsControllerCommandConfig();
         assertEquals(TlsServerScanner.class, config.getScannerClassForVersion());

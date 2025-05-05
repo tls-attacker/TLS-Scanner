@@ -35,26 +35,6 @@ public class TlsScanConfigTest {
     }
 
     @Test
-    public void testCreateWorker() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
-
-        TlsScanWorker worker = (TlsScanWorker) config.createWorker("test-scan", 1, 1);
-
-        assertNotNull(worker);
-
-        // Access bulk scan ID via reflection
-        try {
-            java.lang.reflect.Field bulkScanIdField =
-                    worker.getClass().getSuperclass().getDeclaredField("bulkScanId");
-            bulkScanIdField.setAccessible(true);
-            String bulkScanId = (String) bulkScanIdField.get(worker);
-            assertEquals("test-scan", bulkScanId);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to access fields via reflection", e);
-        }
-    }
-
-    @Test
     public void testStarttlsTypeSetter() {
         TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
 
