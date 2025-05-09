@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.VariableModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
@@ -215,8 +215,8 @@ public class MacProbe extends TlsServerProbe {
         r.getComputations().setMac(modMac);
 
         VariableModification<byte[]> xor =
-                ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
-        modMac.setModification(xor);
+                new ByteArrayXorModification(new byte[] {1}, xorPosition);
+        modMac.setModifications(xor);
         lastSendingAction.setConfiguredRecords(List.of(r));
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
@@ -237,7 +237,7 @@ public class MacProbe extends TlsServerProbe {
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
         VariableModification<byte[]> xor =
-                ByteArrayModificationFactory.xor(new byte[] {1}, xorPosition);
+                new ByteArrayXorModification(new byte[] {1}, xorPosition);
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(
@@ -247,7 +247,7 @@ public class MacProbe extends TlsServerProbe {
         r.prepareComputations();
         ModifiableByteArray modMac = new ModifiableByteArray();
         r.getComputations().setMac(modMac);
-        modMac.setModification(xor);
+        modMac.setModifications(xor);
         lastSendingAction.setConfiguredRecords(List.of(new Record(), new Record(), r));
         return trace;
     }

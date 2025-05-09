@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector;
 
 import de.rub.nds.modifiablevariable.VariableModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.ModifiedTicket;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.Ticket;
 import java.util.Objects;
@@ -31,7 +31,7 @@ public class TicketBitFlipVector implements TicketVector {
         int bitIndex =
                 7 - (position % 8); // 0 -> 7, 1 -> 6, ..., 7 -> 0 i.e. 0 leftmost, 7 rightmost
         byte[] xorValue = new byte[] {(byte) (1 << bitIndex & 0xff)};
-        return ByteArrayModificationFactory.xor(xorValue, byteIndex);
+        return new ByteArrayXorModification(xorValue, byteIndex);
     }
 
     @Override

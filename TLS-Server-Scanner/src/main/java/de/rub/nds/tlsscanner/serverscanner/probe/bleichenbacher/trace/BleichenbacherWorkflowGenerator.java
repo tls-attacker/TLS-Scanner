@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -34,7 +34,7 @@ public class BleichenbacherWorkflowGenerator {
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         RSAClientKeyExchangeMessage cke = new RSAClientKeyExchangeMessage();
         ModifiableByteArray epms = new ModifiableByteArray();
-        epms.setModification(ByteArrayModificationFactory.explicitValue(encryptedPMS));
+        epms.setModifications(new ByteArrayExplicitValueModification(encryptedPMS));
         cke.setPublicKey(epms);
         if (null != type) {
             switch (type) {
