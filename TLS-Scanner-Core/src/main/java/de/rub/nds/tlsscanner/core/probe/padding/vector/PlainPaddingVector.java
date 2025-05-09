@@ -30,7 +30,7 @@ public class PlainPaddingVector extends PaddingVector {
         Record r = new Record();
         r.prepareComputations();
         ModifiableByteArray byteArray = new ModifiableByteArray();
-        byteArray.setModification(modification);
+        byteArray.setModifications(modification);
         r.getComputations().setPlainRecordBytes(byteArray);
         return r;
     }

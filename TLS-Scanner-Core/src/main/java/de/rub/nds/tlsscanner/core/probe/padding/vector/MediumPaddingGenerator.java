@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -354,9 +353,6 @@ public class MediumPaddingGenerator extends PaddingVectorGenerator {
 
     private PaddingVector createVectorWithPlainData(String name, String identifier, byte[] plain) {
         return new PlainPaddingVector(
-                name,
-                identifier,
-                (ByteArrayExplicitValueModification)
-                        ByteArrayModificationFactory.explicitValue(plain));
+                name, identifier, new ByteArrayExplicitValueModification(plain));
     }
 }
