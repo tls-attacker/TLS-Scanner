@@ -1,4 +1,4 @@
-FROM maven:3.8.6-openjdk-11-slim AS build
+FROM maven:3.9.9-eclipse-temurin-21-jammy AS build
 
 ARG MODVAR_BRANCH=main
 ARG ASN1_BRANCH=main
@@ -23,7 +23,7 @@ WORKDIR /TLS-Crawler
 RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
     mvn clean install -DskipTests -Dspotless.apply.skip
 
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:21-jre-jammy
 COPY --from=build /root/.m2/repository/ /root/.m2/repository/
 # dirty copying of dependencies into /lib folder
 RUN for f in `find /root/.m2/repository/ -iname '*.jar'`; do cp "$f" /lib; done
