@@ -9,7 +9,7 @@
 
     <groupId>de.rub.nds.tls.crawler</groupId>
     <artifactId>TLS-Crawler</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
 
     <name>TLS-Crawler</name>
     <url>https://github.com/tls-attacker/TLS-Crawler</url>
@@ -74,7 +74,7 @@
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Crawler.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Crawler-Development.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v2.0.0</tag>
         <url>https://github.com/tls-attacker/TLS-Crawler</url>
     </scm>
 
