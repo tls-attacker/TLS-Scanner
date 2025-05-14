@@ -1,14 +1,17 @@
-FROM maven:3.8.6-openjdk-11-slim AS build
+FROM maven:3.9.9-eclipse-temurin-21-jammy AS build
 
-ARG MODVAR_BRANCH=master
-ARG ASN1_BRANCH=master
-ARG X509_BRANCH=master
-ARG ATTACKER_BRANCH=master
-ARG SCANNER_BRANCH=master
+ARG MODVAR_BRANCH=main
+ARG ASN1_BRANCH=main
+ARG X509_BRANCH=main
+ARG ATTACKER_BRANCH=main
+ARG SCANNER_BRANCH=main
+ARG CRAWLER_CORE_BRANCH=main
 
 WORKDIR /
 
-RUN apt-get update && apt-get install git -y
+RUN apt-get update \
+    && apt-get install git -y \
+    && apt clean
 COPY docker/install-dependencies.sh /install-dependencies.sh
 RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
     --mount=type=secret,id=credentials_provider,dst=/credentials_provider.sh \
@@ -20,7 +23,7 @@ WORKDIR /TLS-Crawler
 RUN --mount=type=secret,id=m2settings,dst=/root/.m2/settings.xml \
     mvn clean install -DskipTests -Dspotless.apply.skip
 
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:21-jre-jammy
 COPY --from=build /root/.m2/repository/ /root/.m2/repository/
 # dirty copying of dependencies into /lib folder
 RUN for f in `find /root/.m2/repository/ -iname '*.jar'`; do cp "$f" /lib; done

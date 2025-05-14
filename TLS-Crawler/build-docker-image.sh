@@ -1,8 +1,8 @@
 #!/bin/bash
-# set github token to pull private repos
-# Can be created at https://github.com/settings/tokens
-# (As of 2023-11-03) A fine grained token does not seem to work, a classical one is required with the "repo" permission
-# Unfortunately, less permissions do not seem to work. Hopefully this will change in the future.
+# Set github token to pull private repos
+# They can be created at https://github.com/settings/tokens
+# Fine grained tokens need the Repository>Contents (read-only suffices) permission and need to be created using the resource owner set to tls-attacker.
+# Classical tokens require the "repo" permission.
 
 if [ "$1" = "run-with-credentials" ]; then
     # implementation detail:
@@ -16,15 +16,16 @@ if [ "$1" = "run-with-credentials" ]; then
     exec "$@"
 fi
 
-# we default to the standard branches, change to branch our commit number you need
+# we default to relying on maven for most dependencies, change to the branch or commit hash you need
 # export ATTACKER_BRANCH='my_very_cool_feature_branch'
-# You can also set 'N/A' to skip the dependency and rely on maven
+# NB: The version of the dependency must match the version in the pom.xml, otherwise maven will again use a remote
 
 export MODVAR_BRANCH='N/A'
-export ASN1_BRANCH='main'
-export X509_BRANCH='main'
-export ATTACKER_BRANCH='main'
-export SCANNER_BRANCH='main'
+export ASN1_BRANCH='N/A'
+export X509_BRANCH='N/A'
+export ATTACKER_BRANCH='N/A'
+export SCANNER_BRANCH='N/A'
+export CRAWLER_CORE_BRANCH='main'
 
 docker_args=()
 if [ "$1" != "use-cache" ]; then

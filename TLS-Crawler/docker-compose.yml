@@ -34,6 +34,7 @@ services:
         X509_BRANCH: ${X509_BRANCH}
         ATTACKER_BRANCH: ${ATTACKER_BRANCH}
         SCANNER_BRANCH: ${SCANNER_BRANCH}
+        CRAWLER_CORE_BRANCH: ${CRAWLER_CORE_BRANCH}
       secrets:
         - m2settings
         - credentials_provider

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        JDK_TOOL_NAME = 'JDK 11'
+        JDK_TOOL_NAME = 'JDK 21'
         MAVEN_TOOL_NAME = 'Maven 3.9.9'
     }
 
@@ -42,25 +42,24 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: '**/target/*.jar'
-                    stash name: 'jar', includes:  '**/apps/*.jar'
-                    stash name: 'lib', includes:  '**/apps/*.jar'
                 }
             }
         }
         stage('Code Analysis') {
             when {
                 anyOf {
-                    branch 'master'
+                    branch 'main'
                     tag 'v*'
                     changeRequest()
                 }
             }
             options {
-                timeout(activity: true, time: 120, unit: 'SECONDS')
+                timeout(activity: true, time: 240, unit: 'SECONDS')
             }
             steps {
                 withMaven(jdk: env.JDK_TOOL_NAME, maven: env.MAVEN_TOOL_NAME) {
-                    sh 'mvn pmd:pmd pmd:cpd spotbugs:spotbugs'
+                    // `package` goal is required here to load modules in reactor and avoid dependency resolve conflicts
+                    sh 'mvn -DskipTests=true package pmd:pmd pmd:cpd spotbugs:spotbugs'
                 }
             }
             post {
@@ -72,13 +71,13 @@ pipeline {
         stage('Unit Tests') {
             when {
                 anyOf {
-                    branch 'master'
+                    branch 'main'
                     tag 'v*'
                     changeRequest()
                 }
             }
             options {
-                timeout(activity: true, time: 120, unit: 'SECONDS')
+                timeout(activity: true, time: 180, unit: 'SECONDS')
             }
             steps {
                 withMaven(jdk: env.JDK_TOOL_NAME, maven: env.MAVEN_TOOL_NAME) {
@@ -87,20 +86,20 @@ pipeline {
             }
             post {
                 always {
-                    junit testResults: '**/target/surefire-reports/TEST-*.xml', allowEmptyResults: true
+                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
                 }
             }
         }
         stage('Integration Tests') {
             when {
                 anyOf {
-                    branch 'master'
+                    branch 'main'
                     tag 'v*'
                     changeRequest()
                 }
             }
             options {
-                timeout(activity: true, time: 120, unit: 'SECONDS')
+                timeout(activity: true, time: 1800, unit: 'SECONDS')
             }
             steps {
                 withMaven(jdk: env.JDK_TOOL_NAME, maven: env.MAVEN_TOOL_NAME) {
@@ -119,10 +118,10 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Jar to Internal Nexus Repository') {
+        stage('Deploy to Internal Nexus Repository') {
             when {
                 anyOf {
-                    branch 'master'
+                    branch 'main'
                     tag 'v*'
                 }
             }
@@ -134,10 +133,10 @@ pipeline {
             }
         }
         stage('Build & Deploy Docker Image to Internal Nexus Repository') {
-            when {
-                anyOf {
-                    branch 'master'
-                    tag 'v*'
+           when {
+               anyOf {
+                   branch 'main'
+                   tag 'v*'
                 }
             }
             environment {
@@ -152,8 +151,6 @@ pipeline {
                 sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:latest'
                 sh 'docker push ${DOCKER_PUSH_URL}/tls-crawler:${BUILD_TIMESTAMP}_${BUILD_NUMBER}'
             }
-
-
         }
     }
     post {
