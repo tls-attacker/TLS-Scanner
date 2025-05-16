@@ -8,8 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.test;
 
+import com.github.dockerjava.api.command.InspectContainerCmd;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.exception.DockerException;
-import com.github.dockerjava.api.model.Image;
+import com.github.dockerjava.api.model.*;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TransportType;
@@ -106,6 +108,20 @@ public abstract class AbstractDockerbasedIT {
     }
 
     protected String getServerAddress() {
-        return "localhost:" + dockerInstance.getPort();
+        InspectContainerCmd cmd =
+                DockerClientManager.getDockerClient()
+                        .inspectContainerCmd(this.dockerInstance.getId());
+        InspectContainerResponse response = cmd.exec();
+        Ports.Binding serverPortBinding =
+                response.getNetworkSettings().getPorts().getBindings().values().stream()
+                        .findFirst()
+                        .orElseThrow(IllegalArgumentException::new)[0];
+
+        int serverPort = Integer.parseInt(serverPortBinding.getHostPortSpec());
+        String serverName =
+                serverPortBinding.getHostIp().equals("0.0.0.0")
+                        ? "127.0.0.1"
+                        : serverPortBinding.getHostIp();
+        return serverName + ":" + serverPort;
     }
 }
