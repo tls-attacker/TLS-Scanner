@@ -153,7 +153,7 @@ pipeline {
                         repository: GIT_URL.tokenize("/.")[-3,-2].join("/"),
                         tagName: draftRelease.htmlUrl.tokenize("/")[-1],
                         uploadAssets: [
-                            [filePath: "${env.WORKSPACE}/TLS-Scanner-${TAG_NAME}.zip"]
+                            [filePath: "TLS-Scanner-${TAG_NAME}.zip"]
                         ]
                     )
                 }
