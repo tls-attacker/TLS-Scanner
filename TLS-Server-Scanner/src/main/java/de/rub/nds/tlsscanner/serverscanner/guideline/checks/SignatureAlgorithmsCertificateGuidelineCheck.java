@@ -69,7 +69,7 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
                     getName(), GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
-        if (!this.recommendedAlgorithms.contains(report.getSignatureAlgorithm())) {
+        if (!this.recommendedAlgorithms.contains(report.getX509SignatureAlgorithm())) {
             nonRecommended.add(report.getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(

@@ -131,9 +131,9 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA384,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
@@ -155,7 +155,6 @@ public class BsiGuidelineSerializationIT {
                                 NamedGroup.BRAINPOOLP256R1,
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
-                                NamedGroup.FFDHE2048,
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096),
                         Collections.emptyList(),
@@ -181,7 +180,7 @@ public class BsiGuidelineSerializationIT {
                                 HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
+                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -189,7 +188,7 @@ public class BsiGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
+                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -197,7 +196,7 @@ public class BsiGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
+                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -205,7 +204,7 @@ public class BsiGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "truncated_hmac sollte nicht unterstüzt werden.",
+                        "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -220,7 +219,7 @@ public class BsiGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.",
+                        "Der Einsatz der TLS-Erweiterung \"Encrypt-then-MAC\" gemäß [RFC 7366] wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -228,18 +227,26 @@ public class BsiGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "Heartbeat sollte nicht unterstüzt werden.",
+                        "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.",
+                        "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
+                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Der PSK-Modus psk_ke bietet keine Perfect Forward Secrecy. Dieser Modus sollte daher nur in speziellen Anwendungsfällen nach Hinzuziehen eines Experten eingesetzt werden.",
+                        RequirementLevel.SHOULD_NOT,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -260,7 +267,6 @@ public class BsiGuidelineSerializationIT {
                                 NamedGroup.BRAINPOOLP256R1,
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
-                                NamedGroup.FFDHE2048,
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096),
                         Collections.emptyList(),
@@ -287,27 +293,39 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         checks.add(
+                // Recommendation by BSI for the "signature_algorithms_cert" extension. As it is
+                // mostly used by the client (?) we check the certificate actually used by the
+                // server here and compare its algorithms to the ones recommended by BSI. Not all
+                // recommended algorithms are currently supported by X509Attacker and thus commented
+                // out.
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
                         "Die folgenden Signaturverfahren werden empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Arrays.asList(
-                                X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA384_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.SHA512_WITH_RSA_ENCRYPTION,
-                                X509SignatureAlgorithm.RSASSA_PSS,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA256,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA384,
-                                X509SignatureAlgorithm.ECDSA_WITH_SHA512
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
-                                // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
+                                X509SignatureAlgorithm
+                                        .SHA256_WITH_RSA_ENCRYPTION, // = rsa_pkcs1_sha256?
+                                X509SignatureAlgorithm
+                                        .SHA384_WITH_RSA_ENCRYPTION, // = rsa_pkcs1_sha384?
+                                X509SignatureAlgorithm
+                                        .SHA512_WITH_RSA_ENCRYPTION, // = rsa_pkcs1_sha512?
+                                X509SignatureAlgorithm.RSASSA_PSS, // = rsa_pss_pss_*
+                                X509SignatureAlgorithm
+                                        .ECDSA_WITH_SHA256, // = ecdsa_secp256r1_sha256
+                                X509SignatureAlgorithm
+                                        .ECDSA_WITH_SHA384, // = ecdsa_secp384r1_sha384
+                                X509SignatureAlgorithm.ECDSA_WITH_SHA512 // = ecdsa_secp521r1_sha512
+                                // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
+                                // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
+                                // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
                                 )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
                         RequirementLevel.SHOULD,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Collections.singletonList(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
@@ -315,11 +333,11 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
                 new KeySizeCertGuidelineCheck(
-                        "Schlüssellängen", RequirementLevel.SHOULD, 2000, 2000, 250, 2000));
+                        "Schlüssellängen", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
 
         Guideline<ServerReport> guideline =
                 new Guideline<>(
-                        "BSI TR-02102-2",
+                        "BSI TR-02102-2 (v2025-01)",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
