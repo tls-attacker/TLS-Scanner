@@ -1119,6 +1119,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        prettyAppend(
+                builder, "Prefers TLS 1.3 PSK-DHE to TLS 1.3 PSK", TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
         return builder;
     }

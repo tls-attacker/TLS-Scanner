@@ -170,6 +170,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_EXCHANGE_MODES(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    PREFERS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_0_RTT(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_ID_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),

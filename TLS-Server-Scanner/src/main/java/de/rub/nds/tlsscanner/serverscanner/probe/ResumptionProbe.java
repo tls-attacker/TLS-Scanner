@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ResumptionProbe extends TlsServerProbe {
     private TestResult issuesTls13SessionTicketAfterHandshake = TestResults.COULD_NOT_TEST;
     private TestResult issuesTls13SessionTicketWithApplicationData = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13PskDhe = TestResults.COULD_NOT_TEST;
+    private TestResult prefersTls13PskDhe = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13Psk = TestResults.COULD_NOT_TEST;
     private TestResult supportsTls13ZeroRtt = TestResults.COULD_NOT_TEST;
     private TestResult supportsDtlsCookieExchangeInSessionTicketResumption =
@@ -76,6 +78,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE,
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
+                TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                 TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
                 TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
@@ -101,8 +104,9 @@ public class ResumptionProbe extends TlsServerProbe {
             supportsDtlsCookieExchangeInSessionTicketResumption = TestResults.NOT_TESTED_YET;
             issuesTls13SessionTicketAfterHandshake = getIssuesTls13SessionTicket(false);
             issuesTls13SessionTicketWithApplicationData = getIssuesTls13SessionTicket(true);
-            supportsTls13PskDhe = getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE);
-            supportsTls13Psk = getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE);
+            supportsTls13PskDhe = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_DHE_KE));
+            supportsTls13Psk = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_KE));
+            prefersTls13PskDhe = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE));
             supportsTls13ZeroRtt = getSupports0rtt();
         }
         supportsResumption = getSupportsSessionResumption();
@@ -279,7 +283,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 : TestResults.FALSE;
     }
 
-    private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
+    private TestResult getSupportsTls13Psk(List<PskKeyExchangeMode> exchangeModes) {
         // add app data if the server does not issue a ticket without them.
         boolean addApplicationData =
                 issuesTls13SessionTicketAfterHandshake == TestResults.FALSE
@@ -287,13 +291,11 @@ public class ResumptionProbe extends TlsServerProbe {
         try {
             if (configSelector.foundWorkingTls13Config()) {
                 Config tlsConfig = configSelector.getTls13BaseConfig();
-                List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-                pskKex.add(exchangeMode);
-                tlsConfig.setPSKKeyExchangeModes(pskKex);
+                tlsConfig.setPSKKeyExchangeModes(exchangeModes);
                 tlsConfig.setAddPSKKeyExchangeModesExtension(true);
                 tlsConfig.setAddPreSharedKeyExtension(true);
                 tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
-                // allow an early NewSessionTicket without aborting execution
+                // allow an early NewSessionTicket without aborting execution.
                 tlsConfig.setStopTraceAfterUnexpected(false);
                 if (addApplicationData) {
                     StackConfiguration stackConfiguration =
@@ -327,13 +329,18 @@ public class ResumptionProbe extends TlsServerProbe {
                 MessageAction lastRcv =
                         (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
                 if (lastRcv.executedAsPlanned()) {
-                    // Check PSK Modes
+                    // Check if the key_share extension is negotiated. This determines which key extension mode the server selected.
                     TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
+                     // If one of the provided key exchange modi is PSK_DHE_KE the key_share extension is required.
                     TestResult keyShareRequired =
-                            TestResults.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
+                        TestResults.of(exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE));
                     if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
                         if (!TestResults.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
                             respectsPskModes = TestResults.FALSE;
+                            if (exchangeModes.size() > 1) {
+                                // If one of the provided key exchange modi is PSK_DHE_KE but no key_share extension was provided the server did not prefer PSK_DHE_KE.
+                                if (exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE)) return TestResults.FALSE;
+                            }
                         }
                     }
                     return TestResults.TRUE;
@@ -345,7 +352,11 @@ public class ResumptionProbe extends TlsServerProbe {
                 LOGGER.error("Timeout on " + getProbeName());
                 throw new RuntimeException(e);
             } else {
-                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + "): ", e);
+                if (exchangeModes.size() > 1) {
+                    LOGGER.error("Could not test if the server prefers PSK_DHE_KE as the TLS 1.3 PSK key exchange mode (provided: " + exchangeModes.toString() + "): ", e);
+            } else {
+                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeModes.get(0) + "): ", e);
+                }
             }
             return TestResults.ERROR_DURING_TEST;
         }
@@ -466,6 +477,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
                 issuesTls13SessionTicketWithApplicationData);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
+        put(TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE, prefersTls13PskDhe);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13ZeroRtt);
         put(TlsAnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
         put(
