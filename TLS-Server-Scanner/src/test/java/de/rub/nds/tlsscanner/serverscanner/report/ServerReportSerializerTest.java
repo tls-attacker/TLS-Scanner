@@ -110,8 +110,8 @@ public class ServerReportSerializerTest {
 
         ServerReport report = new ServerReport();
         report.setConfigProfileIdentifier("something");
-        report.setScanEndTime(1000);
-        report.setScanStartTime(0);
+        report.setScanEndTime(1000l);
+        report.setScanStartTime(0l);
         report.setConfigProfileIdentifierTls13("some identifier");
         report.setIsHandshaking(true);
         report.setPerformedConnections(10);

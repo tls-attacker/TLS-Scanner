@@ -13,5 +13,5 @@ import java.io.OutputStream;
 
 public class TlsCoreTestReport extends TlsScanReport {
     @Override
-    public void serializeToJson(OutputStream stream) {}
+    public synchronized void serializeToJson(OutputStream stream) {}
 }

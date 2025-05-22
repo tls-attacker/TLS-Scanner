@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.LongResult;
@@ -21,13 +24,22 @@ import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.converter.*;
+import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ExtractedValueContainerDeserializer;
+import de.rub.nds.tlsscanner.core.converter.HttpsHeaderDeserializer;
+import de.rub.nds.tlsscanner.core.converter.HttpsHeaderSerializer;
+import de.rub.nds.tlsscanner.core.converter.PointSerializer;
+import de.rub.nds.tlsscanner.core.converter.PublicKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
+import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -43,6 +55,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.io.OutputStream;
+import java.security.PublicKey;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +69,17 @@ public class ServerReport extends TlsScanReport {
                     .addSerializer(new ResponseFingerprintSerializer())
                     .addSerializer(new VectorSerializer())
                     .addSerializer(new PointSerializer())
-                    .addSerializer(new HttpsHeaderSerializer()),
+                    .addSerializer(new HttpsHeaderSerializer())
+                    .addDeserializer(byte[].class, new ByteArrayDeserializer())
+                    .addDeserializer(
+                            ExtractedValueContainer.class,
+                            new ExtractedValueContainerDeserializer())
+                    .addDeserializer(HttpHeader.class, new HttpsHeaderDeserializer())
+                    .addDeserializer(PublicKey.class, new PublicKeyDeserializer())
+                    .addKeyDeserializer(
+                            AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
+                    .addKeyDeserializer(
+                            TrackableValue.class, new TrackableValueTypeKeyDeserializer()),
             new JodaModule()
         };
     }
@@ -68,10 +91,6 @@ public class ServerReport extends TlsScanReport {
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
-
-    // Rating
-    private int score;
-    private ScoreReport scoreReport;
 
     // Config profile used to limit our Client Hello
     private String configProfileIdentifier;
@@ -93,12 +112,12 @@ public class ServerReport extends TlsScanReport {
     }
 
     @Override
-    public void serializeToJson(OutputStream outputStream) {
+    public synchronized void serializeToJson(OutputStream outputStream) {
         ServerReportSerializer.serialize(outputStream, this);
     }
 
     @Override
-    public String getRemoteName() {
+    public synchronized String getRemoteName() {
         if (sniHostname != null) {
             return sniHostname + "(" + host + "):" + port;
         } else {
@@ -110,8 +129,12 @@ public class ServerReport extends TlsScanReport {
         return host;
     }
 
-    public synchronized int getPort() {
+    public synchronized Integer getPort() {
         return port;
+    }
+
+    public synchronized String getSniHostname() {
+        return sniHostname;
     }
 
     public synchronized Boolean getServerIsAlive() {
@@ -142,11 +165,11 @@ public class ServerReport extends TlsScanReport {
         this.speaksProtocol = speaksProtocol;
     }
 
-    public Boolean getIsHandshaking() {
+    public synchronized Boolean getIsHandshaking() {
         return isHandshaking;
     }
 
-    public void setIsHandshaking(Boolean isHandshaking) {
+    public synchronized void setIsHandshaking(Boolean isHandshaking) {
         this.isHandshaking = isHandshaking;
     }
 
@@ -295,26 +318,6 @@ public class ServerReport extends TlsScanReport {
                         NamedGroup.class,
                         NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
-    }
-
-    @Override
-    public synchronized int getScore() {
-        return score;
-    }
-
-    @Override
-    public synchronized void setScore(int score) {
-        this.score = score;
-    }
-
-    @Override
-    public synchronized ScoreReport getScoreReport() {
-        return scoreReport;
-    }
-
-    @Override
-    public synchronized void setScoreReport(ScoreReport scoreReport) {
-        this.scoreReport = scoreReport;
     }
 
     public synchronized String getConfigProfileIdentifier() {

@@ -127,7 +127,7 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
+    public synchronized List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
         ListResult<X509SignatureAlgorithm> listResult =
                 getListResult(
                         TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
@@ -135,7 +135,8 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
+    public synchronized List<SignatureAndHashAlgorithm>
+            getSupportedSignatureAndHashAlgorithmsSke() {
         ListResult<SignatureAndHashAlgorithm> listResult =
                 getListResult(
                         TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
@@ -143,7 +144,8 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
+    public synchronized List<SignatureAndHashAlgorithm>
+            getSupportedSignatureAndHashAlgorithmsTls13() {
         ListResult<SignatureAndHashAlgorithm> listResult =
                 getListResult(
                         TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
@@ -248,7 +250,7 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
-    public List<CipherSuite> getSupportedCipherSuitesWithKeyExchange(
+    public synchronized List<CipherSuite> getSupportedCipherSuitesWithKeyExchange(
             KeyExchangeAlgorithm... algorithms) {
         Set<CipherSuite> cipherSuites = getSupportedCipherSuites();
         List<KeyExchangeAlgorithm> matchingKeyExchangeAlgorithms = Arrays.asList(algorithms);

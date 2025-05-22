@@ -52,7 +52,7 @@ public class ClientReport extends TlsScanReport {
     }
 
     @Override
-    public void serializeToJson(OutputStream outputStream) {
+    public synchronized void serializeToJson(OutputStream outputStream) {
         ClientReportSerializer.serialize(outputStream, this);
     }
 
