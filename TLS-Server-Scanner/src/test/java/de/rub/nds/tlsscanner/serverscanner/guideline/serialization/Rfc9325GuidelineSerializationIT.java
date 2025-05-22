@@ -164,9 +164,9 @@ public class Rfc9325GuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "For HTTP over TLS, refer to [RFC8470] for guidance. For QUIC on TLS, refer to Section 9.2 of [RFC9001]. For other protocols [...] applications MUST avoid this feature unless an explicit specification exists for the application protocol in question to clarify when 0-RTT is appropriate and secure.", // Should this be a MUST or removed entirely because it depends on the protocol layer?
+                        "For HTTP over TLS, refer to [RFC8470] for guidance. For QUIC on TLS, refer to Section 9.2 of [RFC9001]. For other protocols [...] applications MUST avoid this feature unless an explicit specification exists for the application protocol in question to clarify when 0-RTT is appropriate and secure.",
                         RequirementLevel.MUST,
-                        new GuidelineCheckCondition(
+                        new GuidelineCheckCondition( // TODO Here should also be a condition that only applies if a protocol other than HTTP is used.
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                         TestResults.FALSE));
@@ -465,8 +465,7 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384)));
         checks.add(
-                new CertificateCurveGuidelineCheck( // Is this the correct check because it
-                        // references the certificate?
+                new CertificateCurveGuidelineCheck(
                         "When using ECDSA signatures for authentication of TLS peers, it is RECOMMENDED that implementations use the NIST curve P-256.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(X509NamedCurve.SECP256R1)));
