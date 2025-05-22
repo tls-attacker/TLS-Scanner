@@ -73,6 +73,9 @@ public class ConfigSelector {
         if (!scannerConfig.getDtlsDelegate().isDTLS()) {
             findWorkingTls13Config();
         }
+        if (scannerConfig.getDebugExtensionDelegate() != null) {
+            scannerConfig.getDebugExtensionDelegate().applyDelegate(workingConfig);
+        }
         return workingConfig != null || workingTl13Config != null;
     }
 
@@ -138,7 +141,7 @@ public class ConfigSelector {
 
     public void prepareBaseConfig(Config baseConfig) throws ConfigurationException {
         applyDelegates(baseConfig);
-        applyPerformanceParamters(baseConfig);
+        applyPerformanceParameters(baseConfig);
         applyScannerConfigParameters(baseConfig);
         repairSni(baseConfig);
         repairConfig(baseConfig);
@@ -177,7 +180,7 @@ public class ConfigSelector {
         return trace.executedAsPlanned();
     }
 
-    private void applyPerformanceParamters(Config config) {
+    private void applyPerformanceParameters(Config config) {
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);

@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.QuicDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.CallbackDelegate;
+import de.rub.nds.tlsscanner.core.config.delegate.DebugExtensionDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.DtlsDelegate;
 
 public class TlsScannerConfig extends TLSDelegateConfig {
@@ -34,6 +35,8 @@ public class TlsScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate private CallbackDelegate callbackDelegate;
 
+    @ParametersDelegate private DebugExtensionDelegate debugExtensionDelegate;
+
     @ParametersDelegate private ExecutorConfig executorConfig;
 
     public TlsScannerConfig(GeneralDelegate delegate) {
@@ -43,12 +46,14 @@ public class TlsScannerConfig extends TLSDelegateConfig {
         this.quicDelegate = new QuicDelegate();
         this.startTlsDelegate = new StarttlsDelegate();
         this.callbackDelegate = new CallbackDelegate();
+        this.debugExtensionDelegate = new DebugExtensionDelegate();
         this.executorConfig = new ExecutorConfig();
 
         addDelegate(dtlsDelegate);
         addDelegate(quicDelegate);
         addDelegate(startTlsDelegate);
         addDelegate(callbackDelegate);
+        addDelegate(debugExtensionDelegate);
     }
 
     public DtlsDelegate getDtlsDelegate() {
@@ -65,6 +70,10 @@ public class TlsScannerConfig extends TLSDelegateConfig {
 
     public CallbackDelegate getCallbackDelegate() {
         return callbackDelegate;
+    }
+
+    public DebugExtensionDelegate getDebugExtensionDelegate() {
+        return debugExtensionDelegate;
     }
 
     public ExecutorConfig getExecutorConfig() {
