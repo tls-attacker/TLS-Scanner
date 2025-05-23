@@ -26,9 +26,13 @@ public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
 
     @Override
     public String toString() {
-        return Objects.equals(GuidelineAdherence.ADHERED, getAdherence())
-                ? "Certificate has correct key usage " + getKeyUsage()
-                : "Certificate is missing key usage " + getKeyUsage();
+        if (supported) {
+            return Objects.equals(GuidelineAdherence.ADHERED, getAdherence())
+                    ? "Certificate has correct key usage " + getKeyUsage()
+                    : "Certificate is missing key usage " + getKeyUsage();
+        } else {
+            return "Key usage extension is not present.";
+        }
     }
 
     public String getKeyUsage() {
