@@ -19,13 +19,22 @@ public class DebugExtensionDelegate extends Delegate {
             names = "-debugExtension",
             required = false,
             description = "TLS-Attacker debug extension")
-    private String debugExtension = "TLS-Attacker debug extension";
+    private Boolean debugExtension = false;
+
+    public boolean isDebugExtension() {
+        return debugExtension;
+    }
+
+    public void setDebugExtension(boolean debugExtension) {
+        this.debugExtension = debugExtension;
+    }
 
     public DebugExtensionDelegate() {}
 
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {
-        config.setAddDebugExtension(true);
-        config.setDefaultDebugContent(debugExtension);
+        if (debugExtension) {
+            config.setAddDebugExtension(true);
+        }
     }
 }

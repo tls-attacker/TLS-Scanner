@@ -33,6 +33,9 @@ public abstract class TlsProbe<ReportT extends TlsScanReport> extends ScannerPro
     }
 
     public final void executeState(Iterable<State> states) {
+        for (State state : states) {
+            state.getContext().getConfig().setDefaultDebugContent(this.getClass().getSimpleName());
+        }
         parallelExecutor.bulkExecuteStateTasks(states);
         extractStats(states);
     }
