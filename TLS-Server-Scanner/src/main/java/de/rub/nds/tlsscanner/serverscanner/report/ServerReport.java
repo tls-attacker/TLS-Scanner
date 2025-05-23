@@ -25,7 +25,6 @@ import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
@@ -33,8 +32,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ExtractedValueContainerDeserializer;
-import de.rub.nds.tlsscanner.core.converter.HttpsHeaderDeserializer;
-import de.rub.nds.tlsscanner.core.converter.HttpsHeaderSerializer;
 import de.rub.nds.tlsscanner.core.converter.PointSerializer;
 import de.rub.nds.tlsscanner.core.converter.PublicKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
@@ -69,12 +66,10 @@ public class ServerReport extends TlsScanReport {
                     .addSerializer(new ResponseFingerprintSerializer())
                     .addSerializer(new VectorSerializer())
                     .addSerializer(new PointSerializer())
-                    .addSerializer(new HttpsHeaderSerializer())
                     .addDeserializer(byte[].class, new ByteArrayDeserializer())
                     .addDeserializer(
                             ExtractedValueContainer.class,
                             new ExtractedValueContainerDeserializer())
-                    .addDeserializer(HttpHeader.class, new HttpsHeaderDeserializer())
                     .addDeserializer(PublicKey.class, new PublicKeyDeserializer())
                     .addKeyDeserializer(
                             AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())

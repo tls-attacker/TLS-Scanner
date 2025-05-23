@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.rub.nds.protocol.crypto.ec.Point;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -80,16 +79,6 @@ public class SerializerDeserializerTest {
         byte[] serialized = serialize(vector);
         Vector deserialized = deserialize(serialized, Vector.class);
         assertEquals(vector.getName(), deserialized.getName());
-    }
-
-    @Test
-    public void testHttpsHeaderSerializerDeserializer() throws IOException {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(HttpHeader.class, new HttpsHeaderSerializer());
-        module.addDeserializer(HttpHeader.class, new HttpsHeaderDeserializer());
-        mapper.registerModule(module);
-        // Cannot instantiate HttpHeader due to missing public constructor
-        // Test only registration and skip actual round-trip
     }
 
     @Test

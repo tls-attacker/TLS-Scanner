@@ -45,7 +45,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameterEntry;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -2411,12 +2410,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpHeader header : report.getHttpHeader()) {
-                    prettyAppend(
-                            builder,
-                            header.getHeaderName().getValue()
-                                    + ":"
-                                    + header.getHeaderValue().getValue());
+                for (String header : report.getHttpHeader()) {
+                    prettyAppend(builder, header);
                 }
                 prettyAppendHeading(builder, "HTTP False Start");
                 prettyAppend(

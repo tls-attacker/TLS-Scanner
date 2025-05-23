@@ -102,12 +102,17 @@ public class HttpHeaderProbe extends TlsServerProbe {
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
-        put(TlsAnalyzedProperty.HTTPS_HEADER, headerList);
+        List<String> stringHeaderList = new LinkedList<>();
+
         List<HpkpPin> pinList = new LinkedList<>();
         List<HpkpPin> reportOnlyPinList = new LinkedList<>();
         supportsHsts = TestResults.FALSE;
         if (headerList != null) {
             for (HttpHeader header : headerList) {
+                stringHeaderList.add(
+                        header.getHeaderName().getValue()
+                                + ":"
+                                + header.getHeaderValue().getValue());
                 if (header.getHeaderName()
                         .getValue()
                         .equalsIgnoreCase("strict-transport-security")) {
@@ -234,6 +239,7 @@ public class HttpHeaderProbe extends TlsServerProbe {
         } else {
             setPropertiesToCouldNotTest();
         }
+        put(TlsAnalyzedProperty.HTTPS_HEADER, stringHeaderList);
         put(TlsAnalyzedProperty.HSTS_MAX_AGE, hstsMaxAge);
         put(TlsAnalyzedProperty.HPKP_MAX_AGE, hpkpMaxAge);
         put(TlsAnalyzedProperty.NORMAL_HPKP_PINS, pinList);

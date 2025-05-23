@@ -30,7 +30,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -496,11 +495,8 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                     container.add(createDefaultTextContainer("Not supported"));
                 }
                 container.add(new HeadlineContainer("HTTPS Response Header"));
-                for (HttpHeader header : report.getHttpHeader()) {
-                    container.add(
-                            createDefaultKeyValueContainer(
-                                    header.getHeaderName().getValue(),
-                                    header.getHeaderValue().getValue()));
+                for (String header : report.getHttpHeader()) {
+                    container.add(createDefaultTextContainer(header));
                 }
                 container.add(new HeadlineContainer("HTTP False Start"));
                 container.add(
@@ -520,7 +516,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createKeyValueContainer(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, report));
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, report));
-        if (report.getCommonDhValues() != null && report.getCommonDhValues().size() != 0) {
+        if (report.getCommonDhValues() != null && !report.getCommonDhValues().isEmpty()) {
             for (CommonDhValues value : report.getCommonDhValues()) {
                 container.add(new TextContainer(value.getName(), AnsiColor.YELLOW));
             }
