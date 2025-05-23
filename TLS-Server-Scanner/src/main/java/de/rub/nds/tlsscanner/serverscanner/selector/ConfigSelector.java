@@ -73,9 +73,6 @@ public class ConfigSelector {
         if (!scannerConfig.getDtlsDelegate().isDTLS()) {
             findWorkingTls13Config();
         }
-        if (scannerConfig.getDebugExtensionDelegate() != null) {
-            scannerConfig.getDebugExtensionDelegate().applyDelegate(workingConfig);
-        }
         return workingConfig != null || workingTl13Config != null;
     }
 
