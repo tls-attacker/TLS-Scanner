@@ -152,24 +152,14 @@ public class Rfc9325GuidelineSerializationIT {
                 new AnalyzedPropertyGuidelineCheck(
                         "In order to prevent the attacks described in [ALPACA], a server that does not recognize the presented server name SHOULD NOT continue the handshake.",
                         RequirementLevel.SHOULD_NOT,
-                        TlsAnalyzedProperty
-                                .STRICT_SNI,
+                        TlsAnalyzedProperty.STRICT_SNI,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
                         RequirementLevel.MUST,
-                        TlsAnalyzedProperty
-                                .STRICT_ALPN,
+                        TlsAnalyzedProperty.STRICT_ALPN,
                         TestResults.TRUE));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "For HTTP over TLS, refer to [RFC8470] for guidance. For QUIC on TLS, refer to Section 9.2 of [RFC9001]. For other protocols [...] applications MUST avoid this feature unless an explicit specification exists for the application protocol in question to clarify when 0-RTT is appropriate and secure.",
-                        RequirementLevel.MUST,
-                        new GuidelineCheckCondition( // TODO Here should also be a condition that only applies if a protocol other than HTTP is used.
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE));
         // Cipher Suites (RFC uses a "MUST NOT/SHOULD NOT"-approach instead of an allowlist)
         checks.add(
                 new CipherSuiteGuidelineCheck(
@@ -523,7 +513,10 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.TRUNCATED_HMAC));
 
-        // Todo for the future: Evaluate whether this can be tested, is worth the effort, and if so implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
+        // Todo for the future: Evaluate whether this can be tested, is worth the effort, and if so
+        // implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the
+        // 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described
+        // in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
