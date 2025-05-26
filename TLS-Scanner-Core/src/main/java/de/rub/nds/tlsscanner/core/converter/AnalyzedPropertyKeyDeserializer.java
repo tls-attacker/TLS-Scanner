@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.converter;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.KeyDeserializer;
+import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.IOException;
 
@@ -22,7 +23,12 @@ public class AnalyzedPropertyKeyDeserializer extends KeyDeserializer {
         try {
             return TlsAnalyzedProperty.valueOf(key);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Unknown AnalyzedProperty key: " + key, e);
+            try {
+                return QuicAnalyzedProperty.valueOf(key);
+            } catch (IllegalArgumentException e2) {
+                // If the key is not found, throw an IOException
+                throw new IOException("Unknown AnalyzedProperty key: " + key, e2);
+            }
         }
     }
 }

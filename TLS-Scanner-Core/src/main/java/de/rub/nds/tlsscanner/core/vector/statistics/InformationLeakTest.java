@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.vector.statistics;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
@@ -18,6 +19,12 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
 public class InformationLeakTest<TestInfoT extends TestInfo>
         extends VectorStatisticTest<TestInfoT> {
+
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private InformationLeakTest() {
+        super(null, new LinkedList<>());
+    }
 
     public InformationLeakTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         super(testInfo, responseList);

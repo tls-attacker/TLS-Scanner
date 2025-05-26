@@ -19,6 +19,13 @@ public class PlainPaddingVector extends PaddingVector {
 
     private final ByteArrayExplicitValueModification modification;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private PlainPaddingVector() {
+        super(null, null);
+        this.modification = null;
+    }
+
     public PlainPaddingVector(
             String name, String identifier, ByteArrayExplicitValueModification modification) {
         super(name, identifier);

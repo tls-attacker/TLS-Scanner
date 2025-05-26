@@ -18,6 +18,13 @@ public class TicketPaddingOracleSecondByteTestInfo extends TicketPaddingOracleLa
 
     private final TicketPaddingOracleVectorLast previousVector;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private TicketPaddingOracleSecondByteTestInfo() {
+        super(null, null);
+        this.previousVector = null;
+    }
+
     public TicketPaddingOracleSecondByteTestInfo(
             ProtocolVersion version, TicketPaddingOracleVectorLast previousVector) {
         super(version, previousVector.offset);

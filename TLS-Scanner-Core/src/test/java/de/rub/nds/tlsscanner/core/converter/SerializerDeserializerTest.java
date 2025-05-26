@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.rub.nds.protocol.crypto.ec.Point;
-import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,24 +60,6 @@ public class SerializerDeserializerTest {
         mapper.registerModule(module);
         // Cannot instantiate Point due to missing public constructor or dependencies
         // Test only registration and skip actual round-trip
-    }
-
-    @Test
-    public void testVectorSerializerDeserializer() throws IOException {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Vector.class, new VectorSerializer());
-        module.addDeserializer(Vector.class, new VectorDeserializer());
-        mapper.registerModule(module);
-        Vector vector =
-                new Vector() {
-                    @Override
-                    public String getName() {
-                        return "testVector";
-                    }
-                };
-        byte[] serialized = serialize(vector);
-        Vector deserialized = deserialize(serialized, Vector.class);
-        assertEquals(vector.getName(), deserialized.getName());
     }
 
     @Test

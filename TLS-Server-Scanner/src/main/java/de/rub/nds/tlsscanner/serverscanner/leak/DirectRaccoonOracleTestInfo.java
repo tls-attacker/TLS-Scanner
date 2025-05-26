@@ -23,6 +23,14 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
 
     private final DirectRaccoonWorkflowType directWorkflowType;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private DirectRaccoonOracleTestInfo() {
+        this.cipherSuite = null;
+        this.version = null;
+        this.directWorkflowType = null;
+    }
+
     public DirectRaccoonOracleTestInfo(
             CipherSuite suite,
             ProtocolVersion version,

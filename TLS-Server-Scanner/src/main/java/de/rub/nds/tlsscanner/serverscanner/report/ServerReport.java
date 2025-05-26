@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
@@ -31,12 +30,10 @@ import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
-import de.rub.nds.tlsscanner.core.converter.ExtractedValueContainerDeserializer;
 import de.rub.nds.tlsscanner.core.converter.PointSerializer;
 import de.rub.nds.tlsscanner.core.converter.PublicKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
-import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -64,12 +61,8 @@ public class ServerReport extends TlsScanReport {
             new SimpleModule()
                     .addSerializer(new ByteArraySerializer())
                     .addSerializer(new ResponseFingerprintSerializer())
-                    .addSerializer(new VectorSerializer())
                     .addSerializer(new PointSerializer())
                     .addDeserializer(byte[].class, new ByteArrayDeserializer())
-                    .addDeserializer(
-                            ExtractedValueContainer.class,
-                            new ExtractedValueContainerDeserializer())
                     .addDeserializer(PublicKey.class, new PublicKeyDeserializer())
                     .addKeyDeserializer(
                             AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())

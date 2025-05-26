@@ -23,6 +23,14 @@ public class VectorContainer {
 
     private final List<ResponseFingerprint> responseList;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private VectorContainer() {
+        this.vector = null;
+        this.distinctResponsesCounterList = new LinkedList<>();
+        this.responseList = new LinkedList<>();
+    }
+
     public VectorContainer(Vector vector, List<ResponseFingerprint> responseFingerprintList) {
         this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();

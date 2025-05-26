@@ -20,6 +20,13 @@ public class TicketPaddingOracleOffsetResult implements Serializable {
     private final List<InformationLeakTest<TicketPaddingOracleSecondByteTestInfo>>
             secondByteLeakTests;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private TicketPaddingOracleOffsetResult() {
+        this.lastByteLeakTest = null;
+        this.secondByteLeakTests = null;
+    }
+
     public TicketPaddingOracleOffsetResult(
             InformationLeakTest<TicketPaddingOracleLastByteTestInfo> lastByteLeakTest,
             List<InformationLeakTest<TicketPaddingOracleSecondByteTestInfo>> secondByteLeakTests) {

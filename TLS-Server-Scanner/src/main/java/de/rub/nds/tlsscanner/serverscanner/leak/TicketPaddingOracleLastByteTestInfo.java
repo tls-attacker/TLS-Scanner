@@ -23,6 +23,13 @@ public class TicketPaddingOracleLastByteTestInfo extends TestInfo {
      */
     private final Integer paddingIvOffset;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private TicketPaddingOracleLastByteTestInfo() {
+        this.version = null;
+        this.paddingIvOffset = null;
+    }
+
     public TicketPaddingOracleLastByteTestInfo(ProtocolVersion version, Integer paddingIvOffset) {
         this.version = version;
         this.paddingIvOffset = paddingIvOffset;

@@ -23,6 +23,15 @@ public class DirectRaccoonVector implements Vector {
 
     private final boolean pmsWithNullByte;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private DirectRaccoonVector() {
+        this.type = null;
+        this.version = null;
+        this.suite = null;
+        this.pmsWithNullByte = false;
+    }
+
     public DirectRaccoonVector(
             DirectRaccoonWorkflowType type,
             ProtocolVersion version,
