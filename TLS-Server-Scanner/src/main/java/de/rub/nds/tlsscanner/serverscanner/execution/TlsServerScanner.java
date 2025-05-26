@@ -168,16 +168,16 @@ public final class TlsServerScanner
         registerProbeForExecution(new RawPublicKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ProtocolVersionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteOrderProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ExtensionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ECPointFormatProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new RenegotiationProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new RenegotiationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HeartbleedProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));
-        // registerProbeForExecution(new InvalidCurveProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new PaddingOracleProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new BleichenbacherProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new InvalidCurveProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CcaSupportProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CcaRequiredProbe(configSelector, parallelExecutor));
         registerProbeForExecution(
