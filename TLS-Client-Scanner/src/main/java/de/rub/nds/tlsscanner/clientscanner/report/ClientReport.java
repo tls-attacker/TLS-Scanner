@@ -118,4 +118,9 @@ public class ClientReport extends TlsScanReport {
                 (ListResult<String>) getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS);
         return listResult == null ? null : listResult.getList();
     }
+
+    @Override
+    public String getRemoteName() {
+        return "client";
+    }
 }

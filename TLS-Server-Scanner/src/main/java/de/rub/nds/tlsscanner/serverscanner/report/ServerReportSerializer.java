@@ -48,11 +48,13 @@ public class ServerReportSerializer {
                 mapper.registerModule(modules);
             }
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            // mapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
             mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             mapper.configOverride(BigDecimal.class)
                     .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.writeValue(stream, scanReport);
 
         } catch (IOException ex) {

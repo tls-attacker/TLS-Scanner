@@ -131,7 +131,9 @@ public class ServerReportSerializerTest {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(certReport)));
-        ServerReportSerializer.serialize(new ByteArrayOutputStream(), report);
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        ServerReportSerializer.serialize(outstream, report);
+        System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
     }
 }
