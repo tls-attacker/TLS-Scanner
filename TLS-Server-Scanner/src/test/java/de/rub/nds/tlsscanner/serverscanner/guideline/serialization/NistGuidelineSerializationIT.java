@@ -22,20 +22,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsTypeCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509Version;
@@ -145,6 +132,11 @@ public class NistGuidelineSerializationIT {
                         "Certificate validity period should be 3 years or less.",
                         RequirementLevel.SHOULD,
                         1095));
+        checks.add(
+                new CertificateNameGuidelineCheck(
+                        "Issuer Distinguished Name (DN): A single value should be encoded in each Relative Distinguished Name (RDN). All attributes that are of DirectoryString type should be encoded as a PrintableString. [...] Subject Distinguished Name: A single value should be encoded in each RDN. All attributes that are of DirectoryString type should be encoded as a PrintableString. If present, the CN attribute should be of the form: CN={host IP address | host DNS name}",
+                        RequirementLevel.SHOULD,
+                        false));
         checks.add(
                 new KeyUsageCertificateCheck(
                         "Key Usage extension should be used with \"digitalSignature\" and \"keyAgreement\" values.",
