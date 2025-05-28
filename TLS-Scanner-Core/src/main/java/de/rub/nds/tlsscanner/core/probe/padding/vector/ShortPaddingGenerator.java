@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -27,6 +26,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
      * two full padding blocks can be inserted.
      */
     static final int DEFAULT_CIPHERTEXT_LENGTH = 80;
+
     /** Default padding length for the construction of modified encrypted plaintexts */
     static final int DEFAULT_PADDING_LENGTH = 4;
 
@@ -339,9 +339,6 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
 
     private PaddingVector createVectorWithPlainData(String name, String identifier, byte[] plain) {
         return new PlainPaddingVector(
-                name,
-                identifier,
-                (ByteArrayExplicitValueModification)
-                        ByteArrayModificationFactory.explicitValue(plain));
+                name, identifier, new ByteArrayExplicitValueModification(plain));
     }
 }

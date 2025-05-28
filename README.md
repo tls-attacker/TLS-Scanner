@@ -33,7 +33,9 @@ $ mvn clean install
 
 # Running
 
-In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
+In order to run TLS-Scanner you need to run one of the jar files in the apps/ folder.
+These can be obtained by compiling the app yourself or by
+[downloading released jar files from GitHub](https://github.com/tls-attacker/TLS-Scanner/releases).
 
 ```bash
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
@@ -45,7 +47,20 @@ In order to see more details about the Guidelines, use "-reportDetail ALL".
 
 # Docker
 
-We provide you with a Dockerfile, which lets you run the scanner directly:
+We provide prebuilt docker images for easy use of the TLS-Server-Scanner.
+
+```bash
+$ docker run --network host ghcr.io/tls-attacker/tlsscanner -connect localhost:4433
+```
+
+The image is made to be used for server-scanning but also contains the other jar files.
+They can be accessed by altering the entrypoint.
+
+```bash
+$ docker run --network host --entrypoint "java" ghcr.io/tls-attacker/tlsscanner -jar TLS-Client-Scanner.jar
+```
+
+We also provide you with a Dockerfile, to build the container yourself:
 
 ```bash
 $ docker build . -t tlsscanner

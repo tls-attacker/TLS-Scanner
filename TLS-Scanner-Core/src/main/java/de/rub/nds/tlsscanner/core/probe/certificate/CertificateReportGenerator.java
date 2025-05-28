@@ -37,6 +37,7 @@ public class CertificateReportGenerator {
 
     public static CertificateReport generateReport(X509Certificate cert) {
         CertificateReport report = new CertificateReport();
+        report.setCertificate(cert);
         setSubject(report, cert);
         setCommonNames(report, cert);
         // setAlternativeNames(report, cert); TODO
@@ -103,7 +104,7 @@ public class CertificateReportGenerator {
     }
 
     private static void setCommonNames(CertificateReport report, X509Certificate cert) {
-        report.setCommonName(cert.getCommonName());
+        report.setCommonName(cert.getSubjectCommonName());
     }
 
     private static void setAlternativeNames(CertificateReport report, X509Certificate cert) {

@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.layer.context.TlsContext;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.psk.PskSet;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret.Secret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketHolder;
@@ -22,6 +23,13 @@ import java.util.stream.Collectors;
 public class SessionTicketUtil {
     private SessionTicketUtil() {}
 
+    private static void addSecretIfNotNull(
+            List<SessionSecret> secretList, Secret secretType, byte[] secret) {
+        if (secret != null) {
+            secretList.add(new SessionSecret(secretType, secret));
+        }
+    }
+
     /**
      * generates a list of all session secrets of current state which might be included in a session
      * ticket by the server
@@ -33,26 +41,21 @@ public class SessionTicketUtil {
         List<SessionSecret> secretList = new LinkedList<>();
         TlsContext context = state.getTlsContext();
         if (state.getTlsContext().getSelectedProtocolVersion().isTLS13()) {
-            secretList.add(
-                    new SessionSecret(Secret.HANDSHAKE_SECRET, context.getHandshakeSecret()));
-            secretList.add(new SessionSecret(Secret.MASTER_SECRET, context.getMasterSecret()));
-            secretList.add(
-                    new SessionSecret(
-                            Secret.RESUMPTION_SECRET, context.getResumptionMasterSecret()));
+            addSecretIfNotNull(secretList, Secret.HANDSHAKE_SECRET, context.getHandshakeSecret());
+            addSecretIfNotNull(secretList, Secret.MASTER_SECRET, context.getMasterSecret());
+            addSecretIfNotNull(
+                    secretList, Secret.RESUMPTION_SECRET, context.getResumptionMasterSecret());
             if (context.getPskSets() != null) {
-                secretList.addAll(
+                for (byte[] secret :
                         context.getPskSets().stream()
-                                .map(
-                                        pskset ->
-                                                new SessionSecret(
-                                                        Secret.PRESHARED_KEY,
-                                                        pskset.getPreSharedKey()))
-                                .collect(Collectors.toList()));
+                                .map(PskSet::getPreSharedKey)
+                                .collect(Collectors.toList())) {
+                    addSecretIfNotNull(secretList, Secret.PRESHARED_KEY, secret);
+                }
             }
         } else {
-            secretList.add(
-                    new SessionSecret(Secret.PREMASTER_SECRET, context.getPreMasterSecret()));
-            secretList.add(new SessionSecret(Secret.MASTER_SECRET, context.getMasterSecret()));
+            addSecretIfNotNull(secretList, Secret.PREMASTER_SECRET, context.getPreMasterSecret());
+            addSecretIfNotNull(secretList, Secret.MASTER_SECRET, context.getMasterSecret());
         }
         return secretList;
     }
@@ -62,13 +65,13 @@ public class SessionTicketUtil {
                 || state.getTlsContext().getSelectedProtocolVersion() == null) {
             return new TicketHolder(null);
         }
-        List<SessionSecret> sessionSecrets = generateSecretList(state);
         TlsContext context = state.getTlsContext();
         ProtocolVersion protocolVersion = context.getSelectedProtocolVersion();
         if (protocolVersion.isTLS13()) {
             if (context.getPskSets() == null) {
                 return new TicketHolder(protocolVersion);
             }
+            List<SessionSecret> sessionSecrets = generateSecretList(state);
             return context.getPskSets().stream()
                     .map(pskset -> new TicketTls13(pskset, sessionSecrets))
                     .collect(TicketHolder.collector(protocolVersion));
@@ -76,6 +79,7 @@ public class SessionTicketUtil {
             if (context.getLatestSessionTicket() == null) {
                 return new TicketHolder(protocolVersion);
             }
+            List<SessionSecret> sessionSecrets = generateSecretList(state);
             return new TicketHolder(
                     protocolVersion,
                     new TicketTls12(

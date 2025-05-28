@@ -156,7 +156,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
                 if (NamedGroup.getImplemented().contains(group)
-                        && group.isCurve()
+                        && group.isEcGroup()
                         && group.getGroupParameters() instanceof NamedEllipticCurveParameters
                         && ((NamedEllipticCurveParameters) group.getGroupParameters())
                                         .getEquationType()
@@ -210,7 +210,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
             protocolVersions.add(ProtocolVersion.TLS13);
             for (NamedGroup group : report.getSupportedTls13Groups()) {
                 if (NamedGroup.getImplemented().contains(group)
-                        && group.isCurve()
+                        && group.isEcGroup()
                         && group.getGroupParameters() instanceof NamedEllipticCurveParameters
                         && ((NamedEllipticCurveParameters) (group.getGroupParameters()))
                                         .getEquationType()

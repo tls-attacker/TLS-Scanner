@@ -8,8 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
-import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.protocol.constants.EcCurveEquationType;
@@ -70,11 +69,13 @@ public class InvalidCurveAttacker {
     private BigInteger premasterSecret;
     private List<FingerprintSecretPair> responsePairs;
     private List<Point> receivedEcPublicKeys;
+
     /**
      * All keys we received from a server in handshakes that lead to a ServerFinished - we can use
      * these to mitigate the impact of false positives in scans.
      */
     private List<Point> finishedKeys;
+
     /**
      * Indicates if there is a higher chance that the keys we extracted might have been sent by a
      * TLS accelerator and a TLS server behind it at the same time. (See evaluateExecutedTask)
@@ -198,8 +199,7 @@ public class InvalidCurveAttacker {
 
     private State buildState() {
         EllipticCurve curve = vector.getTargetedCurve();
-        ModifiableByteArray serializedPublicKey =
-                ModifiableVariableFactory.createByteArrayModifiableVariable();
+        ModifiableByteArray serializedPublicKey = new ModifiableByteArray();
         Point basepoint =
                 new Point(
                         new FieldElementFp(publicPointBaseX, curve.getModulus()),
@@ -215,13 +215,13 @@ public class InvalidCurveAttacker {
                             basepoint,
                             pointCompressionFormat.getFormat());
         }
-        serializedPublicKey.setModification(ByteArrayModificationFactory.explicitValue(serialized));
-        ModifiableByteArray pms = ModifiableVariableFactory.createByteArrayModifiableVariable();
+        serializedPublicKey.setModifications(new ByteArrayExplicitValueModification(serialized));
+        ModifiableByteArray pms = new ModifiableByteArray();
         byte[] explicitPMS =
                 BigIntegers.asUnsignedByteArray(
                         ArrayConverter.bigIntegerToByteArray(curve.getModulus()).length,
                         premasterSecret);
-        pms.setModification(ByteArrayModificationFactory.explicitValue(explicitPMS));
+        pms.setModifications(new ByteArrayExplicitValueModification(explicitPMS));
 
         WorkflowTrace trace;
         tlsConfig.setWorkflowExecutorShouldClose(false);

@@ -56,27 +56,27 @@ public class NistGuidelineSerializationIT {
         List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
+                        "Servers should support TLS 1.3 and shall support TLS 1.3 by January 1, 2024.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
                         "Servers shall support TLS 1.2.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Servers should support TLS 1.3 and shall support TLS 1.3 by January 1, 2024.",
-                        RequirementLevel.SHOULD,
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                        TestResults.TRUE));
+                        "Support of TLS 1.1 is discouraged.",
+                        RequirementLevel.MAY,
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Support of TLS 1.0 is discouraged.",
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
-                        TestResults.FALSE));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "Support of TLS 1.1 is discouraged.",
-                        RequirementLevel.MAY,
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -92,11 +92,11 @@ public class NistGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new CertificateAgilityGuidelineCheck(
-                        "Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility",
+                        "Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility.",
                         RequirementLevel.SHOULD));
         checks.add(
                 new SignatureAlgorithmsTypeCertificateGuidelineCheck(
-                        "Shall be configured with an RSA signature certificate or an ECDSA signature certificate",
+                        "Shall be configured with an RSA signature certificate or an ECDSA signature certificate.",
                         RequirementLevel.MUST,
                         true,
                         Arrays.asList(
@@ -105,18 +105,18 @@ public class NistGuidelineSerializationIT {
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
                 new CertificateCurveGuidelineCheck(
-                        "For ECDSA: Curve P-256 or curve P-384 should be used in the public key",
+                        "For ECDSA: Curve P-256 or curve P-384 should be used in the public key.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Certificates shall be issued by CA that publishes revocation information in OCSP responses",
+                        "Certificates shall be issued by a CA that publishes revocation information in OCSP responses.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_OCSP,
                         TestResults.TRUE));
         checks.add(
                 new CertificateVersionGuidelineCheck(
-                        "Server certificate shall be an X.509 version 3 certificate",
+                        "Server certificate shall be an X.509 version 3 certificate.",
                         RequirementLevel.MUST,
                         X509Version.V3));
         checks.add(
@@ -129,7 +129,7 @@ public class NistGuidelineSerializationIT {
                         2048));
         checks.add(
                 new CertificateSignatureCheck(
-                        "If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm consistent with the public key",
+                        "If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm consistent with the public key.",
                         RequirementLevel.SHOULD,
                         GuidelineCheckCondition.or(
                                 Arrays.asList(
@@ -142,20 +142,20 @@ public class NistGuidelineSerializationIT {
                         false));
         checks.add(
                 new CertificateValidityGuidelineCheck(
-                        "Certificate Validity Period should be 3 years or less.",
+                        "Certificate validity period should be 3 years or less.",
                         RequirementLevel.SHOULD,
                         1095));
         checks.add(
                 new KeyUsageCertificateCheck(
-                        "Key Usage Extension should be used with digitalSignature and keyAgreement values.",
+                        "Key Usage extension should be used with \"digitalSignature\" and \"keyAgreement\" values.",
                         RequirementLevel.SHOULD));
         checks.add(
                 new ExtendedKeyUsageCertificateCheck(
-                        "Server should be configured to allow use of extended key usage extension with key purpose specifically for server authentication",
+                        "Servers should be configured to allow use of the Extended Key Usage extension with a key purpose specifically for server authentication.",
                         RequirementLevel.SHOULD));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used",
+                        "Only listed cipher suites shall be used.",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
@@ -230,7 +230,7 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.3",
+                        "Only listed cipher suites shall be used for TLS 1.3.",
                         RequirementLevel.MUST,
                         Arrays.asList(ProtocolVersion.TLS13),
                         Arrays.asList(
@@ -257,7 +257,7 @@ public class NistGuidelineSerializationIT {
                         HashAlgorithm.SHA224));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The server shall support secure renegotiation Extension.",
+                        "The server shall support Secure Renegotiation extension.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
                                 Arrays.asList(
@@ -274,12 +274,12 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The server shall be able to process and respond to the server name indication extension.",
+                        "The server shall be able to process and respond to the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The Extended Master Secret extension shall be supported.",
+                        "Extended Master Secret extension shall be supported.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
                                 Arrays.asList(
@@ -310,7 +310,7 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The Certificate Status Request extension shall be supported.",
+                        "Certificate Status Request extension shall be supported.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
                         TestResults.TRUE));
@@ -370,14 +370,14 @@ public class NistGuidelineSerializationIT {
                         2));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The Key Share extension shall be supported if the server supports TLS 1.3",
+                        "The Key Share extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The EC Point Format extension shall be supported if the server supports EC cipher suites",
+                        "The EC Point Format extension shall be supported if the server supports EC cipher suites.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.and(
                                 Arrays.asList(
@@ -401,7 +401,7 @@ public class NistGuidelineSerializationIT {
                         ExtensionType.EC_POINT_FORMATS));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The Multiple Certificate Status extension should be supported if status information for the server’s certificate is available via OCSP and the extension is supported by the server implementation",
+                        "The Multiple Certificate Status extension should be supported if status information for the server's certificate is available via OCSP and the extension is supported by the server implementation.",
                         RequirementLevel.SHOULD,
                         GuidelineCheckCondition.and(
                                 Arrays.asList(
@@ -473,21 +473,23 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "The Supported Versions extension shall be supported if the server supports TLS 1.3",
+                        "The Supported Versions extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SUPPORTED_VERSIONS));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "Servers that support TLS 1.3 may support the cookie extension",
+                        "Servers that support TLS 1.3 may support the Cookie extension.", // Earlier
+                        // in the document it is stated that the "Cookie extension **shall** be
+                        // supported if the server supports TLS 1.3".
                         RequirementLevel.MAY,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.COOKIE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The Signed Certificate Timestamps extension should be supported if the server’s certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.",
+                        "The Signed Certificate Timestamps extension should be supported if the server's certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE,
@@ -504,12 +506,35 @@ public class NistGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
+                        "The Client Certificate URL extension should not be supported.",
+                        RequirementLevel.SHOULD_NOT,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
+                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
                         "If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT, TestResults.TRUE),
                         TlsAnalyzedProperty.REUSABLE_TICKET,
                         TestResults.FALSE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The Raw Public Key extension shall not be supported.",
+                        RequirementLevel.MUST_NOT,
+                        TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
+                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",

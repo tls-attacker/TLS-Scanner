@@ -13,6 +13,7 @@ import java.io.Serializable;
 
 public class FoundSecret implements Serializable {
     public final SessionSecret secret;
+
     /** Offset of the secret in the ticket (from left; 0=start). */
     public final int offset;
 

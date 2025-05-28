@@ -72,6 +72,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
 
     // Possible plaintexts the last byte can have; i.e. all last bytes of all possible paddings
     private static final Byte[] POSSIBLE_PLAINTEXTS_LAST_BYTE;
+
     /**
      * All possible xor values we might want to xor the last byte with. That is, all values that
      * cause the existing padding to be transformed to a valid 1B padding.
@@ -132,6 +133,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
         ALL_BYTES = initAllBytes();
         PADDING_IV_OFFSETS = initPaddingIvOffsets();
     }
+
     // endregion
 
     private VersionDependentSummarizableResult<TicketPaddingOracleResult> overallResult;

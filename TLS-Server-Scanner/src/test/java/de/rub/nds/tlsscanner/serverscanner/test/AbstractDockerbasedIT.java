@@ -8,8 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.test;
 
+import com.github.dockerjava.api.command.InspectContainerCmd;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.exception.DockerException;
-import com.github.dockerjava.api.model.Image;
+import com.github.dockerjava.api.model.*;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.constants.TransportType;
@@ -20,12 +22,16 @@ import de.rub.nds.tls.subject.docker.build.DockerBuilder;
 import java.security.Security;
 import java.util.List;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assume;
 import org.junit.jupiter.api.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractDockerbasedIT {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private static List<Image> localImages;
 
     private final TlsImplementationType implementation;
@@ -34,6 +40,10 @@ public abstract class AbstractDockerbasedIT {
     private final TransportType transportType;
 
     private DockerTlsServerInstance dockerInstance;
+    private String serverAddress;
+
+    private static final int MAX_TRIES = 10;
+    private static final int WAIT_TIME_MS = 500;
 
     public AbstractDockerbasedIT(
             TlsImplementationType implementation,
@@ -92,6 +102,47 @@ public abstract class AbstractDockerbasedIT {
                 .additionalParameters(additionalParameters);
         dockerInstance = serverInstanceBuilder.build();
         dockerInstance.start();
+        saveServerAddress();
+    }
+
+    private void saveServerAddress() {
+        InspectContainerCmd cmd =
+                DockerClientManager.getDockerClient()
+                        .inspectContainerCmd(this.dockerInstance.getId());
+        InspectContainerResponse response;
+        Ports.Binding serverPortBinding = null;
+        for (int currentTry = 0; currentTry < MAX_TRIES; currentTry++) {
+            response = cmd.exec();
+            Ports.Binding[] serverPortBindings =
+                    response.getNetworkSettings().getPorts().getBindings().values().stream()
+                            .findFirst()
+                            .orElse(new Ports.Binding[] {});
+            if (serverPortBindings.length >= 1) {
+                serverPortBinding = serverPortBindings[0];
+                break;
+            } else {
+                LOGGER.info(
+                        "Could not determine container port binding. Retrying in {} ms...",
+                        WAIT_TIME_MS);
+                try {
+                    Thread.sleep(WAIT_TIME_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while waiting for port bindings", e);
+                }
+            }
+        }
+
+        if (serverPortBinding == null) {
+            Assertions.fail("Could not load assigned port for docker container.");
+        }
+
+        int serverPort = Integer.parseInt(serverPortBinding.getHostPortSpec());
+        String serverName =
+                serverPortBinding.getHostIp().equals("0.0.0.0")
+                        ? "127.0.0.1"
+                        : serverPortBinding.getHostIp();
+        this.serverAddress = serverName + ":" + serverPort;
     }
 
     @AfterEach
@@ -106,6 +157,6 @@ public abstract class AbstractDockerbasedIT {
     }
 
     protected String getServerAddress() {
-        return "localhost:" + dockerInstance.getPort();
+        return serverAddress;
     }
 }
