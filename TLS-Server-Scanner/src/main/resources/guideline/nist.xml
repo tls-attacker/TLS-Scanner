@@ -100,6 +100,11 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <days>1095</days>
     </certificateValidityGuidelineCheck>
+    <certificateNameGuidelineCheck>
+        <name>Issuer Distinguished Name (DN): A single value should be encoded in each Relative Distinguished Name (RDN). All attributes that are of DirectoryString type should be encoded as a PrintableString. [...] Subject Distinguished Name: A single value should be encoded in each RDN. All attributes that are of DirectoryString type should be encoded as a PrintableString. If present, the CN attribute should be of the form: CN={host IP address | host DNS name}</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
+    </certificateNameGuidelineCheck>
     <keyUsageCertificateCheck>
         <name>Key Usage extension should be used with "digitalSignature" and "keyAgreement" values.</name>
         <requirementLevel>SHOULD</requirementLevel>
