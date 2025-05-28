@@ -1661,7 +1661,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
                 builder,
@@ -2475,7 +2475,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Alpaca Details");
         prettyAppend(builder, "Strict ALPN", TlsAnalyzedProperty.STRICT_ALPN);
         prettyAppend(builder, "Strict SNI", TlsAnalyzedProperty.STRICT_SNI);
-        prettyAppend(builder, "ALPACA Mitigation", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "Vulnerable ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         return builder;
     }
 

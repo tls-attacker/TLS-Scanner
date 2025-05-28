@@ -276,7 +276,7 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
         container.add(new HeadlineContainer("Alpaca Details"));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.STRICT_ALPN, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.STRICT_SNI, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         return container;
     }
 

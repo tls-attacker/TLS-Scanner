@@ -280,7 +280,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(TlsAnalyzedPropertyCategory.ATTACKS),
-    ALPACA_MITIGATED(TlsAnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_ALPACA(TlsAnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),

@@ -392,7 +392,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,

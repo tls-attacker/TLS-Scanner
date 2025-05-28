@@ -31,7 +31,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
 import de.rub.nds.tlsscanner.core.converter.PointSerializer;
-import de.rub.nds.tlsscanner.core.converter.PublicKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -49,7 +48,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import java.io.OutputStream;
-import java.security.PublicKey;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +61,6 @@ public class ServerReport extends TlsScanReport {
                     .addSerializer(new ResponseFingerprintSerializer())
                     .addSerializer(new PointSerializer())
                     .addDeserializer(byte[].class, new ByteArrayDeserializer())
-                    .addDeserializer(PublicKey.class, new PublicKeyDeserializer())
                     .addKeyDeserializer(
                             AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
                     .addKeyDeserializer(

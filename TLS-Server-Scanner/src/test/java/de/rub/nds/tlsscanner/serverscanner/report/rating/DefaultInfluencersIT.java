@@ -982,9 +982,9 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.ALPACA_MITIGATED,
-                        new PropertyResultRatingInfluencer(TestResults.TRUE, 200),
-                        new PropertyResultRatingInfluencer(TestResults.FALSE, -200)));
+                        TlsAnalyzedProperty.VULNERABLE_TO_ALPACA,
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 200),
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200)));
         influencers.add(
                 new RatingInfluencer(
                         TlsAnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,

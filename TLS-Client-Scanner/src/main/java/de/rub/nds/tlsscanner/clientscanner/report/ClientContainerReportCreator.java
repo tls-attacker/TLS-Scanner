@@ -417,7 +417,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_FREAK_DOWNGRADE, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         return container;
     }
 
