@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.probe.requirements.FulfilledRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
@@ -46,8 +47,6 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -341,14 +340,10 @@ public class CommonBugProbe extends TlsServerProbe {
         if (configSelector.foundWorkingConfig()) {
             Config config = configSelector.getBaseConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            SilentByteArrayOutputStream stream = new SilentByteArrayOutputStream();
             for (CipherSuite suite : CipherSuite.values()) {
                 if (suite.getByteValue()[0] == 0x00) {
-                    try {
-                        stream.write(new byte[] {(byte) 0xDF, suite.getByteValue()[1]});
-                    } catch (IOException ex) {
-                        LOGGER.debug(ex);
-                    }
+                    stream.write(new byte[] {(byte) 0xDF, suite.getByteValue()[1]});
                 }
             }
             message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));

@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
@@ -19,8 +20,6 @@ import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -160,13 +159,9 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
     }
 
     private byte[] convertToSingleByteArray(List<ComparableByteArray> byteArrayList) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream outputStream = new SilentByteArrayOutputStream();
         for (ComparableByteArray byteArray : byteArrayList) {
-            try {
-                outputStream.write(byteArray.getArray());
-            } catch (IOException ex) {
-                LOGGER.error("Could not write byteArray to outputStream");
-            }
+            outputStream.write(byteArray.getArray());
         }
         return outputStream.toByteArray();
     }

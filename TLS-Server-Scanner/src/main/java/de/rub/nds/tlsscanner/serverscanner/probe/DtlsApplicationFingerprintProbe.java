@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.primitives.Bytes;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -34,8 +35,6 @@ import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -157,13 +156,9 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
         executeState(state);
         if (receiveAction.getReceivedRecords() != null
                 && !receiveAction.getReceivedRecords().isEmpty()) {
-            ByteArrayOutputStream receivedAppData = new ByteArrayOutputStream();
-            try {
-                for (Record record : receiveAction.getReceivedRecords()) {
-                    receivedAppData.write(record.getCleanProtocolMessageBytes().getValue());
-                }
-            } catch (IOException ex) {
-                LOGGER.error("Could not write cleanProtocolMessageBytes to receivedAppData");
+            SilentByteArrayOutputStream receivedAppData = new SilentByteArrayOutputStream();
+            for (Record record : receiveAction.getReceivedRecords()) {
+                receivedAppData.write(record.getCleanProtocolMessageBytes().getValue());
             }
             return receivedAppData.toByteArray();
         } else {
