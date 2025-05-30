@@ -29,8 +29,7 @@ import java.util.Optional;
 
 /**
  * Checks the certificate issuer and subject for coherence to the NIST SP 800-52r2. This means,
- * having only one value per RDN, using only PrintableString characters and having the subject CN
- * match the hostname or IP of the server.
+ * having only one value per RDN, using only PrintableString characters.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -110,6 +109,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                                                 .getX500AttributeTypeFromValue()
                                                 == X500AttributeType.COMMON_NAME)
                         .findFirst();
+        // Removed check here when copying this class from serverscanner, because the NIST guide only requires this for servers: "If present, the CN attribute should be of the form: CN={host IP address | host DNS name}"
         return null;
     }
 
