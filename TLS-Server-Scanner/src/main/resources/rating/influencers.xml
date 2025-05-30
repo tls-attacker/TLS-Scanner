@@ -2022,13 +2022,13 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>ALPACA_MITIGATED</property>
+        <property>VULNERABLE_TO_ALPACA</property>
         <propertyRatingInfluencers>
-            <result>TRUE</result>
+            <result>FALSE</result>
             <influence>200</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
-            <result>FALSE</result>
+            <result>TRUE</result>
             <influence>-200</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>

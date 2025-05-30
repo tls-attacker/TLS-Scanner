@@ -8,20 +8,18 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Serializer for ServerReport objects using the ServerReportJsonMapper. This class is maintained
+ * for backward compatibility. New code should use ServerReportJsonMapper directly.
+ */
+@Deprecated
 public class ServerReportSerializer {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -30,6 +28,12 @@ public class ServerReportSerializer {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Serializes a ServerReport to a file.
+     *
+     * @param outputFile the file to write the report to
+     * @param scanReport the report to serialize
+     */
     public static void serialize(File outputFile, ServerReport scanReport) {
         try {
             if (!outputFile.exists()) {
@@ -41,24 +45,20 @@ public class ServerReportSerializer {
         }
     }
 
+    /**
+     * Serializes a ServerReport to an output stream. Uses the ServerReportJsonMapper for actual
+     * serialization.
+     *
+     * @param stream the stream to write the report to
+     * @param scanReport the report to serialize
+     */
     public static void serialize(OutputStream stream, ServerReport scanReport) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            for (Module modules : ServerReport.getSerializerModules()) {
-                mapper.registerModule(modules);
-            }
-            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-            mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-            mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            mapper.configOverride(BigDecimal.class)
-                    .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
-            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            mapper.writeValue(stream, scanReport);
-
+            ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+            String jsonString = mapper.toJsonString(scanReport);
+            stream.write(jsonString.getBytes());
         } catch (IOException ex) {
-            LOGGER.error(ex);
+            LOGGER.error("Error serializing ServerReport to JSON", ex);
         }
     }
 }

@@ -47,12 +47,16 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerReport extends TlsScanReport {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static Module[] getSerializerModules() {
         return new Module[] {
@@ -98,7 +102,12 @@ public class ServerReport extends TlsScanReport {
 
     @Override
     public synchronized void serializeToJson(OutputStream outputStream) {
-        ServerReportSerializer.serialize(outputStream, this);
+        try {
+            ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+            mapper.objectMapper.writeValue(outputStream, this);
+        } catch (IOException e) {
+            LOGGER.error("Error serializing ServerReport to JSON", e);
+        }
     }
 
     @Override
