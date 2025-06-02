@@ -55,25 +55,25 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Support of TLS 1.1 is discouraged.",
+                        "The use of TLS versions 1.1 and 1.0 is generally discouraged.",
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Support of TLS 1.0 is discouraged.",
+                        "The use of TLS versions 1.1 and 1.0 is generally discouraged.",
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Servers shall not support SSL 3.0.",
+                        "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Servers shall not support SSL 2.0.",
+                        "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
@@ -147,23 +147,13 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed cipher suites shall be used.",
+                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
                                 ProtocolVersion.TLS12),
                         Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
@@ -222,14 +212,33 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed cipher suites shall be used for TLS 1.3.",
+                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
                         RequirementLevel.MUST,
-                        Arrays.asList(ProtocolVersion.TLS13),
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256,
                                 CipherSuite.TLS_AES_128_CCM_8_SHA256)));
+        checks.add(
+                new CipherSuiteGuidelineCheck(
+                        "Appendix D: While these guidelines do not recommend cipher suites using RSA key transport, there may be circumstances in practice where RSA key transport is needed. [...] If RSA key transport is needed while a new traffic inspection strategy is being developed, only RSA key transport cipher suites from the following list may be used.",
+                        RequirementLevel.MAY,
+                        Arrays.asList(
+                                ProtocolVersion.TLS10,
+                                ProtocolVersion.TLS11,
+                                ProtocolVersion.TLS12),
+                        Arrays.asList(
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers shall not be vulnerable to padding oracle.",
@@ -512,7 +521,7 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.",
