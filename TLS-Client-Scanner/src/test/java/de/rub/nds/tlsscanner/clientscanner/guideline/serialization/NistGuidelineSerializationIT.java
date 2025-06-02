@@ -12,18 +12,19 @@ import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,27 +37,39 @@ public class NistGuidelineSerializationIT {
         List<GuidelineCheck<ClientReport>> checks = new ArrayList<>();
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
+                        "After this date [January 1, 2024], clients shall be configured to use TLS 1.3.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
                         "The client shall be configured to use TLS 1.2.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client should be configured to use TLS 1.3.",
-                        RequirementLevel.SHOULD,
-                        TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                        TestResults.TRUE));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "The client shall not be configured to use SSL 2.0.",
-                        RequirementLevel.MUST,
-                        TlsAnalyzedProperty.SUPPORTS_SSL_2,
+                        "The client may be configured to use TLS 1.1 and TLS 1.0 to facilitate communication with private sector servers.",
+                        RequirementLevel.MAY,
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "The client shall not be configured to use SSL 3.0.",
-                        RequirementLevel.MUST,
+                        "The client may be configured to use TLS 1.1 and TLS 1.0 to facilitate communication with private sector servers.",
+                        RequirementLevel.MAY,
+                        TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                        TestResults.FALSE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall not be configured to use SSL 2.0 or SSL 3.0.",
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
+                        TestResults.FALSE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "The client shall not be configured to use SSL 2.0 or SSL 3.0.",
+                        RequirementLevel.MUST_NOT,
+                        TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
                 new CertificateVersionGuidelineCheck(
@@ -84,6 +97,16 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                                                 TestResults.TRUE))),
                         false));
+        checks.add(
+                new CertificateNameGuidelineCheck(
+                        "Issuer Distinguished Name (DN): A single value should be encoded in each RDN. All attributes that are of directoryString type should be encoded as a printable string. [...] Subject Distinguished Name: A single value should be encoded in each RDN. All attributes that are of directoryString type should be encoded as a printable string.",
+                        RequirementLevel.SHOULD,
+                        false));
+        checks.add(
+                new CertificateCurveGuidelineCheck(
+                        "ECDSA signature certificate or ECDH certificate: The curve should be P-256 or P-384.",
+                        RequirementLevel.SHOULD,
+                        Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
         // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth
         // key purpose OID should be included in the certificates to be used for TLS client
         // authentication and should be omitted from any other certificates.
@@ -95,20 +118,13 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.0 and 1.1.",
-                        RequirementLevel.MUST,
-                        Arrays.asList(ProtocolVersion.TLS10, ProtocolVersion.TLS11),
+                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
+                        RequirementLevel.SHOULD,
                         Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
+                                ProtocolVersion.TLS10,
+                                ProtocolVersion.TLS11,
+                                ProtocolVersion.TLS12),
+                        Arrays.asList(
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
@@ -167,76 +183,23 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.2.",
-                        RequirementLevel.MUST,
-                        Collections.singletonList(ProtocolVersion.TLS12),
+                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
+                        RequirementLevel.SHOULD,
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_AES_128_CCM_SHA256,
+                                CipherSuite.TLS_AES_128_CCM_8_SHA256)));
+        checks.add(
+                new CipherSuiteGuidelineCheck(
+                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Appendix C—Pre-shared Keys:",
+                        RequirementLevel.SHOULD,
+                        Arrays.asList(
+                                ProtocolVersion.TLS10,
+                                ProtocolVersion.TLS11,
+                                ProtocolVersion.TLS12),
+                        Arrays.asList(
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
@@ -263,25 +226,44 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Only listed Cipher Suites shall be used for TLS 1.3.",
-                        RequirementLevel.MUST,
-                        List.of(ProtocolVersion.TLS13),
+                        "Appendix D—RSA Key Transport: While these guidelines do not recommend cipher suites using RSA key transport, there may be circumstances in practice where RSA key transport is needed. [...] If RSA key transport is needed while a new traffic inspection strategy is being developed, only RSA key transport cipher suites from the following list may be used.",
+                        RequirementLevel.MAY,
                         Arrays.asList(
-                                CipherSuite.TLS_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_AES_128_CCM_SHA256,
-                                CipherSuite.TLS_AES_128_CCM_8_SHA256)));
+                                ProtocolVersion.TLS10,
+                                ProtocolVersion.TLS11,
+                                ProtocolVersion.TLS12),
+                        Arrays.asList(
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
+                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS implementations that support versions prior to TLS 1.3 shall use the bad_record_mac error to indicate a padding error. Implementations shall compute the MAC regardless of whether padding errors exist. TLS implementations should support constant-time decryption or near constant-time decryption.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                         TestResults.FALSE));
-        // TODO: Check randomness of RNG
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The validated random number generator should be used to generate the 4-byte timestamp of the client random value for TLS versions prior to TLS 1.3.",
                         RequirementLevel.SHOULD,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
                         TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM,
                         TestResults.FALSE));
         checks.add(
@@ -377,6 +359,39 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.TRUE))),
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
+                new NamedGroupsGuidelineCheck(
+                        "When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422. Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.",
+                        RequirementLevel.MUST,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_ECDHE,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.TRUE))),
+                        Arrays.asList(
+                                NamedGroup.SECP224R1,
+                                NamedGroup.SECP256R1,
+                                NamedGroup.SECP384R1,
+                                NamedGroup.SECP521R1,
+                                NamedGroup.SECT233K1,
+                                NamedGroup.SECT283K1,
+                                NamedGroup.SECT409K1,
+                                NamedGroup.SECT571K1,
+                                NamedGroup.SECT233R1,
+                                NamedGroup.SECT283R1,
+                                NamedGroup.SECT409R1,
+                                NamedGroup.SECT571R1,
+                                NamedGroup.FFDHE2048,
+                                NamedGroup.FFDHE3072,
+                                NamedGroup.FFDHE4096,
+                                NamedGroup.FFDHE6144,
+                                NamedGroup.FFDHE8192),
+                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1),
+                        false,
+                        2));
+        checks.add(
                 new ExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
@@ -455,8 +470,6 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
-        // TODO: The Truncated HMAC extension shall not be used in conjunction with variable-length
-        // padding.
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Pre-Shared Key extension may be supported by TLS 1.3 clients.",
@@ -528,17 +541,29 @@ public class NistGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.POST_HANDSHAKE_AUTH));
         checks.add(
-                new ExtensionGuidelineCheck(
-                        "The Client Certificate URL extension should not be used.",
+                new AnalyzedPropertyGuidelineCheck(
+                        "The Client Certificate URL extension should not be supported.",
                         RequirementLevel.SHOULD_NOT,
-                        ExtensionType.CLIENT_CERTIFICATE_URL));
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
+                        TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new ExtensionGuidelineCheck( // TODO: Adjust ExtensionGuidelineCheck to not use the RequirementLevel and take a boolean instead to determine if it should check for included or excluded extensions.
                         "The Early Data Indication extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
                         ExtensionType.EARLY_DATA));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new ExtensionGuidelineCheck( // TODO: Adjust ExtensionGuidelineCheck to not use the RequirementLevel and take a boolean instead to determine if it should check for included or excluded extensions.
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
                         ExtensionType.CLIENT_CERTIFICATE_TYPE,
@@ -555,7 +580,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients shall not use False Start.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START,

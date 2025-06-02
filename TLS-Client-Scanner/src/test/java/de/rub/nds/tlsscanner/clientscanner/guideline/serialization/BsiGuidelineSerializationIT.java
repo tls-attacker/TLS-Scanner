@@ -52,37 +52,37 @@ public class BsiGuidelineSerializationIT {
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.2 wird empfohlen.",
+                        "Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.3 wird empfohlen.",
+                        "Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.0 wird nicht empfohlen.",
+                        "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.1 wird nicht empfohlen.",
+                        "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "SSL v2 wird nicht empfohlen.",
+                        "SSL v2 und SSL v3 werden nicht empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "SSL v3 wird nicht empfohlen.",
+                        "SSL v2 und SSL v3 werden nicht empfohlen.",
                         RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
@@ -130,9 +130,9 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384,
-                                // CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA384,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
@@ -145,7 +145,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384)));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "Die Verwendung der „supported_groups“ Erweiterung für TLS_(EC)DHE_* Cipher-Suiten in TLS 1.2 wird empfohlen.",
+                        "Die Verwendung der \"supported_groups\" Erweiterung für TLS_(EC)DHE_* Cipher-Suiten wird empfohlen.",
                         RequirementLevel.SHOULD,
                         GuidelineCheckCondition.and(
                                 Arrays.asList(
@@ -163,7 +163,7 @@ public class BsiGuidelineSerializationIT {
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
                 new NamedGroupsGuidelineCheck(
-                        "Die folgenden Diffie-Hellman Gruppen werden für die Verwendung mit TLS 1.2 empfohlen.",
+                        "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
@@ -179,26 +179,25 @@ public class BsiGuidelineSerializationIT {
                         2));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "Die Verwendung der „signature_algorithms“ Erweiterung wird in TLS 1.2 empfohlen.",
+                        "Die Verwendung der \"signature_algorithms\" Erweiterung wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.SIGNATURE_AND_HASH_ALGORITHMS));
         checks.add(
                 new SignatureAlgorithmsGuidelineCheck(
-                        "Die folgenden Signaturverfahren werden für die Verwendung mit TLS 1.2 empfohlen.",
+                        "Die folgenden Signaturverfahren werden empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(
                                 SignatureAlgorithm.RSA_PKCS1,
-                                SignatureAlgorithm.RSA_PSS_RSAE,
                                 SignatureAlgorithm.RSA_SSA_PSS,
                                 SignatureAlgorithm.DSA,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
                 new HashAlgorithmsGuidelineCheck(
-                        "Die folgenden Hashfunktionen werden für die Verwendung mit TLS 1.2 empfohlen.",
+                        "Die folgenden Hashfunktionen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -206,15 +205,15 @@ public class BsiGuidelineSerializationIT {
                                 HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
+                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
-                        "Die Extension „truncated_hmac“ sollte nicht unterstützt werden.",
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                        "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -229,26 +228,35 @@ public class BsiGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.",
+                        "Der Einsatz der TLS-Erweiterung \"Encrypt-then-MAC\" gemäß [RFC 7366] wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
-                        "Heartbeat sollte nicht unterstützt werden.",
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                        "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Der Einsatz der TLS-Erweiterung „Extended Master Secret“ gemäß [RFC7627] wird empfohlen.",
+                        "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                         TestResults.TRUE));
-        // TODO: Die folgenden PSK-Modi werden empfohlen
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Der PSK-Modus psk_ke bietet keine Perfect Forward Secrecy. Dieser Modus sollte daher nur in speziellen Anwendungsfällen nach Hinzuziehen eines Experten eingesetzt werden.",
+                        RequirementLevel.SHOULD_NOT,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.",
@@ -259,7 +267,7 @@ public class BsiGuidelineSerializationIT {
                         TestResults.FALSE));
         checks.add(
                 new NamedGroupsGuidelineCheck(
-                        "Die folgenden Diffie-Hellman Gruppen werden für die Verwendung mit TLS 1.3 empfohlen.",
+                        "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
                                 NamedGroup.SECP256R1,
@@ -275,7 +283,7 @@ public class BsiGuidelineSerializationIT {
                         2));
         checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
-                        "Die folgenden Signaturverfahren werden für die Verwendung mit TLS 1.3 empfohlen.",
+                        "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
@@ -295,7 +303,7 @@ public class BsiGuidelineSerializationIT {
                         true));
         checks.add(
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
-                        "Die folgenden Algorithmen werden für die „signature_algorithms_cert“ Erweiterung empfohlen.",
+                        "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
@@ -317,8 +325,10 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Die folgenden Cipher-Suiten werden für die Verwendung mit TLS 1.3 empfohlen.",
+                        "Die folgenden Cipher-Suiten werden empfohlen.",
                         RequirementLevel.SHOULD,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         Collections.singletonList(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
@@ -346,7 +356,7 @@ public class BsiGuidelineSerializationIT {
 
         Guideline<ClientReport> guideline =
                 new Guideline<>(
-                        "BSI TR-02102-2",
+                        "BSI TR-02102-2 (v2025-01)",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
