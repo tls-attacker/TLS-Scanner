@@ -497,7 +497,7 @@ public class Rfc9325GuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        Arrays.asList(HashAlgorithm.SHA256)));
+                        List.of(HashAlgorithm.SHA256)));
         checks.add(
                 new HashAlgorithmsGuidelineCheck(  // TODO: *_NOT does not work for HashAlgorithmsGuidelineCheck because it just compares the algorithms used with the one given in the List.
                         "In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).",
