@@ -34,7 +34,7 @@ public class CompressionProbe extends TlsClientProbe {
     private List<CompressionMethod> clientAdvertisedCompressions;
 
     private List<CompressionMethod> supportedCompressions;
-    private TestResult forcedCompression = TestResults.COULD_NOT_TEST;
+    private TestResult forcedCompression = TestResults.ERROR_DURING_TEST;
 
     public CompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.COMPRESSIONS, scannerConfig);
@@ -97,8 +97,8 @@ public class CompressionProbe extends TlsClientProbe {
                 put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.FALSE);
             }
         } else {
-            put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.COULD_NOT_TEST);
-            put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.COULD_NOT_TEST);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, TestResults.ERROR_DURING_TEST);
+            put(TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResults.ERROR_DURING_TEST);
         }
         put(TlsAnalyzedProperty.FORCED_COMPRESSION, forcedCompression);
     }

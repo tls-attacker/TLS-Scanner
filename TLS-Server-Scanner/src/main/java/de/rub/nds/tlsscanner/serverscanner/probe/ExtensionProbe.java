@@ -191,7 +191,7 @@ public class ExtensionProbe extends TlsServerProbe {
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
         } else {
-            setPropertiesToCouldNotTest();
+            setPropertiesToCannotBeTested();
         }
     }
 }

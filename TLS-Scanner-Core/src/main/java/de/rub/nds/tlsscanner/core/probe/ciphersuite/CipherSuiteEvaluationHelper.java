@@ -202,7 +202,7 @@ public class CipherSuiteEvaluationHelper {
             writeToReport(probe);
         } else {
             probe.put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
-            probe.setPropertiesToCouldNotTest();
+            probe.setPropertiesToCannotBeTested();
         }
     }
 

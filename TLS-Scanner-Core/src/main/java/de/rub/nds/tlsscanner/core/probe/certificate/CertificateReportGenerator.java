@@ -45,6 +45,7 @@ public class CertificateReportGenerator {
         setPubkey(report, cert);
         setWeakDebianKey(report, cert);
         setIssuer(report, cert);
+        setPublicKeyType(report, cert);
         setSignatureAlgorithm(report, cert);
         setHashAlgorithm(report, cert);
         setX509SignatureAlgorithm(cert, report);
@@ -73,6 +74,10 @@ public class CertificateReportGenerator {
             report.setSelfSigned(false);
         }
         return report;
+    }
+
+    private static void setPublicKeyType(CertificateReport report, X509Certificate cert) {
+        report.setPublicKeyType(cert.getCertificateKeyType());
     }
 
     private static void setSignatureAlgorithmOid(X509Certificate cert, CertificateReport report) {

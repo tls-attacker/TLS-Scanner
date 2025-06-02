@@ -237,7 +237,7 @@ public class HttpHeaderProbe extends TlsServerProbe {
             put(TlsAnalyzedProperty.HSTS_NOT_PARSEABLE, hstsNotParseable);
             put(TlsAnalyzedProperty.HPKP_NOT_PARSEABLE, hpkpNotParseable);
         } else {
-            setPropertiesToCouldNotTest();
+            setPropertiesToCannotBeTested();
         }
         put(TlsAnalyzedProperty.HTTPS_HEADER, stringHeaderList);
         put(TlsAnalyzedProperty.HSTS_MAX_AGE, hstsMaxAge);

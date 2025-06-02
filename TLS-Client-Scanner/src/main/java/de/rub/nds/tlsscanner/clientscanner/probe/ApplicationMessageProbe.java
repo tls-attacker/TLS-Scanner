@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 
 public class ApplicationMessageProbe extends TlsClientProbe {
 
-    private TestResult sendsApplicationMessage = TestResults.COULD_NOT_TEST;
+    private TestResult sendsApplicationMessage = TestResults.ERROR_DURING_TEST;
 
     public ApplicationMessageProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
