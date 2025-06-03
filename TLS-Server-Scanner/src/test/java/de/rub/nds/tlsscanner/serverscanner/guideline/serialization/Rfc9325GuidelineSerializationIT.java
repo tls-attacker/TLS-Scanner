@@ -526,8 +526,8 @@ public class Rfc9325GuidelineSerializationIT {
                         RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.TRUNCATED_HMAC,
-                        true));
+                        false,
+                        ExtensionType.TRUNCATED_HMAC));
 
         // TODO for the future: Evaluate whether this can be tested, is worth the effort, and if so
         // implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the

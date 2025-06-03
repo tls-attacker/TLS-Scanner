@@ -209,8 +209,8 @@ public class BsiGuidelineSerializationIT {
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.TRUNCATED_HMAC,
-                        true));
+                        false,
+                        ExtensionType.TRUNCATED_HMAC));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.",
@@ -233,8 +233,8 @@ public class BsiGuidelineSerializationIT {
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.HEARTBEAT,
-                        true));
+                        false,
+                        ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.",
@@ -322,7 +322,7 @@ public class BsiGuidelineSerializationIT {
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
-                                )));
+                        )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
