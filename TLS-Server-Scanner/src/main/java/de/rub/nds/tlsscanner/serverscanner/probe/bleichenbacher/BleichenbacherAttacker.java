@@ -117,7 +117,7 @@ public class BleichenbacherAttacker {
     private List<VectorResponse> createVectorResponseList() {
         prepareConfig();
         PublicKeyContainer publicKey = getServerPublicKey();
-        if (publicKey.getAlgorithmType() != AsymmetricAlgorithmType.RSA) {
+        if (publicKey == null || publicKey.getAlgorithmType() != AsymmetricAlgorithmType.RSA) {
             throw new RuntimeException(
                     "Could not retrieve RSA public key from Server. Broken server config?");
         }
