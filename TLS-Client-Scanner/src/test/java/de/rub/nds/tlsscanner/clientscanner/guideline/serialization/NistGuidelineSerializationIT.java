@@ -558,20 +558,16 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
                         TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: Adjust ExtensionGuidelineCheck to not use the
-                        // RequirementLevel and take a boolean instead to
-                        // determine if it should check for included or
-                        // excluded extensions.
+                new ExtensionGuidelineCheck(
                         "The Early Data Indication extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
+                        false,
                         ExtensionType.EARLY_DATA));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: Adjust ExtensionGuidelineCheck to not use the
-                        // RequirementLevel and take a boolean instead to
-                        // determine if it should check for included or
-                        // excluded extensions.
+                new ExtensionGuidelineCheck(
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
+                        false,
                         ExtensionType.CLIENT_CERTIFICATE_TYPE,
                         ExtensionType.SERVER_CERTIFICATE_TYPE));
         // TODO: Checking the Server Key Size

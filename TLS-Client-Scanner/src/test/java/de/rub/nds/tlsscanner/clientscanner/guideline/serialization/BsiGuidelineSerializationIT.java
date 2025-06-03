@@ -212,13 +212,12 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for
-                        // *_NOT because it checks if the provided Extension is
-                        // set.
+                new ExtensionGuidelineCheck(
                         "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                        false,
                         ExtensionType.TRUNCATED_HMAC));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -237,13 +236,12 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for
-                        // *_NOT because it checks if the provided Extension is
-                        // set.
+                new ExtensionGuidelineCheck(
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                        false,
                         ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
