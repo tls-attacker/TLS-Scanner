@@ -16,22 +16,22 @@ import java.util.List;
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<ExtensionType> supportedExtensions;
-    private final List<ExtensionType> affectedExtensions;
+    private final List<ExtensionType> extensionsInQuestion;
 
     public ExtensionGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
             List<ExtensionType> supportedExtensions,
-            List<ExtensionType> affectedExtensions) {
+            List<ExtensionType> extensionsInQuestion) {
         super(checkName, adherence);
         this.supportedExtensions = supportedExtensions;
-        this.affectedExtensions = affectedExtensions;
+        this.extensionsInQuestion = extensionsInQuestion;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (ExtensionType extension : affectedExtensions) {
+        for (ExtensionType extension : extensionsInQuestion) {
             builder.append(
                             supportedExtensions.contains(extension)
                                     ? "The client supports "
@@ -42,8 +42,8 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
         return builder.toString().stripTrailing();
     }
 
-    public List<ExtensionType> getAffectedExtensions() {
-        return affectedExtensions;
+    public List<ExtensionType> getExtensionsInQuestion() {
+        return extensionsInQuestion;
     }
 
     public List<ExtensionType> getSupportedExtensions() {

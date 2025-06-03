@@ -19,12 +19,16 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private ExtensionType requiredExtension;
+    private List<ExtensionType> extensionsInQuestion;
     private boolean notRequired; // If true this class checks if the provided extension is NOT set.
 
     private ExtensionGuidelineCheck() {
@@ -32,18 +36,18 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
     }
 
     public ExtensionGuidelineCheck(
-            String name, RequirementLevel requirementLevel, ExtensionType requiredExtension) {
+            String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel);
-        this.requiredExtension = requiredExtension;
+        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
     }
 
     public ExtensionGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            ExtensionType requiredExtension) {
+            ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
-        this.requiredExtension = requiredExtension;
+        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
         this.notRequired =
                 false; // Default case, this means the requiredExtension is expected to be
         // supported.
@@ -53,30 +57,31 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            ExtensionType requiredExtension,
-            boolean notRequired) { // "Optional" parameter to invert the check this class performs.
+            boolean notRequired, // "Optional" parameter to invert the check this class performs.
+            ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
-        this.requiredExtension = requiredExtension;
+        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
         this.notRequired = notRequired;
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        if (notRequired)
-            return new ExtensionGuidelineCheckResult(
-                    getName(),
+        GuidelineAdherence adherence;
+        List<ExtensionType> supportedExtensions =
+                extensionsInQuestion.stream()
+                        .filter(report.getSupportedExtensions()::contains)
+                        .collect(Collectors.toList());
+
+        if (notRequired) {
+            adherence = GuidelineAdherence.of(supportedExtensions.isEmpty());
+        } else {
+            adherence =
                     GuidelineAdherence.of(
-                            !report.getSupportedExtensions()
-                                    .contains(
-                                            requiredExtension)), // ADHERED if the requiredExtension
-                    // is NOT supported.
-                    report.getSupportedExtensions().contains(requiredExtension),
-                    requiredExtension);
-        return new ExtensionGuidelineCheckResult( // Default case for notRequired = false.
-                getName(),
-                GuidelineAdherence.of(report.getSupportedExtensions().contains(requiredExtension)),
-                report.getSupportedExtensions().contains(requiredExtension),
-                requiredExtension);
+                            supportedExtensions.size() == extensionsInQuestion.size());
+        }
+
+        return new ExtensionGuidelineCheckResult(
+                getName(), adherence, supportedExtensions, extensionsInQuestion);
     }
 
     @Override
@@ -84,12 +89,12 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
         return "Extension_"
                 + getRequirementLevel()
                 + "_"
-                + requiredExtension
+                + extensionsInQuestion
                 + "_notRequired_"
                 + notRequired;
     }
 
-    public ExtensionType getRequiredExtension() {
-        return requiredExtension;
+    public List<ExtensionType> getExtensionsInQuestion() {
+        return Collections.unmodifiableList(extensionsInQuestion);
     }
 }
