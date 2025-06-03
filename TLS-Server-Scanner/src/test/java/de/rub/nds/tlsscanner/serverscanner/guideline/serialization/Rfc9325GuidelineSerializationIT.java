@@ -162,7 +162,10 @@ public class Rfc9325GuidelineSerializationIT {
                         TestResults.TRUE));
         // Cipher Suites (RFC uses a "MUST NOT/SHOULD NOT"-approach instead of an allowlist)
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for CipherSuiteGuidelineCheck because it just compares the cipher suites in the Hello messages with the one given in the List.
+                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
+                        // CipherSuiteGuidelineCheck because it just compares
+                        // the cipher suites in the Hello messages with the
+                        // one given in the List.
                         "Implementations MUST NOT negotiate the cipher suites with NULL encryption. Implementations MUST NOT negotiate RC4 cipher suites. Implementations MUST NOT negotiate cipher suites offering less than 112 bits of security, including so-called \"export-level\" encryption (which provides 40 or 56 bits of security).",
                         RequirementLevel.MUST_NOT,
                         List.of(ProtocolVersion.TLS12),
@@ -218,7 +221,10 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_EXPORT_WITH_DES40_CBC_SHA,
                                 CipherSuite.TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5)));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for CipherSuiteGuidelineCheck because it just compares the cipher suites in the Hello messages with the one given in the List.
+                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
+                        // CipherSuiteGuidelineCheck because it just compares
+                        // the cipher suites in the Hello messages with the
+                        // one given in the List.
                         "Implementations SHOULD NOT negotiate cipher suites that use algorithms offering less than 128 bits of security. Implementations SHOULD NOT negotiate cipher suites based on RSA key transport, a.k.a. \"static RSA\". Implementations SHOULD NOT negotiate cipher suites based on non-ephemeral (static) finite-field Diffie-Hellman (DH) key agreement. Similarly, implementations SHOULD NOT negotiate non-ephemeral Elliptic Curve DH key agreement. TLS 1.2 implementations SHOULD NOT negotiate cipher suites based on ephemeral finite-field Diffie-Hellman key agreement (i.e., \"TLS_DHE_*\" suites).",
                         RequirementLevel.SHOULD_NOT,
                         List.of(ProtocolVersion.TLS12),
@@ -437,7 +443,10 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384)));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for CipherSuiteGuidelineCheck because it just compares the cipher suites in the Hello messages with the one given in the List.
+                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
+                        // CipherSuiteGuidelineCheck because it just compares
+                        // the cipher suites in the Hello messages with the
+                        // one given in the List.
                         "A cipher suite that operates in CBC (cipher block chaining) mode (e.g., TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) SHOULD NOT be used unless the encrypt_then_mac extension [RFC7366] is also successfully negotiated. This requirement applies to both client and server implementations.",
                         RequirementLevel.SHOULD_NOT,
                         GuidelineCheckCondition.and(
@@ -460,7 +469,10 @@ public class Rfc9325GuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         List.of(X509NamedCurve.SECP256R1)));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for CipherSuiteGuidelineCheck because it just compares the cipher suites in the Hello messages with the one given in the List.
+                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
+                        // CipherSuiteGuidelineCheck because it just compares
+                        // the cipher suites in the Hello messages with the
+                        // one given in the List.
                         "The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -499,19 +511,23 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         List.of(HashAlgorithm.SHA256)));
         checks.add(
-                new HashAlgorithmsGuidelineCheck(  // TODO: *_NOT does not work for HashAlgorithmsGuidelineCheck because it just compares the algorithms used with the one given in the List.
+                new HashAlgorithmsGuidelineCheck( // TODO: *_NOT does not work for
+                        // HashAlgorithmsGuidelineCheck because it just
+                        // compares the algorithms used with the one given
+                        // in the List.
                         "In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).",
                         RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(HashAlgorithm.SHA1, HashAlgorithm.MD5)));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: *_NOT does not work for ExtensionGuidelineCheck because it just compares the extensions in the Hello message with the one in question.
+                new ExtensionGuidelineCheck(
                         "Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].",
                         RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.TRUNCATED_HMAC));
+                        ExtensionType.TRUNCATED_HMAC,
+                        true));
 
         // TODO for the future: Evaluate whether this can be tested, is worth the effort, and if so
         // implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the
