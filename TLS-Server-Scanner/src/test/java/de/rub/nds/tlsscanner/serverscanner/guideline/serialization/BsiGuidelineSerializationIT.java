@@ -209,7 +209,7 @@ public class BsiGuidelineSerializationIT {
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        true,
+                        false,
                         ExtensionType.TRUNCATED_HMAC));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -233,7 +233,7 @@ public class BsiGuidelineSerializationIT {
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        true,
+                        false,
                         ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(

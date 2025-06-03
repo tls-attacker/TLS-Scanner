@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private List<ExtensionType> extensionsInQuestion;
-    private boolean notRequired; // If true this class checks if the provided extension is NOT set.
+    private boolean required; // If false this class checks if the provided extension is NOT set.
 
     private ExtensionGuidelineCheck() {
         super(null, null);
@@ -39,6 +39,18 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.required = true; // Default case, this means the extensionsInQuestion is expected to be
+        // supported.
+    }
+
+    public ExtensionGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            boolean required,
+            ExtensionType... extensionsInQuestion) {
+        super(name, requirementLevel);
+        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.required = required;
     }
 
     public ExtensionGuidelineCheck(
@@ -48,8 +60,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.notRequired =
-                false; // Default case, this means the requiredExtension is expected to be
+        this.required = true; // Default case, this means the extensionsInQuestion is expected to be
         // supported.
     }
 
@@ -57,11 +68,11 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            boolean notRequired, // "Optional" parameter to invert the check this class performs.
+            boolean required, // "Optional" parameter to invert the check this class performs.
             ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.notRequired = notRequired;
+        this.required = required;
     }
 
     @Override
@@ -72,7 +83,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
                         .filter(report.getSupportedExtensions()::contains)
                         .collect(Collectors.toList());
 
-        if (notRequired) {
+        if (!required) {
             adherence = GuidelineAdherence.of(supportedExtensions.isEmpty());
         } else {
             adherence =
@@ -90,8 +101,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
                 + getRequirementLevel()
                 + "_"
                 + extensionsInQuestion
-                + "_notRequired_"
-                + notRequired;
+                + "_required_"
+                + required;
     }
 
     public List<ExtensionType> getExtensionsInQuestion() {
