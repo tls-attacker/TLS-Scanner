@@ -35,6 +35,7 @@ public class ExtensionGuidelineCheckTest {
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
+    @Test
     public void testPositiveMultipleExtensions() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
@@ -48,6 +49,7 @@ public class ExtensionGuidelineCheckTest {
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
+    @Test
     public void testPositiveNotRequiredExtension() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
@@ -60,6 +62,7 @@ public class ExtensionGuidelineCheckTest {
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
+    @Test
     public void testPositiveNotRequiredMultipleExtensions() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
@@ -84,18 +87,20 @@ public class ExtensionGuidelineCheckTest {
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 
+    @Test
     public void testNegativeMultipleExtensions() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                Arrays.asList(ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO));
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Arrays.asList(ExtensionType.COOKIE));
 
         ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+                new ExtensionGuidelineCheck(
+                        null, null, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 
+    @Test
     public void testNegativeNotRequiredExtension() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
@@ -108,6 +113,7 @@ public class ExtensionGuidelineCheckTest {
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 
+    @Test
     public void testNegativeNotRequiredMultipleExtensions() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
