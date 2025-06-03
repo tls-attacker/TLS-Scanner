@@ -12,9 +12,9 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.CertificateNameGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.x509attacker.constants.X500AttributeType;
 import de.rub.nds.x509attacker.x509.model.Name;
 import de.rub.nds.x509attacker.x509.model.RelativeDistinguishedName;
@@ -22,8 +22,6 @@ import de.rub.nds.x509attacker.x509.model.X509Certificate;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,11 +103,13 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                         .filter(
                                 rdn ->
                                         rdn.getAttributeTypeAndValueList()
-                                                .get(0)
-                                                .getX500AttributeTypeFromValue()
+                                                        .get(0)
+                                                        .getX500AttributeTypeFromValue()
                                                 == X500AttributeType.COMMON_NAME)
                         .findFirst();
-        // Removed check here when copying this class from serverscanner, because the NIST guide only requires this for servers: "If present, the CN attribute should be of the form: CN={host IP address | host DNS name}"
+        // Removed check here when copying this class from serverscanner, because the NIST guide
+        // only requires this for servers: "If present, the CN attribute should be of the form:
+        // CN={host IP address | host DNS name}"
         return null;
     }
 

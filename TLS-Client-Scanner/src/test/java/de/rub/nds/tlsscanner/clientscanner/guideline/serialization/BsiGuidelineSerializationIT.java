@@ -212,7 +212,9 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for
+                        // *_NOT because it checks if the provided Extension is
+                        // set.
                         "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -235,7 +237,9 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for
+                        // *_NOT because it checks if the provided Extension is
+                        // set.
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -336,7 +340,12 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
                 new KeySizeCertGuidelineCheck(
-                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
+                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.",
+                        RequirementLevel.SHOULD,
+                        3000,
+                        3000,
+                        250,
+                        3000));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)",
