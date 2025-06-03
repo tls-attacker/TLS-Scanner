@@ -204,12 +204,13 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
                         TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                new ExtensionGuidelineCheck(
                         "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.TRUNCATED_HMAC));
+                        ExtensionType.TRUNCATED_HMAC,
+                        true));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.",
@@ -227,12 +228,13 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
+                new ExtensionGuidelineCheck(
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        ExtensionType.HEARTBEAT));
+                        ExtensionType.HEARTBEAT,
+                        true));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.",
@@ -320,7 +322,7 @@ public class BsiGuidelineSerializationIT {
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
-                        )));
+                                )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
@@ -334,7 +336,12 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
                 new KeySizeCertGuidelineCheck(
-                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
+                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.",
+                        RequirementLevel.SHOULD,
+                        3000,
+                        3000,
+                        250,
+                        3000));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)",
