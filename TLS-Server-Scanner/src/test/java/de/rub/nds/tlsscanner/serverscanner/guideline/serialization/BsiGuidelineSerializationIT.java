@@ -54,44 +54,44 @@ public class BsiGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.",
-                        RequirementLevel.MAY,
+                        RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.",
-                        RequirementLevel.MAY,
+                        RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "SSL v2 und SSL v3 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "SSL v2 und SSL v3 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.",
                         RequirementLevel.SHOULD,
-                        Collections.singletonList(ProtocolVersion.TLS12),
+                        List.of(ProtocolVersion.TLS12),
                         Arrays.asList(
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
@@ -167,7 +167,8 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(
-                                SignatureAlgorithm.RSA_PKCS1, // TODO correct?
+                                SignatureAlgorithm.RSA_PKCS1,
+                                SignatureAlgorithm.RSA_SSA_PSS,
                                 SignatureAlgorithm.DSA,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
@@ -203,7 +204,7 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
                         TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
                         "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -212,7 +213,7 @@ public class BsiGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
@@ -226,7 +227,7 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new ExtensionGuidelineCheck( // TODO: ExtensionGuidelineCheck does not work for *_NOT because it checks if the provided Extension is set.
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -247,11 +248,11 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
@@ -274,7 +275,7 @@ public class BsiGuidelineSerializationIT {
                         2));
         checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
-                        "Die folgenden Signaturverfahren werden empfohlen.",
+                        "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
@@ -294,12 +295,12 @@ public class BsiGuidelineSerializationIT {
                         true));
         checks.add(
                 // Recommendation by BSI for the "signature_algorithms_cert" extension. As it is
-                // mostly used by the client (?) we check the certificate actually used by the
+                // mostly used by the client we check the certificate actually used by the
                 // server here and compare its algorithms to the ones recommended by BSI. Not all
                 // recommended algorithms are currently supported by X509Attacker and thus commented
                 // out.
                 new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
-                        "Die folgenden Signaturverfahren werden empfohlen.",
+                        "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
@@ -319,21 +320,37 @@ public class BsiGuidelineSerializationIT {
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
-                                )));
+                        )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        Collections.singletonList(ProtocolVersion.TLS13),
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
                 new KeySizeCertGuidelineCheck(
-                        "Schlüssellängen", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
+                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)",
+                        RequirementLevel.MUST,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_DHE, TestResults.TRUE),
+                        TlsAnalyzedProperty.REUSES_DH_PUBLICKEY,
+                        TestResults.FALSE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (ECDHE)",
+                        RequirementLevel.MUST,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_ECDHE, TestResults.TRUE),
+                        TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
+                        TestResults.FALSE));
 
         Guideline<ServerReport> guideline =
                 new Guideline<>(
