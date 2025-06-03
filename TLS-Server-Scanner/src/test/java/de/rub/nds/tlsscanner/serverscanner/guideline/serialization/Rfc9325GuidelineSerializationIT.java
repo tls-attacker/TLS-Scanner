@@ -153,7 +153,7 @@ public class Rfc9325GuidelineSerializationIT {
                         "In order to prevent the attacks described in [ALPACA], a server that does not recognize the presented server name SHOULD NOT continue the handshake.",
                         RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.STRICT_SNI,
-                        TestResults.FALSE));
+                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
@@ -469,7 +469,7 @@ public class Rfc9325GuidelineSerializationIT {
                         List.of(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA)));
         checks.add(
                 new ExtensionGuidelineCheck(
-                        "TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].",
+                        "Both clients and servers SHOULD include the \"Supported Elliptic Curves Extension\" [RFC8422].",
                         RequirementLevel.SHOULD,
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
@@ -513,7 +513,7 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.TRUNCATED_HMAC));
 
-        // Todo for the future: Evaluate whether this can be tested, is worth the effort, and if so
+        // TODO for the future: Evaluate whether this can be tested, is worth the effort, and if so
         // implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the
         // 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described
         // in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
