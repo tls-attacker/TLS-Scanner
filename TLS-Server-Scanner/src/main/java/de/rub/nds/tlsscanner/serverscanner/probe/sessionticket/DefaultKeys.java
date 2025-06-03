@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.protocol.constants.MacAlgorithm;
 import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;

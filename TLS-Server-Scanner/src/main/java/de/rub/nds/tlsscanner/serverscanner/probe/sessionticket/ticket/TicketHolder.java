@@ -33,6 +33,12 @@ public class TicketHolder extends LinkedList<Ticket> {
 
     private final ProtocolVersion protocolVersion;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private TicketHolder() {
+        this.protocolVersion = null;
+    }
+
     public TicketHolder(ProtocolVersion protocolVersion) {
         super();
         this.protocolVersion = protocolVersion;

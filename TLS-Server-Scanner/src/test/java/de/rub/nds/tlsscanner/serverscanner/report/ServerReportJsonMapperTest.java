@@ -29,6 +29,7 @@ import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
@@ -401,8 +402,7 @@ class ServerReportJsonMapperTest {
         report.markProbeAsExecuted(new CertificateProbe(null, null));
         report.markProbeAsUnexecuted(new CipherSuiteOrderProbe(null, null));
         report.recordProbePerformance(new PerformanceData(TlsProbeType.ALPN, 0, 10));
-        report.putExtractedValueContainer(
-                new TrackableValue() {}, new ExtractedValueContainer<>(new TrackableValue() {}));
+        report.putExtractedValueContainer(TrackableValueType.COOKIE, new ExtractedValueContainer<byte[]>());
         report.putResult(
                 TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(chainReport)));
