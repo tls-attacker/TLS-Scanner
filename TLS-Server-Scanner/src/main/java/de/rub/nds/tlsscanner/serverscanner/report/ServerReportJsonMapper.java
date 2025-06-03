@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;
@@ -50,6 +51,7 @@ public class ServerReportJsonMapper {
         objectMapper.getFactory().setStreamReadConstraints(streamReadConstraints);
         objectMapper.registerModule(new JodaModule());
         objectMapper.registerModules(ServerReport.getSerializerModules());
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);

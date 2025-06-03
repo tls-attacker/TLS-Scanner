@@ -30,8 +30,6 @@ import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
 import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
-import de.rub.nds.tlsscanner.core.converter.PointSerializer;
-import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -62,8 +60,6 @@ public class ServerReport extends TlsScanReport {
         return new Module[] {
             new SimpleModule()
                     .addSerializer(new ByteArraySerializer())
-                    .addSerializer(new ResponseFingerprintSerializer())
-                    .addSerializer(new PointSerializer())
                     .addDeserializer(byte[].class, new ByteArrayDeserializer())
                     .addKeyDeserializer(
                             AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
