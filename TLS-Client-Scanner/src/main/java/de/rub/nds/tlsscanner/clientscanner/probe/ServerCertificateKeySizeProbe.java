@@ -91,7 +91,7 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
 
     @Override
     protected void executeTest() {
-        // TODO readd properly with x509 attacker
+        // TODO: read properly with x509 attacker
     }
 
     @Override
