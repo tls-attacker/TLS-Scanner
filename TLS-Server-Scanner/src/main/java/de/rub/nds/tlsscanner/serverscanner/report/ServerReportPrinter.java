@@ -2457,6 +2457,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 "Certificate Status Request v2",
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
         prettyAppend(builder, "ESNI", TlsAnalyzedProperty.SUPPORTS_ESNI);
+        prettyAppend(
+                builder,
+                "Supports Raw Public Key Certificates",
+                TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES);
 
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");

@@ -1,5 +1,5 @@
 <guideline>
-    <name>BSI TR-02102-2</name>
+    <name>BSI TR-02102-2 (v2025-01)</name>
     <link>https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html</link>
     <analyzedPropertyGuidelineCheck>
         <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
@@ -79,6 +79,9 @@
         <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
@@ -99,7 +102,6 @@
         <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
-        <recommendedGroups>FFDHE2048</recommendedGroups>
         <recommendedGroups>FFDHE3072</recommendedGroups>
         <recommendedGroups>FFDHE4096</recommendedGroups>
         <tls13>false</tls13>
@@ -128,7 +130,7 @@
         <recommendedAlgorithms>SHA512</recommendedAlgorithms>
     </hashAlgorithmsGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -138,7 +140,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -148,7 +150,7 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
+        <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -158,7 +160,7 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>truncated_hmac sollte nicht unterstüzt werden.</name>
+        <name>Die in [RFC 6066] definierte Extension "truncated_hmac" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -177,7 +179,7 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.</name>
+        <name>Der Einsatz der TLS-Erweiterung "Encrypt-then-MAC" gemäß [RFC 7366] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -187,7 +189,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>Heartbeat sollte nicht unterstüzt werden.</name>
+        <name>Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
@@ -196,13 +198,23 @@
         <requiredExtension>HEARTBEAT</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.</name>
+        <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
+        <result>TRUE</result>
+    </analyzedPropertyGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>Der PSK-Modus psk_ke bietet keine Perfect Forward Secrecy. Dieser Modus sollte daher nur in speziellen Anwendungsfällen nach Hinzuziehen eines Experten eingesetzt werden.</name>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
+        <condition>
+            <property>SUPPORTS_TLS_1_3</property>
+            <result>TRUE</result>
+        </condition>
+        <property>SUPPORTS_TLS13_PSK</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
@@ -224,7 +236,6 @@
         <recommendedGroups>BRAINPOOLP256R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP384R1</recommendedGroups>
         <recommendedGroups>BRAINPOOLP512R1</recommendedGroups>
-        <recommendedGroups>FFDHE2048</recommendedGroups>
         <recommendedGroups>FFDHE3072</recommendedGroups>
         <recommendedGroups>FFDHE4096</recommendedGroups>
         <tls13>true</tls13>
@@ -269,6 +280,10 @@
     <cipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
+        <condition>
+            <property>SUPPORTS_TLS_1_3</property>
+            <result>TRUE</result>
+        </condition>
         <versions>TLS13</versions>
         <recommendedCipherSuites>TLS_AES_128_GCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
@@ -278,9 +293,9 @@
         <name>Schlüssellängen</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
-        <minimumDsaKeyLength>2000</minimumDsaKeyLength>
-        <minimumRsaKeyLength>2000</minimumRsaKeyLength>
+        <minimumDsaKeyLength>3000</minimumDsaKeyLength>
+        <minimumRsaKeyLength>3000</minimumRsaKeyLength>
         <minimumEcKeyLength>250</minimumEcKeyLength>
-        <minimumDhKeyLength>2000</minimumDhKeyLength>
+        <minimumDhKeyLength>3000</minimumDhKeyLength>
     </keySizeCertGuidelineCheck>
 </guideline>

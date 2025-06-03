@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
+import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
@@ -64,22 +65,28 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
             return new KeyUsageCertificateCheckResult(
                     getName(), GuidelineAdherence.VIOLATED, false, null);
         }
-        for (X509ExtensionType extension : extensions) {
-            if (extension == X509ExtensionType.KEY_USAGE) {
-                return new KeyUsageCertificateCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, false, null);
-            }
+
+        // checks if the extension is set
+        if (!extensions.contains(X509ExtensionType.KEY_USAGE)) {
+            return new KeyUsageCertificateCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, null);
         }
-        if (report.getKeyUsageSet() != null) {
-            if (report.getKeyUsageSet().contains(KeyUsage.DIGITAL_SIGNATURE)) {
-                return new KeyUsageCertificateCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, false, "digitalSignature");
-            }
+        if (report.getKeyUsageSet() == null) {
+            return new KeyUsageCertificateCheckResult(
+                    getName(), GuidelineAdherence.VIOLATED, false, null);
         }
-        if (report.getPublicKey() instanceof DhPublicKey) {
+
+        // checks the right extension type based on the certificate key type
+        if (report.getPublicKey() instanceof DhPublicKey
+                || report.getPublicKey() instanceof EcdhPublicKey) {
             if (!report.getKeyUsageSet().contains(KeyUsage.KEY_AGREEMENT)) {
                 return new KeyUsageCertificateCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, false, "keyAgreement");
+                        getName(), GuidelineAdherence.VIOLATED, true, "keyAgreement");
+            }
+        } else { // RSA, ECDSA or DSA
+            if (!report.getKeyUsageSet().contains(KeyUsage.DIGITAL_SIGNATURE)) {
+                return new KeyUsageCertificateCheckResult(
+                        getName(), GuidelineAdherence.VIOLATED, true, "digitalSignature");
             }
         }
         return new KeyUsageCertificateCheckResult(
