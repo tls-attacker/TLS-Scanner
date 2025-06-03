@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.x509attacker.constants.KeyUsage;
@@ -337,7 +338,9 @@ class ServerReportJsonMapperTest {
 
         // Create a guideline report
         List<GuidelineCheckResult> checkResultList = new LinkedList<>();
-        checkResultList.add(new GuidelineCheckResult("some check", GuidelineAdherence.ADHERED));
+        checkResultList.add(
+                new CertificateAgilityGuidelineCheckResult(
+                        "some check", GuidelineAdherence.ADHERED));
         GuidelineReport guidelineReport =
                 new GuidelineReport("guideline", "here is a link", checkResultList);
 

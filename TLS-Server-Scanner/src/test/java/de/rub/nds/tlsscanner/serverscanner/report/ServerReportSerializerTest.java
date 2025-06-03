@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.x509attacker.constants.KeyUsage;
@@ -62,7 +63,9 @@ public class ServerReportSerializerTest {
                         new PropertyResultRatingInfluencer(TestResults.CANNOT_BE_TESTED, 10));
 
         List<GuidelineCheckResult> checkResultList = new LinkedList<>();
-        checkResultList.add(new GuidelineCheckResult("some checke", GuidelineAdherence.ADHERED));
+        checkResultList.add(
+                new CertificateAgilityGuidelineCheckResult(
+                        "some checke", GuidelineAdherence.ADHERED));
         GuidelineReport guidelineReport =
                 new GuidelineReport("guideline", "here is a link", checkResultList);
 
