@@ -1102,6 +1102,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                TlsAnalyzedProperty
+                                        .CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS,
