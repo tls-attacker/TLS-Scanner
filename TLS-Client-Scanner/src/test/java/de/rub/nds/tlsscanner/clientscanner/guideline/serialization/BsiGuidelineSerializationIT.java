@@ -65,32 +65,32 @@ public class BsiGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.0 und TLS 1.1 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "SSL v2 und SSL v3 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "SSL v2 und SSL v3 werden nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.",
                         RequirementLevel.SHOULD,
-                        Collections.singletonList(ProtocolVersion.TLS12),
+                        List.of(ProtocolVersion.TLS12),
                         Arrays.asList(
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
@@ -205,7 +205,7 @@ public class BsiGuidelineSerializationIT {
                                 HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.",
+                        "Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
@@ -221,7 +221,7 @@ public class BsiGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
@@ -260,7 +260,7 @@ public class BsiGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
@@ -329,14 +329,14 @@ public class BsiGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        Collections.singletonList(ProtocolVersion.TLS13),
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
                 new KeySizeCertGuidelineCheck(
-                        "Schlüssellängen", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
+                        "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.", RequirementLevel.SHOULD, 3000, 3000, 250, 3000));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)",

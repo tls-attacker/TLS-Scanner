@@ -119,7 +119,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
@@ -184,7 +184,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
@@ -194,7 +194,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Appendix C—Pre-shared Keys:",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,

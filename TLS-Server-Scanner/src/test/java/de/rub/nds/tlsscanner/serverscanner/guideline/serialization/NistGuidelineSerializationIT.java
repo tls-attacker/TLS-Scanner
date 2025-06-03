@@ -68,13 +68,13 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
@@ -148,7 +148,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
@@ -242,7 +242,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers shall not be vulnerable to padding oracle.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                         TestResults.FALSE));
         checks.add(
@@ -500,7 +500,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers should not process early data received in the ClientHello message.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
@@ -535,7 +535,7 @@ public class NistGuidelineSerializationIT {
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",
