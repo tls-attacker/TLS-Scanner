@@ -106,7 +106,10 @@ public class ResumptionProbe extends TlsServerProbe {
             issuesTls13SessionTicketWithApplicationData = getIssuesTls13SessionTicket(true);
             supportsTls13PskDhe = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_DHE_KE));
             supportsTls13Psk = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_KE));
-            prefersTls13PskDhe = getSupportsTls13Psk(Arrays.asList(PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE));
+            prefersTls13PskDhe =
+                    getSupportsTls13Psk(
+                            Arrays.asList(
+                                    PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE));
             supportsTls13ZeroRtt = getSupports0rtt();
         }
         supportsResumption = getSupportsSessionResumption();
@@ -329,17 +332,22 @@ public class ResumptionProbe extends TlsServerProbe {
                 MessageAction lastRcv =
                         (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
                 if (lastRcv.executedAsPlanned()) {
-                    // Check if the key_share extension is negotiated. This determines which key extension mode the server selected.
+                    // Check if the key_share extension is negotiated. This determines which key
+                    // extension mode the server selected.
                     TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
-                     // If one of the provided key exchange modi is PSK_DHE_KE the key_share extension is required.
+                    // If one of the provided key exchange modi is PSK_DHE_KE the key_share
+                    // extension is required.
                     TestResult keyShareRequired =
-                        TestResults.of(exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE));
+                            TestResults.of(exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE));
                     if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
                         if (!TestResults.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
                             respectsPskModes = TestResults.FALSE;
                             if (exchangeModes.size() > 1) {
-                                // If one of the provided key exchange modi is PSK_DHE_KE but no key_share extension was provided the server did not prefer PSK_DHE_KE.
-                                if (exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE)) return TestResults.FALSE;
+                                // If one of the provided key exchange modi is PSK_DHE_KE but no
+                                // key_share extension was provided the server did not prefer
+                                // PSK_DHE_KE.
+                                if (exchangeModes.contains(PskKeyExchangeMode.PSK_DHE_KE))
+                                    return TestResults.FALSE;
                             }
                         }
                     }
@@ -353,9 +361,17 @@ public class ResumptionProbe extends TlsServerProbe {
                 throw new RuntimeException(e);
             } else {
                 if (exchangeModes.size() > 1) {
-                    LOGGER.error("Could not test if the server prefers PSK_DHE_KE as the TLS 1.3 PSK key exchange mode (provided: " + exchangeModes.toString() + "): ", e);
-            } else {
-                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeModes.get(0) + "): ", e);
+                    LOGGER.error(
+                            "Could not test if the server prefers PSK_DHE_KE as the TLS 1.3 PSK key exchange mode (provided: "
+                                    + exchangeModes.toString()
+                                    + "): ",
+                            e);
+                } else {
+                    LOGGER.error(
+                            "Could not test for support for Tls13Psk ("
+                                    + exchangeModes.get(0)
+                                    + "): ",
+                            e);
                 }
             }
             return TestResults.ERROR_DURING_TEST;
