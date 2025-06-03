@@ -2,27 +2,27 @@
     <name>NIST SP 800-52r2</name>
     <link>https://doi.org/10.6028/NIST.SP.800-52r2</link>
     <analyzedPropertyGuidelineCheck>
+        <name>Servers should support TLS 1.3 and shall support TLS 1.3 by January 1, 2024.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <property>SUPPORTS_TLS_1_3</property>
+        <result>TRUE</result>
+    </analyzedPropertyGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
         <name>Servers shall support TLS 1.2.</name>
         <requirementLevel>MUST</requirementLevel>
         <property>SUPPORTS_TLS_1_2</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Servers should support TLS 1.3 and shall support TLS 1.3 by January 1, 2024.</name>
-        <requirementLevel>SHOULD</requirementLevel>
-        <property>SUPPORTS_TLS_1_3</property>
-        <result>TRUE</result>
+        <name>Support of TLS 1.1 is discouraged.</name>
+        <requirementLevel>MAY</requirementLevel>
+        <property>SUPPORTS_TLS_1_1</property>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Support of TLS 1.0 is discouraged.</name>
         <requirementLevel>MAY</requirementLevel>
         <property>SUPPORTS_TLS_1_0</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Support of TLS 1.1 is discouraged.</name>
-        <requirementLevel>MAY</requirementLevel>
-        <property>SUPPORTS_TLS_1_1</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
@@ -38,11 +38,11 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <certificateAgilityGuidelineCheck>
-        <name>Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility</name>
+        <name>Should support the use of multiple server certificates with their associated private keys to support algorithm and key size agility.</name>
         <requirementLevel>SHOULD</requirementLevel>
     </certificateAgilityGuidelineCheck>
     <signatureAlgorithmsTypeCertificateGuidelineCheck>
-        <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate</name>
+        <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate.</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>true</atLeastOneCertificateShallPass>
         <recommendedAlgorithms>RSA_PKCS1</recommendedAlgorithms>
@@ -50,20 +50,20 @@
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsTypeCertificateGuidelineCheck>
     <certificateCurveGuidelineCheck>
-        <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</name>
+        <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
         <recommendedNamedParameters>SECP384R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Certificates shall be issued by CA that publishes revocation information in OCSP responses</name>
+        <name>Certificates shall be issued by a CA that publishes revocation information in OCSP responses.</name>
         <requirementLevel>MUST</requirementLevel>
         <property>SUPPORTS_OCSP</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <certificateVersionGuidelineCheck>
-        <name>Server certificate shall be an X.509 version 3 certificate</name>
+        <name>Server certificate shall be an X.509 version 3 certificate.</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <version>V3</version>
@@ -78,7 +78,7 @@
         <minimumDhKeyLength>2048</minimumDhKeyLength>
     </keySizeCertGuidelineCheck>
     <certificateSignatureCheck>
-        <name>If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm consistent with the public key</name>
+        <name>If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm consistent with the public key.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <or>
@@ -95,23 +95,28 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
     </certificateSignatureCheck>
     <certificateValidityGuidelineCheck>
-        <name>Certificate Validity Period should be 3 years or less.</name>
+        <name>Certificate validity period should be 3 years or less.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <days>1095</days>
     </certificateValidityGuidelineCheck>
+    <certificateNameGuidelineCheck>
+        <name>Issuer Distinguished Name (DN): A single value should be encoded in each Relative Distinguished Name (RDN). All attributes that are of DirectoryString type should be encoded as a PrintableString. [...] Subject Distinguished Name: A single value should be encoded in each RDN. All attributes that are of DirectoryString type should be encoded as a PrintableString. If present, the CN attribute should be of the form: CN={host IP address | host DNS name}</name>
+        <requirementLevel>SHOULD</requirementLevel>
+        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
+    </certificateNameGuidelineCheck>
     <keyUsageCertificateCheck>
-        <name>Key Usage Extension should be used with digitalSignature and keyAgreement values.</name>
+        <name>Key Usage extension should be used with "digitalSignature" and "keyAgreement" values.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
     </keyUsageCertificateCheck>
     <extendedKeyUsageCertificateCheck>
-        <name>Server should be configured to allow use of extended key usage extension with key purpose specifically for server authentication</name>
+        <name>Servers should be configured to allow use of the Extended Key Usage extension with a key purpose specifically for server authentication.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
     </extendedKeyUsageCertificateCheck>
     <cipherSuiteGuidelineCheck>
-        <name>Only listed Cipher Suites shall be used</name>
+        <name>Only listed cipher suites shall be used.</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS10</versions>
         <versions>TLS11</versions>
@@ -184,7 +189,7 @@
         <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
     </cipherSuiteGuidelineCheck>
     <cipherSuiteGuidelineCheck>
-        <name>Only listed Cipher Suites shall be used for TLS 1.3</name>
+        <name>Only listed cipher suites shall be used for TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS13</versions>
         <recommendedCipherSuites>TLS_AES_128_GCM_SHA256</recommendedCipherSuites>
@@ -211,7 +216,7 @@
         <minimumStrength>SHA224</minimumStrength>
     </hashAlgorithmStrengthCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>The server shall support secure renegotiation Extension.</name>
+        <name>The server shall support Secure Renegotiation extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <or>
@@ -233,12 +238,12 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>The server shall be able to process and respond to the server name indication extension.</name>
+        <name>The server shall be able to process and respond to the Server Name Indication extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <requiredExtension>SERVER_NAME_INDICATION</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>The Extended Master Secret extension shall be supported.</name>
+        <name>Extended Master Secret extension shall be supported.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <or>
@@ -278,7 +283,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>The Certificate Status Request extension shall be supported.</name>
+        <name>Certificate Status Request extension shall be supported.</name>
         <requirementLevel>MUST</requirementLevel>
         <property>SUPPORTS_CERTIFICATE_STATUS_REQUEST</property>
         <result>TRUE</result>
@@ -347,7 +352,7 @@
         <minGroupCount>2</minGroupCount>
     </namedGroupsGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>The Key Share extension shall be supported if the server supports TLS 1.3</name>
+        <name>The Key Share extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
@@ -356,7 +361,7 @@
         <requiredExtension>KEY_SHARE</requiredExtension>
     </extensionGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>The EC Point Format extension shall be supported if the server supports EC cipher suites</name>
+        <name>The EC Point Format extension shall be supported if the server supports EC cipher suites.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <and>
@@ -385,7 +390,7 @@
         <requiredExtension>EC_POINT_FORMATS</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>The Multiple Certificate Status extension should be supported if status information for the server’s certificate is available via OCSP and the extension is supported by the server implementation</name>
+        <name>The Multiple Certificate Status extension should be supported if status information for the server's certificate is available via OCSP and the extension is supported by the server implementation.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <and>
@@ -471,7 +476,7 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>The Supported Versions extension shall be supported if the server supports TLS 1.3</name>
+        <name>The Supported Versions extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
@@ -480,7 +485,7 @@
         <requiredExtension>SUPPORTED_VERSIONS</requiredExtension>
     </extensionGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>Servers that support TLS 1.3 may support the cookie extension</name>
+        <name>Servers that support TLS 1.3 may support the Cookie extension.</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
@@ -489,7 +494,7 @@
         <requiredExtension>COOKIE</requiredExtension>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>The Signed Certificate Timestamps extension should be supported if the server’s certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.</name>
+        <name>The Signed Certificate Timestamps extension should be supported if the server's certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
             <property>SUPPORTS_SCTS_PRECERTIFICATE</property>
@@ -509,6 +514,28 @@
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
+        <name>The Client Certificate URL extension should not be supported.</name>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
+        <condition>
+            <or>
+                <condition>
+                    <property>SUPPORTS_TLS_1_0</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <property>SUPPORTS_TLS_1_1</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <property>SUPPORTS_TLS_1_2</property>
+                    <result>TRUE</result>
+                </condition>
+            </or>
+        </condition>
+        <property>SUPPORTS_CLIENT_CERTIFICATE_URL</property>
+        <result>TRUE</result>
+    </analyzedPropertyGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
         <name>If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -517,6 +544,12 @@
         </condition>
         <property>REUSABLE_TICKET</property>
         <result>FALSE</result>
+    </analyzedPropertyGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>The Raw Public Key extension shall not be supported.</name>
+        <requirementLevel>MUST_NOT</requirementLevel>
+        <property>SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES</property>
+        <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The null compression method shall be enabled, and all other compression methods shall be disabled.</name>
