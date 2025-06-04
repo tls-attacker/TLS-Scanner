@@ -95,12 +95,15 @@ public class NistGuidelineSerializationIT {
                         "For ECDSA: Curve P-256 or curve P-384 should be used in the public key.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "Certificates shall be issued by a CA that publishes revocation information in OCSP responses.",
-                        RequirementLevel.MUST,
-                        TlsAnalyzedProperty.SUPPORTS_OCSP,
-                        TestResults.TRUE));
+        // TODO: Implement serverscanner probe that sets TlsAnalyzedProperty.SUPPORTS_OCSP (see
+        // issue #199).
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "Certificates shall be issued by a CA that publishes revocation
+        // information in OCSP responses.",
+        //                        RequirementLevel.MUST,
+        //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
+        //                        TestResults.TRUE));
         checks.add(
                 new CertificateVersionGuidelineCheck(
                         "Server certificate shall be an X.509 version 3 certificate.",
