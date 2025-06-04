@@ -121,14 +121,17 @@ public class NistGuidelineSerializationIT {
         //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
         //                        TestResults.TRUE));
         checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
+                new CipherSuiteGuidelineCheck( // Appendix D only contains a conditional MAY for RSA
+                        // cipher suites. Thus, these cipher suites are
+                        // omitted here.
+                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1 and Appendix C:",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
                                 ProtocolVersion.TLS12),
                         Arrays.asList(
+                                // Section 3.3.1:
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
@@ -184,26 +187,8 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
-        checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
-                        RequirementLevel.SHOULD,
-                        List.of(ProtocolVersion.TLS13),
-                        Arrays.asList(
-                                CipherSuite.TLS_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_AES_128_CCM_SHA256,
-                                CipherSuite.TLS_AES_128_CCM_8_SHA256)));
-        checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Appendix C—Pre-shared Keys:",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(
-                                ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11,
-                                ProtocolVersion.TLS12),
-                        Arrays.asList(
+                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,
+                                // Appendix C:
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_DHE_PSK_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256,
@@ -230,23 +215,14 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA)));
         checks.add(
                 new CipherSuiteGuidelineCheck(
-                        "Appendix D—RSA Key Transport: While these guidelines do not recommend cipher suites using RSA key transport, there may be circumstances in practice where RSA key transport is needed. [...] If RSA key transport is needed while a new traffic inspection strategy is being developed, only RSA key transport cipher suites from the following list may be used.",
-                        RequirementLevel.MAY,
+                        "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
+                        RequirementLevel.SHOULD,
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
-                                ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11,
-                                ProtocolVersion.TLS12),
-                        Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384)));
+                                CipherSuite.TLS_AES_128_GCM_SHA256,
+                                CipherSuite.TLS_AES_256_GCM_SHA384,
+                                CipherSuite.TLS_AES_128_CCM_SHA256,
+                                CipherSuite.TLS_AES_128_CCM_8_SHA256)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS implementations that support versions prior to TLS 1.3 shall use the bad_record_mac error to indicate a padding error. Implementations shall compute the MAC regardless of whether padding errors exist. TLS implementations should support constant-time decryption or near constant-time decryption.",

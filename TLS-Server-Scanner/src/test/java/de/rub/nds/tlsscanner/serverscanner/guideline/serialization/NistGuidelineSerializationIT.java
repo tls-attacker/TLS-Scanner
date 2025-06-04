@@ -149,8 +149,11 @@ public class NistGuidelineSerializationIT {
                         "Servers should be configured to allow use of the Extended Key Usage extension with a key purpose specifically for server authentication.",
                         RequirementLevel.SHOULD));
         checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
+                new CipherSuiteGuidelineCheck( // Appendix C contains a conditional SHOULD for PSK
+                        // cipher suites. Appendix D only contains a
+                        // conditional MAY for RSA cipher suites. Thus, these
+                        // cipher suites are omitted here.
+                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used. Section 3.3.1:",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
@@ -223,25 +226,6 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256,
                                 CipherSuite.TLS_AES_128_CCM_8_SHA256)));
-        checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "Appendix D: While these guidelines do not recommend cipher suites using RSA key transport, there may be circumstances in practice where RSA key transport is needed. [...] If RSA key transport is needed while a new traffic inspection strategy is being developed, only RSA key transport cipher suites from the following list may be used.",
-                        RequirementLevel.MAY,
-                        Arrays.asList(
-                                ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11,
-                                ProtocolVersion.TLS12),
-                        Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384)));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers shall not be vulnerable to padding oracle.",
