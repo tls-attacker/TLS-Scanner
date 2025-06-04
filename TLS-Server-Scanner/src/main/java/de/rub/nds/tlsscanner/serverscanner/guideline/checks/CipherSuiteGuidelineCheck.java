@@ -95,6 +95,11 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     }
 
     @Override
+    public boolean passesCondition(ServerReport report) {
+        return this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains)
+                && super.passesCondition(report);
+    }
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         Set<CipherSuite> supportedCipherSuites = new HashSet<>();
         List<CipherSuite> nonRecommendedCipherSuites = null;

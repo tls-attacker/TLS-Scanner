@@ -18,9 +18,7 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<CipherSuite> notRecommendedSuites;
     private boolean
-            recommended; // If false CipherSuiteGuidelineCheck checked if the provided cipher suites
-
-    // are NOT supported.
+            recommended; // If false CipherSuiteGuidelineCheck checked if the provided cipher suites are NOT supported.
 
     public CipherSuiteGuidelineCheckResult(
             String checkName,
