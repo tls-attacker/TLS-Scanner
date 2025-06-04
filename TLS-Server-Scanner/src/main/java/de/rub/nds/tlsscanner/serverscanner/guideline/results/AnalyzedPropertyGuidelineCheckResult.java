@@ -18,7 +18,7 @@ public class AnalyzedPropertyGuidelineCheckResult extends GuidelineCheckResult {
     private final AnalyzedProperty property;
     private final TestResult expectedResult;
     private final TestResult actualResult;
-    
+
     @SuppressWarnings("unused")
     // Default constructor for deserialization
     private AnalyzedPropertyGuidelineCheckResult() {
