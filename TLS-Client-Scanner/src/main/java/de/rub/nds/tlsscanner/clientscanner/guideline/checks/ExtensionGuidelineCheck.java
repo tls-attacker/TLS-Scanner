@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     private List<ExtensionType> extensionsInQuestion;
-    private boolean required; // If false this class checks if the provided extension is NOT set.
+    private boolean required; // If false this class checks if the provided extensions are NOT set.
 
     private ExtensionGuidelineCheck() {
         super(null, null);
@@ -39,8 +39,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
             String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true; // Default case, this means the extensionsInQuestion is expected to be
-        // supported.
+        this.required = true; // Default case, this means the extensionsInQuestion are expected to be set.
     }
 
     public ExtensionGuidelineCheck(
@@ -60,8 +59,7 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
             ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true; // Default case, this means the extensionsInQuestion is expected to be
-        // supported.
+        this.required = true; // Default case, this means the extensionsInQuestion are expected to be set.
     }
 
     public ExtensionGuidelineCheck(
@@ -107,5 +105,9 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     public List<ExtensionType> getExtensionsInQuestion() {
         return Collections.unmodifiableList(extensionsInQuestion);
+    }
+
+    public boolean isRequired() {
+        return required;
     }
 }
