@@ -110,12 +110,15 @@ public class NistGuidelineSerializationIT {
         // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth
         // key purpose OID should be included in the certificates to be used for TLS client
         // authentication and should be omitted from any other certificates.
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "The client shall perform revocation checking of the server certificate.",
-                        RequirementLevel.MUST,
-                        TlsAnalyzedProperty.SUPPORTS_OCSP,
-                        TestResults.TRUE));
+
+        // TODO: Implement clientscanner probe that sets TlsAnalyzedProperty.SUPPORTS_OCSP.
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "The client shall perform revocation checking of the server
+        // certificate.",
+        //                        RequirementLevel.MUST,
+        //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
+        //                        TestResults.TRUE));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
