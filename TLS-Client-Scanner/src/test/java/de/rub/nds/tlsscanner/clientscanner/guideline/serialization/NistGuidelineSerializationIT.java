@@ -107,6 +107,7 @@ public class NistGuidelineSerializationIT {
                         "ECDSA signature certificate or ECDH certificate: The curve should be P-256 or P-384.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
+
         // TODO: If the EKU extension is included in client certificates, then the id-kp-client-auth
         // key purpose OID should be included in the certificates to be used for TLS client
         // authentication and should be omitted from any other certificates.
@@ -480,28 +481,32 @@ public class NistGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.PRE_SHARED_KEY));
-        // TODO: Implement corresponding probes
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "The Pre-Shared Key Exchange Modes extension shall be supported by TLS 1.3 clients that support the Pre-Shared Key extension.",
-                        RequirementLevel.MUST,
-                        GuidelineCheckCondition.and(
-                                Arrays.asList(
-                                        GuidelineCheckCondition.or(
-                                                Arrays.asList(
-                                                        new GuidelineCheckCondition(
-                                                                TlsAnalyzedProperty
-                                                                        .SUPPORTS_TLS13_PSK,
-                                                                TestResults.TRUE),
-                                                        new GuidelineCheckCondition(
-                                                                TlsAnalyzedProperty
-                                                                        .SUPPORTS_TLS13_PSK_DHE,
-                                                                TestResults.TRUE))),
-                                        new GuidelineCheckCondition(
-                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
-                                                TestResults.TRUE))),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
-                        TestResults.TRUE));
+        // TODO: Implement clientscanner probe that sets
+        // TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES.
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "The Pre-Shared Key Exchange Modes extension shall be supported by
+        // TLS 1.3 clients that support the Pre-Shared Key extension.",
+        //                        RequirementLevel.MUST,
+        //                        GuidelineCheckCondition.and(
+        //                                Arrays.asList(
+        //                                        GuidelineCheckCondition.or(
+        //                                                Arrays.asList(
+        //                                                        new GuidelineCheckCondition(
+        //                                                                TlsAnalyzedProperty
+        //
+        // .SUPPORTS_TLS13_PSK,
+        //                                                                TestResults.TRUE),
+        //                                                        new GuidelineCheckCondition(
+        //                                                                TlsAnalyzedProperty
+        //
+        // .SUPPORTS_TLS13_PSK_DHE,
+        //                                                                TestResults.TRUE))),
+        //                                        new GuidelineCheckCondition(
+        //                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+        //                                                TestResults.TRUE))),
+        //                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
+        //                        TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Supported Versions extension shall be supported by TLS 1.3 clients.",
@@ -567,29 +572,38 @@ public class NistGuidelineSerializationIT {
                         false,
                         ExtensionType.EARLY_DATA));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new ExtensionGuidelineCheck( // Raw Public Key is currently the only use-case for
+                        // client/server certificate type. Thus, it is
+                        // sufficient to just check if any of these extensions
+                        // is present in the ClientHello.
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
                         false,
                         ExtensionType.CLIENT_CERTIFICATE_TYPE,
                         ExtensionType.SERVER_CERTIFICATE_TYPE));
-        // TODO: Checking the Server Key Size
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "Clients using TLS 1.3 should not send 0-RTT data.",
-                        RequirementLevel.SHOULD_NOT,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "TLS 1.2 clients shall not use False Start.",
-                        RequirementLevel.MUST_NOT,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START,
-                        TestResults.FALSE));
+
+        // TODO: Add Check for "4.5.3 Checking the Server Key Size". Probably can utilize
+        // ServerCertificateKeySizeProbe.java once its executeTest() is implemented.
+
+        // TODO: Implement clientscanner probe that sets TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT.
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "Clients using TLS 1.3 should not send 0-RTT data.",
+        //                        RequirementLevel.SHOULD_NOT,
+        //                        new GuidelineCheckCondition(
+        //                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+        //                        TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
+        //                        TestResults.FALSE));
+        // TODO: Implement clientscanner probe that sets
+        // TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START.
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "TLS 1.2 clients shall not use False Start.",
+        //                        RequirementLevel.MUST_NOT,
+        //                        new GuidelineCheckCondition(
+        //                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+        //                        TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START,
+        //                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",
