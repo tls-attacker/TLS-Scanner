@@ -322,13 +322,11 @@ public class BsiGuidelineSerializationIT {
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P256R1_TLS13_SHA256,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P384R1_TLS13_SHA384,
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
-                        )));
+                                )));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
                         RequirementLevel.SHOULD,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
