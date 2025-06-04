@@ -33,7 +33,10 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     /** The protocol versions this check applies to. */
     private List<ProtocolVersion> versions;
 
-    private List<CipherSuite> recommendedCipherSuites;
+    private List<CipherSuite> cipherSuitesInQuestion;
+    private boolean recommended; // If false this class checks if the provided cipher suites are NOT
+
+    // supported.
 
     private CipherSuiteGuidelineCheck() {
         super(null, null);
@@ -43,10 +46,13 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
             String name,
             RequirementLevel requirementLevel,
             List<ProtocolVersion> versions,
-            List<CipherSuite> recommendedCipherSuites) {
+            List<CipherSuite> cipherSuitesInQuestion) {
         super(name, requirementLevel);
         this.versions = versions;
-        this.recommendedCipherSuites = recommendedCipherSuites;
+        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.recommended =
+                true; // Default case, this means the cipherSuitesInQuestion are expected to be
+        // supported.
     }
 
     public CipherSuiteGuidelineCheck(
@@ -54,17 +60,66 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             List<ProtocolVersion> versions,
-            List<CipherSuite> recommendedCipherSuites) {
+            List<CipherSuite> cipherSuitesInQuestion) {
         super(name, requirementLevel, condition);
         this.versions = versions;
-        this.recommendedCipherSuites = recommendedCipherSuites;
+        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.recommended =
+                true; // Default case, this means the cipherSuitesInQuestion are expected to be
+        // supported.
+    }
+
+    public CipherSuiteGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<ProtocolVersion> versions,
+            List<CipherSuite> cipherSuitesInQuestion,
+            boolean recommended) {
+        super(name, requirementLevel);
+        this.versions = versions;
+        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.recommended = recommended;
+    }
+
+    public CipherSuiteGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<ProtocolVersion> versions,
+            List<CipherSuite> cipherSuitesInQuestion,
+            boolean recommended) {
+        super(name, requirementLevel, condition);
+        this.versions = versions;
+        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.recommended = recommended;
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
+        Set<CipherSuite> supportedCipherSuites = new HashSet<>();
+        List<CipherSuite> nonRecommendedCipherSuites = null;
+        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+            if (versions.contains(pair.getVersion())) {
+                supportedCipherSuites.addAll(pair.getCipherSuiteList());
+            }
+        }
+
+        if (!recommended) {
+            nonRecommendedCipherSuites =
+                    cipherSuitesInQuestion.stream()
+                            .filter(supportedCipherSuites::contains)
+                            .collect(Collectors.toList());
+        } else {
+            nonRecommendedCipherSuites =
+                    supportedCipherSuites.stream()
+                            .filter(suite -> !cipherSuitesInQuestion.contains(suite))
+                            .collect(Collectors.toList());
+        }
         return new CipherSuiteGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(),
+                GuidelineAdherence.of(nonRecommendedCipherSuites.isEmpty()),
+                nonRecommendedCipherSuites,
+                recommended);
     }
 
     @Override
@@ -74,7 +129,9 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
                 + "_"
                 + versions
                 + "_"
-                + recommendedCipherSuites;
+                + cipherSuitesInQuestion
+                + "_"
+                + recommended;
     }
 
     private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
@@ -85,7 +142,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
             }
         }
         return supported.stream()
-                .filter(suite -> !recommendedCipherSuites.contains(suite))
+                .filter(suite -> !cipherSuitesInQuestion.contains(suite))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +150,11 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
         return versions;
     }
 
-    public List<CipherSuite> getRecommendedCipherSuites() {
-        return recommendedCipherSuites;
+    public List<CipherSuite> getCipherSuitesInQuestion() {
+        return cipherSuitesInQuestion;
+    }
+
+    public boolean isRecommended() {
+        return recommended;
     }
 }

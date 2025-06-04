@@ -162,10 +162,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TestResults.TRUE));
         // Cipher Suites (RFC uses a "MUST NOT/SHOULD NOT"-approach instead of an allowlist)
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
-                        // CipherSuiteGuidelineCheck because it just compares
-                        // the cipher suites in the Hello messages with the
-                        // one given in the List.
+                new CipherSuiteGuidelineCheck(
                         "Implementations MUST NOT negotiate the cipher suites with NULL encryption. Implementations MUST NOT negotiate RC4 cipher suites. Implementations MUST NOT negotiate cipher suites offering less than 112 bits of security, including so-called \"export-level\" encryption (which provides 40 or 56 bits of security).",
                         RequirementLevel.MUST_NOT,
                         List.of(ProtocolVersion.TLS12),
@@ -219,12 +216,10 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_KRB5_EXPORT_WITH_RC2_CBC_40_MD5,
                                 CipherSuite.TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA,
                                 CipherSuite.TLS_RSA_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5)));
+                                CipherSuite.TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5),
+                        false));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
-                        // CipherSuiteGuidelineCheck because it just compares
-                        // the cipher suites in the Hello messages with the
-                        // one given in the List.
+                new CipherSuiteGuidelineCheck(
                         "Implementations SHOULD NOT negotiate cipher suites that use algorithms offering less than 128 bits of security. Implementations SHOULD NOT negotiate cipher suites based on RSA key transport, a.k.a. \"static RSA\". Implementations SHOULD NOT negotiate cipher suites based on non-ephemeral (static) finite-field Diffie-Hellman (DH) key agreement. Similarly, implementations SHOULD NOT negotiate non-ephemeral Elliptic Curve DH key agreement. TLS 1.2 implementations SHOULD NOT negotiate cipher suites based on ephemeral finite-field Diffie-Hellman key agreement (i.e., \"TLS_DHE_*\" suites).",
                         RequirementLevel.SHOULD_NOT,
                         List.of(ProtocolVersion.TLS12),
@@ -429,7 +424,8 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384,
                                 CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
                                 CipherSuite.TLS_DHE_RSA_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_SEED_CBC_SHA)));
+                                CipherSuite.TLS_DHE_RSA_WITH_SEED_CBC_SHA),
+                        false));
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Given the foregoing considerations, implementation and deployment of the following cipher suites is RECOMMENDED.",
@@ -443,10 +439,7 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384)));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
-                        // CipherSuiteGuidelineCheck because it just compares
-                        // the cipher suites in the Hello messages with the
-                        // one given in the List.
+                new CipherSuiteGuidelineCheck(
                         "A cipher suite that operates in CBC (cipher block chaining) mode (e.g., TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) SHOULD NOT be used unless the encrypt_then_mac extension [RFC7366] is also successfully negotiated. This requirement applies to both client and server implementations.",
                         RequirementLevel.SHOULD_NOT,
                         GuidelineCheckCondition.and(
@@ -462,23 +455,22 @@ public class Rfc9325GuidelineSerializationIT {
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384)));
+                                CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384),
+                        false));
         checks.add(
                 new CertificateCurveGuidelineCheck(
                         "When using ECDSA signatures for authentication of TLS peers, it is RECOMMENDED that implementations use the NIST curve P-256.",
                         RequirementLevel.SHOULD,
                         List.of(X509NamedCurve.SECP256R1)));
         checks.add(
-                new CipherSuiteGuidelineCheck( // TODO: *_NOT does not work for
-                        // CipherSuiteGuidelineCheck because it just compares
-                        // the cipher suites in the Hello messages with the
-                        // one given in the List.
+                new CipherSuiteGuidelineCheck(
                         "The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         List.of(ProtocolVersion.TLS12),
-                        List.of(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA)));
+                        List.of(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA),
+                        false));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "Both clients and servers SHOULD include the \"Supported Elliptic Curves Extension\" [RFC8422].",
