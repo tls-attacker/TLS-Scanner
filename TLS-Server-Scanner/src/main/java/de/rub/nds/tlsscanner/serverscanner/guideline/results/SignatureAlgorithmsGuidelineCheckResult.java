@@ -19,6 +19,13 @@ public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResul
 
     private final Set<SignatureAlgorithm> notRecommendedAlgorithms;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private SignatureAlgorithmsGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedAlgorithms = null;
+    }
+
     public SignatureAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

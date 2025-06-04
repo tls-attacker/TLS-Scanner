@@ -19,6 +19,13 @@ public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckRe
 
     private final Set<X509SignatureAlgorithm> notRecommendedAlgorithms;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private X509SignatureAlgorithmGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedAlgorithms = null;
+    }
+
     public X509SignatureAlgorithmGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

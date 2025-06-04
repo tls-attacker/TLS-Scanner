@@ -20,6 +20,13 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
 
     private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private SignatureAndHashAlgorithmsCertificateGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedAlgorithms = null;
+    }
+
     public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

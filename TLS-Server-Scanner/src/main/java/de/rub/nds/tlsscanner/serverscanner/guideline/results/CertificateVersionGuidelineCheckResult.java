@@ -16,6 +16,13 @@ public class CertificateVersionGuidelineCheckResult extends GuidelineCheckResult
 
     private final X509Version version;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private CertificateVersionGuidelineCheckResult() {
+        super(null, null);
+        this.version = null;
+    }
+
     public CertificateVersionGuidelineCheckResult(
             String checkName, GuidelineAdherence adherence, X509Version version) {
         super(checkName, adherence);

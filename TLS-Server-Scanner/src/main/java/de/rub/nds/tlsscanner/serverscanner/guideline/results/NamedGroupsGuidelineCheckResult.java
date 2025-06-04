@@ -22,6 +22,12 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private NamedGroupsGuidelineCheckResult() {
+        super(null, null);
+    }
+
     public NamedGroupsGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
         super(checkName, adherence);
     }

@@ -14,6 +14,12 @@ import java.util.Objects;
 
 public class ExtendedKeyUsageCertificateCheckResult extends GuidelineCheckResult {
 
+    @SuppressWarnings("unused")
+    // Default constructor for deserialization
+    private ExtendedKeyUsageCertificateCheckResult() {
+        super(null, null);
+    }
+
     public ExtendedKeyUsageCertificateCheckResult(String checkName, GuidelineAdherence adherence) {
         super(checkName, adherence);
     }
