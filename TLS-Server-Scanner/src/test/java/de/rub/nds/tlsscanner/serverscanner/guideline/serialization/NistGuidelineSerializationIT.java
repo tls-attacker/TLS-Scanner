@@ -151,7 +151,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new CipherSuiteGuidelineCheck(
                         "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
-                        RequirementLevel.MUST_NOT,
+                        RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
