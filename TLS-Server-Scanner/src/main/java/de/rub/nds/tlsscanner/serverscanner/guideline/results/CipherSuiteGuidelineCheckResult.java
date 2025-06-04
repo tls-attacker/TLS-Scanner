@@ -17,26 +17,35 @@ import java.util.List;
 public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<CipherSuite> notRecommendedSuites;
+    private boolean
+            recommended; // If false CipherSuiteGuidelineCheck checked if the provided cipher suites are NOT supported.
 
     public CipherSuiteGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            List<CipherSuite> notRecommendedSuites) {
+            List<CipherSuite> notRecommendedSuites,
+            boolean recommended) {
         super(checkName, adherence);
         this.notRecommendedSuites = notRecommendedSuites;
+        this.recommended = recommended;
     }
 
     @Override
     public String toString() {
         if (notRecommendedSuites.isEmpty()) {
-            return "Only listed Cipher Suites are supported.";
+            if (recommended) return "Only listed Cipher Suites are supported.";
+            return "None of the listed Cipher Suites is supported.";
         } else {
-            return "The following Cipher Suites were supported but not recommended:\n"
+            return "The following Cipher Suites were supported against the guidance:\n"
                     + Joiner.on('\n').join(notRecommendedSuites);
         }
     }
 
     public List<CipherSuite> getNotRecommendedSuites() {
         return notRecommendedSuites;
+    }
+
+    public boolean isRecommended() {
+        return recommended;
     }
 }

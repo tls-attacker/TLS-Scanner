@@ -78,4 +78,62 @@ public class CipherSuiteGuidelineCheckTest {
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
+
+    @Test
+    public void testPositiveNotRecommended() {
+        ServerReport report = new ServerReport("test", 443);
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                Arrays.asList(
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS12,
+                                Collections.singletonList(
+                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS13,
+                                Collections.singletonList(CipherSuite.TLS_AES_256_GCM_SHA384))));
+        CipherSuiteGuidelineCheck check =
+                new CipherSuiteGuidelineCheck(
+                        null,
+                        null,
+                        Collections.singletonList(ProtocolVersion.TLS12),
+                        Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA),
+                        false);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
+
+        check =
+                new CipherSuiteGuidelineCheck(
+                        null,
+                        null,
+                        Collections.singletonList(ProtocolVersion.TLS13),
+                        Collections.singletonList(CipherSuite.TLS_AES_128_CCM_SHA256),
+                        false);
+
+        result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
+    }
+
+    @Test
+    public void testNegativeNotRecommended() {
+        ServerReport report = new ServerReport("test", 443);
+        report.putResult(
+                TlsAnalyzedProperty.VERSION_SUITE_PAIRS,
+                Collections.singletonList(
+                        new VersionSuiteListPair(
+                                ProtocolVersion.TLS12,
+                                Arrays.asList(
+                                        CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
+                                        CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA))));
+
+        CipherSuiteGuidelineCheck check =
+                new CipherSuiteGuidelineCheck(
+                        null,
+                        null,
+                        Collections.singletonList(ProtocolVersion.TLS12),
+                        Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA),
+                        false);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
+    }
 }
