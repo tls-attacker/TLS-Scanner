@@ -544,7 +544,7 @@ public class NistGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.POST_HANDSHAKE_AUTH));
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "The Client Certificate URL extension should not be supported.",
                         RequirementLevel.SHOULD_NOT,
                         GuidelineCheckCondition.or(
@@ -558,8 +558,8 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                                                 TestResults.TRUE))),
-                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
-                        TestResults.FALSE));
+                        false,
+                        ExtensionType.CLIENT_CERTIFICATE_URL));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "The Early Data Indication extension should not be used.",
