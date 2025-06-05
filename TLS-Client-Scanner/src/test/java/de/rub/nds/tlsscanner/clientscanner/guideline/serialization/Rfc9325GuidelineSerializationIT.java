@@ -141,15 +141,14 @@ public class Rfc9325GuidelineSerializationIT {
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "In order to prevent the attacks described in [ALPACA], a server that does not recognize the presented server name SHOULD NOT continue the handshake.",
-                        RequirementLevel.SHOULD_NOT,
-                        TlsAnalyzedProperty.STRICT_SNI,
-                        TestResults.TRUE));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
                         RequirementLevel.MUST,
+                        ExtensionType.ALPN));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Clients SHOULD abort the handshake if the server acknowledges the ALPN extension but does not select a protocol from the client list.",
+                        RequirementLevel.SHOULD,
                         TlsAnalyzedProperty.STRICT_ALPN,
                         TestResults.TRUE));
         // Cipher Suites (RFC uses a "MUST NOT/SHOULD NOT"-approach instead of an allowlist)

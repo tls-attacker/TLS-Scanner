@@ -112,14 +112,17 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
-//        checks.add(
-//                new AnalyzedPropertyGuidelineCheck(
-//                        "In order to gain forward secrecy, this document recommends that server implementations SHOULD **select the \"psk_dhe_ke\" PSK key exchange mode** and respond with a \"key_share\" to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
-//                        RequirementLevel.SHOULD,
-//                        new GuidelineCheckCondition(
-//                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-//                        TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
-//                        TestResults.TRUE));
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "In order to gain forward secrecy, this document recommends that
+        // server implementations SHOULD **select the \"psk_dhe_ke\" PSK key exchange mode** and
+        // respond with a \"key_share\" to complete an Ephemeral Elliptic Curve Diffie-Hellman
+        // (ECDHE) exchange on each session resumption.",
+        //                        RequirementLevel.SHOULD,
+        //                        new GuidelineCheckCondition(
+        //                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
+        //                        TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
+        //                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "In order to gain forward secrecy, this document recommends that server implementations SHOULD select the \"psk_dhe_ke\" PSK key exchange mode and **respond with a \"key_share\"** to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
@@ -155,8 +158,13 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.STRICT_SNI,
                         TestResults.TRUE));
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
+                        RequirementLevel.MUST,
+                        ExtensionType.ALPN));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "In the event that the server supports no protocols that the client advertises, then the server SHALL respond with a fatal 'no_application_protocol' alert.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.STRICT_ALPN,
                         TestResults.TRUE));
