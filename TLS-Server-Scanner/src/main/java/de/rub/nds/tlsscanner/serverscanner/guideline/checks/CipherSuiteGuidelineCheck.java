@@ -109,8 +109,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
 
         if (!recommended) {
             nonRecommendedCipherSuites =
-                    cipherSuitesInQuestion.stream()
-                            .filter(supportedCipherSuites::contains)
+                    supportedCipherSuites.stream()
+                            .filter(suite -> cipherSuitesInQuestion.contains(suite))
                             .collect(Collectors.toList());
         } else {
             nonRecommendedCipherSuites =
