@@ -63,7 +63,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
         <skip.failsafe.tests>${skipTests}</skip.failsafe.tests>
         <!-- Set TLS-Attacker version once -->
-        <toolkit.tls.attacker.version>7.1.1</toolkit.tls.attacker.version>
+        <toolkit.tls.attacker.version>7.2.3</toolkit.tls.attacker.version>
     </properties>
 
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
