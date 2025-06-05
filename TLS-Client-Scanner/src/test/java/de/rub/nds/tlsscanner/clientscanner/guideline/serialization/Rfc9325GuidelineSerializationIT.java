@@ -113,20 +113,17 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "In order to gain forward secrecy, this document recommends that server implementations SHOULD select the \"psk_dhe_ke\" PSK key exchange mode and **respond with a \"key_share\"** to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
-                        RequirementLevel.SHOULD,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
-                        TestResults.TRUE));
-        checks.add(
                 new ExtensionGuidelineCheck(
                         "TLS 1.2 clients and servers MUST implement the renegotiation_info extension, as defined in [RFC5746].",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.RENEGOTIATION_INFO));
+
+        // TODO: 3.5: If the server does not acknowledge the extension, the client MUST generate a
+        // fatal handshake_failure alert prior to terminating the connection.
+        // Probe und check benötigt.
+
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 implementations MUST support the extended_master_secret extension defined in [RFC7627].",
@@ -140,6 +137,12 @@ public class Rfc9325GuidelineSerializationIT {
                         "TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Clients SHOULD abort the handshake if the server acknowledges the SNI extension but presents a certificate with a different hostname than the one sent by the client.",
+                        RequirementLevel.SHOULD,
+                        TlsAnalyzedProperty.STRICT_SNI,
+                        TestResults.TRUE));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
@@ -483,6 +486,15 @@ public class Rfc9325GuidelineSerializationIT {
                         Collections.emptyList(),
                         true,
                         2));
+
+        // TODO: Sinnvoll umsetzbar? 4.2.1: Clients SHOULD include
+        // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.
+
+        // TODO: 4.2.1: Note that [RFC8422] deprecates all but the uncompressed point format.
+        // Therefore,
+        // if the client sends an ec_point_formats extension, the ECPointFormatList MUST contain a
+        // single element, "uncompressed".
+
         checks.add(
                 new KeySizeCertGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to 0
                         "4.5. Public Key Length", RequirementLevel.MUST, 0, 2048, 224, 2048));
@@ -503,6 +515,22 @@ public class Rfc9325GuidelineSerializationIT {
                         false));
         checks.add(
                 new ExtensionGuidelineCheck(
+                        "Clients MUST indicate to servers that they request SHA-256 by using the \"Signature Algorithms\" extension defined in TLS 1.2. For TLS 1.3, the same requirement is already specified by [RFC8446].",
+                        RequirementLevel.MUST,
+                        GuidelineCheckCondition.or(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.TRUE))),
+                        ExtensionType.SIGNATURE_AND_HASH_ALGORITHMS));
+        // TODO for the future: Add second check that makes sure the client requests SHA-256 by
+        // using the "Signature Algorithms" extension.
+
+        checks.add(
+                new ExtensionGuidelineCheck(
                         "Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].",
                         RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
@@ -514,13 +542,6 @@ public class Rfc9325GuidelineSerializationIT {
         // implement it here. "It is therefore RECOMMENDED that TLS 1.2 implementations use the
         // 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described
         // in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
-
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "For the common use cases of public key certificates in TLS, servers SHOULD support the following as a best practice given the current state of the art and as a foundation for a possible future solution: OCSP [RFC6960] and OCSP stapling using the status_request extension defined in [RFC6066].",
-                        RequirementLevel.SHOULD,
-                        TlsAnalyzedProperty.SUPPORTS_OCSP,
-                        TestResults.TRUE));
 
         Guideline<ClientReport> guideline =
                 new Guideline<>(
