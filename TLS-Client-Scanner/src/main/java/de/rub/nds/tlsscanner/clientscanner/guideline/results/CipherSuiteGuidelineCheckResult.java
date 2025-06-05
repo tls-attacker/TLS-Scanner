@@ -36,7 +36,7 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
             if (recommended) return "Only listed Cipher Suites are supported.";
             return "None of the listed Cipher Suites is supported.";
         } else {
-            return "The following Cipher Suites were supported against the guidance:\n"
+            return "The following Cipher Suites were supported contrary to the guideline:\n"
                     + Joiner.on('\n').join(notRecommendedSuites);
         }
     }
