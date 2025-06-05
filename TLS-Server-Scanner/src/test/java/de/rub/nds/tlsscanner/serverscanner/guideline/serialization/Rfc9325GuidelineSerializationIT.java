@@ -503,15 +503,13 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         List.of(HashAlgorithm.SHA256)));
         checks.add(
-                new HashAlgorithmsGuidelineCheck( // TODO: *_NOT does not work for
-                        // HashAlgorithmsGuidelineCheck because it just
-                        // compares the algorithms used with the one given
-                        // in the List.
+                new HashAlgorithmsGuidelineCheck(
                         "In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).",
                         RequirementLevel.MUST_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        Arrays.asList(HashAlgorithm.SHA1, HashAlgorithm.MD5)));
+                        Arrays.asList(HashAlgorithm.SHA1, HashAlgorithm.MD5),
+                        false));
         checks.add(
                 new ExtensionGuidelineCheck(
                         "Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].",
