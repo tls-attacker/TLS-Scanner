@@ -155,8 +155,13 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.STRICT_SNI,
                         TestResults.TRUE));
         checks.add(
-                new AnalyzedPropertyGuidelineCheck(
+                new ExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
+                        RequirementLevel.MUST,
+                        ExtensionType.ALPN));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "In the event that the server supports no protocols that the client advertises, then the server SHALL respond with a fatal 'no_application_protocol' alert.",
                         RequirementLevel.MUST,
                         TlsAnalyzedProperty.STRICT_ALPN,
                         TestResults.TRUE));
