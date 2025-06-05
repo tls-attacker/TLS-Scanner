@@ -36,6 +36,17 @@ public class ExtensionGuidelineCheckTest {
     }
 
     @Test
+    public void testNegative() {
+        ClientReport report = new ClientReport();
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Collections.emptyList());
+
+        ExtensionGuidelineCheck check =
+                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
+    }
+
+    @Test
     public void testPositiveMultipleExtensions() {
         ClientReport report = new ClientReport();
         report.putResult(
@@ -47,44 +58,6 @@ public class ExtensionGuidelineCheckTest {
                         null, null, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
-    }
-
-    @Test
-    public void testPositiveNotRequiredExtension() {
-        ClientReport report = new ClientReport();
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                Collections.singletonList(ExtensionType.COOKIE));
-
-        ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(null, null, false, ExtensionType.RENEGOTIATION_INFO);
-        GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
-    }
-
-    @Test
-    public void testPositiveNotRequiredMultipleExtensions() {
-        ClientReport report = new ClientReport();
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                Collections.singletonList(ExtensionType.HEARTBEAT));
-
-        ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(
-                        null, null, false, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
-        GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
-    }
-
-    @Test
-    public void testNegative() {
-        ClientReport report = new ClientReport();
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Collections.emptyList());
-
-        ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
-        GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 
     @Test
@@ -101,6 +74,19 @@ public class ExtensionGuidelineCheckTest {
     }
 
     @Test
+    public void testPositiveNotRequiredExtension() {
+        ClientReport report = new ClientReport();
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                Collections.singletonList(ExtensionType.COOKIE));
+
+        ExtensionGuidelineCheck check =
+                new ExtensionGuidelineCheck(null, null, false, ExtensionType.RENEGOTIATION_INFO);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
+    }
+
+    @Test
     public void testNegativeNotRequiredExtension() {
         ClientReport report = new ClientReport();
         report.putResult(
@@ -111,6 +97,20 @@ public class ExtensionGuidelineCheckTest {
                 new ExtensionGuidelineCheck(null, null, false, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
+    }
+
+    @Test
+    public void testPositiveNotRequiredMultipleExtensions() {
+        ClientReport report = new ClientReport();
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
+                Collections.singletonList(ExtensionType.HEARTBEAT));
+
+        ExtensionGuidelineCheck check =
+                new ExtensionGuidelineCheck(
+                        null, null, false, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
     @Test
