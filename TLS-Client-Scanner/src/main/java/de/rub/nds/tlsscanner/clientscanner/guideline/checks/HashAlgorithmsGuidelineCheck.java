@@ -29,7 +29,9 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ClientReport> {
 
-    private List<HashAlgorithm> recommendedAlgorithms;
+    private List<HashAlgorithm> algorithmsInQuestion;
+    // If false this class checks if the provided cipher suites are NOT supported.
+    private boolean recommended;
 
     private HashAlgorithmsGuidelineCheck() {
         super(null, null);
@@ -38,45 +40,93 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ClientReport> {
     public HashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<HashAlgorithm> recommendedAlgorithms) {
+            List<HashAlgorithm> algorithmsInQuestion) {
         super(name, requirementLevel);
-        this.recommendedAlgorithms = recommendedAlgorithms;
+        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommended = true;
+        // Default case, this means the algorithmsInQuestion are expected to be supported.
     }
 
     public HashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            List<HashAlgorithm> recommendedAlgorithms) {
+            List<HashAlgorithm> algorithmsInQuestion) {
         super(name, requirementLevel, condition);
-        this.recommendedAlgorithms = recommendedAlgorithms;
+        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommended = true;
+        // Default case, this means the algorithmsInQuestion are expected to be supported.
+    }
+
+    public HashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            List<HashAlgorithm> algorithmsInQuestion,
+            boolean recommended) {
+        super(name, requirementLevel);
+        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommended = recommended;
+    }
+
+    public HashAlgorithmsGuidelineCheck(
+            String name,
+            RequirementLevel requirementLevel,
+            GuidelineCheckCondition condition,
+            List<HashAlgorithm> algorithmsInQuestion,
+            boolean recommended) {
+        super(name, requirementLevel, condition);
+        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommended = recommended;
     }
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
-        List<SignatureAndHashAlgorithm> algorithms =
+        List<SignatureAndHashAlgorithm> supportedAlgorithms =
                 report.getClientAdvertisedSignatureAndHashAlgorithms();
-        if (algorithms != null) {
-            Set<HashAlgorithm> nonRecommended = new HashSet<>();
-            for (SignatureAndHashAlgorithm alg : algorithms) {
-                if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
-                    nonRecommended.add(alg.getHashAlgorithm());
+        if (supportedAlgorithms != null) {
+            Set<HashAlgorithm> nonRecommendedAlgorithms = new HashSet<>();
+            if (!recommended) {
+                for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
+                    if (this.algorithmsInQuestion.contains(alg.getHashAlgorithm())) {
+                        nonRecommendedAlgorithms.add(alg.getHashAlgorithm());
+                    }
+                }
+            } else {
+                for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
+                    if (!this.algorithmsInQuestion.contains(alg.getHashAlgorithm())) {
+                        nonRecommendedAlgorithms.add(alg.getHashAlgorithm());
+                    }
                 }
             }
             return new HashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                    getName(),
+                    GuidelineAdherence.of(nonRecommendedAlgorithms.isEmpty()),
+                    nonRecommendedAlgorithms,
+                    recommended);
         } else {
             return new HashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
+                    getName(),
+                    GuidelineAdherence.CHECK_FAILED,
+                    Collections.emptySet(),
+                    recommended);
         }
     }
 
     @Override
     public String toString() {
-        return "HashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
+        return "HashAlgorithms_"
+                + getRequirementLevel()
+                + "_"
+                + algorithmsInQuestion
+                + "_"
+                + recommended;
     }
 
-    public List<HashAlgorithm> getRecommendedAlgorithms() {
-        return recommendedAlgorithms;
+    public List<HashAlgorithm> getAlgorithmsInQuestion() {
+        return algorithmsInQuestion;
+    }
+
+    public boolean isRecommended() {
+        return recommended;
     }
 }

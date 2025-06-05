@@ -52,4 +52,37 @@ public class HashAlgorithmsGuidelineCheckTest {
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
+
+    public void testPositiveNotRecommended() {
+        ClientReport report = new ClientReport();
+        report.putResult(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA224));
+        HashAlgorithmsGuidelineCheck check =
+                new HashAlgorithmsGuidelineCheck(
+                        null,
+                        null,
+                        Collections.singletonList(
+                                SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()),
+                        false);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
+    }
+
+    @Test
+    public void testNegativeNotRecommended() {
+        ClientReport report = new ClientReport();
+        report.putResult(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+        HashAlgorithmsGuidelineCheck check =
+                new HashAlgorithmsGuidelineCheck(
+                        null,
+                        null,
+                        Collections.singletonList(
+                                SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()),
+                        false);
+        GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
+    }
 }
