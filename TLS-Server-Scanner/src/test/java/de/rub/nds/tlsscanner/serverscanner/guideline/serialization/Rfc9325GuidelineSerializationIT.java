@@ -524,12 +524,17 @@ public class Rfc9325GuidelineSerializationIT {
         // 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described
         // in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
 
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "For the common use cases of public key certificates in TLS, servers SHOULD support the following as a best practice given the current state of the art and as a foundation for a possible future solution: OCSP [RFC6960] and OCSP stapling using the status_request extension defined in [RFC6066].",
-                        RequirementLevel.SHOULD,
-                        TlsAnalyzedProperty.SUPPORTS_OCSP,
-                        TestResults.TRUE));
+        // TODO: Implement serverscanner probe that sets TlsAnalyzedProperty.SUPPORTS_OCSP (see
+        // issue #199).
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "For the common use cases of public key certificates in TLS,
+        // servers SHOULD support the following as a best practice given the current state of the
+        // art and as a foundation for a possible future solution: OCSP [RFC6960] and OCSP stapling
+        // using the status_request extension defined in [RFC6066].",
+        //                        RequirementLevel.SHOULD,
+        //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
+        //                        TestResults.TRUE));
 
         Guideline<ServerReport> guideline =
                 new Guideline<>(
