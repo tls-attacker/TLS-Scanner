@@ -34,9 +34,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
     private List<ProtocolVersion> versions;
 
     private List<CipherSuite> cipherSuitesInQuestion;
-    private boolean recommended; // If false this class checks if the provided cipher suites are NOT
-
-    // supported.
+    // If false this class checks if the provided cipher suites are NOT supported.
+    private boolean recommended;
 
     private CipherSuiteGuidelineCheck() {
         super(null, null);
@@ -50,9 +49,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
         super(name, requirementLevel);
         this.versions = versions;
         this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended =
-                true; // Default case, this means the cipherSuitesInQuestion are expected to be
-        // supported.
+        this.recommended = true;
+        // Default case, this means the cipherSuitesInQuestion are expected to be supported.
     }
 
     public CipherSuiteGuidelineCheck(
@@ -64,9 +62,8 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
         super(name, requirementLevel, condition);
         this.versions = versions;
         this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended =
-                true; // Default case, this means the cipherSuitesInQuestion are expected to be
-        // supported.
+        this.recommended = true;
+        // Default case, this means the cipherSuitesInQuestion are expected to be supported.
     }
 
     public CipherSuiteGuidelineCheck(

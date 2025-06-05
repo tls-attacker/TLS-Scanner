@@ -39,7 +39,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true; // Default case, this means the extensionsInQuestion are expected to be set.
+        this.required = true;
+        // Default case, this means the extensionsInQuestion are expected to be set.
     }
 
     public ExtensionGuidelineCheck(
@@ -59,7 +60,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
             ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true; // Default case, this means the extensionsInQuestion are expected to be set.
+        this.required = true;
+        // Default case, this means the extensionsInQuestion are expected to be set.
     }
 
     public ExtensionGuidelineCheck(
