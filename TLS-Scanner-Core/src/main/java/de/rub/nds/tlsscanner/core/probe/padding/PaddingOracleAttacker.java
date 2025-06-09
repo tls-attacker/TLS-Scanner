@@ -138,7 +138,7 @@ public class PaddingOracleAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                LOGGER.warn("Could not extract fingerprint for {}", pair);
             } else {
                 testedSuite =
                         pair.getFingerPrintTask()
@@ -178,9 +178,9 @@ public class PaddingOracleAttacker {
                         FingerprintChecker.checkEquality(
                                 responseOne.getFingerprint(), responseTwo.getFingerprint());
                 if (error != EqualityError.NONE) {
-                    LOGGER.debug("Found an EqualityError: " + error);
-                    LOGGER.debug("Fingerprint1: " + responseOne.getFingerprint().toString());
-                    LOGGER.debug("Fingerprint2: " + responseTwo.getFingerprint().toString());
+                    LOGGER.debug("Found an EqualityError: {}", error);
+                    LOGGER.debug("Fingerprint1: {}", responseOne.getFingerprint());
+                    LOGGER.debug("Fingerprint2: {}", responseTwo.getFingerprint());
                     return error;
                 }
             }
