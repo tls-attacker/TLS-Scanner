@@ -797,6 +797,17 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>AVOIDS_WEAK_CIPHER_SUITES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>HAS_VERSION_INTOLERANCE</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
@@ -2184,6 +2195,17 @@
         <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>PREFERS_TLS13_PSK_DHE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>

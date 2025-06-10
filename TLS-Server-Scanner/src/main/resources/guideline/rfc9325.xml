@@ -5,25 +5,25 @@
         <name>Implementations MUST NOT negotiate SSL version 2.</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_SSL_2</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Implementations MUST NOT negotiate SSL version 3.</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_SSL_3</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Implementations MUST NOT negotiate TLS version 1.0 [RFC2246].</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_TLS_1_0</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Implementations MUST NOT negotiate TLS version 1.1 [RFC4346].</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_TLS_1_1</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Implementations MUST support TLS 1.2 [RFC5246].</name>
@@ -61,7 +61,7 @@
             </and>
         </condition>
         <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>In order to help prevent compression-related attacks (summarized in Section 2.6 of [RFC7457]) when using TLS 1.2, implementations and deployments SHOULD NOT support TLS-level compression (Section 6.2.2 of [RFC5246]).</name>
@@ -71,7 +71,7 @@
             <result>TRUE</result>
         </condition>
         <property>SUPPORTS_TLS_COMPRESSION</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>In order to gain forward secrecy, this document recommends that server implementations SHOULD **select the "psk_dhe_ke" PSK key exchange mode** and respond with a "key_share" to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.</name>
@@ -100,7 +100,8 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>RENEGOTIATION_INFO</requiredExtension>
+        <extensionsInQuestion>RENEGOTIATION_INFO</extensionsInQuestion>
+        <required>true</required>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>TLS 1.2 implementations MUST support the extended_master_secret extension defined in [RFC7627].</name>
@@ -115,7 +116,8 @@
     <extensionGuidelineCheck>
         <name>TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].</name>
         <requirementLevel>MUST</requirementLevel>
-        <requiredExtension>SERVER_NAME_INDICATION</requiredExtension>
+        <extensionsInQuestion>SERVER_NAME_INDICATION</extensionsInQuestion>
+        <required>true</required>
     </extensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>In order to prevent the attacks described in [ALPACA], a server that does not recognize the presented server name SHOULD NOT continue the handshake.</name>
@@ -123,281 +125,279 @@
         <property>STRICT_SNI</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
+    <extensionGuidelineCheck>
         <name>TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].</name>
+        <requirementLevel>MUST</requirementLevel>
+        <extensionsInQuestion>ALPN</extensionsInQuestion>
+        <required>true</required>
+    </extensionGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>In the event that the server supports no protocols that the client advertises, then the server SHALL respond with a fatal 'no_application_protocol' alert.</name>
         <requirementLevel>MUST</requirementLevel>
         <property>STRICT_ALPN</property>
         <result>TRUE</result>
-    </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>For HTTP over TLS, refer to [RFC8470] for guidance. For QUIC on TLS, refer to Section 9.2 of [RFC9001]. For other protocols [...] applications MUST avoid this feature unless an explicit specification exists for the application protocol in question to clarify when 0-RTT is appropriate and secure.</name>
-        <requirementLevel>MUST</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_3</property>
-            <result>TRUE</result>
-        </condition>
-        <property>SUPPORTS_TLS13_0_RTT</property>
-        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Implementations MUST NOT negotiate the cipher suites with NULL encryption. Implementations MUST NOT negotiate RC4 cipher suites. Implementations MUST NOT negotiate cipher suites offering less than 112 bits of security, including so-called "export-level" encryption (which provides 40 or 56 bits of security).</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_NULL_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_NULL_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_anon_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_NULL_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_NULL_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_NULL_WITH_NULL_NULL</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_PSK_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_PSK_WITH_NULL_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_PSK_WITH_NULL_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_NULL_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_NULL_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_NULL_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_NULL_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_NULL_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_EXPORT_WITH_RC4_40_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_RC4_128_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_anon_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_RC4_40_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_RC4_40_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_WITH_RC4_128_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_PSK_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_EXPORT_WITH_RC4_40_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_RC4_128_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_RC4_128_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_DES_CBC_40_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_DES_CBC_40_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_RC2_CBC_40_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_EXPORT_WITH_DES40_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5</recommendedCipherSuites>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_NULL_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_NULL_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_anon_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_PSK_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_PSK_WITH_NULL_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_PSK_WITH_NULL_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_NULL_WITH_NULL_NULL</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_PSK_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_PSK_WITH_NULL_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_PSK_WITH_NULL_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_NULL_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_NULL_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_NULL_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_NULL_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_NULL_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_EXPORT_WITH_RC4_40_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_RC4_128_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_anon_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_PSK_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_RC4_40_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_RC4_40_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_WITH_RC4_128_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_PSK_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_EXPORT_WITH_RC4_40_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_RC4_128_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_RC4_128_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_DES_CBC_40_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_DES_CBC_40_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_RC2_CBC_40_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5</cipherSuitesInQuestion>
+        <recommended>false</recommended>
     </cipherSuiteGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Implementations SHOULD NOT negotiate cipher suites that use algorithms offering less than 128 bits of security. Implementations SHOULD NOT negotiate cipher suites based on RSA key transport, a.k.a. "static RSA". Implementations SHOULD NOT negotiate cipher suites based on non-ephemeral (static) finite-field Diffie-Hellman (DH) key agreement. Similarly, implementations SHOULD NOT negotiate non-ephemeral Elliptic Curve DH key agreement. TLS 1.2 implementations SHOULD NOT negotiate cipher suites based on ephemeral finite-field Diffie-Hellman key agreement (i.e., "TLS_DHE_*" suites).</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_WITH_3DES_EDE_CBC_MD5</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_KRB5_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_PSK_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_IDEA_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_SEED_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_anon_WITH_SEED_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_DSS_WITH_SEED_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DH_RSA_WITH_SEED_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_anon_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_anon_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_DSS_WITH_SEED_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_ARIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_ARIA_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_DES_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_DHE_RSA_WITH_SEED_CBC_SHA</recommendedCipherSuites>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_WITH_3DES_EDE_CBC_MD5</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_KRB5_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_PSK_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CCM_8</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_256_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_256_CCM_8</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_IDEA_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_anon_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_DSS_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DH_RSA_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_anon_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_anon_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_DSS_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_128_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_256_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_128_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_128_CCM_8</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_256_CCM</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_256_CCM_8</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_ARIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_ARIA_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
+        <recommended>false</recommended>
     </cipherSuiteGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>Given the foregoing considerations, implementation and deployment of the following cipher suites is RECOMMENDED.</name>
@@ -407,10 +407,11 @@
             <result>TRUE</result>
         </condition>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
+        <recommended>true</recommended>
     </cipherSuiteGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>A cipher suite that operates in CBC (cipher block chaining) mode (e.g., TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) SHOULD NOT be used unless the encrypt_then_mac extension [RFC7366] is also successfully negotiated. This requirement applies to both client and server implementations.</name>
@@ -428,10 +429,11 @@
             </and>
         </condition>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
+        <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
+        <recommended>false</recommended>
     </cipherSuiteGuidelineCheck>
     <certificateCurveGuidelineCheck>
         <name>When using ECDSA signatures for authentication of TLS peers, it is RECOMMENDED that implementations use the NIST curve P-256.</name>
@@ -439,6 +441,12 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
+    <analyzedPropertyGuidelineCheck>
+        <name>Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server. Servers MUST prefer this cipher suite over weaker cipher suites whenever it is proposed, even if it is not the first proposal.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <property>AVOIDS_WEAK_CIPHER_SUITES</property>
+        <result>TRUE</result>
+    </analyzedPropertyGuidelineCheck>
     <cipherSuiteGuidelineCheck>
         <name>The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
@@ -447,12 +455,14 @@
             <result>TRUE</result>
         </condition>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
+        <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
+        <recommended>false</recommended>
     </cipherSuiteGuidelineCheck>
     <extensionGuidelineCheck>
-        <name>TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].</name>
+        <name>Both clients and servers SHOULD include the "Supported Elliptic Curves Extension" [RFC8422].</name>
         <requirementLevel>SHOULD</requirementLevel>
-        <requiredExtension>ELLIPTIC_CURVES</requiredExtension>
+        <extensionsInQuestion>ELLIPTIC_CURVES</extensionsInQuestion>
+        <required>true</required>
     </extensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.</name>
@@ -486,7 +496,8 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>SHA256</recommendedAlgorithms>
+        <algorithmsInQuestion>SHA256</algorithmsInQuestion>
+        <recommended>true</recommended>
     </hashAlgorithmsGuidelineCheck>
     <hashAlgorithmsGuidelineCheck>
         <name>In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).</name>
@@ -495,8 +506,9 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <recommendedAlgorithms>SHA1</recommendedAlgorithms>
-        <recommendedAlgorithms>MD5</recommendedAlgorithms>
+        <algorithmsInQuestion>SHA1</algorithmsInQuestion>
+        <algorithmsInQuestion>MD5</algorithmsInQuestion>
+        <recommended>false</recommended>
     </hashAlgorithmsGuidelineCheck>
     <extensionGuidelineCheck>
         <name>Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].</name>
@@ -505,12 +517,7 @@
             <property>SUPPORTS_TLS_1_2</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>TRUNCATED_HMAC</requiredExtension>
+        <extensionsInQuestion>TRUNCATED_HMAC</extensionsInQuestion>
+        <required>false</required>
     </extensionGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>For the common use cases of public key certificates in TLS, servers SHOULD support the following as a best practice given the current state of the art and as a foundation for a possible future solution: OCSP [RFC6960] and OCSP stapling using the status_request extension defined in [RFC6066].</name>
-        <requirementLevel>SHOULD</requirementLevel>
-        <property>SUPPORTS_OCSP</property>
-        <result>TRUE</result>
-    </analyzedPropertyGuidelineCheck>
 </guideline>
