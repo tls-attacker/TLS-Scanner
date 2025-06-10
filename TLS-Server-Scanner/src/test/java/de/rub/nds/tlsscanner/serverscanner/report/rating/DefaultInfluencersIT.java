@@ -418,6 +418,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 
         influencers.add(
                 new RatingInfluencer(
@@ -1161,6 +1166,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_RENEGOTIATION,
+                                TlsAnalyzedProperty.ENFORCES_RENEGOTIATION_INFO_FROM_SERVER,
                                 TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
                                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION,
                                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,

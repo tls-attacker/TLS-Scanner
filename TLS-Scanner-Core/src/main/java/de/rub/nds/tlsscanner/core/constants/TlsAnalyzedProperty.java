@@ -209,6 +209,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     PREFERS_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
+    AVOIDS_WEAK_CIPHER_SUITES(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_NAMED_GROUP_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(TlsAnalyzedPropertyCategory.SNI),

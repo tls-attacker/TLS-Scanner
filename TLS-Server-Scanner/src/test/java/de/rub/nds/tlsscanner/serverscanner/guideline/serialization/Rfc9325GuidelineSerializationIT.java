@@ -468,6 +468,12 @@ public class Rfc9325GuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         List.of(X509NamedCurve.SECP256R1)));
         checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server. Servers MUST prefer this cipher suite over weaker cipher suites whenever it is proposed, even if it is not the first proposal.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES,
+                        TestResults.TRUE));
+        checks.add(
                 new CipherSuiteGuidelineCheck(
                         "The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.",
                         RequirementLevel.SHOULD_NOT,
