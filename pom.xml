@@ -118,7 +118,6 @@
         <dependency>
             <groupId>com.github.wendykierp</groupId>
             <artifactId>JTransforms</artifactId>
-            <classifier>with-dependencies</classifier>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
