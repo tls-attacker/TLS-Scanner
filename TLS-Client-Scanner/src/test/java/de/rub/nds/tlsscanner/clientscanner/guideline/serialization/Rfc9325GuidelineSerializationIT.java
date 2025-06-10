@@ -526,9 +526,6 @@ public class Rfc9325GuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
                         ExtensionType.SIGNATURE_AND_HASH_ALGORITHMS));
-        // TODO for the future: Add second check that makes sure the client requests SHA-256 by
-        // using the "Signature Algorithms" extension.
-
         checks.add(
                 new ExtensionGuidelineCheck(
                         "Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].",
