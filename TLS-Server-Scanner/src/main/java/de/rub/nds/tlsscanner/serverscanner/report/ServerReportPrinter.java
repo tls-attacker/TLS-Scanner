@@ -61,6 +61,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
+import de.rub.nds.tlsscanner.core.util.VersionInformation;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -127,7 +128,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     @Override
     public String getFullReport() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Report for ");
+        builder.append("TLS-Scanner Report\n");
+        builder.append("Generated with: ")
+                .append(VersionInformation.getFullVersionInfo())
+                .append("\n");
+        builder.append("\nReport for ");
         builder.append(report.getHost() + ":" + report.getPort());
         builder.append("\n");
         if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
