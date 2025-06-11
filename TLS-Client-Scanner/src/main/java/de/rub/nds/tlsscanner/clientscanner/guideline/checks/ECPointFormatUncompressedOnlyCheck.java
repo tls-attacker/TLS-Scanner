@@ -22,11 +22,18 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 /**
  * Checks if the client only supports the uncompressed point format for EC.
  *
- * <p>CONDITION_NOT_MET: If the client does not support/use the ec_point_formats extension the check
- * cannot be performed. VIOLATED: If any of these is true - The extension does not contain the
- * uncompressed point format. - The extension does contain the ansiX962_compressed_prime format. -
- * The extension does contain the ansiX962_compressed_char2 format. ADHERED: If the extension only
- * contains the uncompressed point format.
+ * <p>CONDITION_NOT_MET: If the client does not use the ec_point_formats extension the check cannot
+ * be performed.
+ *
+ * <p>VIOLATED: If any of these is true
+ *
+ * <p>1. The extension does not contain the uncompressed point format.
+ *
+ * <p>2. The extension does contain the ansiX962_compressed_prime format.
+ *
+ * <p>3. The extension does contain the ansiX962_compressed_char2 format.
+ *
+ * <p>ADHERED: If the extension only contains the uncompressed point format.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -47,8 +54,10 @@ public class ECPointFormatUncompressedOnlyCheck extends GuidelineCheck<ClientRep
 
     @Override
     public GuidelineCheckResult evaluate(ClientReport clientReport) {
-        // Step 1: Check if client supports/uses ec_point_formats extension.
-        if (clientReport.getClientAdvertisedExtensions().contains(ExtensionType.EC_POINT_FORMATS)) {
+        // Step 1: Check if client uses ec_point_formats extension.
+        if (!clientReport
+                .getClientAdvertisedExtensions()
+                .contains(ExtensionType.EC_POINT_FORMATS)) {
             return new ECPointFormatUncompressedOnlyCheckResult(
                     getName(), GuidelineAdherence.CONDITION_NOT_MET);
         }
