@@ -20,13 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.CertificateCurveGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.CipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
@@ -489,12 +483,13 @@ public class Rfc9325GuidelineSerializationIT {
 
         // TODO: Sinnvoll umsetzbar? 4.2.1: Clients SHOULD include
         // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.
-
-        // TODO: 4.2.1: Note that [RFC8422] deprecates all but the uncompressed point format.
-        // Therefore,
-        // if the client sends an ec_point_formats extension, the ECPointFormatList MUST contain a
-        // single element, "uncompressed".
-
+        
+        checks.add(
+                new ECPointFormatUncompressedOnlyCheck(
+                        "Note that [RFC8422] deprecates all but the uncompressed point format. Therefore, if the client sends an ec_point_formats extension, the ECPointFormatList MUST contain a single element, \"uncompressed\".",
+                        RequirementLevel.MUST,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE)));
         checks.add(
                 new KeySizeCertGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to 0
                         "4.5. Public Key Length", RequirementLevel.MUST, 0, 2048, 224, 2048));
