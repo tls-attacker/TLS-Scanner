@@ -155,6 +155,7 @@ public final class TlsClientScanner
         registerProbeForExecution(new AlpnProbe(parallelExecutor, config));
         registerProbeForExecution(new SniProbe(parallelExecutor, config));
         registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+        registerProbeForExecution(new RenegotiationProbe(parallelExecutor, config));
         registerProbeForExecution(new ServerCertificateKeySizeProbe(parallelExecutor, config));
         registerProbeForExecution(new ConnectionClosingProbe(parallelExecutor, config));
         registerProbeForExecution(new ECPointFormatProbe(parallelExecutor, config));

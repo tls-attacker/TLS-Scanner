@@ -113,11 +113,14 @@ public class Rfc9325GuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         ExtensionType.RENEGOTIATION_INFO));
-
-        // TODO: 3.5: If the server does not acknowledge the extension, the client MUST generate a
-        // fatal handshake_failure alert prior to terminating the connection.
-        // Probe und check benötigt.
-
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "TLS 1.2 clients MUST send renegotiation_info in the Client Hello. If the server does not acknowledge the extension, the client MUST generate a fatal handshake_failure alert prior to terminating the connection.",
+                        RequirementLevel.MUST,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                        TlsAnalyzedProperty.ENFORCES_RENEGOTIATION_INFO_FROM_SERVER,
+                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 implementations MUST support the extended_master_secret extension defined in [RFC7627].",
@@ -483,7 +486,7 @@ public class Rfc9325GuidelineSerializationIT {
 
         // TODO: Sinnvoll umsetzbar? 4.2.1: Clients SHOULD include
         // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.
-        
+
         checks.add(
                 new ECPointFormatUncompressedOnlyCheck(
                         "Note that [RFC8422] deprecates all but the uncompressed point format. Therefore, if the client sends an ec_point_formats extension, the ECPointFormatList MUST contain a single element, \"uncompressed\".",

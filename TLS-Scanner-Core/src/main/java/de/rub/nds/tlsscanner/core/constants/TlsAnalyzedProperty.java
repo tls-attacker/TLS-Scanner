@@ -192,6 +192,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS_COMPRESSION(TlsAnalyzedPropertyCategory.COMPRESSION),
     SUPPORTS_INSECURE_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
+    ENFORCES_RENEGOTIATION_INFO_FROM_SERVER(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_HTTPS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS_PRELOADING(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),

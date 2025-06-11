@@ -1158,6 +1158,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_RENEGOTIATION,
+                                TlsAnalyzedProperty.ENFORCES_RENEGOTIATION_INFO_FROM_SERVER,
                                 TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
                                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION,
                                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
