@@ -1155,6 +1155,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Tickets resumable in different version",
                 TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+        prettyAppend(builder," "); // Workaround for single newline.
 
         prettyAppendSubheading(builder, "Details");
         // TODO use tables
@@ -2697,7 +2698,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED);
         prettyAppend(
                 builder, "Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW);
-        prettyAppend(builder, "Condition Not Met: " + guidelineReport.getConditionNotMet().size());
+        prettyAppend(builder, "Condition Not Met: " + guidelineReport.getConditionNotMet().size() + "\n");
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
 
