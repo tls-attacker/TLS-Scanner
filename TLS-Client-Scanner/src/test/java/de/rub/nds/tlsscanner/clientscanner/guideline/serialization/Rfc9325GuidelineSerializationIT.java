@@ -483,10 +483,12 @@ public class Rfc9325GuidelineSerializationIT {
                         Collections.emptyList(),
                         true,
                         2));
-
-        // TODO: Sinnvoll umsetzbar? 4.2.1: Clients SHOULD include
-        // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.
-
+        checks.add(
+                new CipherSuiteFirstProposalGuidelineCheck(
+                        "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.",
+                        RequirementLevel.SHOULD,
+                        new GuidelineCheckCondition(
+                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE)));
         checks.add(
                 new ECPointFormatUncompressedOnlyCheck(
                         "Note that [RFC8422] deprecates all but the uncompressed point format. Therefore, if the client sends an ec_point_formats extension, the ECPointFormatList MUST contain a single element, \"uncompressed\".",
