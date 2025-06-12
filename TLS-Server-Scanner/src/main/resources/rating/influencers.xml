@@ -2313,6 +2313,9 @@
         <property>CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>CLIENT_ADVERTISED_EXTENSIONS</property>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -2458,6 +2461,9 @@
     </ratingInfluencer>
     <ratingInfluencer>
         <property>SUPPORTS_RENEGOTIATION</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ENFORCES_RENEGOTIATION_INFO_FROM_SERVER</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT</property>
