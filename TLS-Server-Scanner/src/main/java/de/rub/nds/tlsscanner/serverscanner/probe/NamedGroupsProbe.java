@@ -354,7 +354,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 certificateGroup = context.getServerX509Context().getSubjectNamedCurve();
 
                 if (!toTestList.contains(selectedGroup)) {
-                    LOGGER.warn("Server chose a group we did not offer:" + selectedGroup);
+                    LOGGER.warn("Server chose a group we did not offer: {}", selectedGroup);
                     // TODO add to site report
                     break;
                 }

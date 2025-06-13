@@ -129,7 +129,7 @@ public class ResumptionProbe extends TlsServerProbe {
                     : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for support for Tls13PskDhe");
@@ -168,7 +168,7 @@ public class ResumptionProbe extends TlsServerProbe {
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for support for SessionResumption");
@@ -205,7 +205,7 @@ public class ResumptionProbe extends TlsServerProbe {
                     : TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error(
@@ -253,7 +253,7 @@ public class ResumptionProbe extends TlsServerProbe {
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for support for SessionTicketResumption");
@@ -342,10 +342,10 @@ public class ResumptionProbe extends TlsServerProbe {
             return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
-                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + "): ", e);
+                LOGGER.error("Could not test for support for Tls13Psk ({}): ", exchangeMode, e);
             }
             return TestResults.ERROR_DURING_TEST;
         }
@@ -372,7 +372,7 @@ public class ResumptionProbe extends TlsServerProbe {
             return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for support for Tls13PskDhe");
@@ -426,7 +426,7 @@ public class ResumptionProbe extends TlsServerProbe {
             return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for support for Tls13SessionTickets");

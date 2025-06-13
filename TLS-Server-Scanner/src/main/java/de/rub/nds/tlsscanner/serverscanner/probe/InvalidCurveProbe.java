@@ -442,7 +442,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
                     scanType);
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.warn(

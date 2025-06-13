@@ -229,7 +229,7 @@ public class TrustAnchorManager {
                 X509Certificate cert = (X509Certificate) certFactory.generateCertificate(inStream);
                 certX509List.add(cert);
             } catch (CertificateException | IOException ex) {
-                LOGGER.error("Couldn't load the CA: " + filepath, ex);
+                LOGGER.error("Couldn't load the CA: {}", filepath, ex);
             }
         }
         return certX509List;
@@ -256,7 +256,9 @@ public class TrustAnchorManager {
                 keyStore.setCertificateEntry("custom_" + i, cert);
             } catch (KeyStoreException ex) {
                 throw new RuntimeException(
-                        "Couldn't add the certificate:" + customCAPaths.get(i) + " to the keyStore",
+                        "Couldn't add the certificate: "
+                                + customCAPaths.get(i)
+                                + " to the keyStore",
                         ex);
             }
 
@@ -277,9 +279,8 @@ public class TrustAnchorManager {
                 this.asn1CaCertificateSet.add(cert);
             } catch (NoSuchAlgorithmException | CertificateEncodingException ex) {
                 LOGGER.error(
-                        "Couldn't add CA "
-                                + customCAList.get(i)
-                                + " to either trustAnchor or asn1CaCertificateSet.",
+                        "Couldn't add CA {} to either trustAnchor or asn1CaCertificateSet.",
+                        customCAList.get(i),
                         ex);
             }
         }

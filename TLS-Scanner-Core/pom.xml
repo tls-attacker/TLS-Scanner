@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tls.scanner</groupId>
         <artifactId>tls-scanner</artifactId>
-        <version>7.1.2-SNAPSHOT</version>
+        <version>7.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>tls-scanner-core</artifactId>
 
@@ -29,7 +29,7 @@
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
             <!--################# default lifecycle plugins #################-->
-            <!-- Copy project resources to output directory -->
+            <!-- Copy project resources and process with filtering for version properties -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -47,6 +47,31 @@
                                 </resource>
                                 <resource>
                                     <directory>${main.basedir}/trust_stores_observatory/certificates/</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-resources</id>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*.properties</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>**/*.properties</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>

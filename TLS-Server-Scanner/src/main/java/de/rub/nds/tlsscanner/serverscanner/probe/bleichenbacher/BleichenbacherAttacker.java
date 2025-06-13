@@ -153,7 +153,7 @@ public class BleichenbacherAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                LOGGER.warn("Could not extract fingerprint for {}", pair);
             } else {
                 testedSuite =
                         pair.getFingerPrintTask()

@@ -90,7 +90,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
                 usesCompressionsInCookie = usesCompressionsInCookie();
             }
         } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+            LOGGER.error("Could not scan for {}", getProbeName(), E);
         }
     }
 
