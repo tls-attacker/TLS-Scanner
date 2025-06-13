@@ -66,6 +66,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, TestResults.FALSE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
-                        TestResults.FALSE);
+                        TestResults.FALSE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL, TestResults.FALSE);
     }
 }
