@@ -42,7 +42,7 @@ public class ExtensionProbe extends TlsServerProbe {
 
     private List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResults.FALSE;
-    private TestResult supportsClientCertificateUrl = TestResults.UNCERTAIN;
+    private TestResult supportsClientCertificateUrl = TestResults.FALSE;
     private TestResult encryptThenMac = TestResults.FALSE;
     private TestResult secureRenegotiation = TestResults.FALSE;
     private TestResult sessionTickets = TestResults.FALSE;
