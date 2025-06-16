@@ -28,7 +28,6 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        Security.addProvider(new BouncyCastleProvider());
         ClientScannerConfig config = new ClientScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {

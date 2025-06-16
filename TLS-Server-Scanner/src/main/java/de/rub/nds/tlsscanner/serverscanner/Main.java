@@ -29,7 +29,6 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        Security.addProvider(new BouncyCastleProvider());
         ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {
