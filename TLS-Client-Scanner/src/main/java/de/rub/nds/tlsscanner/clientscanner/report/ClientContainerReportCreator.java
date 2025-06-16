@@ -374,7 +374,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createSessionResumptionContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.RESUMPTION)) {
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.RESUMPTION)) {
             container.add(new HeadlineContainer("Session Resumption"));
             container.add(
                     createKeyValueContainer(
@@ -476,7 +476,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createAlpnContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.ALPN)
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.ALPN)
                 && report.getClientAdvertisedAlpns() != null) {
             container.add(new HeadlineContainer("Advertised ALPNs"));
             ListContainer listContainer = new ListContainer();
