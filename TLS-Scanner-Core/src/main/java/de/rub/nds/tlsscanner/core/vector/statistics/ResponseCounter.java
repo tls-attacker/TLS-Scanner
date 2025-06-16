@@ -18,8 +18,8 @@ public class ResponseCounter {
 
     private int total;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private ResponseCounter() {
         this.fingerprint = null;
         this.counter = 0;

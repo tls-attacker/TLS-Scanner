@@ -17,8 +17,8 @@ public class CertificateGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<GuidelineCheckResult> results = new ArrayList<>();
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateGuidelineCheckResult() {
         super(null, null);
     }

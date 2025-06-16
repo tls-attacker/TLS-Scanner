@@ -37,10 +37,9 @@ public class EntropyReport implements Serializable {
 
     private double failedTemplateTestPercentage;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private EntropyReport() {
-        // Default constructor for deserialization
         this.type = null;
         this.numberOfValues = 0;
         this.numberOfBytes = 0;

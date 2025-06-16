@@ -18,8 +18,8 @@ public class CertificateSignatureCheckResult extends GuidelineCheckResult {
     private final X509PublicKeyType keyAlgorithm;
     private final SignatureAlgorithm signatureAlgorithm;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateSignatureCheckResult() {
         super(null, null);
         this.keyAlgorithm = null;

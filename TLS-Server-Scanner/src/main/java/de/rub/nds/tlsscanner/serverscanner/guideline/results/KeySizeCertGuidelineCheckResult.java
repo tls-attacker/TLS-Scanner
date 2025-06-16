@@ -17,8 +17,8 @@ public class KeySizeCertGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<KeySizeData> keySizes = new ArrayList<>();
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private KeySizeCertGuidelineCheckResult() {
         super(null, null);
     }

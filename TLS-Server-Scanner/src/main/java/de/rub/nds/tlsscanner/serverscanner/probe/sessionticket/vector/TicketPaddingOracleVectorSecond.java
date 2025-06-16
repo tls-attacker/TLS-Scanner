@@ -38,8 +38,8 @@ public class TicketPaddingOracleVectorSecond implements TicketPaddingOracleVecto
     */
     private final int CREATE_TICKET_XOR_OFFSET = 3;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketPaddingOracleVectorSecond() {
         this.offset = null;
         this.lastXorValue = null;

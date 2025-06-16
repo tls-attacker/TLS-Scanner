@@ -25,8 +25,8 @@ public class VectorContainer {
 
     private final List<String> responseStringList;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private VectorContainer() {
         this.vector = null;
         this.distinctResponsesCounterList = new LinkedList<>();

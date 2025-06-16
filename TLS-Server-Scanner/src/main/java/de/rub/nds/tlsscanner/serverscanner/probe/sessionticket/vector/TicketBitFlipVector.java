@@ -17,8 +17,8 @@ import java.util.Objects;
 public class TicketBitFlipVector implements TicketVector {
     public final int position;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketBitFlipVector() {
         this.position = 0;
     }

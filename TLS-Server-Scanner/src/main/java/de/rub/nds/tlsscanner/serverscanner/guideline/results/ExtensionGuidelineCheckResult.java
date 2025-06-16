@@ -17,8 +17,8 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
     private final boolean supported;
     private final ExtensionType requiredExtension;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private ExtensionGuidelineCheckResult() {
         super(null, null);
         this.supported = false;

@@ -16,8 +16,8 @@ public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResul
     private final int maximumValidity;
     private final long actualValidity;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateValidityGuidelineCheckResult() {
         super(null, null);
         this.maximumValidity = 0;

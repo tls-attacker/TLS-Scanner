@@ -13,22 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
@@ -55,6 +40,18 @@ import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ServerReportJsonMapperTest {
 
@@ -68,9 +65,7 @@ class ServerReportJsonMapperTest {
     @Test
     void testFromJsonString() throws Exception {
         // Read the report.json from test resources
-        Path reportPath =
-                Paths.get(
-                        getClass().getClassLoader().getResource("report.json").toURI());
+        Path reportPath = Paths.get(getClass().getClassLoader().getResource("report.json").toURI());
         String jsonReport = Files.readString(reportPath);
 
         // Test conversion from JSON string to ServerReport

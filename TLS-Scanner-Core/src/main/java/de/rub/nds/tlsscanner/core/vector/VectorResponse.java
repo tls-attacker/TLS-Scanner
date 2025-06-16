@@ -16,8 +16,8 @@ public class VectorResponse {
 
     private final Vector vector;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private VectorResponse() {
         this.vector = null;
         this.fingerprint = null;

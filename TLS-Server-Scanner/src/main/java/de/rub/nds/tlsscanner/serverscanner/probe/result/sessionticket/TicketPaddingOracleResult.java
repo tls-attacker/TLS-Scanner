@@ -29,8 +29,8 @@ public class TicketPaddingOracleResult implements SummarizableTestResult {
     private final List<TicketPaddingOracleVectorLast> lastVectorsWithRareResponses;
     private final List<TicketPaddingOracleVectorSecond> secondVectorsWithRareResponses;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketPaddingOracleResult() {
         this.overallResult = null;
         this.positionResults = null;

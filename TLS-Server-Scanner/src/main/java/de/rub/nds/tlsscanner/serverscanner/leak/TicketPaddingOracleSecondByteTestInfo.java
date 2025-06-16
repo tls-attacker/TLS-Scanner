@@ -18,8 +18,8 @@ public class TicketPaddingOracleSecondByteTestInfo extends TicketPaddingOracleLa
 
     private final TicketPaddingOracleVectorLast previousVector;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketPaddingOracleSecondByteTestInfo() {
         super(null, null);
         this.previousVector = null;

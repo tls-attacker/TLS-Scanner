@@ -22,8 +22,8 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private NamedGroupsGuidelineCheckResult() {
         super(null, null);
     }

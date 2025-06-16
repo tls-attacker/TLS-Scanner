@@ -29,8 +29,8 @@ public class TicketPaddingOracleVectorLast implements TicketPaddingOracleVector 
     */
     private final int CREATE_TICKET_XOR_OFFSET = 2;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketPaddingOracleVectorLast() {
         this.offset = null;
         this.xorValue = null;

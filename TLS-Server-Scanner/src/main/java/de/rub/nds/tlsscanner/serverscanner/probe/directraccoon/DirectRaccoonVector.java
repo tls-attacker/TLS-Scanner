@@ -23,8 +23,8 @@ public class DirectRaccoonVector implements Vector {
 
     private final boolean pmsWithNullByte;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private DirectRaccoonVector() {
         this.type = null;
         this.version = null;

@@ -21,7 +21,7 @@ public class Pkcs1Vector implements Vector {
 
     private byte[] encryptedValue;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private Pkcs1Vector() {}
 

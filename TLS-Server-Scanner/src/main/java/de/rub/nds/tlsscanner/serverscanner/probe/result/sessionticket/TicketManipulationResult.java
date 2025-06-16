@@ -32,8 +32,8 @@ public class TicketManipulationResult implements SummarizableTestResult {
     private final ResponseFingerprint acceptDifferentSecretFingerprint;
     private final ResponseFingerprint rejectFingerprint;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TicketManipulationResult() {
         this(null, null, null, null, null);
     }

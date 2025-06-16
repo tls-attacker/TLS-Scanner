@@ -23,8 +23,8 @@ public class TripleVector extends PaddingVector {
     private final VariableModification macModification;
     private final VariableModification paddingModification;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private TripleVector() {
         super(null, null);
         this.cleanModification = null;

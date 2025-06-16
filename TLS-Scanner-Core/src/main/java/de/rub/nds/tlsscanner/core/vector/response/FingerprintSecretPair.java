@@ -13,7 +13,7 @@ public class FingerprintSecretPair {
     private final ResponseFingerprint fingerprint;
     private final int appliedSecret;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private FingerprintSecretPair() {
         fingerprint = null;

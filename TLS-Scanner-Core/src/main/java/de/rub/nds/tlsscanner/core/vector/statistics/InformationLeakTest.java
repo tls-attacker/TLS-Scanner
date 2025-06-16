@@ -20,8 +20,8 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest;
 public class InformationLeakTest<TestInfoT extends TestInfo>
         extends VectorStatisticTest<TestInfoT> {
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private InformationLeakTest() {
         super(null, new LinkedList<>());
     }

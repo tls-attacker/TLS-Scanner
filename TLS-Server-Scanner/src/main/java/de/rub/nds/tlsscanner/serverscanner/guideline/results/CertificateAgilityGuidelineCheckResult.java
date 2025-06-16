@@ -14,8 +14,8 @@ import java.util.Objects;
 
 public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult {
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateAgilityGuidelineCheckResult() {
         super(null, null);
     }

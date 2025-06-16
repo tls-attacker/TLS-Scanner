@@ -19,8 +19,8 @@ public class PlainPaddingVector extends PaddingVector {
 
     private final ByteArrayExplicitValueModification modification;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private PlainPaddingVector() {
         super(null, null);
         this.modification = null;

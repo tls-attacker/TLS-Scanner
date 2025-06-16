@@ -19,7 +19,7 @@ public class VersionSuiteListPair implements Serializable {
 
     private final List<CipherSuite> cipherSuiteList;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private VersionSuiteListPair() {
         version = null;

@@ -17,8 +17,8 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
     private boolean supported;
     private X509NamedCurve namedCurve;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateCurveGuidelineCheckResult() {
         super(null, null);
     }

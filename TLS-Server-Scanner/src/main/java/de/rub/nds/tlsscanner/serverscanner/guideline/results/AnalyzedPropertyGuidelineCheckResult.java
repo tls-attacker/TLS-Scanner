@@ -19,8 +19,8 @@ public class AnalyzedPropertyGuidelineCheckResult extends GuidelineCheckResult {
     private final TestResult expectedResult;
     private final TestResult actualResult;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private AnalyzedPropertyGuidelineCheckResult() {
         super(null, null);
         this.property = null;

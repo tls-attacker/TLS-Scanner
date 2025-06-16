@@ -16,8 +16,8 @@ public class CertificateVersionGuidelineCheckResult extends GuidelineCheckResult
 
     private final X509Version version;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private CertificateVersionGuidelineCheckResult() {
         super(null, null);
         this.version = null;

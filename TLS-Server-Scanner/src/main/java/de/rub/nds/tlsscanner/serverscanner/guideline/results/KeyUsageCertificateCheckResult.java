@@ -17,8 +17,8 @@ public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
     private final boolean supported;
     private final String keyUsage;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private KeyUsageCertificateCheckResult() {
         super(null, null);
         this.supported = false;

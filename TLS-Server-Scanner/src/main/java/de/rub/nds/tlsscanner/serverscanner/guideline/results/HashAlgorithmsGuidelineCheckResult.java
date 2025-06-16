@@ -19,8 +19,8 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<HashAlgorithm> notRecommendedAlgorithms;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private HashAlgorithmsGuidelineCheckResult() {
         super(null, null);
         this.notRecommendedAlgorithms = null;

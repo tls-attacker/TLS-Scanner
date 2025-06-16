@@ -16,8 +16,8 @@ public class DhKeyLengthGuidelineCheckResult extends GuidelineCheckResult {
     private final int weakestDhStrength;
     private final int minimumDhKeyLength;
 
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    // Default constructor for deserialization
     private DhKeyLengthGuidelineCheckResult() {
         super(null, null);
         this.weakestDhStrength = 0;

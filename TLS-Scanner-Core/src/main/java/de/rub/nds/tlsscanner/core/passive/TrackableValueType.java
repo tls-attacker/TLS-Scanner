@@ -22,7 +22,7 @@ public enum TrackableValueType implements TrackableValue {
     DTLS_RETRANSMISSIONS,
     DESTINATION_PORT;
 
-    private TrackableValueType() {
-        // Default constructor
-    }
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private TrackableValueType() {}
 }
