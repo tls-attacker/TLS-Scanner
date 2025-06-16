@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.passive;
 
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.StatExtractor;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;

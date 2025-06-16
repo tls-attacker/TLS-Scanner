@@ -17,6 +17,13 @@ public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
 
     private final HashAlgorithm hashAlgorithm;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private HashAlgorithmStrengthCheckResult() {
+        super(null, null);
+        this.hashAlgorithm = null;
+    }
+
     public HashAlgorithmStrengthCheckResult(
             String checkName, GuidelineAdherence adherence, HashAlgorithm hashAlgorithm) {
         super(checkName, adherence);

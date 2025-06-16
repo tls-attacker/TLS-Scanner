@@ -21,6 +21,7 @@ import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.x509attacker.constants.KeyUsage;
 import de.rub.nds.x509attacker.constants.X509ExtensionType;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
+import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
@@ -45,6 +46,7 @@ public class CertificateReport {
     private PublicKeyContainer publicKey;
     private Boolean weakDebianKey;
     private String issuer;
+    private X509PublicKeyType publicKeyType;
     private X509SignatureAlgorithm x509SignatureAlgorithm;
     private SignatureAlgorithm signatureAlgorithm;
     private X509NamedCurve namedCurve;
@@ -71,6 +73,14 @@ public class CertificateReport {
     private Set<KeyUsage> keyUsageSet;
 
     public CertificateReport() {}
+
+    public X509PublicKeyType getPublicKeyType() {
+        return publicKeyType;
+    }
+
+    public void setPublicKeyType(X509PublicKeyType publicKeyType) {
+        this.publicKeyType = publicKeyType;
+    }
 
     public X509Certificate getCertificate() {
         return certificate;

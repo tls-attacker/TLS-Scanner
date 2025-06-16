@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.core.passive;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.StatExtractor;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;

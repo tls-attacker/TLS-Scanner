@@ -15,7 +15,7 @@ public class HpkpPin {
     private String pinType;
     private byte[] pin;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private HpkpPin() {}
 

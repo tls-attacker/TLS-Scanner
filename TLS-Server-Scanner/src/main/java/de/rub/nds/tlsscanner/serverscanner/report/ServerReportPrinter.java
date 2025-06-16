@@ -45,7 +45,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameterEntry;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -1667,7 +1666,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
                 builder,
@@ -2416,12 +2415,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpHeader header : report.getHttpHeader()) {
-                    prettyAppend(
-                            builder,
-                            header.getHeaderName().getValue()
-                                    + ":"
-                                    + header.getHeaderValue().getValue());
+                for (String header : report.getHttpHeader()) {
+                    prettyAppend(builder, header);
                 }
                 prettyAppendHeading(builder, "HTTP False Start");
                 prettyAppend(
@@ -2489,7 +2484,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Alpaca Details");
         prettyAppend(builder, "Strict ALPN", TlsAnalyzedProperty.STRICT_ALPN);
         prettyAppend(builder, "Strict SNI", TlsAnalyzedProperty.STRICT_SNI);
-        prettyAppend(builder, "ALPACA Mitigation", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "Vulnerable ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         return builder;
     }
 

@@ -24,20 +24,20 @@ public class AlpacaAfterProbe extends AfterProbe<ClientReport> {
         if ((strictSni != TestResults.TRUE && strictSni != TestResults.FALSE)
                 || (strictAlpn != TestResults.TRUE && strictAlpn != TestResults.FALSE)) {
             // at least one of the two properties could not be evaluated
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.UNCERTAIN);
             return;
         }
 
         if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.TRUE);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.FALSE);
             return;
         }
 
         if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.PARTIALLY);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.PARTIALLY);
             return;
         }
 
-        report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.FALSE);
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.TRUE);
     }
 }

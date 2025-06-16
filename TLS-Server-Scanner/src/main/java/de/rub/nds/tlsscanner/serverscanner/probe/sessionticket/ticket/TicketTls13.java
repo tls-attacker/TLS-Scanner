@@ -19,6 +19,13 @@ public class TicketTls13 implements Ticket {
     private PskSet pskSet;
     private List<SessionSecret> sessionSecrets;
 
+    @SuppressWarnings("unused")
+    // This constructor is used by Jackson for deserialization
+    private TicketTls13() {
+        this.pskSet = new PskSet();
+        this.sessionSecrets = List.of();
+    }
+
     public TicketTls13(PskSet pskSet, List<SessionSecret> sessionSecrets) {
         this.pskSet =
                 new PskSet(

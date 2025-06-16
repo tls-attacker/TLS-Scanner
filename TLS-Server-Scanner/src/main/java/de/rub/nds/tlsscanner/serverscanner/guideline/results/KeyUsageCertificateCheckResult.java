@@ -17,6 +17,14 @@ public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
     private final boolean supported;
     private final String keyUsage;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private KeyUsageCertificateCheckResult() {
+        super(null, null);
+        this.supported = false;
+        this.keyUsage = null;
+    }
+
     public KeyUsageCertificateCheckResult(
             String checkName, GuidelineAdherence adherence, boolean supported, String keyUsage) {
         super(checkName, adherence);
