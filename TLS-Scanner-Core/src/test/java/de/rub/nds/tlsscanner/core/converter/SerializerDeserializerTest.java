@@ -9,17 +9,14 @@
 package de.rub.nds.tlsscanner.core.converter;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import de.rub.nds.protocol.crypto.ec.Point;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.PublicKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -50,29 +47,6 @@ public class SerializerDeserializerTest {
         byte[] serialized = serialize(original);
         byte[] deserialized = deserialize(serialized, byte[].class);
         assertArrayEquals(original, deserialized);
-    }
-
-    @Test
-    public void testPointSerializerDeserializer() throws IOException {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Point.class, new PointSerializer());
-        module.addDeserializer(Point.class, new PointDeserializer());
-        mapper.registerModule(module);
-        // Cannot instantiate Point due to missing public constructor or dependencies
-        // Test only registration and skip actual round-trip
-    }
-
-    @Test
-    public void testPublicKeySerializerDeserializer() throws IOException {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(PublicKey.class, new PublicKeySerializer());
-        module.addDeserializer(PublicKey.class, new PublicKeyDeserializer());
-        mapper.registerModule(module);
-        // PublicKeyDeserializer is not implemented, so we expect null
-        PublicKey key = null;
-        byte[] serialized = serialize(key);
-        PublicKey deserialized = deserialize(serialized, PublicKey.class);
-        assertEquals(null, deserialized);
     }
 
     private <T> byte[] serialize(T value) throws IOException {

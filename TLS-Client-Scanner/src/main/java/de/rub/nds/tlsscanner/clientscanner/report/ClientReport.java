@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,9 +23,9 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.converter.PointSerializer;
-import de.rub.nds.tlsscanner.core.converter.ResponseFingerprintSerializer;
-import de.rub.nds.tlsscanner.core.converter.VectorSerializer;
+import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
+import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -40,9 +42,11 @@ public class ClientReport extends TlsScanReport {
         return new Module[] {
             new SimpleModule()
                     .addSerializer(new ByteArraySerializer())
-                    .addSerializer(new ResponseFingerprintSerializer())
-                    .addSerializer(new VectorSerializer())
-                    .addSerializer(new PointSerializer()),
+                    .addDeserializer(byte[].class, new ByteArrayDeserializer())
+                    .addKeyDeserializer(
+                            AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
+                    .addKeyDeserializer(
+                            TrackableValue.class, new TrackableValueTypeKeyDeserializer()),
             new JodaModule()
         };
     }
