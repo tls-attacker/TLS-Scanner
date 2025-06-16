@@ -18,7 +18,6 @@ public class KeySizeData {
     @SuppressWarnings("unused")
     // Default constructor for deserialization
     private KeySizeData() {
-        // Empty constructor for JAXB
     }
 
     public KeySizeData(AsymmetricAlgorithmType algorithm, int minimumLength, int actualLength) {
