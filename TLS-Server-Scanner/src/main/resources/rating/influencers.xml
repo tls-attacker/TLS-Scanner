@@ -797,7 +797,7 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>AVOIDS_WEAK_CIPHER_SUITES</property>
+        <property>AVOIDS_WEAKER_CIPHER_SUITES_RFC9325</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>50</influence>

@@ -471,7 +471,7 @@ public class Rfc9325GuidelineSerializationIT {
                 new AnalyzedPropertyGuidelineCheck(
                         "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server. Servers MUST prefer this cipher suite over weaker cipher suites whenever it is proposed, even if it is not the first proposal.",
                         RequirementLevel.MUST,
-                        TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES,
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
                         TestResults.TRUE));
         checks.add(
                 new CipherSuiteGuidelineCheck(

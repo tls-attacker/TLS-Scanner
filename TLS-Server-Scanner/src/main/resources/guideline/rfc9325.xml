@@ -444,7 +444,7 @@
     <analyzedPropertyGuidelineCheck>
         <name>Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server. Servers MUST prefer this cipher suite over weaker cipher suites whenever it is proposed, even if it is not the first proposal.</name>
         <requirementLevel>MUST</requirementLevel>
-        <property>AVOIDS_WEAK_CIPHER_SUITES</property>
+        <property>AVOIDS_WEAKER_CIPHER_SUITES_RFC9325</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <cipherSuiteGuidelineCheck>

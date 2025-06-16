@@ -2209,8 +2209,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
             prettyAppend(
                     builder,
-                    "Avoids weak CipherSuites",
-                    TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES);
+                    "Avoids weaker CipherSuites (according to RFC 9325)",
+                    TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325);
         }
 
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {

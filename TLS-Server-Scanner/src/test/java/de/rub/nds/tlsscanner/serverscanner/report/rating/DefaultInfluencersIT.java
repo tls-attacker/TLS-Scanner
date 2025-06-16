@@ -420,7 +420,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES,
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 

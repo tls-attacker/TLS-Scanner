@@ -35,7 +35,7 @@ public class CipherSuiteOrderProbe extends TlsServerProbe {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);
         register(
                 TlsAnalyzedProperty.ENFORCES_CS_ORDERING,
-                TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES);
+                TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325);
     }
 
     @Override
@@ -258,6 +258,6 @@ public class CipherSuiteOrderProbe extends TlsServerProbe {
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
-        put(TlsAnalyzedProperty.AVOIDS_WEAK_CIPHER_SUITES, avoidsWeakCipherSuites);
+        put(TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325, avoidsWeakCipherSuites);
     }
 }
