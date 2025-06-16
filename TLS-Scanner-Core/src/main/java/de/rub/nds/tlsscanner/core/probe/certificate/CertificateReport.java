@@ -81,7 +81,7 @@ public class CertificateReport {
     public void setPublicKeyType(X509PublicKeyType publicKeyType) {
         this.publicKeyType = publicKeyType;
     }
-    
+
     public X509Certificate getCertificate() {
         return certificate;
     }
