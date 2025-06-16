@@ -2165,6 +2165,28 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_CLIENT_CERTIFICATE_URL</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SUPPORTED_APPLICATIONS</property>
     </ratingInfluencer>
     <ratingInfluencer>

@@ -50,6 +50,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     TLS13_ECDSA_SIG_GROUPS(TlsAnalyzedPropertyCategory.CERTIFICATE),
     MINIMUM_RSA_CERT_KEY_SIZE(TlsAnalyzedPropertyCategory.CERTIFICATE),
     MINIMUM_DSS_CERT_KEY_SIZE(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES(TlsAnalyzedPropertyCategory.CERTIFICATE),
+    SUPPORTS_CLIENT_CERTIFICATE_URL(TlsAnalyzedPropertyCategory.CERTIFICATE),
     OCSP_RESULTS(TlsAnalyzedPropertyCategory.OCSP),
     VERSION_SUITE_PAIRS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),

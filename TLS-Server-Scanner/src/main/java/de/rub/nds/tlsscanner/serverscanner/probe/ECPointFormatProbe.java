@@ -135,7 +135,7 @@ public class ECPointFormatProbe extends TlsServerProbe {
             return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
+                LOGGER.error("Timeout on {}", getProbeName());
                 throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for Tls13SecpCompression", e);

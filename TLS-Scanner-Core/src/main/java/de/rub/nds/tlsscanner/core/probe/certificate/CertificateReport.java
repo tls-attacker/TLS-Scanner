@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
@@ -23,6 +24,7 @@ import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
+import de.rub.nds.x509attacker.x509.model.X509Certificate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -30,6 +32,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 public class CertificateReport {
+
+    @JsonIgnore private X509Certificate certificate;
 
     private X509Version version;
     private String subject;
@@ -76,6 +80,14 @@ public class CertificateReport {
 
     public void setPublicKeyType(X509PublicKeyType publicKeyType) {
         this.publicKeyType = publicKeyType;
+    }
+    
+    public X509Certificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(X509Certificate certificate) {
+        this.certificate = certificate;
     }
 
     public X509NamedCurve getNamedCurve() {

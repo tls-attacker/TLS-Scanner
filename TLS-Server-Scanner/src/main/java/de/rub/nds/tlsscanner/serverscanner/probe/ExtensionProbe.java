@@ -42,6 +42,7 @@ public class ExtensionProbe extends TlsServerProbe {
 
     private List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResults.FALSE;
+    private TestResult supportsClientCertificateUrl = TestResults.UNCERTAIN;
     private TestResult encryptThenMac = TestResults.FALSE;
     private TestResult secureRenegotiation = TestResults.FALSE;
     private TestResult sessionTickets = TestResults.FALSE;
@@ -57,6 +58,7 @@ public class ExtensionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+                TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
     }
 
@@ -107,6 +109,8 @@ public class ExtensionProbe extends TlsServerProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddHeartbeatExtension(true);
+        tlsConfig.setAddClientCertificateUrlExtension(true);
+        tlsConfig.setAddServerCertificateTypeExtension(true);
         tlsConfig.setAddMaxFragmentLengthExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);
@@ -183,6 +187,9 @@ public class ExtensionProbe extends TlsServerProbe {
                 if (type == ExtensionType.STATUS_REQUEST_V2) {
                     certStatusRequestV2 = TestResults.TRUE;
                 }
+                if (type == ExtensionType.CLIENT_CERTIFICATE_URL) {
+                    supportsClientCertificateUrl = TestResults.TRUE;
+                }
             }
             put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
             put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
@@ -190,6 +197,7 @@ public class ExtensionProbe extends TlsServerProbe {
             put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, sessionTickets);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
+            put(TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL, supportsClientCertificateUrl);
         } else {
             setPropertiesToCannotBeTested();
         }

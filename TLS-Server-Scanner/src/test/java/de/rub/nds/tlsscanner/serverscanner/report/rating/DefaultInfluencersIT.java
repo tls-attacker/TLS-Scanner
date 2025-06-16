@@ -1045,6 +1045,16 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.REUSABLE_TICKET,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -200),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 50)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =

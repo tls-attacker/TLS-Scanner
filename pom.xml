@@ -9,7 +9,7 @@
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>7.1.2-SNAPSHOT</version>
+    <version>7.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>de.rub.nds.tls.dockerlib</groupId>
             <artifactId>tls-docker-library</artifactId>
-            <version>3.1.1</version>
+            <version>3.1.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

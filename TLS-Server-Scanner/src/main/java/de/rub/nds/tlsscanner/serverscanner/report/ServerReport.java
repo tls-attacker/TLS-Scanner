@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
 import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.core.util.VersionInformation;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
@@ -72,6 +73,11 @@ public class ServerReport extends TlsScanReport {
     private final String sniHostname;
     private final String host;
     private final Integer port;
+
+    // Version information for JSON output
+    private String tlsScannerVersion = VersionInformation.getTlsScannerVersion();
+    private String tlsAttackerVersion = VersionInformation.getTlsAttackerVersion();
+    private String javaVersion = VersionInformation.getJavaVersion();
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
@@ -123,8 +129,16 @@ public class ServerReport extends TlsScanReport {
         return port;
     }
 
-    public synchronized String getSniHostname() {
-        return sniHostname;
+    public synchronized String getTlsScannerVersion() {
+        return tlsScannerVersion;
+    }
+
+    public synchronized String getTlsAttackerVersion() {
+        return tlsAttackerVersion;
+    }
+
+    public synchronized String getJavaVersion() {
+        return javaVersion;
     }
 
     public synchronized Boolean getServerIsAlive() {
