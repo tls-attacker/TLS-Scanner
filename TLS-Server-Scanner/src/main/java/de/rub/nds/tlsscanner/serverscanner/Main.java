@@ -19,14 +19,17 @@ import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
 import java.io.IOException;
+import java.security.Security;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Main {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
+        Security.addProvider(new BouncyCastleProvider());
         ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {
