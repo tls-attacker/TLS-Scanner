@@ -564,7 +564,7 @@ public class DefaultPrintingScheme {
         textEncodingMap.put(TestResults.FALSE, "not mitigated");
         textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
         textEncodingMap.put(TestResults.TIMEOUT, "timeout");
-        textEncodingMap.put(TestResults.TRUE, "true");
+        textEncodingMap.put(TestResults.TRUE, "mitigated");
         textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by tls-scanner");
         textEncodingMap.put(TestResults.PARTIALLY, "partially");
