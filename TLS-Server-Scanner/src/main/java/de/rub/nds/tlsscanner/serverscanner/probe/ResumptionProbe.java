@@ -361,7 +361,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 throw new RuntimeException(e);
             } else {
                 if (exchangeModes.size() > 1) {
-                    LOGGER.error(
+                    LOGGER.warn(
                             "Could not test if the server prefers PSK_DHE_KE as the TLS 1.3 PSK key exchange mode (provided: "
                                     + exchangeModes.toString()
                                     + "): ",
