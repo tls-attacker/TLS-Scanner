@@ -64,9 +64,16 @@ public class CertificateChainReport {
 
     private List<TrustPath> trustPaths;
 
-    /** Private no-arg constructor to please JAXB */
+    /** No-arg constructor for deserialization */
     @SuppressWarnings("unused")
-    private CertificateChainReport() {}
+    public CertificateChainReport() {
+        certificateIssues = new LinkedList<>();
+        certificateReportList = new LinkedList<>();
+        platformsTrustingCertificate = new LinkedList<>();
+        platformsNotTrustingCertificate = new LinkedList<>();
+        platformsBlacklistingCertificate = new LinkedList<>();
+        trustPaths = new LinkedList<>();
+    }
 
     public CertificateChainReport(X509CertificateChain certificateChain, String uri) {
         certificateIssues = new LinkedList<>();

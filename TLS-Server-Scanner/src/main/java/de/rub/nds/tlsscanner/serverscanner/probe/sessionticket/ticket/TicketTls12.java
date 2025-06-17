@@ -19,6 +19,14 @@ public class TicketTls12 implements Ticket {
     private byte[] masterSecret;
     private List<SessionSecret> sessionSecrets;
 
+    @SuppressWarnings("unused")
+    // This constructor is used by Jackson for deserialization
+    private TicketTls12() {
+        this.ticketBytes = null;
+        this.masterSecret = null;
+        this.sessionSecrets = List.of();
+    }
+
     public TicketTls12(
             byte[] ticketBytes, byte[] masterSecret, List<SessionSecret> sessionSecrets) {
         this.ticketBytes = ticketBytes;

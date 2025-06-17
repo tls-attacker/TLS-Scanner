@@ -17,6 +17,12 @@ public class CertificateGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<GuidelineCheckResult> results = new ArrayList<>();
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private CertificateGuidelineCheckResult() {
+        super(null, null);
+    }
+
     public CertificateGuidelineCheckResult(String checkName) {
         super(checkName, GuidelineAdherence.CHECK_FAILED);
     }

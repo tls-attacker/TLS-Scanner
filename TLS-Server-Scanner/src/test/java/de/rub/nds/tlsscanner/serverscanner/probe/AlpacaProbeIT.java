@@ -38,6 +38,6 @@ public class AlpacaProbeIT extends AbstractProbeIT {
     protected boolean executedAsPlanned() {
         return verifyProperty(TlsAnalyzedProperty.STRICT_SNI, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.STRICT_ALPN, TestResults.FALSE)
-                && verifyProperty(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.FALSE);
+                && verifyProperty(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.TRUE);
     }
 }

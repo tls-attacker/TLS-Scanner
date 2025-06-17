@@ -18,6 +18,14 @@ public class ResponseCounter {
 
     private int total;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private ResponseCounter() {
+        this.fingerprint = null;
+        this.counter = 0;
+        this.total = 0;
+    }
+
     public ResponseCounter(ResponseFingerprint fingerprint, int counter, int total) {
         this.fingerprint = fingerprint;
         this.counter = counter;

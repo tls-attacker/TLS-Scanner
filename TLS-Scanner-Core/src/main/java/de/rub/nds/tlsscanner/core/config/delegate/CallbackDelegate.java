@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 public class CallbackDelegate extends Delegate {
 
-    private static final Logger LOGGER = LogManager.getLogger(CallbackDelegate.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Parameter(
             names = "-beforeTransportPreInitCb",

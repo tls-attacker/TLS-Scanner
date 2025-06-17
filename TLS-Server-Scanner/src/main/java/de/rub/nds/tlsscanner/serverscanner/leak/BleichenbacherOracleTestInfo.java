@@ -26,6 +26,15 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
 
     private final BleichenbacherScanType bleichenbacherType;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private BleichenbacherOracleTestInfo() {
+        this.version = null;
+        this.cipherSuite = null;
+        this.bleichenbacherWorkflowType = null;
+        this.bleichenbacherType = null;
+    }
+
     public BleichenbacherOracleTestInfo(
             ProtocolVersion version,
             CipherSuite cipherSuite,

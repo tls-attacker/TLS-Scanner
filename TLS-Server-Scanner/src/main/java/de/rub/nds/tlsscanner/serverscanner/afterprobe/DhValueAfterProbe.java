@@ -52,7 +52,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
             if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE) == TestResults.TRUE) {
                 reuse = TestResults.ERROR_DURING_TEST;
             } else {
-                reuse = TestResults.COULD_NOT_TEST;
+                reuse = TestResults.CANNOT_BE_TESTED;
             }
         }
 
@@ -89,10 +89,10 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
             }
         } else {
             report.putResult(
-                    TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.COULD_NOT_TEST);
-            onlyPrime = TestResults.COULD_NOT_TEST;
-            onlySafePrime = TestResults.COULD_NOT_TEST;
-            usesCommonDhPrimes = TestResults.COULD_NOT_TEST;
+                    TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResults.CANNOT_BE_TESTED);
+            onlyPrime = TestResults.CANNOT_BE_TESTED;
+            onlySafePrime = TestResults.CANNOT_BE_TESTED;
+            usesCommonDhPrimes = TestResults.CANNOT_BE_TESTED;
         }
         report.putResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, usesCommonDhPrimes);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);

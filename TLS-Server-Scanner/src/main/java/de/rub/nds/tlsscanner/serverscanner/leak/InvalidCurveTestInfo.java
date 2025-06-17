@@ -17,6 +17,12 @@ public class InvalidCurveTestInfo extends TestInfo {
 
     private final InvalidCurveVector vector;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private InvalidCurveTestInfo() {
+        this.vector = null;
+    }
+
     public InvalidCurveTestInfo(InvalidCurveVector vector) {
         this.vector = vector;
     }

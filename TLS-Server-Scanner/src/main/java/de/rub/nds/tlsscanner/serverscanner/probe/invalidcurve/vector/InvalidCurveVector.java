@@ -29,7 +29,7 @@ public class InvalidCurveVector implements Vector {
     private boolean attackInRenegotiation;
     private List<NamedGroup> ecdsaRequiredGroups;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private InvalidCurveVector() {}
 

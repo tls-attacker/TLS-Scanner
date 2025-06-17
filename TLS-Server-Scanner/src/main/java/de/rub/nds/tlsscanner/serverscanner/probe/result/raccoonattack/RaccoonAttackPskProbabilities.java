@@ -18,7 +18,7 @@ public class RaccoonAttackPskProbabilities {
 
     private BigDecimal chanceForEquation;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private RaccoonAttackPskProbabilities() {}
 

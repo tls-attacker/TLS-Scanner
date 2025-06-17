@@ -21,6 +21,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.DhKeyLengthGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -194,14 +195,11 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     public GuidelineCheckResult evaluate(ServerReport report) {
         if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
             if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new GuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED) {
-                    @Override
-                    public String toString() {
-                        return String.format(
-                                "Weakest DH size %d<%d",
-                                report.getWeakestDhStrength(), minimumDhKeyLength);
-                    }
-                };
+                return new DhKeyLengthGuidelineCheckResult(
+                        getName(),
+                        GuidelineAdherence.VIOLATED,
+                        report.getWeakestDhStrength(),
+                        minimumDhKeyLength);
             }
         }
         return super.evaluate(report);

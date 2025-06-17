@@ -516,8 +516,8 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.STRICT_SNI,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(
-                TlsAnalyzedProperty.ALPACA_MITIGATED,
-                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+                TlsAnalyzedProperty.VULNERABLE_TO_ALPACA,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
                 getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -537,7 +537,7 @@ public class DefaultPrintingScheme {
 
         HashMap<AnalyzedProperty, TestResultTextEncoder> specialTextMap = new HashMap<>();
 
-        specialTextMap.put(TlsAnalyzedProperty.ALPACA_MITIGATED, getAlpacaTextEncoding());
+        specialTextMap.put(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, getAlpacaTextEncoding());
 
         HashMap<AnalyzedProperty, String> propertyNamesMap = new HashMap<>();
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, "SSL 2");
@@ -564,7 +564,7 @@ public class DefaultPrintingScheme {
         textEncodingMap.put(TestResults.FALSE, "not mitigated");
         textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
         textEncodingMap.put(TestResults.TIMEOUT, "timeout");
-        textEncodingMap.put(TestResults.TRUE, "true");
+        textEncodingMap.put(TestResults.TRUE, "mitigated");
         textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by tls-scanner");
         textEncodingMap.put(TestResults.PARTIALLY, "partially");

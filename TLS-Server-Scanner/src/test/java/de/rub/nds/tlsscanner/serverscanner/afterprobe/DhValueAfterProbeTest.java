@@ -59,7 +59,7 @@ public class DhValueAfterProbeTest {
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES));
         assertEquals(
-                TestResults.COULD_NOT_TEST,
+                TestResults.CANNOT_BE_TESTED,
                 report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY));
     }
 
@@ -82,7 +82,7 @@ public class DhValueAfterProbeTest {
         assertEquals(
                 TestResults.FALSE, report.getResult(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES));
         assertEquals(
-                TestResults.COULD_NOT_TEST,
+                TestResults.CANNOT_BE_TESTED,
                 report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY));
     }
 

@@ -37,6 +37,23 @@ public class EntropyReport implements Serializable {
 
     private double failedTemplateTestPercentage;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private EntropyReport() {
+        this.type = null;
+        this.numberOfValues = 0;
+        this.numberOfBytes = 0;
+        this.duplicates = false;
+        this.numberOfDuplicates = 0;
+        this.failedFrequencyTest = false;
+        this.failedMonoBitTest = false;
+        this.failedRunsTest = false;
+        this.failedLongestRunTest = false;
+        this.failedFourierTest = false;
+        this.failedEntropyTest = false;
+        this.failedTemplateTestPercentage = 0.0;
+    }
+
     public EntropyReport(
             RandomType type,
             int numberOfValues,

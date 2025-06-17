@@ -170,7 +170,7 @@ public class VersionProbe extends TlsClientProbe {
                 }
             }
         } else {
-            setPropertiesToCouldNotTest();
+            setPropertiesToCannotBeTested();
         }
         put(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, supportedProtocolVersions);
     }

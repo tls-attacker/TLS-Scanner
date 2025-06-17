@@ -18,6 +18,13 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<CipherSuite> notRecommendedSuites;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private CipherSuiteGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedSuites = null;
+    }
+
     public CipherSuiteGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

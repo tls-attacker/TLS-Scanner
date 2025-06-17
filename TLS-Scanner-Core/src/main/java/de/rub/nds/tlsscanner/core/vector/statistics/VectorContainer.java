@@ -23,10 +23,22 @@ public class VectorContainer {
 
     private final List<ResponseFingerprint> responseList;
 
+    private final List<String> responseStringList;
+
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private VectorContainer() {
+        this.vector = null;
+        this.distinctResponsesCounterList = new LinkedList<>();
+        this.responseList = new LinkedList<>();
+        this.responseStringList = new LinkedList<>();
+    }
+
     public VectorContainer(Vector vector, List<ResponseFingerprint> responseFingerprintList) {
         this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();
         this.responseList = responseFingerprintList;
+        this.responseStringList = new LinkedList<>();
         List<ResponseFingerprint> fingerprintSet = getUniqueFingerprints(responseFingerprintList);
         for (ResponseFingerprint fingerprint : fingerprintSet) {
             int counter = 0;
@@ -35,6 +47,7 @@ public class VectorContainer {
                     counter++;
                 }
             }
+            responseStringList.add(fingerprint.toHumanReadable());
             distinctResponsesCounterList.add(
                     new ResponseCounter(fingerprint, counter, responseFingerprintList.size()));
         }
@@ -74,6 +87,7 @@ public class VectorContainer {
 
     public void addResponseFingerprint(ResponseFingerprint fingerprint) {
         responseList.add(fingerprint);
+        responseStringList.add(fingerprint.toHumanReadable());
         updateResponseCounter(fingerprint, false);
     }
 

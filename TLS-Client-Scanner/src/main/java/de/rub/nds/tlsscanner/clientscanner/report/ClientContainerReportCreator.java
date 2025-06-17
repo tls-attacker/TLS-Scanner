@@ -374,7 +374,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createSessionResumptionContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.RESUMPTION)) {
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.RESUMPTION)) {
             container.add(new HeadlineContainer("Session Resumption"));
             container.add(
                     createKeyValueContainer(
@@ -417,7 +417,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_FREAK_DOWNGRADE, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         return container;
     }
 
@@ -476,7 +476,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createAlpnContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.ALPN)
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.ALPN)
                 && report.getClientAdvertisedAlpns() != null) {
             container.add(new HeadlineContainer("Advertised ALPNs"));
             ListContainer listContainer = new ListContainer();

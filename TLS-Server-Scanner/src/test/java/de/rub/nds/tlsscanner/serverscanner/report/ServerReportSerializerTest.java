@@ -26,6 +26,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.x509attacker.constants.KeyUsage;
@@ -62,7 +63,9 @@ public class ServerReportSerializerTest {
                         new PropertyResultRatingInfluencer(TestResults.CANNOT_BE_TESTED, 10));
 
         List<GuidelineCheckResult> checkResultList = new LinkedList<>();
-        checkResultList.add(new GuidelineCheckResult("some checke", GuidelineAdherence.ADHERED));
+        checkResultList.add(
+                new CertificateAgilityGuidelineCheckResult(
+                        "some checke", GuidelineAdherence.ADHERED));
         GuidelineReport guidelineReport =
                 new GuidelineReport("guideline", "here is a link", checkResultList);
 
@@ -110,8 +113,8 @@ public class ServerReportSerializerTest {
 
         ServerReport report = new ServerReport();
         report.setConfigProfileIdentifier("something");
-        report.setScanEndTime(1000);
-        report.setScanStartTime(0);
+        report.setScanEndTime(1000l);
+        report.setScanStartTime(0l);
         report.setConfigProfileIdentifierTls13("some identifier");
         report.setIsHandshaking(true);
         report.setPerformedConnections(10);
@@ -131,7 +134,9 @@ public class ServerReportSerializerTest {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(certReport)));
-        ServerReportSerializer.serialize(new SilentByteArrayOutputStream(), report);
+        SilentByteArrayOutput outstream = new SilentByteArrayOutputStream();
+        ServerReportSerializer.serialize(outstream, report);
+        System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
     }
 }
