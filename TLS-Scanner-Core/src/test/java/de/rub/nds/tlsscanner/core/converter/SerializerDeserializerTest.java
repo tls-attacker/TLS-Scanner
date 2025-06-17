@@ -14,8 +14,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class SerializerDeserializerTest {
     }
 
     private <T> byte[] serialize(T value) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream outputStream = new SilentByteArrayOutputStream();
         mapper.writeValue(outputStream, value);
         return outputStream.toByteArray();
     }
