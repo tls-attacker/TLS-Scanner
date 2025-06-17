@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
@@ -34,7 +35,6 @@ import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,7 +49,7 @@ public class ServerReportSerializerTest {
     @Test
     void testSerializeEmpty() {
         ServerReport report = new ServerReport();
-        ServerReportSerializer.serialize(new ByteArrayOutputStream(), report);
+        ServerReportSerializer.serialize(new SilentByteArrayOutputStream(), report);
         // This should not throw an exception
     }
 
@@ -134,7 +134,7 @@ public class ServerReportSerializerTest {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(certReport)));
-        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream outstream = new SilentByteArrayOutputStream();
         ServerReportSerializer.serialize(outstream, report);
         System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
