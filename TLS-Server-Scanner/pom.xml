@@ -28,11 +28,6 @@
             <artifactId>tls-scanner-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.rub.nds</groupId>
-            <artifactId>scanner-core</artifactId>
-            <version>6.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
         </dependency>
