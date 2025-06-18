@@ -86,15 +86,12 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
     public boolean equals(Object o) {
         if (o instanceof BleichenbacherOracleTestInfo) {
             BleichenbacherOracleTestInfo other = (BleichenbacherOracleTestInfo) o;
-            if (other.getBleichenbacherType().equals(this.getBleichenbacherType())) {
-                if (other.getBleichenbacherWorkflowType()
-                        .equals(this.getBleichenbacherWorkflowType())) {
-                    if (other.getVersion().equals(this.getVersion())) {
-                        if (other.getCipherSuite().equals(this.getCipherSuite())) {
-                            return true;
-                        }
-                    }
-                }
+            if (other.getBleichenbacherType().equals(this.getBleichenbacherType())
+                    && other.getBleichenbacherWorkflowType()
+                            .equals(this.getBleichenbacherWorkflowType())
+                    && other.getVersion().equals(this.getVersion())
+                    && other.getCipherSuite().equals(this.getCipherSuite())) {
+                return true;
             }
         }
         return false;
