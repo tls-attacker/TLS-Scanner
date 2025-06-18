@@ -37,6 +37,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             TlsScanConfig scanConfig,
             int parallelScanThreads) {
         super(bulkScanID, scanConfig, parallelScanThreads);
+        if (parallelConnectionThreads <= 0) {
+            throw new IllegalArgumentException("parallelConnectionThreads must be positive");
+        }
         this.parallelConnectionThreads = parallelConnectionThreads;
     }
 
