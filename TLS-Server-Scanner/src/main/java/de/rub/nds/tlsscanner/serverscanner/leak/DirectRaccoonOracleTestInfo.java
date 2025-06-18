@@ -64,12 +64,10 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
     public boolean equals(Object o) {
         if (o instanceof DirectRaccoonOracleTestInfo) {
             DirectRaccoonOracleTestInfo other = (DirectRaccoonOracleTestInfo) o;
-            if (other.getDirectWorkflowType().equals(this.getDirectWorkflowType())) {
-                if (other.getVersion().equals(this.getVersion())) {
-                    if (other.getCipherSuite().equals(this.getCipherSuite())) {
-                        return true;
-                    }
-                }
+            if (other.getDirectWorkflowType().equals(this.getDirectWorkflowType())
+                    && other.getVersion().equals(this.getVersion())
+                    && other.getCipherSuite().equals(this.getCipherSuite())) {
+                return true;
             }
         }
         return false;
