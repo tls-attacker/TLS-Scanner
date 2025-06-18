@@ -18,6 +18,9 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 public class Main {
 
     public static void main(String[] args) {
+        if (args == null) {
+            args = new String[0];
+        }
         MongoPersistenceProvider.registerModule(ServerReport.getSerializerModules());
         ControllerCommandConfig controllerCommandConfig = new TlsControllerCommandConfig();
         CommonMain.main(args, controllerCommandConfig);

@@ -34,6 +34,9 @@ public class TlsScanConfig extends ScanConfig {
     }
 
     public void setStarttlsType(StarttlsType starttlsType) {
+        if (starttlsType == null) {
+            throw new IllegalArgumentException("starttlsType cannot be null");
+        }
         this.starttlsType = starttlsType;
     }
 }
