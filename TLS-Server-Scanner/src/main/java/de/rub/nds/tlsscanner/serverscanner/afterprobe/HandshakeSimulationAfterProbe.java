@@ -244,12 +244,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         }
         if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
                 && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32)
-                        == TestResults.TRUE) {
-            if (cipherSuite.name().contains("3DES")
-                    || cipherSuite.name().contains("IDEA")
-                    || cipherSuite.name().contains("GOST")) {
-                simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
-            }
+                        == TestResults.TRUE
+                && (cipherSuite.name().contains("3DES")
+                        || cipherSuite.name().contains("IDEA")
+                        || cipherSuite.name().contains("GOST"))) {
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
         }
     }
 
@@ -279,13 +278,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
         boolean isRfc7918Secure = false;
         CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
-        if (cipherSuite != null && pubKey != null) {
-            if (isProtocolVersionWhitelisted(simulatedClient)
-                    && isSymmetricCipherRfc7918Whitelisted(cipherSuite)
-                    && isKeyExchangeMethodWhitelisted(simulatedClient)
-                    && isKeyLengthWhitelisted(simulatedClient, pubKey)) {
-                isRfc7918Secure = true;
-            }
+        if (cipherSuite != null
+                && pubKey != null
+                && isProtocolVersionWhitelisted(simulatedClient)
+                && isSymmetricCipherRfc7918Whitelisted(cipherSuite)
+                && isKeyExchangeMethodWhitelisted(simulatedClient)
+                && isKeyLengthWhitelisted(simulatedClient, pubKey)) {
+            isRfc7918Secure = true;
         }
         simulatedClient.setConnectionRfc7918Secure(isRfc7918Secure);
     }
@@ -316,16 +315,14 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
     private boolean isKeyLengthWhitelisted(
             SimulatedClientResult simulatedClient, Integer keyLength) {
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh()
-                && simulatedClient.getSelectedCipherSuite().isEphemeral()) {
-            if (keyLength >= 3072) {
-                return true;
-            }
+                && simulatedClient.getSelectedCipherSuite().isEphemeral()
+                && keyLength >= 3072) {
+            return true;
         }
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh()
-                && simulatedClient.getSelectedCipherSuite().isEphemeral()) {
-            if (keyLength >= 256) {
-                return true;
-            }
+                && simulatedClient.getSelectedCipherSuite().isEphemeral()
+                && keyLength >= 256) {
+            return true;
         }
         return false;
     }
