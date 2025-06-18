@@ -392,30 +392,30 @@ public class NamedGroupsProbe extends TlsServerProbe {
         Set<CipherSuite> joinedCurveCipherSuites = new HashSet<>();
         Set<CipherSuite> joinedFfdheCipherSuites = new HashSet<>();
         overallSupported
-                .keySet()
+                .entrySet()
                 .forEach(
-                        group -> {
-                            if (group.isEcGroup()) {
+                        entry -> {
+                            if (entry.getKey().isEcGroup()) {
                                 joinedCurveCipherSuites.addAll(
-                                        overallSupported.get(group).getCipherSuites());
+                                        entry.getValue().getCipherSuites());
                             } else {
                                 joinedFfdheCipherSuites.addAll(
-                                        overallSupported.get(group).getCipherSuites());
+                                        entry.getValue().getCipherSuites());
                             }
                         });
 
         boolean foundMismatch =
-                overallSupported.keySet().stream()
+                overallSupported.entrySet().stream()
                         .anyMatch(
-                                group -> {
-                                    return (group.isEcGroup()
-                                                    && !overallSupported
-                                                            .get(group)
+                                entry -> {
+                                    return (entry.getKey().isEcGroup()
+                                                    && !entry
+                                                            .getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedCurveCipherSuites))
-                                            || (!group.isEcGroup()
-                                                    && !overallSupported
-                                                            .get(group)
+                                            || (!entry.getKey().isEcGroup()
+                                                    && !entry
+                                                            .getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedFfdheCipherSuites));
                                 });
