@@ -23,14 +23,12 @@ public class SessionIdExtractor extends StatExtractor<State, ComparableByteArray
 
     @Override
     public void extract(State state) {
-        if (state.getTlsContext().getSelectedProtocolVersion() != ProtocolVersion.TLS13) {
-            if (state.getTlsContext().getServerSessionId() != null) {
-                if (!Arrays.equals(
+        if (state.getTlsContext().getSelectedProtocolVersion() != ProtocolVersion.TLS13
+                && state.getTlsContext().getServerSessionId() != null
+                && !Arrays.equals(
                         state.getTlsContext().getClientSessionId(),
                         state.getTlsContext().getServerSessionId())) {
-                    put(new ComparableByteArray(state.getTlsContext().getServerSessionId()));
-                }
-            }
+            put(new ComparableByteArray(state.getTlsContext().getServerSessionId()));
         }
     }
 }
