@@ -16,8 +16,22 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
+/**
+ * AfterProbe implementation that analyzes whether a server reuses EC (Elliptic Curve) public keys
+ * across multiple handshakes, which could indicate a security vulnerability.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
 public class EcPublicKeyAfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
+    /**
+     * Analyzes the extracted EC public keys to determine if the server reuses the same public key
+     * across multiple handshakes. Sets the result to TRUE if key reuse is detected, FALSE if all
+     * keys are different, COULD_NOT_TEST if insufficient data is available, or ERROR_DURING_TEST
+     * if an exception occurs.
+     *
+     * @param report the TLS scan report containing extracted EC public key data
+     */
     @Override
     public void analyze(ReportT report) {
         TestResult reuse;
