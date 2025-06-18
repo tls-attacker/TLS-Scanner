@@ -64,11 +64,10 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
                 return new CertificateAgilityGuidelineCheckResult(
                         getName(), GuidelineAdherence.ADHERED);
             }
-            if (firstKey != certReport.getPublicKey().length()) {
-                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
-                    return new CertificateAgilityGuidelineCheckResult(
-                            getName(), GuidelineAdherence.ADHERED);
-                }
+            if (firstKey != certReport.getPublicKey().length()
+                    && firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
+                return new CertificateAgilityGuidelineCheckResult(
+                        getName(), GuidelineAdherence.ADHERED);
             }
         }
         return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);
