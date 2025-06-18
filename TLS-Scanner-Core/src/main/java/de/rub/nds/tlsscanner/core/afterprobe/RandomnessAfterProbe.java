@@ -28,6 +28,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Abstract AfterProbe implementation that analyzes the randomness quality of various TLS random
+ * values including server randoms, session IDs, cookies, and CBC IVs. Performs statistical tests
+ * to assess entropy and detects patterns like Unix timestamp usage.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
 public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         extends AfterProbe<ReportT> {
 
@@ -62,7 +69,8 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
     /**
      * Checks if the Host utilities Unix time or similar counters for Randoms.
      *
-     * @return TRUE if the all timestamps are within one year of now
+     * @param randomContainer the container with extracted random values to check
+     * @return TRUE if all timestamps are within one year of now, FALSE otherwise
      */
     public boolean checkForUnixTime(ExtractedValueContainer<ComparableByteArray> randomContainer) {
         Integer serverUnixTime = null;
@@ -82,6 +90,13 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         return true;
     }
 
+    /**
+     * Analyzes various random values extracted from TLS handshakes including server randoms,
+     * session IDs, cookies, and CBC IVs. Creates entropy reports for each type of random value and
+     * stores whether Unix timestamps are used in the random values.
+     *
+     * @param report the TLS scan report containing extracted random value data
+     */
     @Override
     public void analyze(ReportT report) {
 
@@ -117,6 +132,15 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
     }
 
+    /**
+     * Creates an entropy report for a given list of random byte arrays by performing various
+     * statistical tests including frequency tests, runs tests, discrete Fourier tests, and
+     * approximate entropy tests.
+     *
+     * @param byteArrayList the list of random byte arrays to analyze
+     * @param type the type of random value being analyzed (RANDOM, SESSION_ID, COOKIE, or CBC_IV)
+     * @return an EntropyReport containing the results of all statistical tests
+     */
     public EntropyReport createEntropyReport(
             List<ComparableByteArray> byteArrayList, RandomType type) {
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
@@ -166,6 +190,15 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         return outputStream.toByteArray();
     }
 
+    /**
+     * Filters random values by removing special values like HELLO_RETRY_REQUEST constants and TLS
+     * downgrade prevention strings. Also removes Unix timestamps from the beginning of randoms if
+     * they are detected to be in use.
+     *
+     * @param extractedValueList the list of extracted random values to filter
+     * @param usesUnixTime whether Unix timestamps are used in the random values
+     * @return a filtered list of random values with special values and timestamps removed
+     */
     public List<ComparableByteArray> filterRandoms(
             List<ComparableByteArray> extractedValueList, boolean usesUnixTime) {
         // Filter unix Time
