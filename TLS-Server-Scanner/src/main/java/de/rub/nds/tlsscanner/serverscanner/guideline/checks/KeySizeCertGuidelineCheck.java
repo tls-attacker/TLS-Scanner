@@ -193,14 +193,14 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
-            if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-                return new DhKeyLengthGuidelineCheckResult(
-                        getName(),
-                        GuidelineAdherence.VIOLATED,
-                        report.getWeakestDhStrength(),
-                        minimumDhKeyLength);
-            }
+        if (report.getWeakestDhStrength() != null
+                && this.minimumDhKeyLength != null
+                && report.getWeakestDhStrength() < this.minimumDhKeyLength) {
+            return new DhKeyLengthGuidelineCheckResult(
+                    getName(),
+                    GuidelineAdherence.VIOLATED,
+                    report.getWeakestDhStrength(),
+                    minimumDhKeyLength);
         }
         return super.evaluate(report);
     }

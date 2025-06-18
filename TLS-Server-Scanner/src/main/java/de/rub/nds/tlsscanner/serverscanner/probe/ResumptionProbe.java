@@ -331,10 +331,9 @@ public class ResumptionProbe extends TlsServerProbe {
                     TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
                     TestResult keyShareRequired =
                             TestResults.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
-                    if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
-                        if (!TestResults.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
-                            respectsPskModes = TestResults.FALSE;
-                        }
+                    if (!keyShareExtensionNegotiated.equals(keyShareRequired)
+                            && !TestResults.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
+                        respectsPskModes = TestResults.FALSE;
                     }
                     return TestResults.TRUE;
                 }

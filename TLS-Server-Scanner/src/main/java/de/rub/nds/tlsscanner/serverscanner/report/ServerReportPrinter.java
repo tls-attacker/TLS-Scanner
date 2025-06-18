@@ -1811,15 +1811,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED
-                                && Objects.equals(
-                                        testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
-                        || detail == ScannerDetail.ALL) {
-                    if (testResult.getEqualityError() != EqualityError.NONE
-                            || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendInformationLeakTestResult(builder, testResult);
-                    }
+                if (((detail == ScannerDetail.DETAILED
+                                        && Objects.equals(
+                                                testResult.isSignificantDistinctAnswers(),
+                                                Boolean.TRUE))
+                                || detail == ScannerDetail.ALL)
+                        && (testResult.getEqualityError() != EqualityError.NONE
+                                || detail == ScannerDetail.ALL)) {
+                    prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
+                    appendInformationLeakTestResult(builder, testResult);
                 }
             }
         }
