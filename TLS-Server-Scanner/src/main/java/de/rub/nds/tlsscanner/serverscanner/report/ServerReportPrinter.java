@@ -1813,7 +1813,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
                 if (((detail == ScannerDetail.DETAILED
                                         && Objects.equals(
-                                                testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
+                                                testResult.isSignificantDistinctAnswers(),
+                                                Boolean.TRUE))
                                 || detail == ScannerDetail.ALL)
                         && (testResult.getEqualityError() != EqualityError.NONE
                                 || detail == ScannerDetail.ALL)) {

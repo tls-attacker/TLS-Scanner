@@ -243,8 +243,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
         }
         if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
-                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32)
-                        == TestResults.TRUE
+                && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResults.TRUE
                 && (cipherSuite.name().contains("3DES")
                         || cipherSuite.name().contains("IDEA")
                         || cipherSuite.name().contains("GOST"))) {
