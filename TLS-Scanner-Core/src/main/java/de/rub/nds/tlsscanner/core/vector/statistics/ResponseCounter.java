@@ -9,27 +9,28 @@
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ResponseCounter {
 
     private final ResponseFingerprint fingerprint;
 
-    private int counter;
+    private final AtomicInteger counter;
 
-    private int total;
+    private final AtomicInteger total;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private ResponseCounter() {
         this.fingerprint = null;
-        this.counter = 0;
-        this.total = 0;
+        this.counter = new AtomicInteger(0);
+        this.total = new AtomicInteger(0);
     }
 
     public ResponseCounter(ResponseFingerprint fingerprint, int counter, int total) {
         this.fingerprint = fingerprint;
-        this.counter = counter;
-        this.total = total;
+        this.counter = new AtomicInteger(counter);
+        this.total = new AtomicInteger(total);
     }
 
     public ResponseFingerprint getFingerprint() {
@@ -37,23 +38,23 @@ public class ResponseCounter {
     }
 
     public int getCounter() {
-        return counter;
+        return counter.get();
     }
 
     public int getTotal() {
-        return total;
+        return total.get();
     }
 
     public void increaseCounterAndTotal() {
-        counter++;
-        total++;
+        counter.incrementAndGet();
+        total.incrementAndGet();
     }
 
     public void increaseOnlyTotal() {
-        total++;
+        total.incrementAndGet();
     }
 
     public double getProbability() {
-        return (double) counter / (double) total;
+        return (double) counter.get() / (double) total.get();
     }
 }
