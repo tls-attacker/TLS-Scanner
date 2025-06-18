@@ -70,10 +70,11 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         // Ensure parallelExecutor is initialized before use
         synchronized (this) {
             if (parallelExecutor == null) {
-                throw new IllegalStateException("Parallel executor not initialized. Call init() first.");
+                throw new IllegalStateException(
+                        "Parallel executor not initialized. Call init() first.");
             }
         }
-        
+
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
 
