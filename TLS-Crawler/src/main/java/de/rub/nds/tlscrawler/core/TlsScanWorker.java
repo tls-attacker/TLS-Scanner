@@ -96,6 +96,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {
+        if (report == null) {
+            return null;
+        }
         if (report.getServerIsAlive() != null && !report.getServerIsAlive()) {
             return null;
         }
