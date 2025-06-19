@@ -27,8 +27,8 @@ public class EcPublicKeyAfterProbe<ReportT extends TlsScanReport> extends AfterP
     /**
      * Analyzes the extracted EC public keys to determine if the server reuses the same public key
      * across multiple handshakes. Sets the result to TRUE if key reuse is detected, FALSE if all
-     * keys are different, COULD_NOT_TEST if insufficient data is available, or ERROR_DURING_TEST
-     * if an exception occurs.
+     * keys are different, COULD_NOT_TEST if insufficient data is available, or ERROR_DURING_TEST if
+     * an exception occurs.
      *
      * @param report the TLS scan report containing extracted EC public key data
      */

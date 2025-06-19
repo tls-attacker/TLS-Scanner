@@ -29,8 +29,8 @@ public class DtlsRetransmissionAfterProbe<ReportT extends TlsScanReport>
 
     /**
      * Analyzes DTLS retransmission data by extracting retransmitted handshake messages from the
-     * report, counting occurrences of each message type, and storing both the per-type counters
-     * and total retransmission count in the report.
+     * report, counting occurrences of each message type, and storing both the per-type counters and
+     * total retransmission count in the report.
      *
      * @param report the TLS scan report containing extracted DTLS retransmission data
      */

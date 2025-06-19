@@ -30,8 +30,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract AfterProbe implementation that analyzes the randomness quality of various TLS random
- * values including server randoms, session IDs, cookies, and CBC IVs. Performs statistical tests
- * to assess entropy and detects patterns like Unix timestamp usage.
+ * values including server randoms, session IDs, cookies, and CBC IVs. Performs statistical tests to
+ * assess entropy and detects patterns like Unix timestamp usage.
  *
  * @param <ReportT> the type of TLS scan report this probe operates on
  */
