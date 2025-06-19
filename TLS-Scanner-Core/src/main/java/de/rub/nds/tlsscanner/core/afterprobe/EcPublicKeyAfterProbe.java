@@ -18,7 +18,7 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /**
  * AfterProbe implementation that analyzes whether a server reuses EC (Elliptic Curve) public keys
- * across multiple handshakes, which could indicate a security vulnerability.
+ * across multiple handshakes
  *
  * @param <ReportT> the type of TLS scan report this probe operates on
  */
