@@ -10,9 +10,13 @@ package de.rub.nds.tlsscanner.core.probe.certificate;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import org.bouncycastle.asn1.x509.Certificate;
@@ -107,7 +111,10 @@ public class CertificateJudge {
             return true;
         } catch (SignatureException | InvalidKeyException ex) {
             return false;
-        } catch (Exception e) {
+        } catch (CertificateException
+                | NoSuchAlgorithmException
+                | NoSuchProviderException
+                | IOException e) {
             return null;
         }
     }
