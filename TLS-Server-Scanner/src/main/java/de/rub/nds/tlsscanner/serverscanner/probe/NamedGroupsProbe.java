@@ -396,11 +396,9 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 .forEach(
                         entry -> {
                             if (entry.getKey().isEcGroup()) {
-                                joinedCurveCipherSuites.addAll(
-                                        entry.getValue().getCipherSuites());
+                                joinedCurveCipherSuites.addAll(entry.getValue().getCipherSuites());
                             } else {
-                                joinedFfdheCipherSuites.addAll(
-                                        entry.getValue().getCipherSuites());
+                                joinedFfdheCipherSuites.addAll(entry.getValue().getCipherSuites());
                             }
                         });
 
@@ -409,13 +407,11 @@ public class NamedGroupsProbe extends TlsServerProbe {
                         .anyMatch(
                                 entry -> {
                                     return (entry.getKey().isEcGroup()
-                                                    && !entry
-                                                            .getValue()
+                                                    && !entry.getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedCurveCipherSuites))
                                             || (!entry.getKey().isEcGroup()
-                                                    && !entry
-                                                            .getValue()
+                                                    && !entry.getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedFfdheCipherSuites));
                                 });
