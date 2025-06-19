@@ -64,9 +64,8 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
         List<?> extractedValueList = publicKeyContainer.getExtractedValueList();
         Map<Integer, BigInteger> smallestByteSizeModuloMap =
                 generateSmallestByteSizeModuloMap(extractedValueList);
-        for (Integer i : smallestByteSizeModuloMap.keySet()) {
-            BigInteger modulo = smallestByteSizeModuloMap.get(i);
-            attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
+        for (Map.Entry<Integer, BigInteger> entry : smallestByteSizeModuloMap.entrySet()) {
+            attackProbabilityList.addAll(computeRaccoonAttackProbabilities(entry.getValue()));
         }
         report.putResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES, attackProbabilityList);
 
