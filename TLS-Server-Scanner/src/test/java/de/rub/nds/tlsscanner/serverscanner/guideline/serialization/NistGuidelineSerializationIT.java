@@ -149,7 +149,8 @@ public class NistGuidelineSerializationIT {
                         "Servers should be configured to allow use of the Extended Key Usage extension with a key purpose specifically for server authentication.",
                         RequirementLevel.SHOULD));
         checks.add(
-                new CipherSuiteGuidelineCheck( // Appendix C contains a conditional SHOULD for PSK
+                new RecommendedCipherSuiteGuidelineCheck( // Appendix C contains a conditional
+                        // SHOULD for PSK
                         // cipher suites. Appendix D only contains a
                         // conditional MAY for RSA cipher suites. Thus, these
                         // cipher suites are omitted here.
@@ -217,7 +218,7 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
-                new CipherSuiteGuidelineCheck(
+                new RecommendedCipherSuiteGuidelineCheck(
                         "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
                         RequirementLevel.MUST,
                         List.of(ProtocolVersion.TLS13),
@@ -261,7 +262,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The server shall be able to process and respond to the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -357,14 +358,14 @@ public class NistGuidelineSerializationIT {
                         false,
                         2));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The EC Point Format extension shall be supported if the server supports EC cipher suites.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.and(
@@ -460,14 +461,14 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Supported Versions extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SUPPORTED_VERSIONS));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "Servers that support TLS 1.3 may support the Cookie extension.", // Earlier
                         // in the document it is stated that the "Cookie extension **shall** be
                         // supported if the server supports TLS 1.3".

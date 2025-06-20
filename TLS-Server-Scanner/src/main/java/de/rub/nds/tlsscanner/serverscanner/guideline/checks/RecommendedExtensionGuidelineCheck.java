@@ -26,53 +26,27 @@ import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
+public class RecommendedExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     private List<ExtensionType> extensionsInQuestion;
-    private boolean required; // If false this class checks if the provided extensions are NOT set.
 
-    private ExtensionGuidelineCheck() {
+    private RecommendedExtensionGuidelineCheck() {
         super(null, null);
     }
 
-    public ExtensionGuidelineCheck(
+    public RecommendedExtensionGuidelineCheck(
             String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true;
-        // Default case, this means the extensionsInQuestion are expected to be set.
     }
 
-    public ExtensionGuidelineCheck(
-            String name,
-            RequirementLevel requirementLevel,
-            boolean required,
-            ExtensionType... extensionsInQuestion) {
-        super(name, requirementLevel);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = required;
-    }
-
-    public ExtensionGuidelineCheck(
+    public RecommendedExtensionGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             ExtensionType... extensionsInQuestion) {
         super(name, requirementLevel, condition);
         this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = true;
-        // Default case, this means the extensionsInQuestion are expected to be set.
-    }
-
-    public ExtensionGuidelineCheck(
-            String name,
-            RequirementLevel requirementLevel,
-            GuidelineCheckCondition condition,
-            boolean required, // "Optional" parameter to invert the check this class performs.
-            ExtensionType... extensionsInQuestion) {
-        super(name, requirementLevel, condition);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
-        this.required = required;
     }
 
     @Override
@@ -83,13 +57,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
                         .filter(report.getSupportedExtensions()::contains)
                         .collect(Collectors.toList());
 
-        if (!required) {
-            adherence = GuidelineAdherence.of(supportedExtensions.isEmpty());
-        } else {
-            adherence =
-                    GuidelineAdherence.of(
-                            supportedExtensions.size() == extensionsInQuestion.size());
-        }
+        adherence =
+                GuidelineAdherence.of(supportedExtensions.size() == extensionsInQuestion.size());
 
         return new ExtensionGuidelineCheckResult(
                 getName(), adherence, supportedExtensions, extensionsInQuestion);
@@ -97,19 +66,10 @@ public class ExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     @Override
     public String toString() {
-        return "Extension_"
-                + getRequirementLevel()
-                + "_"
-                + extensionsInQuestion
-                + "_required_"
-                + required;
+        return "Extension_" + getRequirementLevel() + "_" + extensionsInQuestion;
     }
 
     public List<ExtensionType> getExtensionsInQuestion() {
         return Collections.unmodifiableList(extensionsInQuestion);
-    }
-
-    public boolean isRequired() {
-        return required;
     }
 }

@@ -109,7 +109,7 @@
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
     </extendedKeyUsageCertificateCheck>
-    <cipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used. Section 3.3.1:</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS10</versions>
@@ -171,9 +171,8 @@
         <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS13</versions>
@@ -181,8 +180,7 @@
         <cipherSuitesInQuestion>TLS_AES_256_GCM_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_128_CCM_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_128_CCM_8_SHA256</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Servers shall not be vulnerable to padding oracle.</name>
         <requirementLevel>MUST_NOT</requirementLevel>
@@ -223,12 +221,11 @@
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The server shall be able to process and respond to the Server Name Indication extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <extensionsInQuestion>SERVER_NAME_INDICATION</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Extended Master Secret extension shall be supported.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -338,7 +335,7 @@
         <tls13>false</tls13>
         <minGroupCount>2</minGroupCount>
     </namedGroupsGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Key Share extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -346,9 +343,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>KEY_SHARE</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The EC Point Format extension shall be supported if the server supports EC cipher suites.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -376,8 +372,7 @@
             </and>
         </condition>
         <extensionsInQuestion>EC_POINT_FORMATS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The Multiple Certificate Status extension should be supported if status information for the server's certificate is available via OCSP and the extension is supported by the server implementation.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -464,7 +459,7 @@
         <property>SUPPORTS_TLS13_PSK_EXCHANGE_MODES</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Supported Versions extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -472,9 +467,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>SUPPORTED_VERSIONS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>Servers that support TLS 1.3 may support the Cookie extension.</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
@@ -482,8 +476,7 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>COOKIE</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The Signed Certificate Timestamps extension should be supported if the server's certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.</name>
         <requirementLevel>SHOULD</requirementLevel>
