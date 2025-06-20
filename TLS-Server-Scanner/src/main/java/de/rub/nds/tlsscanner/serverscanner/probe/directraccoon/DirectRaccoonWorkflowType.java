@@ -26,7 +26,9 @@ public enum DirectRaccoonWorkflowType {
     }
 
     /**
-     * @return
+     * Returns the description of this workflow type.
+     *
+     * @return The description string for this workflow type
      */
     public String getDescription() {
         return description;
