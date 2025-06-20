@@ -134,6 +134,12 @@ public abstract class ECPointFormatUtils {
         return secpGroups;
     }
 
+    /**
+     * Creates requirements for EC point format testing.
+     *
+     * @param <ReportT> The type of scan report that extends TlsScanReport
+     * @return A Requirement object specifying that ECDHE support or TLS 1.3 support is needed
+     */
     public static <ReportT extends TlsScanReport> Requirement<ReportT> getRequirements() {
         return new ProbeRequirement<ReportT>(
                         TlsProbeType.PROTOCOL_VERSION, TlsProbeType.CIPHER_SUITE)
