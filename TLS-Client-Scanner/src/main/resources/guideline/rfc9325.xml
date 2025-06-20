@@ -73,7 +73,7 @@
         <property>SUPPORTS_TLS_COMPRESSION</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>TLS 1.2 clients and servers MUST implement the renegotiation_info extension, as defined in [RFC5746].</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -81,8 +81,7 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>RENEGOTIATION_INFO</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>TLS 1.2 clients MUST send renegotiation_info in the Client Hello. If the server does not acknowledge the extension, the client MUST generate a fatal handshake_failure alert prior to terminating the connection.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -103,31 +102,29 @@
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].</name>
         <requirementLevel>MUST</requirementLevel>
         <extensionsInQuestion>SERVER_NAME_INDICATION</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Clients SHOULD abort the handshake if the server acknowledges the SNI extension but presents a certificate with a different hostname than the one sent by the client.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <property>STRICT_SNI</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].</name>
         <requirementLevel>MUST</requirementLevel>
         <extensionsInQuestion>ALPN</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Clients SHOULD abort the handshake if the server acknowledges the ALPN extension but does not select a protocol from the client list.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <property>STRICT_ALPN</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    <notRecommendedCipherSuiteGuidelineCheck>
         <name>Implementations MUST NOT negotiate the cipher suites with NULL encryption. Implementations MUST NOT negotiate RC4 cipher suites. Implementations MUST NOT negotiate cipher suites offering less than 112 bits of security, including so-called "export-level" encryption (which provides 40 or 56 bits of security).</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <versions>TLS12</versions>
@@ -181,9 +178,8 @@
         <cipherSuitesInQuestion>TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_RSA_EXPORT_WITH_DES40_CBC_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5</cipherSuitesInQuestion>
-        <recommended>false</recommended>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    </notRecommendedCipherSuiteGuidelineCheck>
+    <notRecommendedCipherSuiteGuidelineCheck>
         <name>Implementations SHOULD NOT negotiate cipher suites that use algorithms offering less than 128 bits of security. Implementations SHOULD NOT negotiate cipher suites based on RSA key transport, a.k.a. "static RSA". Implementations SHOULD NOT negotiate cipher suites based on non-ephemeral (static) finite-field Diffie-Hellman (DH) key agreement. Similarly, implementations SHOULD NOT negotiate non-ephemeral Elliptic Curve DH key agreement. TLS 1.2 implementations SHOULD NOT negotiate cipher suites based on ephemeral finite-field Diffie-Hellman key agreement (i.e., "TLS_DHE_*" suites).</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <versions>TLS12</versions>
@@ -387,9 +383,8 @@
         <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_DES_CBC_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_DHE_RSA_WITH_SEED_CBC_SHA</cipherSuitesInQuestion>
-        <recommended>false</recommended>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    </notRecommendedCipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>Given the foregoing considerations, implementation and deployment of the following cipher suites is RECOMMENDED.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -401,9 +396,8 @@
         <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
+    <notRecommendedCipherSuiteGuidelineCheck>
         <name>A cipher suite that operates in CBC (cipher block chaining) mode (e.g., TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) SHOULD NOT be used unless the encrypt_then_mac extension [RFC7366] is also successfully negotiated. This requirement applies to both client and server implementations.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
@@ -423,8 +417,7 @@
         <cipherSuitesInQuestion>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
-        <recommended>false</recommended>
-    </cipherSuiteGuidelineCheck>
+    </notRecommendedCipherSuiteGuidelineCheck>
     <certificateCurveGuidelineCheck>
         <name>When using ECDSA signatures for authentication of TLS peers, it is RECOMMENDED that implementations use the NIST curve P-256.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -435,7 +428,7 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    <notRecommendedCipherSuiteGuidelineCheck>
         <name>The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
@@ -444,14 +437,12 @@
         </condition>
         <versions>TLS12</versions>
         <cipherSuitesInQuestion>TLS_RSA_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
-        <recommended>false</recommended>
-    </cipherSuiteGuidelineCheck>
-    <extensionGuidelineCheck>
+    </notRecommendedCipherSuiteGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>Both clients and servers SHOULD include the "Supported Elliptic Curves Extension" [RFC8422].</name>
         <requirementLevel>SHOULD</requirementLevel>
         <extensionsInQuestion>ELLIPTIC_CURVES</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -517,7 +508,7 @@
         <minimumEcKeyLength>224</minimumEcKeyLength>
         <minimumDhKeyLength>2048</minimumDhKeyLength>
     </keySizeCertGuidelineCheck>
-    <hashAlgorithmsGuidelineCheck>
+    <recommendedHashAlgorithmsGuidelineCheck>
         <name>In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -525,9 +516,8 @@
             <result>TRUE</result>
         </condition>
         <algorithmsInQuestion>SHA256</algorithmsInQuestion>
-        <recommended>true</recommended>
-    </hashAlgorithmsGuidelineCheck>
-    <hashAlgorithmsGuidelineCheck>
+    </recommendedHashAlgorithmsGuidelineCheck>
+    <notRecommendedHashAlgorithmsGuidelineCheck>
         <name>In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <condition>
@@ -536,9 +526,8 @@
         </condition>
         <algorithmsInQuestion>SHA1</algorithmsInQuestion>
         <algorithmsInQuestion>MD5</algorithmsInQuestion>
-        <recommended>false</recommended>
-    </hashAlgorithmsGuidelineCheck>
-    <extensionGuidelineCheck>
+    </notRecommendedHashAlgorithmsGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>Clients MUST indicate to servers that they request SHA-256 by using the "Signature Algorithms" extension defined in TLS 1.2. For TLS 1.3, the same requirement is already specified by [RFC8446].</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -554,9 +543,8 @@
             </or>
         </condition>
         <extensionsInQuestion>SIGNATURE_AND_HASH_ALGORITHMS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>Implementations MUST NOT use the Truncated HMAC Extension, defined in Section 7 of [RFC6066].</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <condition>
@@ -564,6 +552,5 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>TRUNCATED_HMAC</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
 </guideline>

@@ -15,20 +15,16 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 import java.util.Set;
 
-public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
+public class NotRecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<HashAlgorithm> notRecommendedAlgorithms;
-    // If false HashAlgorithmsGuidelineCheck checked if the provided algorithms are NOT supported.
-    private boolean recommended;
 
-    public HashAlgorithmsGuidelineCheckResult(
+    public NotRecommendedHashAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            Set<HashAlgorithm> notRecommendedAlgorithms,
-            boolean recommended) {
+            Set<HashAlgorithm> notRecommendedAlgorithms) {
         super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
-        this.recommended = recommended;
     }
 
     @Override
@@ -37,7 +33,6 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
             return "Missing Information";
         }
         if (notRecommendedAlgorithms.isEmpty()) {
-            if (recommended) return "Only listed Hash Algorithms are supported.";
             return "None of the listed Hash Algorithms is supported.";
         } else {
             return "The following Hash Algorithms were supported contrary to the guideline:\n"
@@ -47,9 +42,5 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     public Set<HashAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
-    }
-
-    public boolean isRecommended() {
-        return recommended;
     }
 }

@@ -105,7 +105,7 @@
         <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
         <recommendedNamedParameters>SECP384R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1 and Appendix C:</name>
         <requirementLevel>SHOULD</requirementLevel>
         <versions>TLS10</versions>
@@ -191,9 +191,8 @@
         <cipherSuitesInQuestion>TLS_DHE_PSK_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_PSK_WITH_AES_128_CBC_SHA</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_PSK_WITH_AES_256_CBC_SHA</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:</name>
         <requirementLevel>SHOULD</requirementLevel>
         <versions>TLS13</versions>
@@ -201,8 +200,7 @@
         <cipherSuitesInQuestion>TLS_AES_256_GCM_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_128_CCM_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_128_CCM_8_SHA256</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>TLS implementations that support versions prior to TLS 1.3 shall use the bad_record_mac error to indicate a padding error. Implementations shall compute the MAC regardless of whether padding errors exist. TLS implementations should support constant-time decryption or near constant-time decryption.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -253,12 +251,11 @@
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The client shall be configured to use the Server Name Indication extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <extensionsInQuestion>SERVER_NAME_INDICATION</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The client shall be configured to use the Extended Master Secret extension.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -281,7 +278,7 @@
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The client shall be configured to use the Signature Algorithms extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -297,8 +294,7 @@
             </or>
         </condition>
         <extensionsInQuestion>SIGNATURE_AND_HASH_ALGORITHMS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The client shall be configured to use the Certificate Status Request extension.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -331,7 +327,7 @@
         <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Supported Groups extension shall be supported if the client supports ephemeral ECDH cipher suites or if the client supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -347,8 +343,7 @@
             </or>
         </condition>
         <extensionsInQuestion>ELLIPTIC_CURVES</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422. Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -406,7 +401,7 @@
         <tls13>false</tls13>
         <minGroupCount>2</minGroupCount>
     </namedGroupsGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Key Share extension shall be supported if the client supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -414,9 +409,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>KEY_SHARE</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The EC Point Format TLS extension shall be supported if the client supports EC cipher suite(s).</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -452,8 +446,7 @@
             </and>
         </condition>
         <extensionsInQuestion>EC_POINT_FORMATS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The Multiple Certificate Status extension should be enabled if the extension is supported by the client implementation.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -506,7 +499,7 @@
         <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Pre-Shared Key extension may be supported by TLS 1.3 clients.</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
@@ -514,9 +507,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>PRE_SHARED_KEY</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Supported Versions extension shall be supported by TLS 1.3 clients.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -524,9 +516,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>SUPPORTED_VERSIONS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Cookie extension shall be supported by TLS 1.3 clients.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -534,9 +525,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>COOKIE</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -544,9 +534,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>SIGNATURE_ALGORITHMS_CERT</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Certificate Signature Algorithms Extension should be supported for TLS 1.2.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -562,9 +551,8 @@
             </and>
         </condition>
         <extensionsInQuestion>SIGNATURE_ALGORITHMS_CERT</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>The Post-handshake Client Authentication extension may be supported if the client supports TLS 1.3.</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
@@ -572,9 +560,8 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>POST_HANDSHAKE_AUTH</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>The Client Certificate URL extension should not be supported.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
@@ -594,21 +581,18 @@
             </or>
         </condition>
         <extensionsInQuestion>CLIENT_CERTIFICATE_URL</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>The Early Data Indication extension should not be used.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <extensionsInQuestion>EARLY_DATA</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>The Raw Public Key extension shall not be supported.</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <extensionsInQuestion>CLIENT_CERTIFICATE_TYPE</extensionsInQuestion>
         <extensionsInQuestion>SERVER_CERTIFICATE_TYPE</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The null compression method shall be enabled, and all other compression methods shall be disabled.</name>
         <requirementLevel>MUST</requirementLevel>

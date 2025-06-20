@@ -37,7 +37,7 @@
         <property>SUPPORTS_SSL_3</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <versions>TLS12</versions>
@@ -92,9 +92,8 @@
         <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_256_CBC_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_128_GCM_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_RSA_PSK_WITH_AES_256_GCM_SHA384</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>Die Verwendung der "supported_groups" Erweiterung für TLS_(EC)DHE_* Cipher-Suiten wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -118,8 +117,7 @@
             </and>
         </condition>
         <extensionsInQuestion>ELLIPTIC_CURVES</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <namedGroupsGuidelineCheck>
         <name>Die folgenden Diffie-Hellman Gruppen werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -150,7 +148,7 @@
         <tls13>false</tls13>
         <minGroupCount>2</minGroupCount>
     </namedGroupsGuidelineCheck>
-    <extensionGuidelineCheck>
+    <recommendedExtensionGuidelineCheck>
         <name>Die Verwendung der "signature_algorithms" Erweiterung wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -158,8 +156,7 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>SIGNATURE_AND_HASH_ALGORITHMS</extensionsInQuestion>
-        <required>true</required>
-    </extensionGuidelineCheck>
+    </recommendedExtensionGuidelineCheck>
     <signatureAlgorithmsGuidelineCheck>
         <name>Die folgenden Signaturverfahren werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -172,7 +169,7 @@
         <recommendedAlgorithms>DSA</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
     </signatureAlgorithmsGuidelineCheck>
-    <hashAlgorithmsGuidelineCheck>
+    <recommendedHashAlgorithmsGuidelineCheck>
         <name>Die folgenden Hashfunktionen werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -182,8 +179,7 @@
         <algorithmsInQuestion>SHA256</algorithmsInQuestion>
         <algorithmsInQuestion>SHA384</algorithmsInQuestion>
         <algorithmsInQuestion>SHA512</algorithmsInQuestion>
-        <recommended>true</recommended>
-    </hashAlgorithmsGuidelineCheck>
+    </recommendedHashAlgorithmsGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC 5746] zu verwenden.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -194,7 +190,7 @@
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>Die in [RFC 6066] definierte Extension "truncated_hmac" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
@@ -202,8 +198,7 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>TRUNCATED_HMAC</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
@@ -224,7 +219,7 @@
         <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <notRecommendedExtensionGuidelineCheck>
         <name>Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.</name>
         <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
@@ -232,8 +227,7 @@
             <result>TRUE</result>
         </condition>
         <extensionsInQuestion>HEARTBEAT</extensionsInQuestion>
-        <required>false</required>
-    </extensionGuidelineCheck>
+    </notRecommendedExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC 7627] wird empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -334,15 +328,14 @@
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P384R1_TLS13_SHA384</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
     </signatureAndHashAlgorithmsCertificateGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <versions>TLS13</versions>
         <cipherSuitesInQuestion>TLS_AES_128_GCM_SHA256</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_256_GCM_SHA384</cipherSuitesInQuestion>
         <cipherSuitesInQuestion>TLS_AES_128_CCM_SHA256</cipherSuitesInQuestion>
-        <recommended>true</recommended>
-    </cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
     <keySizeCertGuidelineCheck>
         <name>Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.</name>
         <requirementLevel>SHOULD</requirementLevel>

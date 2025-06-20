@@ -8,14 +8,10 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.clientscanner.guideline.results.CipherSuiteGuidelineCheckResult;
+import de.rub.nds.tlsscanner.clientscanner.guideline.results.RecommendedCipherSuiteGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -28,20 +24,18 @@ import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
+public class RecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     /** The protocol versions this check applies to. */
     private List<ProtocolVersion> versions;
 
     private List<CipherSuite> cipherSuitesInQuestion;
-    // If false this class checks if the provided cipher suites are NOT supported.
-    private boolean recommended;
 
-    private CipherSuiteGuidelineCheck() {
+    private RecommendedCipherSuiteGuidelineCheck() {
         super(null, null);
     }
 
-    public CipherSuiteGuidelineCheck(
+    public RecommendedCipherSuiteGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             List<ProtocolVersion> versions,
@@ -49,11 +43,9 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
         super(name, requirementLevel);
         this.versions = versions;
         this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended = true;
-        // Default case, this means the cipherSuitesInQuestion are expected to be supported.
     }
 
-    public CipherSuiteGuidelineCheck(
+    public RecommendedCipherSuiteGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
@@ -62,33 +54,6 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
         super(name, requirementLevel, condition);
         this.versions = versions;
         this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended = true;
-        // Default case, this means the cipherSuitesInQuestion are expected to be supported.
-    }
-
-    public CipherSuiteGuidelineCheck(
-            String name,
-            RequirementLevel requirementLevel,
-            List<ProtocolVersion> versions,
-            List<CipherSuite> cipherSuitesInQuestion,
-            boolean recommended) {
-        super(name, requirementLevel);
-        this.versions = versions;
-        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended = recommended;
-    }
-
-    public CipherSuiteGuidelineCheck(
-            String name,
-            RequirementLevel requirementLevel,
-            GuidelineCheckCondition condition,
-            List<ProtocolVersion> versions,
-            List<CipherSuite> cipherSuitesInQuestion,
-            boolean recommended) {
-        super(name, requirementLevel, condition);
-        this.versions = versions;
-        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
-        this.recommended = recommended;
     }
 
     @Override
@@ -100,29 +65,20 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
     @Override
     public GuidelineCheckResult evaluate(ClientReport report) {
         Set<CipherSuite> supportedCipherSuites = new HashSet<>();
-        List<CipherSuite> nonRecommendedCipherSuites = null;
+        List<CipherSuite> notRecommendedCipherSuites = null;
         for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
             if (versions.contains(pair.getVersion())) {
                 supportedCipherSuites.addAll(pair.getCipherSuiteList());
             }
         }
-
-        if (!recommended) {
-            nonRecommendedCipherSuites =
-                    supportedCipherSuites.stream()
-                            .filter(suite -> cipherSuitesInQuestion.contains(suite))
-                            .collect(Collectors.toList());
-        } else {
-            nonRecommendedCipherSuites =
-                    supportedCipherSuites.stream()
-                            .filter(suite -> !cipherSuitesInQuestion.contains(suite))
-                            .collect(Collectors.toList());
-        }
-        return new CipherSuiteGuidelineCheckResult(
+        notRecommendedCipherSuites =
+                supportedCipherSuites.stream()
+                        .filter(suite -> !cipherSuitesInQuestion.contains(suite))
+                        .collect(Collectors.toList());
+        return new RecommendedCipherSuiteGuidelineCheckResult(
                 getName(),
-                GuidelineAdherence.of(nonRecommendedCipherSuites.isEmpty()),
-                nonRecommendedCipherSuites,
-                recommended);
+                GuidelineAdherence.of(notRecommendedCipherSuites.isEmpty()),
+                notRecommendedCipherSuites);
     }
 
     @Override
@@ -132,9 +88,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
                 + "_"
                 + versions
                 + "_"
-                + cipherSuitesInQuestion
-                + "_"
-                + recommended;
+                + cipherSuitesInQuestion;
     }
 
     private List<CipherSuite> nonRecommendedSuites(ClientReport report) {
@@ -155,9 +109,5 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ClientReport> {
 
     public List<CipherSuite> getCipherSuitesInQuestion() {
         return cipherSuitesInQuestion;
-    }
-
-    public boolean isRecommended() {
-        return recommended;
     }
 }

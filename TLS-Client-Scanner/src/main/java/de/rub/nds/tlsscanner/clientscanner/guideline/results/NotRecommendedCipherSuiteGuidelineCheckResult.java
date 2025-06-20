@@ -14,26 +14,21 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import java.util.List;
 
-public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
+public class NotRecommendedCipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<CipherSuite> notRecommendedSuites;
-    // If false CipherSuiteGuidelineCheck checked if the provided cipher suites are NOT supported.
-    private boolean recommended;
 
-    public CipherSuiteGuidelineCheckResult(
+    public NotRecommendedCipherSuiteGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            List<CipherSuite> notRecommendedSuites,
-            boolean recommended) {
+            List<CipherSuite> notRecommendedSuites) {
         super(checkName, adherence);
         this.notRecommendedSuites = notRecommendedSuites;
-        this.recommended = recommended;
     }
 
     @Override
     public String toString() {
         if (notRecommendedSuites.isEmpty()) {
-            if (recommended) return "Only listed Cipher Suites are supported.";
             return "None of the listed Cipher Suites is supported.";
         } else {
             return "The following Cipher Suites were supported contrary to the guideline:\n"
@@ -43,9 +38,5 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     public List<CipherSuite> getNotRecommendedSuites() {
         return notRecommendedSuites;
-    }
-
-    public boolean isRecommended() {
-        return recommended;
     }
 }

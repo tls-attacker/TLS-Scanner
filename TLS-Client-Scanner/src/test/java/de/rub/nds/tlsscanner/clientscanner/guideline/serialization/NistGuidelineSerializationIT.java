@@ -121,9 +121,9 @@ public class NistGuidelineSerializationIT {
         //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
         //                        TestResults.TRUE));
         checks.add(
-                new CipherSuiteGuidelineCheck( // Appendix D only contains a conditional MAY for RSA
-                        // cipher suites. Thus, these cipher suites are
-                        // omitted here.
+                new RecommendedCipherSuiteGuidelineCheck( // Appendix D only contains a conditional
+                        // MAY for RSA cipher suites. Thus, these
+                        // cipher suites are omitted here.
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1 and Appendix C:",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
@@ -214,7 +214,7 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA,
                                 CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA)));
         checks.add(
-                new CipherSuiteGuidelineCheck(
+                new RecommendedCipherSuiteGuidelineCheck(
                         "The client should not be configured to use cipher suites other than those listed in Section 3.3.1, Appendix C, or Appendix D. [...] The cipher suite requirement for clients is weaker than for servers because many clients, such as web browsers, may not allow the same level of configuration as servers. [...] Section 3.3.1:",
                         RequirementLevel.SHOULD,
                         List.of(ProtocolVersion.TLS13),
@@ -264,7 +264,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The client shall be configured to use the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -286,7 +286,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The client shall be configured to use the Signature Algorithms extension.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
@@ -326,7 +326,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Supported Groups extension shall be supported if the client supports ephemeral ECDH cipher suites or if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
@@ -372,14 +372,14 @@ public class NistGuidelineSerializationIT {
                         false,
                         2));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The EC Point Format TLS extension shall be supported if the client supports EC cipher suite(s).",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.and(
@@ -451,7 +451,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Pre-Shared Key extension may be supported by TLS 1.3 clients.",
                         RequirementLevel.MAY,
                         new GuidelineCheckCondition(
@@ -484,28 +484,28 @@ public class NistGuidelineSerializationIT {
         //                        TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
         //                        TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Supported Versions extension shall be supported by TLS 1.3 clients.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SUPPORTED_VERSIONS));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Cookie extension shall be supported by TLS 1.3 clients.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.COOKIE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Certificate Signature Algorithms Extension shall be supported if the client supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Certificate Signature Algorithms Extension should be supported for TLS 1.2.",
                         RequirementLevel.SHOULD,
                         GuidelineCheckCondition.and(
@@ -518,14 +518,14 @@ public class NistGuidelineSerializationIT {
                                                 TestResults.FALSE))),
                         ExtensionType.SIGNATURE_ALGORITHMS_CERT));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "The Post-handshake Client Authentication extension may be supported if the client supports TLS 1.3.",
                         RequirementLevel.MAY,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.POST_HANDSHAKE_AUTH));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new NotRecommendedExtensionGuidelineCheck(
                         "The Client Certificate URL extension should not be supported.",
                         RequirementLevel.SHOULD_NOT,
                         GuidelineCheckCondition.or(
@@ -539,22 +539,20 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                                                 TestResults.TRUE))),
-                        false,
                         ExtensionType.CLIENT_CERTIFICATE_URL));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new NotRecommendedExtensionGuidelineCheck(
                         "The Early Data Indication extension should not be used.",
                         RequirementLevel.SHOULD_NOT,
-                        false,
                         ExtensionType.EARLY_DATA));
         checks.add(
-                new ExtensionGuidelineCheck( // Raw Public Key is currently the only use-case for
-                        // client/server certificate type. Thus, it is
-                        // sufficient to just check if any of these extensions
-                        // is present in the ClientHello.
+                new NotRecommendedExtensionGuidelineCheck( // Raw Public Key is currently the only
+                        // use-case for client/server certificate
+                        // type. Thus, it is sufficient to just
+                        // check if any of these extensions is
+                        // present in the ClientHello.
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
-                        false,
                         ExtensionType.CLIENT_CERTIFICATE_TYPE,
                         ExtensionType.SERVER_CERTIFICATE_TYPE));
 

@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class HashAlgorithmsGuidelineCheckTest {
+public class RecommendedHashAlgorithmsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
@@ -27,8 +27,8 @@ public class HashAlgorithmsGuidelineCheckTest {
         report.putResult(
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
-        HashAlgorithmsGuidelineCheck check =
-                new HashAlgorithmsGuidelineCheck(
+        RecommendedHashAlgorithmsGuidelineCheck check =
+                new RecommendedHashAlgorithmsGuidelineCheck(
                         null,
                         null,
                         Collections.singletonList(
@@ -43,45 +43,12 @@ public class HashAlgorithmsGuidelineCheckTest {
         report.putResult(
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA224));
-        HashAlgorithmsGuidelineCheck check =
-                new HashAlgorithmsGuidelineCheck(
+        RecommendedHashAlgorithmsGuidelineCheck check =
+                new RecommendedHashAlgorithmsGuidelineCheck(
                         null,
                         null,
                         Collections.singletonList(
                                 SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()));
-        GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
-    }
-
-    public void testPositiveNotRecommended() {
-        ClientReport report = new ClientReport();
-        report.putResult(
-                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA224));
-        HashAlgorithmsGuidelineCheck check =
-                new HashAlgorithmsGuidelineCheck(
-                        null,
-                        null,
-                        Collections.singletonList(
-                                SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()),
-                        false);
-        GuidelineCheckResult result = check.evaluate(report);
-        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
-    }
-
-    @Test
-    public void testNegativeNotRecommended() {
-        ClientReport report = new ClientReport();
-        report.putResult(
-                TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
-                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
-        HashAlgorithmsGuidelineCheck check =
-                new HashAlgorithmsGuidelineCheck(
-                        null,
-                        null,
-                        Collections.singletonList(
-                                SignatureAndHashAlgorithm.RSA_SHA1.getHashAlgorithm()),
-                        false);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
