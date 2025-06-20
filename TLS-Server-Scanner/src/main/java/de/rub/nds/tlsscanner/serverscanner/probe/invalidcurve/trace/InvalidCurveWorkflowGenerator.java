@@ -37,6 +37,17 @@ public class InvalidCurveWorkflowGenerator {
 
     private InvalidCurveWorkflowGenerator() {}
 
+    /**
+     * Generates a workflow trace for invalid curve testing based on the specified type.
+     *
+     * @param type The type of invalid curve workflow to generate (REGULAR or RENEGOTIATION)
+     * @param serializedPublicKey The serialized public key to use in the workflow
+     * @param pms The pre-master secret to use in the workflow
+     * @param explicitPMS The explicit pre-master secret bytes
+     * @param tlsConfig The TLS configuration to use for the workflow
+     * @return A configured WorkflowTrace for invalid curve testing
+     * @throws IllegalArgumentException if an unknown InvalidCurveWorkflowType is provided
+     */
     public static WorkflowTrace generateWorkflow(
             InvalidCurveWorkflowType type,
             ModifiableByteArray serializedPublicKey,
