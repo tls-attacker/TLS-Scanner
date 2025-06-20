@@ -174,6 +174,14 @@ public abstract class ECPointFormatUtils {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
 
+    /**
+     * Merges EC point format test results into the calling probe.
+     *
+     * @param supportedFormats The list of supported EC point formats discovered
+     * @param callingProbe The probe to merge results into
+     * @param completesHandshakeWithUndefined Test result for handshake with undefined point format
+     * @param tls13SecpCompression Test result for TLS 1.3 SECP compression support (can be null)
+     */
     public static void mergeInProbe(
             List<ECPointFormat> supportedFormats,
             TlsProbe<?> callingProbe,
