@@ -24,11 +24,12 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
@@ -88,7 +89,7 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
-                new CipherSuiteGuidelineCheck(
+                new RecommendedCipherSuiteGuidelineCheck(
                         "Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.",
                         RequirementLevel.SHOULD,
                         List.of(ProtocolVersion.TLS12),
@@ -172,7 +173,7 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAlgorithm.DSA,
                                 SignatureAlgorithm.ECDSA)));
         checks.add(
-                new HashAlgorithmsGuidelineCheck(
+                new RecommendedHashAlgorithmsGuidelineCheck(
                         "Die folgenden Hashfunktionen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -204,12 +205,11 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
                         TestResults.FALSE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new NotRecommendedExtensionGuidelineCheck(
                         "Die in [RFC 6066] definierte Extension \"truncated_hmac\" zur Verkürzung der Ausgabe des HMAC auf 80 Bit sollte nicht verwendet werden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        false,
                         ExtensionType.TRUNCATED_HMAC));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -228,12 +228,11 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RecommendedExtensionGuidelineCheck(
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
-                        false,
                         ExtensionType.HEARTBEAT));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -324,7 +323,7 @@ public class BsiGuidelineSerializationIT {
                                 // X509SignatureAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512
                                 )));
         checks.add(
-                new CipherSuiteGuidelineCheck(
+                new RecommendedCipherSuiteGuidelineCheck(
                         "Die folgenden Cipher-Suiten werden empfohlen.",
                         RequirementLevel.SHOULD,
                         List.of(ProtocolVersion.TLS13),
