@@ -36,12 +36,14 @@ public class Pkcs1VectorGenerator {
     private Pkcs1VectorGenerator() {}
 
     /**
-     * Generates different encrypted PKCS1 vectors
+     * Generates different encrypted PKCS#1 vectors for Bleichenbacher vulnerability testing. This
+     * method creates various malformed and correctly formatted PKCS#1 padded messages that can be
+     * used to test RSA implementations for padding oracle vulnerabilities.
      *
-     * @param publicKey The public key
-     * @param type the type
-     * @param protocolVersion
-     * @return encrypted pkcs1Vectors
+     * @param publicKey the RSA public key to use for encryption
+     * @param type the type of Bleichenbacher scan (FAST or FULL)
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a list of PKCS#1 vectors with both plain and encrypted values
      */
     public static List<Pkcs1Vector> generatePkcs1Vectors(
             RsaPublicKey publicKey, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
@@ -61,9 +63,13 @@ public class Pkcs1VectorGenerator {
     }
 
     /**
-     * @param publicKey
-     * @param protocolVersion
-     * @return
+     * Generates a single correctly formatted PKCS#1 vector using Java's Cipher implementation. This
+     * method creates a properly padded PKCS#1 message with the correct TLS version bytes.
+     *
+     * @param publicKey the RSA public key to use for encryption
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a correctly formatted and encrypted PKCS#1 vector
+     * @throws ConfigurationException if the vector cannot be generated due to cryptographic errors
      */
     public static Pkcs1Vector generateCorrectPkcs1Vector(
             RSAPublicKey publicKey, ProtocolVersion protocolVersion) {
@@ -87,12 +93,15 @@ public class Pkcs1VectorGenerator {
     }
 
     /**
-     * Generates different plain PKCS1 vectors
+     * Generates different plain (unencrypted) PKCS#1 vectors with various padding errors. These
+     * vectors include correctly formatted messages as well as messages with specific malformations
+     * designed to test padding oracle vulnerabilities.
      *
-     * @param publicKeyBitLength The publicKeyBitLength
-     * @param type the type
-     * @param protocolVersion
-     * @return pkcs1Vectors
+     * @param publicKeyBitLength the bit length of the RSA public key
+     * @param type the type of Bleichenbacher scan (FAST or FULL). FULL includes additional vectors
+     *     with 0x00 bytes at different positions
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a list of plain PKCS#1 vectors with various padding formats
      */
     public static List<Pkcs1Vector> generatePlainPkcs1Vectors(
             int publicKeyBitLength, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
