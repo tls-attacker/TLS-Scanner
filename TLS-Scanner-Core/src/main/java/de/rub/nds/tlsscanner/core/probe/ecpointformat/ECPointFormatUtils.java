@@ -63,6 +63,14 @@ public abstract class ECPointFormatUtils {
         return ourECDHCipherSuites;
     }
 
+    /**
+     * Retrieves the appropriate named groups for testing based on the specified EC point format.
+     *
+     * @param format The EC point format to get groups for
+     * @param baseConfig The base configuration containing default client named groups
+     * @return A list of named groups suitable for the specified format, or null if format is not
+     *     supported
+     */
     public static List<NamedGroup> getGroupsForTest(ECPointFormat format, Config baseConfig) {
         List<NamedGroup> groups = null;
         switch (format) {
