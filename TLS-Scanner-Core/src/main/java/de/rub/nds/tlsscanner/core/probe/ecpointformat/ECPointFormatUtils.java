@@ -118,6 +118,12 @@ public abstract class ECPointFormatUtils {
         return state;
     }
 
+    /**
+     * Retrieves named groups that contain a specific identifier in their name.
+     *
+     * @param identifier The string to search for in group names (e.g., "SECP" or "SECT")
+     * @return A list of named groups whose names contain the specified identifier
+     */
     public static List<NamedGroup> getSpecificGroups(String identifier) {
         List<NamedGroup> secpGroups = new LinkedList<>();
         for (NamedGroup group : NamedGroup.getImplemented()) {
