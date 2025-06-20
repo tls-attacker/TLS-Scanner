@@ -164,6 +164,12 @@ public abstract class ECPointFormatUtils {
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE;
     }
 
+    /**
+     * Checks if the target supports TLS 1.3.
+     *
+     * @param report The scan report to check
+     * @return true if the target supports TLS 1.3, false otherwise
+     */
     public static boolean testInTLS13(TlsScanReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResults.TRUE;
     }
