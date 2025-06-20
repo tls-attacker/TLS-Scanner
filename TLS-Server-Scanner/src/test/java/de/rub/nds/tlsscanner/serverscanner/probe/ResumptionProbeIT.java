@@ -56,6 +56,6 @@ public class ResumptionProbeIT extends AbstractProbeIT {
                         TestResults.NOT_TESTED_YET)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, TestResults.TRUE)
-                && verifyProperty(TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE, TestResults.TRUE);
+                && verifyProperty(TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE, TestResults.TRUE);
     }
 }

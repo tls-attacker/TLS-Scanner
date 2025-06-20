@@ -2198,7 +2198,7 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>PREFERS_TLS13_PSK_DHE</property>
+        <property>SELECTS_TLS13_PSK_DHE</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>

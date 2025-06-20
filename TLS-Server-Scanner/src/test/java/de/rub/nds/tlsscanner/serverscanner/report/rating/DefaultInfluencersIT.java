@@ -1062,7 +1062,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 50)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
+                        TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 

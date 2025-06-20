@@ -1121,8 +1121,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
         prettyAppend(
                 builder,
-                "Prefers TLS 1.3 PSK-DHE to TLS 1.3 PSK",
-                TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE);
+                "Selects TLS 1.3 PSK-DHE when also TLS 1.3 PSK is provided by client",
+                TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
         return builder;
     }

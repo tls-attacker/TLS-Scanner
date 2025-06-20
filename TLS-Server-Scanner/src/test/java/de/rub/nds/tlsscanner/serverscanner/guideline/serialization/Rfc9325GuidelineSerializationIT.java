@@ -119,9 +119,15 @@ public class Rfc9325GuidelineSerializationIT {
                 new AnalyzedPropertyGuidelineCheck(
                         "In order to gain forward secrecy, this document recommends that server implementations SHOULD **select the \"psk_dhe_ke\" PSK key exchange mode** and respond with a \"key_share\" to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
                         RequirementLevel.SHOULD,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-                        TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
+                        GuidelineCheckCondition.and(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(

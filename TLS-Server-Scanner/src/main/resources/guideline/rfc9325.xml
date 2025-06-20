@@ -77,10 +77,18 @@
         <name>In order to gain forward secrecy, this document recommends that server implementations SHOULD **select the "psk_dhe_ke" PSK key exchange mode** and respond with a "key_share" to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
-            <property>SUPPORTS_TLS_1_3</property>
-            <result>TRUE</result>
+            <and>
+                <condition>
+                    <property>SUPPORTS_TLS_1_3</property>
+                    <result>TRUE</result>
+                </condition>
+                <condition>
+                    <property>SUPPORTS_TLS13_PSK_DHE</property>
+                    <result>TRUE</result>
+                </condition>
+            </and>
         </condition>
-        <property>PREFERS_TLS13_PSK_DHE</property>
+        <property>SELECTS_TLS13_PSK_DHE</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
