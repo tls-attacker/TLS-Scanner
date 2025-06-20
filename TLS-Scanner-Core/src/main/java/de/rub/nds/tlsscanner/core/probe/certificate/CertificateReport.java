@@ -72,252 +72,563 @@ public class CertificateReport {
     private List<X509ExtensionType> supportedExtensionTypes;
     private Set<KeyUsage> keyUsageSet;
 
+    /** Default constructor for CertificateReport. */
     public CertificateReport() {}
 
+    /**
+     * Gets the public key type of the certificate.
+     *
+     * @return the X509 public key type
+     */
     public X509PublicKeyType getPublicKeyType() {
         return publicKeyType;
     }
 
+    /**
+     * Sets the public key type of the certificate.
+     *
+     * @param publicKeyType the X509 public key type to set
+     */
     public void setPublicKeyType(X509PublicKeyType publicKeyType) {
         this.publicKeyType = publicKeyType;
     }
 
+    /**
+     * Gets the X509 certificate object.
+     *
+     * @return the X509 certificate
+     */
     public X509Certificate getCertificate() {
         return certificate;
     }
 
+    /**
+     * Sets the X509 certificate object.
+     *
+     * @param certificate the X509 certificate to set
+     */
     public void setCertificate(X509Certificate certificate) {
         this.certificate = certificate;
     }
 
+    /**
+     * Gets the named curve used in elliptic curve cryptography.
+     *
+     * @return the X509 named curve
+     */
     public X509NamedCurve getNamedCurve() {
         return namedCurve;
     }
 
+    /**
+     * Sets the named curve used in elliptic curve cryptography.
+     *
+     * @param namedCurve the X509 named curve to set
+     */
     public void setNamedCurve(X509NamedCurve namedCurve) {
         this.namedCurve = namedCurve;
     }
 
+    /**
+     * Gets the X509 signature algorithm used by the certificate.
+     *
+     * @return the X509 signature algorithm
+     */
     public X509SignatureAlgorithm getX509SignatureAlgorithm() {
         return x509SignatureAlgorithm;
     }
 
+    /**
+     * Sets the X509 signature algorithm used by the certificate.
+     *
+     * @param x509SignatureAlgorithm the X509 signature algorithm to set
+     */
     public void setX509SignatureAlgorithm(X509SignatureAlgorithm x509SignatureAlgorithm) {
         this.x509SignatureAlgorithm = x509SignatureAlgorithm;
     }
 
+    /**
+     * Gets the remaining duration until the certificate expires.
+     *
+     * @return the remaining duration
+     */
     public Duration getRemainingDuration() {
         return remainingDuration;
     }
 
+    /**
+     * Sets the remaining duration until the certificate expires.
+     *
+     * @param remainingDuration the remaining duration to set
+     */
     public void setRemainingDuration(Duration remainingDuration) {
         this.remainingDuration = remainingDuration;
     }
 
+    /**
+     * Gets the original full duration of the certificate validity period.
+     *
+     * @return the original full duration
+     */
     public Duration getOriginalFullDuration() {
         return originalFullDuration;
     }
 
+    /**
+     * Sets the original full duration of the certificate validity period.
+     *
+     * @param originalFullDuration the original full duration to set
+     */
     public void setOriginalFullDuration(Duration originalFullDuration) {
         this.originalFullDuration = originalFullDuration;
     }
 
+    /**
+     * Gets the set of key usage flags defined in the certificate.
+     *
+     * @return the set of key usage flags
+     */
     public Set<KeyUsage> getKeyUsageSet() {
         return keyUsageSet;
     }
 
+    /**
+     * Sets the key usage flags for the certificate.
+     *
+     * @param keyUsageSet the set of key usage flags to set
+     */
     public void setKeyUsageSet(Set<KeyUsage> keyUsageSet) {
         this.keyUsageSet = keyUsageSet;
     }
 
+    /**
+     * Gets the list of X509 extension types supported by the certificate.
+     *
+     * @return the list of supported extension types
+     */
     public List<X509ExtensionType> getSupportedExtensionTypes() {
         return supportedExtensionTypes;
     }
 
+    /**
+     * Sets the list of X509 extension types supported by the certificate.
+     *
+     * @param supportedExtensionTypes the list of supported extension types to set
+     */
     public void setSupportedExtensionTypes(List<X509ExtensionType> supportedExtensionTypes) {
         this.supportedExtensionTypes = supportedExtensionTypes;
     }
 
+    /**
+     * Gets the X509 version of the certificate.
+     *
+     * @return the X509 version
+     */
     public X509Version getVersion() {
         return version;
     }
 
+    /**
+     * Sets the X509 version of the certificate.
+     *
+     * @param version the X509 version to set
+     */
     public void setVersion(X509Version version) {
         this.version = version;
     }
 
+    /**
+     * Gets the object identifier for the signature and hash algorithm.
+     *
+     * @return the signature and hash algorithm OID
+     */
     public ObjectIdentifier getSignatureAndHashAlgorithmOid() {
         return signatureAndHashAlgorithmOid;
     }
 
+    /**
+     * Sets the object identifier for the signature and hash algorithm.
+     *
+     * @param signatureAndHashAlgorithmOid the signature and hash algorithm OID to set
+     */
     public void setSignatureAndHashAlgorithmOid(ObjectIdentifier signatureAndHashAlgorithmOid) {
         this.signatureAndHashAlgorithmOid = signatureAndHashAlgorithmOid;
     }
 
+    /**
+     * Checks if the extended key usage extension is present in the certificate.
+     *
+     * @return true if extended key usage is present, false otherwise, or null if not checked
+     */
     public Boolean getExtendedKeyUsagePresent() {
         return extendedKeyUsagePresent;
     }
 
+    /**
+     * Sets whether the extended key usage extension is present in the certificate.
+     *
+     * @param extendedKeyUsagePresent true if extended key usage is present, false otherwise
+     */
     public void setExtendedKeyUsagePresent(Boolean extendedKeyUsagePresent) {
         this.extendedKeyUsagePresent = extendedKeyUsagePresent;
     }
 
+    /**
+     * Checks if the certificate has server authentication in its extended key usage.
+     *
+     * @return true if server authentication is present, false otherwise, or null if not checked
+     */
     public Boolean getExtendedKeyUsageServerAuth() {
         return extendedKeyUsageServerAuth;
     }
 
+    /**
+     * Sets whether the certificate has server authentication in its extended key usage.
+     *
+     * @param extendedKeyUsageServerAuth true if server authentication is present, false otherwise
+     */
     public void setExtendedKeyUsageServerAuth(Boolean extendedKeyUsageServerAuth) {
         this.extendedKeyUsageServerAuth = extendedKeyUsageServerAuth;
     }
 
+    /**
+     * Gets the SHA-256 fingerprint of the certificate.
+     *
+     * @return the SHA-256 fingerprint as a byte array
+     */
     public byte[] getSHA256Fingerprint() {
         return sha256Fingerprint;
     }
 
+    /**
+     * Sets the SHA-256 fingerprint of the certificate.
+     *
+     * @param sha256Fingerprint the SHA-256 fingerprint as a byte array
+     */
     public void setSha256Fingerprint(byte[] sha256Fingerprint) {
         this.sha256Fingerprint = sha256Fingerprint;
     }
 
+    /**
+     * Gets the subject distinguished name of the certificate.
+     *
+     * @return the subject DN string
+     */
     public String getSubject() {
         return subject;
     }
 
+    /**
+     * Gets the common name (CN) from the certificate subject.
+     *
+     * @return the common name
+     */
     public String getCommonName() {
         return commonName;
     }
 
+    /**
+     * Gets the list of subject alternative names from the certificate.
+     *
+     * @return the list of alternative names
+     */
     public List<String> getAlternativeNames() {
         return alternativeNames;
     }
 
+    /**
+     * Gets the start date of the certificate validity period.
+     *
+     * @return the not-before date
+     */
     public DateTime getNotBefore() {
         return notBefore;
     }
 
+    /**
+     * Gets the end date of the certificate validity period.
+     *
+     * @return the not-after date
+     */
     public DateTime getNotAfter() {
         return notAfter;
     }
 
+    /**
+     * Gets the public key container from the certificate.
+     *
+     * @return the public key container
+     */
     public PublicKeyContainer getPublicKey() {
         return publicKey;
     }
 
+    /**
+     * Checks if the certificate uses a weak Debian key.
+     *
+     * @return true if using weak Debian key, false otherwise, or null if not checked
+     */
     public Boolean getWeakDebianKey() {
         return weakDebianKey;
     }
 
+    /**
+     * Gets the issuer distinguished name of the certificate.
+     *
+     * @return the issuer DN string
+     */
     public String getIssuer() {
         return issuer;
     }
 
+    /**
+     * Checks if the certificate is an Extended Validation (EV) certificate.
+     *
+     * @return true if EV certificate, false otherwise, or null if not checked
+     */
     public Boolean getExtendedValidation() {
         return extendedValidation;
     }
 
+    /**
+     * Checks if the certificate supports Certificate Transparency.
+     *
+     * @return true if CT is supported, false otherwise, or null if not checked
+     */
     public Boolean getCertificateTransparency() {
         return certificateTransparency;
     }
 
+    /**
+     * Checks if the certificate has the OCSP must-staple extension.
+     *
+     * @return true if OCSP must-staple is required, false otherwise, or null if not checked
+     */
     public Boolean getOcspMustStaple() {
         return ocspMustStaple;
     }
 
+    /**
+     * Checks if the certificate supports Certificate Revocation List (CRL).
+     *
+     * @return true if CRL is supported, false otherwise, or null if not checked
+     */
     public Boolean getCrlSupported() {
         return crlSupported;
     }
 
+    /**
+     * Checks if the certificate supports Online Certificate Status Protocol (OCSP).
+     *
+     * @return true if OCSP is supported, false otherwise, or null if not checked
+     */
     public Boolean getOcspSupported() {
         return ocspSupported;
     }
 
+    /**
+     * Checks if the certificate has been revoked.
+     *
+     * @return true if revoked, false otherwise, or null if not checked
+     */
     public Boolean getRevoked() {
         return revoked;
     }
 
+    /**
+     * Checks if the certificate has DNS Certification Authority Authorization (CAA) records.
+     *
+     * @return true if DNS CAA is present, false otherwise, or null if not checked
+     */
     public Boolean getDnsCAA() {
         return dnsCAA;
     }
 
+    /**
+     * Checks if the certificate is trusted by the system trust store.
+     *
+     * @return true if trusted, false otherwise, or null if not checked
+     */
     public Boolean getTrusted() {
         return trusted;
     }
 
+    /**
+     * Sets the subject distinguished name of the certificate.
+     *
+     * @param subject the subject DN string to set
+     */
     public void setSubject(String subject) {
         this.subject = subject;
     }
 
+    /**
+     * Sets the common name (CN) from the certificate subject.
+     *
+     * @param commonNames the common name to set
+     */
     public void setCommonName(String commonNames) {
         this.commonName = commonNames;
     }
 
+    /**
+     * Sets the list of subject alternative names for the certificate.
+     *
+     * @param alternativeNames the list of alternative names to set
+     */
     public void setAlternativeNames(List<String> alternativeNames) {
         this.alternativeNames = alternativeNames;
     }
 
+    /**
+     * Sets the start date of the certificate validity period.
+     *
+     * @param notBefore the not-before date to set
+     */
     public void setNotBefore(DateTime notBefore) {
         this.notBefore = notBefore;
     }
 
+    /**
+     * Sets the end date of the certificate validity period.
+     *
+     * @param notAfter the not-after date to set
+     */
     public void setNotAfter(DateTime notAfter) {
         this.notAfter = notAfter;
     }
 
+    /**
+     * Sets the public key container for the certificate.
+     *
+     * @param publicKey the public key container to set
+     */
     public void setPublicKey(PublicKeyContainer publicKey) {
         this.publicKey = publicKey;
     }
 
+    /**
+     * Sets whether the certificate uses a weak Debian key.
+     *
+     * @param weakDebianKey true if using weak Debian key, false otherwise
+     */
     public void setWeakDebianKey(Boolean weakDebianKey) {
         this.weakDebianKey = weakDebianKey;
     }
 
+    /**
+     * Sets the issuer distinguished name of the certificate.
+     *
+     * @param issuer the issuer DN string to set
+     */
     public void setIssuer(String issuer) {
         this.issuer = issuer;
     }
 
+    /**
+     * Gets the signature algorithm used by the certificate.
+     *
+     * @return the signature algorithm
+     */
     public SignatureAlgorithm getSignatureAlgorithm() {
         return signatureAlgorithm;
     }
 
+    /**
+     * Sets the signature algorithm used by the certificate.
+     *
+     * @param signatureAlgorithm the signature algorithm to set
+     */
     public void setSignatureAlgorithm(SignatureAlgorithm signatureAlgorithm) {
         this.signatureAlgorithm = signatureAlgorithm;
     }
 
+    /**
+     * Gets the hash algorithm used by the certificate.
+     *
+     * @return the hash algorithm
+     */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlgorithm;
     }
 
+    /**
+     * Sets the hash algorithm used by the certificate.
+     *
+     * @param hashAlgorithm the hash algorithm to set
+     */
     public void setHashAlgorithm(HashAlgorithm hashAlgorithm) {
         this.hashAlgorithm = hashAlgorithm;
     }
 
+    /**
+     * Sets whether the certificate is an Extended Validation (EV) certificate.
+     *
+     * @param extendedValidation true if EV certificate, false otherwise
+     */
     public void setExtendedValidation(Boolean extendedValidation) {
         this.extendedValidation = extendedValidation;
     }
 
+    /**
+     * Sets whether the certificate supports Certificate Transparency.
+     *
+     * @param certificateTransparency true if CT is supported, false otherwise
+     */
     public void setCertificateTransparency(Boolean certificateTransparency) {
         this.certificateTransparency = certificateTransparency;
     }
 
+    /**
+     * Sets whether the certificate has the OCSP must-staple extension.
+     *
+     * @param ocspMustStaple true if OCSP must-staple is required, false otherwise
+     */
     public void setOcspMustStaple(Boolean ocspMustStaple) {
         this.ocspMustStaple = ocspMustStaple;
     }
 
+    /**
+     * Sets whether the certificate supports Certificate Revocation List (CRL).
+     *
+     * @param crlSupported true if CRL is supported, false otherwise
+     */
     public void setCrlSupported(Boolean crlSupported) {
         this.crlSupported = crlSupported;
     }
 
+    /**
+     * Sets whether the certificate supports Online Certificate Status Protocol (OCSP).
+     *
+     * @param ocspSupported true if OCSP is supported, false otherwise
+     */
     public void setOcspSupported(Boolean ocspSupported) {
         this.ocspSupported = ocspSupported;
     }
 
+    /**
+     * Sets whether the certificate has been revoked.
+     *
+     * @param revoked true if revoked, false otherwise
+     */
     public void setRevoked(Boolean revoked) {
         this.revoked = revoked;
     }
 
+    /**
+     * Sets whether the certificate has DNS Certification Authority Authorization (CAA) records.
+     *
+     * @param dnsCAA true if DNS CAA is present, false otherwise
+     */
     public void setDnsCAA(Boolean dnsCAA) {
         this.dnsCAA = dnsCAA;
     }
 
+    /**
+     * Sets whether the certificate is trusted by the system trust store.
+     *
+     * @param trusted true if trusted, false otherwise
+     */
     public void setTrusted(Boolean trusted) {
         this.trusted = trusted;
     }
@@ -392,50 +703,110 @@ public class CertificateReport {
         return builder.toString();
     }
 
+    /**
+     * Checks if the certificate is vulnerable to the ROCA vulnerability.
+     *
+     * @return true if ROCA vulnerable, false otherwise, or null if not checked
+     */
     public Boolean getRocaVulnerable() {
         return rocaVulnerable;
     }
 
+    /**
+     * Sets whether the certificate is vulnerable to the ROCA vulnerability.
+     *
+     * @param rocaVulnerable true if ROCA vulnerable, false otherwise
+     */
     public void setRocaVulnerable(Boolean rocaVulnerable) {
         this.rocaVulnerable = rocaVulnerable;
     }
 
+    /**
+     * Checks if the certificate is a trust anchor (root certificate).
+     *
+     * @return true if trust anchor, false otherwise, or null if not checked
+     */
     public Boolean isTrustAnchor() {
         return trustAnchor;
     }
 
+    /**
+     * Sets whether the certificate is a trust anchor (root certificate).
+     *
+     * @param trustAnchor true if trust anchor, false otherwise
+     */
     public void setTrustAnchor(Boolean trustAnchor) {
         this.trustAnchor = trustAnchor;
     }
 
+    /**
+     * Sets whether the certificate is a custom trust anchor.
+     *
+     * @param customTrustAnchor true if custom trust anchor, false otherwise
+     */
     public void setCustomTrustAnchor(Boolean customTrustAnchor) {
         this.customTrustAnchor = customTrustAnchor;
     }
 
+    /**
+     * Checks if the certificate is a custom trust anchor.
+     *
+     * @return true if custom trust anchor, false otherwise, or null if not checked
+     */
     public Boolean isCustomTrustAnchor() {
         return customTrustAnchor;
     }
 
+    /**
+     * Checks if this is a leaf certificate (end-entity certificate).
+     *
+     * @return true if leaf certificate, false otherwise, or null if not checked
+     */
     public Boolean getLeafCertificate() {
         return leafCertificate;
     }
 
+    /**
+     * Sets whether this is a leaf certificate (end-entity certificate).
+     *
+     * @param leafCertificate true if leaf certificate, false otherwise
+     */
     public void setLeafCertificate(Boolean leafCertificate) {
         this.leafCertificate = leafCertificate;
     }
 
+    /**
+     * Checks if the certificate is self-signed.
+     *
+     * @return true if self-signed, false otherwise, or null if not checked
+     */
     public Boolean getSelfSigned() {
         return selfSigned;
     }
 
+    /**
+     * Sets whether the certificate is self-signed.
+     *
+     * @param selfSigned true if self-signed, false otherwise
+     */
     public void setSelfSigned(Boolean selfSigned) {
         this.selfSigned = selfSigned;
     }
 
+    /**
+     * Gets the SHA-256 pin for HTTP Public Key Pinning (HPKP).
+     *
+     * @return the SHA-256 pin string
+     */
     public String getSha256Pin() {
         return sha256Pin;
     }
 
+    /**
+     * Sets the SHA-256 pin for HTTP Public Key Pinning (HPKP).
+     *
+     * @param sha256Pin the SHA-256 pin string to set
+     */
     public void setSha256Pin(String sha256Pin) {
         this.sha256Pin = sha256Pin;
     }
