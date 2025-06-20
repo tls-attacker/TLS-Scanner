@@ -46,6 +46,13 @@ public abstract class ECPointFormatUtils {
         return ourECDHCipherSuites;
     }
 
+    /**
+     * Filters the peer's supported cipher suites to include only those that support ECDH key
+     * exchange.
+     *
+     * @param peerSupported The list of cipher suites supported by the peer
+     * @return A filtered list containing only cipher suites with "TLS_ECDH" in their name
+     */
     public static List<CipherSuite> getCipherSuitesForTest(List<CipherSuite> peerSupported) {
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : peerSupported) {
