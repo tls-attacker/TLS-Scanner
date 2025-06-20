@@ -21,22 +21,42 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Abstract base class for statistical tests on vector responses. Provides functionality to analyze
+ * response patterns across different input vectors and determine if there are statistically
+ * significant differences.
+ *
+ * @param <TestInfoT> The type of test information associated with this test
+ */
 public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
 
+    /** The p-value threshold for determining statistical significance */
     protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.05;
 
+    /** Logger instance for this class */
     protected static final Logger LOGGER = LogManager.getLogger();
 
+    /** List of vector containers holding responses for each distinct vector */
     protected final List<VectorContainer> vectorContainerList;
 
+    /** Information about the test being performed */
     protected final TestInfoT testInfo;
 
+    /** The computed p-value for this test */
     protected double valueP;
 
+    /** Indicates whether distinct answers were observed */
     protected boolean distinctAnswers;
 
+    /** Indicates whether the distinct answers are statistically significant */
     protected boolean significantDistinctAnswers;
 
+    /**
+     * Creates a new vector statistic test with the given test information and response list.
+     *
+     * @param testInfo Information about the test being performed
+     * @param responseList List of vector responses to analyze
+     */
     public VectorStatisticTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         this.testInfo = testInfo;
         vectorContainerList = new LinkedList<>();
@@ -56,26 +76,57 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         }
     }
 
+    /**
+     * Returns whether distinct answers were observed in the test.
+     *
+     * @return true if distinct answers were observed, false otherwise
+     */
     public boolean isDistinctAnswers() {
         return distinctAnswers;
     }
 
+    /**
+     * Returns whether the distinct answers are statistically significant.
+     *
+     * @return true if distinct answers are significant (p-value < 0.05), false otherwise
+     */
     public boolean isSignificantDistinctAnswers() {
         return significantDistinctAnswers;
     }
 
+    /**
+     * Returns the computed p-value for this test.
+     *
+     * @return The p-value
+     */
     public double getValueP() {
         return valueP;
     }
 
+    /**
+     * Returns the test information associated with this test.
+     *
+     * @return The test information
+     */
     public TestInfoT getTestInfo() {
         return testInfo;
     }
 
+    /**
+     * Returns the list of vector containers holding response data.
+     *
+     * @return List of vector containers
+     */
     public List<VectorContainer> getVectorContainerList() {
         return vectorContainerList;
     }
 
+    /**
+     * Returns the vector container for a specific vector.
+     *
+     * @param vector The vector to look up
+     * @return The vector container for the specified vector, or null if not found
+     */
     public VectorContainer getVectorContainer(Vector vector) {
         for (VectorContainer container : vectorContainerList) {
             if (container.getVector().equals(vector)) {
@@ -85,6 +136,11 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         return null;
     }
 
+    /**
+     * Returns a set of all unique vectors in this test.
+     *
+     * @return Set of all vectors
+     */
     public Set<Vector> getAllVectors() {
         Set<Vector> vectorSet = new HashSet<>();
         for (VectorContainer vectorContainer : vectorContainerList) {
@@ -93,6 +149,11 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         return vectorSet;
     }
 
+    /**
+     * Returns a set of all unique response fingerprints across all vectors.
+     *
+     * @return Set of all response fingerprints
+     */
     public Set<ResponseFingerprint> getAllResponseFingerprints() {
         Set<ResponseFingerprint> responseSet = new HashSet<>();
         for (VectorContainer vectorContainer : vectorContainerList) {
@@ -111,6 +172,11 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         return container.getDistinctResponsesCounterList();
     }
 
+    /**
+     * Retrieves the most common response across all vectors.
+     *
+     * @return The response counter with the highest occurrence count
+     */
     public ResponseCounter retrieveMostCommonAnswer() {
         ResponseCounter defaultAnswer = null;
         for (ResponseCounter counter : getAllResponseCounters()) {
@@ -123,6 +189,12 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         return defaultAnswer;
     }
 
+    /**
+     * Extends this test by adding additional vector responses. If a response is for an existing
+     * vector, it is added to that vector's container; otherwise, a new container is created.
+     *
+     * @param vectorResponseList List of vector responses to add
+     */
     public void extendTestWithVectorResponses(List<VectorResponse> vectorResponseList) {
         for (VectorResponse vectorResponse : vectorResponseList) {
             VectorContainer correctContainer = null;
@@ -143,6 +215,12 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         updateInternals();
     }
 
+    /**
+     * Extends this test by merging in additional vector containers. If a container is for an
+     * existing vector, the responses are merged; otherwise, the container is added as-is.
+     *
+     * @param vectorContainerList List of vector containers to merge
+     */
     public void extendTestWithVectorContainers(List<VectorContainer> vectorContainerList) {
         for (VectorContainer otherContainer : vectorContainerList) {
             VectorContainer correctContainer = null;
@@ -161,6 +239,11 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         updateInternals();
     }
 
+    /**
+     * Checks for equality errors between response fingerprints in this test.
+     *
+     * @return The first equality error found, or NONE if all fingerprints are properly comparable
+     */
     public EqualityError getEqualityError() {
         Set<ResponseFingerprint> fingerPrintSet = getAllResponseFingerprints();
         for (ResponseFingerprint fingerprint1 : fingerPrintSet) {
@@ -175,6 +258,10 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         return EqualityError.NONE;
     }
 
+    /**
+     * Updates internal state by recomputing the p-value and determining if there are distinct and
+     * significant differences in responses.
+     */
     protected final void updateInternals() {
         valueP = computePValue();
         distinctAnswers = getAllResponseFingerprints().size() > 1;
@@ -192,9 +279,27 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
         }
     }
 
+    /**
+     * Computes the p-value using Fisher's exact test. This method must be implemented by
+     * subclasses.
+     *
+     * @return The computed p-value
+     */
     abstract double computePValueFisherExact();
 
+    /**
+     * Computes the p-value using the Chi-squared test. This method must be implemented by
+     * subclasses.
+     *
+     * @return The computed p-value
+     */
     abstract double computePValueChiSquared();
 
+    /**
+     * Determines whether Fisher's exact test is applicable for the current data. This method must
+     * be implemented by subclasses.
+     *
+     * @return true if Fisher's exact test can be used, false otherwise
+     */
     abstract boolean isFisherExactUsable();
 }
