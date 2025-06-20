@@ -18,10 +18,20 @@ import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 
 public class DestinationPortExtractor extends StatExtractor<State, Integer> {
 
+    /**
+     * Constructs a new DestinationPortExtractor for extracting destination ports from UDP transport
+     * handlers.
+     */
     public DestinationPortExtractor() {
         super(TrackableValueType.DESTINATION_PORT);
     }
 
+    /**
+     * Extracts the destination port from the state's transport handler if it is a UDP transport
+     * handler.
+     *
+     * @param state the TLS state to extract the destination port from
+     */
     @Override
     public void extract(State state) {
         TransportHandler handler = state.getTlsContext().getTransportHandler();
