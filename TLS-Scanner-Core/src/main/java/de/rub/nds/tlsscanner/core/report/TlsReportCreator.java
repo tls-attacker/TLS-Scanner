@@ -41,6 +41,12 @@ import java.util.concurrent.TimeUnit;
 
 public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreator<ReportT> {
 
+    /**
+     * Creates a TLS report creator with the specified detail level and printing scheme.
+     *
+     * @param detail The level of detail for the report
+     * @param scheme The printing scheme to use for formatting
+     */
     public TlsReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
     }
