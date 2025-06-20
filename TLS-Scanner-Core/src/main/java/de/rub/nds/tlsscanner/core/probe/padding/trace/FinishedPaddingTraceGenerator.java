@@ -25,16 +25,22 @@ import java.util.LinkedList;
 public class FinishedPaddingTraceGenerator extends PaddingTraceGenerator {
 
     /**
-     * @param type
+     * Constructs a new FinishedPaddingTraceGenerator with the specified record generator type.
+     *
+     * @param type The type of padding record generator to use for creating padding vectors
      */
     public FinishedPaddingTraceGenerator(PaddingRecordGeneratorType type) {
         super(type);
     }
 
     /**
-     * @param config
-     * @param vector
-     * @return
+     * Creates a workflow trace for testing padding oracle vulnerabilities in the Finished message.
+     * The padding vector is applied specifically to the record containing the Finished message
+     * during the handshake.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply to the Finished message record
+     * @return A workflow trace configured for testing padding oracles in Finished messages
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
