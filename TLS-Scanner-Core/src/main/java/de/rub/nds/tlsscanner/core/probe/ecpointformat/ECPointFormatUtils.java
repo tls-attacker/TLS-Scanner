@@ -90,6 +90,15 @@ public abstract class ECPointFormatUtils {
         return groups;
     }
 
+    /**
+     * Creates and configures a TLS state for EC point format testing.
+     *
+     * @param ourECDHCipherSuites The list of ECDH cipher suites to use
+     * @param format The EC point format to configure
+     * @param groups The named groups to use
+     * @param baseConfig The base configuration to modify
+     * @return A configured State object ready for EC point format testing
+     */
     public static State getState(
             List<CipherSuite> ourECDHCipherSuites,
             ECPointFormat format,
