@@ -43,16 +43,27 @@ import java.util.stream.Collectors;
 
 public abstract class TlsScanReport extends ScanReport {
 
+    /** Creates a new TLS scan report. */
     public TlsScanReport() {
         super();
     }
 
+    /**
+     * Returns the protocol type (TLS/DTLS) identified during the scan.
+     *
+     * @return The protocol type, or null if not determined
+     */
     public synchronized ProtocolType getProtocolType() {
         ObjectResult<ProtocolType> objectResult =
                 getObjectResult(TlsAnalyzedProperty.PROTOCOL_TYPE, ProtocolType.class);
         return objectResult == null ? null : objectResult.getValue();
     }
 
+    /**
+     * Returns the known padding oracle vulnerability if identified.
+     *
+     * @return The known padding oracle vulnerability, or null if none identified
+     */
     public synchronized KnownPaddingOracleVulnerability getKnownPaddingOracleVulnerability() {
         ObjectResult<KnownPaddingOracleVulnerability> objectResult =
                 getObjectResult(
@@ -61,20 +72,40 @@ public abstract class TlsScanReport extends ScanReport {
         return objectResult == null ? null : objectResult.getValue();
     }
 
+    /**
+     * Returns the total number of received retransmissions during the scan.
+     *
+     * @return The total number of retransmissions, or null if not applicable
+     */
     public synchronized Integer getTotalReceivedRetransmissions() {
         IntegerResult integerResult =
                 getIntegerResult(TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS);
         return integerResult == null ? null : integerResult.getValue();
     }
 
+    /**
+     * Returns whether CCA is supported.
+     *
+     * @return True if CCA is supported, false otherwise
+     */
     public synchronized Boolean getCcaSupported() {
         return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResults.TRUE;
     }
 
+    /**
+     * Returns whether CCA is required.
+     *
+     * @return True if CCA is required, false otherwise
+     */
     public synchronized Boolean getCcaRequired() {
         return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResults.TRUE;
     }
 
+    /**
+     * Returns a map of handshake message types to their retransmission counts.
+     *
+     * @return Map of handshake message types to retransmission counts, or null if not applicable
+     */
     public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
         MapResult<HandshakeMessageType, Integer> mapResult =
                 getMapResult(
@@ -84,18 +115,33 @@ public abstract class TlsScanReport extends ScanReport {
         return mapResult == null ? null : mapResult.getMap();
     }
 
+    /**
+     * Returns the set of supported cipher suites.
+     *
+     * @return Set of supported cipher suites, or null if not determined
+     */
     public synchronized Set<CipherSuite> getSupportedCipherSuites() {
         SetResult<CipherSuite> setResult =
                 getSetResult(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, CipherSuite.class);
         return setResult == null ? null : setResult.getSet();
     }
 
+    /**
+     * Returns the list of entropy reports from randomness analysis.
+     *
+     * @return List of entropy reports, or null if not analyzed
+     */
     public synchronized List<EntropyReport> getEntropyReports() {
         ListResult<EntropyReport> listResult =
                 getListResult(TlsAnalyzedProperty.ENTROPY_REPORTS, EntropyReport.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of padding oracle test results.
+     *
+     * @return List of padding oracle test results, or null if not tested
+     */
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>>
             getPaddingOracleTestResultList() {
         ListResult<InformationLeakTest<PaddingOracleTestInfo>> listResult =
@@ -104,6 +150,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of certificate chain reports.
+     *
+     * @return List of certificate chain reports, or null if not analyzed
+     */
     public synchronized List<CertificateChainReport> getCertificateChainList() {
         ListResult<CertificateChainReport> listResult =
                 (ListResult<CertificateChainReport>)
@@ -113,12 +164,22 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of protocol version and cipher suite pairs.
+     *
+     * @return List of version-suite pairs, or null if not determined
+     */
     public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
         ListResult<VersionSuiteListPair> listResult =
                 getListResult(TlsAnalyzedProperty.VERSION_SUITE_PAIRS, VersionSuiteListPair.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported protocol versions.
+     *
+     * @return List of supported protocol versions, or null if not determined
+     */
     public synchronized List<ProtocolVersion> getSupportedProtocolVersions() {
         ListResult<ProtocolVersion> listResult =
                 getListResult(
@@ -126,6 +187,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported certificate signature algorithms.
+     *
+     * @return List of supported certificate signature algorithms, or null if not determined
+     */
     public synchronized List<X509SignatureAlgorithm> getSupportedCertSignatureAlgorithms() {
         ListResult<X509SignatureAlgorithm> listResult =
                 getListResult(
@@ -134,6 +200,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported signature and hash algorithms for server key exchange.
+     *
+     * @return List of supported signature and hash algorithms for SKE, or null if not determined
+     */
     public synchronized List<SignatureAndHashAlgorithm>
             getSupportedSignatureAndHashAlgorithmsSke() {
         ListResult<SignatureAndHashAlgorithm> listResult =
@@ -143,6 +214,12 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported signature and hash algorithms for TLS 1.3.
+     *
+     * @return List of supported signature and hash algorithms for TLS 1.3, or null if not
+     *     determined
+     */
     public synchronized List<SignatureAndHashAlgorithm>
             getSupportedSignatureAndHashAlgorithmsTls13() {
         ListResult<SignatureAndHashAlgorithm> listResult =
@@ -152,6 +229,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported signature and hash algorithms.
+     *
+     * @return List of supported signature and hash algorithms, or null if not determined
+     */
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
         if (getSupportedCertSignatureAlgorithms() == null
                 && getSupportedSignatureAndHashAlgorithmsSke() == null) {
@@ -160,12 +242,22 @@ public abstract class TlsScanReport extends ScanReport {
         return getSupportedSignatureAndHashAlgorithmsSke();
     }
 
+    /**
+     * Returns the list of supported TLS extensions.
+     *
+     * @return List of supported extensions, or null if not determined
+     */
     public synchronized List<ExtensionType> getSupportedExtensions() {
         ListResult<ExtensionType> listResult =
                 getListResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, ExtensionType.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported compression methods.
+     *
+     * @return List of supported compression methods, or null if not determined
+     */
     public synchronized List<CompressionMethod> getSupportedCompressionMethods() {
         ListResult<CompressionMethod> listResult =
                 getListResult(
@@ -173,60 +265,110 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported named groups for TLS 1.3.
+     *
+     * @return List of supported TLS 1.3 groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getSupportedTls13Groups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported named groups.
+     *
+     * @return List of supported named groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with static ECDSA public keys.
+     *
+     * @return List of static ECDSA public key groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getStaticEcdsaPkgGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with ephemeral ECDSA public keys.
+     *
+     * @return List of ephemeral ECDSA public key groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getEphemeralEcdsaPkgGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with ECDSA public keys in TLS 1.3.
+     *
+     * @return List of TLS 1.3 ECDSA public key groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getTls13EcdsaPkgGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with static ECDSA signatures.
+     *
+     * @return List of static ECDSA signature groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getStaticEcdsaSigGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with ephemeral ECDSA signatures.
+     *
+     * @return List of ephemeral ECDSA signature groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getEphemeralEcdsaSigGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of named groups used with ECDSA signatures in TLS 1.3.
+     *
+     * @return List of TLS 1.3 ECDSA signature groups, or null if not determined
+     */
     public synchronized List<NamedGroup> getTls13EcdsaSigGroups() {
         ListResult<NamedGroup> listResult =
                 getListResult(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of HTTP headers received.
+     *
+     * @return List of HTTP headers, or null if not applicable
+     */
     public synchronized List<String> getHttpHeader() {
         ListResult<String> listResult =
                 getListResult(TlsAnalyzedProperty.HTTPS_HEADER, String.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported token binding versions.
+     *
+     * @return List of supported token binding versions, or null if not determined
+     */
     public synchronized List<TokenBindingVersion> getSupportedTokenbindingVersions() {
         ListResult<TokenBindingVersion> listResult =
                 getListResult(
@@ -235,6 +377,11 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported token binding key parameters.
+     *
+     * @return List of supported token binding key parameters, or null if not determined
+     */
     public synchronized List<TokenBindingKeyParameters> getSupportedTokenbindingKeyParameters() {
         ListResult<TokenBindingKeyParameters> listResult =
                 getListResult(
@@ -243,12 +390,23 @@ public abstract class TlsScanReport extends ScanReport {
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns the list of supported ALPN protocol identifiers.
+     *
+     * @return List of supported ALPN constants, or null if not determined
+     */
     public synchronized List<String> getSupportedAlpnConstans() {
         ListResult<String> listResult =
                 getListResult(TlsAnalyzedProperty.SUPPORTED_ALPN_CONSTANTS, String.class);
         return listResult == null ? null : listResult.getList();
     }
 
+    /**
+     * Returns cipher suites that use the specified key exchange algorithms.
+     *
+     * @param algorithms The key exchange algorithms to filter by
+     * @return List of cipher suites using the specified key exchange algorithms
+     */
     public synchronized List<CipherSuite> getSupportedCipherSuitesWithKeyExchange(
             KeyExchangeAlgorithm... algorithms) {
         Set<CipherSuite> cipherSuites = getSupportedCipherSuites();
