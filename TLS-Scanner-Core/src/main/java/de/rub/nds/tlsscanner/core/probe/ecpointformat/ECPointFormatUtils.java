@@ -31,6 +31,11 @@ public abstract class ECPointFormatUtils {
 
     private ECPointFormatUtils() {}
 
+    /**
+     * Retrieves all cipher suites that support ECDH key exchange.
+     *
+     * @return A list of cipher suites containing "TLS_ECDH" in their name
+     */
     public static List<CipherSuite> getCipherSuitesForTest() {
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
