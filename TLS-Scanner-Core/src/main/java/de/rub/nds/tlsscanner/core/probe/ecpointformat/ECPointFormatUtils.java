@@ -150,6 +150,12 @@ public abstract class ECPointFormatUtils {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3)));
     }
 
+    /**
+     * Checks if the target supports any pre-TLS 1.3 protocol versions.
+     *
+     * @param report The scan report to check
+     * @return true if the target supports any of DTLS 1.0, DTLS 1.2, TLS 1.0, TLS 1.1, or TLS 1.2
+     */
     public static boolean testInPreTLS13(TlsScanReport report) {
         return report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResults.TRUE
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE
