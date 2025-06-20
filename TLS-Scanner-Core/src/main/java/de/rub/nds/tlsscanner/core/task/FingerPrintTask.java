@@ -25,11 +25,26 @@ public class FingerPrintTask extends TlsTask {
 
     private ResponseFingerprint fingerprint;
 
+    /**
+     * Constructs a new FingerPrintTask with the specified state and number of reexecutions.
+     *
+     * @param state The TLS state to execute the fingerprinting task on
+     * @param reexecutions The number of times to retry execution if it fails
+     */
     public FingerPrintTask(State state, int reexecutions) {
         super(reexecutions);
         this.state = state;
     }
 
+    /**
+     * Constructs a new FingerPrintTask with extended timeout configuration.
+     *
+     * @param state The TLS state to execute the fingerprinting task on
+     * @param additionalTimeout Additional timeout in milliseconds for the task execution
+     * @param increasingTimeout Whether to increase timeout on retries
+     * @param reexecutions The number of times to retry execution if it fails
+     * @param additionalTcpTimeout Additional TCP timeout in milliseconds
+     */
     public FingerPrintTask(
             State state,
             long additionalTimeout,
@@ -40,6 +55,13 @@ public class FingerPrintTask extends TlsTask {
         this.state = state;
     }
 
+    /**
+     * Executes the fingerprinting task by running the workflow and extracting the response
+     * fingerprint.
+     *
+     * @return true if the task executed successfully and a fingerprint was extracted, false
+     *     otherwise
+     */
     @Override
     public boolean execute() {
         try {
@@ -64,14 +86,25 @@ public class FingerPrintTask extends TlsTask {
         }
     }
 
+    /**
+     * Gets the TLS state associated with this task.
+     *
+     * @return The TLS state
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * Gets the response fingerprint extracted during task execution.
+     *
+     * @return The response fingerprint, or null if the task has not been executed successfully
+     */
     public ResponseFingerprint getFingerprint() {
         return fingerprint;
     }
 
+    /** Resets the task by resetting its associated TLS state. */
     @Override
     public void reset() {
         state.reset();
