@@ -79,6 +79,12 @@ public class RocaBrokenKey {
                 new BigInteger("187072209578355573530071658587684226515959365500926")
             };
 
+    /**
+     * Checks if the given X509 certificate contains an RSA key vulnerable to the ROCA attack.
+     *
+     * @param certificate the X509 certificate to check
+     * @return true if the certificate's RSA key is vulnerable to ROCA, false otherwise
+     */
     public static boolean isAffected(X509Certificate certificate) {
         if (!(certificate.getPublicKey() instanceof RsaPublicKey)) {
             return false;
@@ -87,6 +93,12 @@ public class RocaBrokenKey {
         return isAffected((RsaPublicKey) certificate.getPublicKey());
     }
 
+    /**
+     * Checks if the given RSA public key is vulnerable to the ROCA attack.
+     *
+     * @param pubkey the RSA public key to check
+     * @return true if the RSA key is vulnerable to ROCA, false otherwise
+     */
     public static boolean isAffected(RsaPublicKey pubkey) {
         BigInteger modulus = pubkey.getModulus();
 
