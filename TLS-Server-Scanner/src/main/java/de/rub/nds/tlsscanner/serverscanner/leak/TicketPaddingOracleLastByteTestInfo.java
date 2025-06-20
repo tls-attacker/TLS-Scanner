@@ -30,39 +30,81 @@ public class TicketPaddingOracleLastByteTestInfo extends TestInfo {
         this.paddingIvOffset = null;
     }
 
+    /**
+     * Constructs a new TicketPaddingOracleLastByteTestInfo with the specified parameters.
+     *
+     * @param version the protocol version to test
+     * @param paddingIvOffset the offset used during this test, pointing to the IV of the padding
+     */
     public TicketPaddingOracleLastByteTestInfo(ProtocolVersion version, Integer paddingIvOffset) {
         this.version = version;
         this.paddingIvOffset = paddingIvOffset;
     }
 
+    /**
+     * Returns the names of the fields in this test info.
+     *
+     * @return a list containing "version" and "paddingIvOffset"
+     */
     @Override
     public List<String> getFieldNames() {
         return Arrays.asList("version", "paddingIvOffset");
     }
 
+    /**
+     * Returns the values of the fields in this test info.
+     *
+     * @return a list containing the field values as strings
+     */
     @Override
     public List<String> getFieldValues() {
         return Arrays.asList(version.name(), "" + paddingIvOffset);
     }
 
+    /**
+     * Returns a technical name for this test info.
+     *
+     * @return a string combining version and padding offset
+     */
     @Override
     public String getTechnicalName() {
         return version.name() + ":PaddingOffset=" + paddingIvOffset;
     }
 
+    /**
+     * Returns a human-readable name for this test info.
+     *
+     * @return a tab-separated string of version and padding offset
+     */
     @Override
     public String getPrintableName() {
         return version.name() + "\tPaddingOffset=" + paddingIvOffset;
     }
 
+    /**
+     * Returns the protocol version for this test.
+     *
+     * @return the protocol version
+     */
     public ProtocolVersion getVersion() {
         return this.version;
     }
 
+    /**
+     * Returns the padding IV offset for this test.
+     *
+     * @return the padding IV offset
+     */
     public Integer getPaddingIvOffset() {
         return this.paddingIvOffset;
     }
 
+    /**
+     * Checks if this test info is equal to another object.
+     *
+     * @param o the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
@@ -75,6 +117,11 @@ public class TicketPaddingOracleLastByteTestInfo extends TestInfo {
                 && Objects.equals(paddingIvOffset, sessionTicketTestInfo.paddingIvOffset);
     }
 
+    /**
+     * Returns a hash code value for this test info.
+     *
+     * @return the hash code value
+     */
     @Override
     public int hashCode() {
         return Objects.hash(version, paddingIvOffset);
