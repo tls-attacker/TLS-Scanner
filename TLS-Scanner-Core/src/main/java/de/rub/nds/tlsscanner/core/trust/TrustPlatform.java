@@ -34,8 +34,9 @@ public class TrustPlatform {
     @JsonProperty("blocked_certificates")
     private final List<CertificateEntry> blockedCertificateEntries;
 
-    /** Default constructor for TrustPlatform. Initializes all fields to null. */
-    public TrustPlatform() {
+    /** Default constructor for deserialization. */
+    @SuppressWarnings("unused")
+    private TrustPlatform() {
         blockedCertificateEntries = null;
         certificateEntries = null;
         lastUpdate = null;
