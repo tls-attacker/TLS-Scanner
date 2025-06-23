@@ -96,8 +96,8 @@ public class ConfigSelector {
     }
 
     /**
-     * Attempts to find working configurations for both (D)TLS 1.2 and TLS 1.3 protocols as 
-     * needed by the protocol configuration.
+     * Attempts to find working configurations for both (D)TLS 1.2 and TLS 1.3 protocols as needed
+     * by the protocol configuration.
      *
      * @return true if at least one working configuration was found, false otherwise
      */
@@ -305,8 +305,9 @@ public class ConfigSelector {
     }
 
     /**
-     * Adjusts ECC-related extensions for pre-(D)TLS 1.3 configurations. Ensures that ECC point formats
-     * and elliptic curves extensions are properly configured based on the selected cipher suites.
+     * Adjusts ECC-related extensions for pre-(D)TLS 1.3 configurations. Ensures that ECC point
+     * formats and elliptic curves extensions are properly configured based on the selected cipher
+     * suites.
      *
      * @param config the configuration to adjust
      */
@@ -461,7 +462,7 @@ public class ConfigSelector {
     }
 
     /**
-     * Checks whether a working <= TLS 1.2 configuration was found.
+     * Checks whether a working smaller equal to TLS 1.2 configuration was found.
      *
      * @return true if a working configuration exists, false otherwise
      */
