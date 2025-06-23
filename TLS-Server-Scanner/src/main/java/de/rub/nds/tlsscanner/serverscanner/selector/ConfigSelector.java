@@ -461,7 +461,7 @@ public class ConfigSelector {
     }
 
     /**
-     * Checks whether a working TLS 1.2 configuration was found.
+     * Checks whether a working <= TLS 1.2 configuration was found.
      *
      * @return true if a working configuration exists, false otherwise
      */
