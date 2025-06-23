@@ -32,6 +32,14 @@ public class DirectRaccoonVector implements Vector {
         this.pmsWithNullByte = false;
     }
 
+    /**
+     * Constructs a new DirectRaccoonVector with the specified parameters.
+     *
+     * @param type The workflow type for this vector
+     * @param version The TLS protocol version
+     * @param suite The cipher suite to use
+     * @param pmsWithNullByte Whether the pre-master secret starts with a null byte
+     */
     public DirectRaccoonVector(
             DirectRaccoonWorkflowType type,
             ProtocolVersion version,
@@ -43,22 +51,47 @@ public class DirectRaccoonVector implements Vector {
         this.pmsWithNullByte = pmsWithNullByte;
     }
 
+    /**
+     * Checks if the pre-master secret starts with a null byte.
+     *
+     * @return true if the pre-master secret starts with a null byte, false otherwise
+     */
     public boolean isPmsWithNullByte() {
         return pmsWithNullByte;
     }
 
+    /**
+     * Returns the workflow type of this vector.
+     *
+     * @return The DirectRaccoonWorkflowType
+     */
     public DirectRaccoonWorkflowType getWorkflowType() {
         return type;
     }
 
+    /**
+     * Returns the TLS protocol version for this vector.
+     *
+     * @return The ProtocolVersion
+     */
     public ProtocolVersion getVersion() {
         return version;
     }
 
+    /**
+     * Returns the cipher suite for this vector.
+     *
+     * @return The CipherSuite
+     */
     public CipherSuite getSuite() {
         return suite;
     }
 
+    /**
+     * Returns a descriptive name for this vector including the workflow type and null byte status.
+     *
+     * @return The vector name string
+     */
     public String getVectorName() {
         String name = type.name();
         if (pmsWithNullByte) {

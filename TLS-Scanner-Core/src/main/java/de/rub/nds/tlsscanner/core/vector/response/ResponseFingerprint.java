@@ -37,8 +37,16 @@ public class ResponseFingerprint {
 
     private SocketState socketState;
 
+    /** Default constructor for ResponseFingerprint. */
     public ResponseFingerprint() {}
 
+    /**
+     * Constructs a ResponseFingerprint with the specified parameters.
+     *
+     * @param messageList List of protocol messages in the response
+     * @param recordList List of records in the response
+     * @param socketState The state of the socket after the response
+     */
     public ResponseFingerprint(
             List<ProtocolMessage> messageList, List<Record> recordList, SocketState socketState) {
         this.messageList = messageList;
@@ -47,14 +55,29 @@ public class ResponseFingerprint {
         this.stringRepresentation = toHumanReadable();
     }
 
+    /**
+     * Gets the socket state of this response fingerprint.
+     *
+     * @return The socket state
+     */
     public SocketState getSocketState() {
         return socketState;
     }
 
+    /**
+     * Gets the list of records in this response fingerprint.
+     *
+     * @return The list of records
+     */
     public List<Record> getRecordList() {
         return recordList;
     }
 
+    /**
+     * Gets the list of protocol messages in this response fingerprint.
+     *
+     * @return The list of protocol messages
+     */
     public List<ProtocolMessage> getMessageList() {
         return messageList;
     }
@@ -80,6 +103,11 @@ public class ResponseFingerprint {
                 + ']';
     }
 
+    /**
+     * Generates a short string representation of this response fingerprint.
+     *
+     * @return A short string representation
+     */
     public String toShortString() {
         StringBuilder messages = new StringBuilder();
         for (ProtocolMessage someMessage : this.messageList) {
@@ -88,6 +116,11 @@ public class ResponseFingerprint {
         return messages.append("|").append(socketState).toString();
     }
 
+    /**
+     * Generates a human-readable string representation of this response fingerprint.
+     *
+     * @return A human-readable string representation
+     */
     public String toHumanReadable() {
         StringBuilder resultString = new StringBuilder();
         for (ProtocolMessage msg : messageList) {
@@ -214,10 +247,11 @@ public class ResponseFingerprint {
     }
 
     /**
-     * //TODO, this does not check record layer compatibility
+     * Checks if this response fingerprint is compatible with another fingerprint. TODO: This does
+     * not check record layer compatibility.
      *
-     * @param fingerprint
-     * @return
+     * @param fingerprint The fingerprint to compare with
+     * @return true if the fingerprints are compatible, false otherwise
      */
     public boolean areCompatible(ResponseFingerprint fingerprint) {
         if (socketState != SocketState.TIMEOUT
@@ -258,6 +292,11 @@ public class ResponseFingerprint {
         return true;
     }
 
+    /**
+     * Gets the string representation of this response fingerprint.
+     *
+     * @return The string representation
+     */
     public String getStringRepresentation() {
         return stringRepresentation;
     }

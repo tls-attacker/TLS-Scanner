@@ -17,6 +17,12 @@ import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
+/**
+ * Tests for information leakage by analyzing response patterns across different input vectors. This
+ * test detects whether the system reveals information through its response behavior.
+ *
+ * @param <TestInfoT> The type of test information associated with this test
+ */
 public class InformationLeakTest<TestInfoT extends TestInfo>
         extends VectorStatisticTest<TestInfoT> {
 
@@ -26,6 +32,12 @@ public class InformationLeakTest<TestInfoT extends TestInfo>
         super(null, new LinkedList<>());
     }
 
+    /**
+     * Creates a new information leak test for analyzing potential information disclosure.
+     *
+     * @param testInfo Information about the test being performed
+     * @param responseList List of vector responses to analyze for information leakage
+     */
     public InformationLeakTest(TestInfoT testInfo, List<VectorResponse> responseList) {
         super(testInfo, responseList);
         updateInternals();

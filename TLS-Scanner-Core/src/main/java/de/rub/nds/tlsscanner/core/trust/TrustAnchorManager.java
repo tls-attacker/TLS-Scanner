@@ -43,6 +43,11 @@ public class TrustAnchorManager {
 
     private Set<X509Certificate> asn1CaCertificateSet;
 
+    /**
+     * Returns the singleton instance of TrustAnchorManager.
+     *
+     * @return the TrustAnchorManager instance
+     */
     public static synchronized TrustAnchorManager getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TrustAnchorManager();
@@ -91,6 +96,11 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks whether the TrustAnchorManager has been successfully initialized with trust anchors.
+     *
+     * @return true if initialized, false otherwise
+     */
     public boolean isInitialized() {
         return trustAnchorSet != null && trustPlatformList != null && trustAnchors != null;
     }
@@ -103,10 +113,21 @@ public class TrustAnchorManager {
         return loadedPlatform;
     }
 
+    /**
+     * Returns the list of all loaded trust platforms.
+     *
+     * @return the list of trust platforms
+     */
     public List<TrustPlatform> getTrustPlatformList() {
         return trustPlatformList;
     }
 
+    /**
+     * Checks if the given certificate report represents a trust anchor.
+     *
+     * @param report the certificate report to check
+     * @return true if the certificate is a trust anchor, false otherwise
+     */
     public boolean isTrustAnchor(CertificateReport report) {
         if (trustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a trustAnchor for Issuer report");
@@ -122,6 +143,12 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks if the given X500Principal represents a trust anchor.
+     *
+     * @param principal the X500Principal to check
+     * @return true if the principal is a trust anchor, false otherwise
+     */
     public boolean isTrustAnchor(X500Principal principal) {
         for (TrustAnchor anchor : trustAnchorSet) {
             if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
@@ -175,10 +202,21 @@ public class TrustAnchorManager {
         return new HashSet<>();
     }
 
+    /**
+     * Returns the set of all trust anchors.
+     *
+     * @return the set of trust anchors
+     */
     public Set<TrustAnchor> getTrustAnchorSet() {
         return trustAnchorSet;
     }
 
+    /**
+     * Returns the X509Certificate for a trust anchor with the given principal.
+     *
+     * @param principal the X500Principal to search for
+     * @return the X509Certificate if found, null otherwise
+     */
     public X509Certificate getTrustAnchorX509Certificate(X500Principal principal) {
         for (TrustAnchor anchor : trustAnchorSet) {
             if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
@@ -188,6 +226,12 @@ public class TrustAnchorManager {
         return null;
     }
 
+    /**
+     * Returns the X509Certificate from the CA certificate set for the given principal.
+     *
+     * @param principal the X500Principal to search for
+     * @return the X509Certificate if found, null otherwise
+     */
     public X509Certificate getTrustAnchorCertificate(X500Principal principal) {
         for (X509Certificate cert : asn1CaCertificateSet) {
             if (principal.equals(cert.getSubjectX500Principal())) {
@@ -235,6 +279,11 @@ public class TrustAnchorManager {
         return certX509List;
     }
 
+    /**
+     * Adds custom Certificate Authorities from the specified file paths.
+     *
+     * @param customCAPaths list of file paths to custom CA certificates
+     */
     public void addCustomCA(List<String> customCAPaths) {
         List<X509Certificate> customCAList = getCustomCA(customCAPaths);
         KeyStore keyStore = null;
@@ -300,10 +349,21 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks whether custom trust anchors have been added.
+     *
+     * @return true if custom trust anchors exist, false otherwise
+     */
     public boolean hasCustomTrustAnchros() {
         return customTrustAnchors != null && !customTrustAnchors.isEmpty();
     }
 
+    /**
+     * Checks if the given certificate report represents a custom trust anchor.
+     *
+     * @param report the certificate report to check
+     * @return true if the certificate is a custom trust anchor, false otherwise
+     */
     public boolean isCustomTrustAnchor(CertificateReport report) {
         if (customTrustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a customTrustAnchor for Issuer report");

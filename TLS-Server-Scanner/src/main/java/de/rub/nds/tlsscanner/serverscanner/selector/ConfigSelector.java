@@ -32,12 +32,27 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.IPAddress;
 
+/**
+ * Responsible for selecting and preparing TLS configurations for scanning operations. This class
+ * finds working configurations by testing various filter profiles and prepares them for use in TLS
+ * handshakes and protocol analysis.
+ */
 public class ConfigSelector {
 
+    /**
+     * Returns the identifier of the configuration profile used for TLS 1.2 and earlier.
+     *
+     * @return the configuration profile identifier, or null if no working config was found
+     */
     public String getConfigProfileIdentifier() {
         return configProfileIdentifier;
     }
 
+    /**
+     * Returns the identifier of the configuration profile used for TLS 1.3.
+     *
+     * @return the TLS 1.3 configuration profile identifier, or null if no working config was found
+     */
     public String getConfigProfileIdentifierTls13() {
         return configProfileIdentifierTls13;
     }
@@ -49,10 +64,18 @@ public class ConfigSelector {
     private Config workingTl13Config;
     private String configProfileIdentifierTls13;
 
+    /** Path to configuration files resource directory */
     public static final String PATH = "/configs/";
+
+    /** SSL2-specific configuration filename */
     public static final String SSL2_CONFIG = "ssl2Only.config";
+
+    /** TLS 1.3 rich configuration filename */
     public static final String TLS13_CONFIG = "tls13rich.config";
+
+    /** Default configuration filename */
     public static final String DEFAULT_CONFIG = "default.config";
+
     private static final int COOLDOWN_TIMEOUT_MULTIPLIER = 5;
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -61,11 +84,23 @@ public class ConfigSelector {
     private boolean isHandshaking = false;
     private boolean quicRetryRequired = false;
 
+    /**
+     * Constructs a new ConfigSelector with the specified scanner configuration and executor.
+     *
+     * @param scannerConfig the server scanner configuration
+     * @param parallelExecutor the parallel executor for running test handshakes
+     */
     public ConfigSelector(ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         this.scannerConfig = scannerConfig;
         this.parallelExecutor = parallelExecutor;
     }
 
+    /**
+     * Attempts to find working configurations for both (D)TLS 1.2 and TLS 1.3 protocols as needed
+     * by the protocol configuration.
+     *
+     * @return true if at least one working configuration was found, false otherwise
+     */
     public boolean findWorkingConfigs() {
         if (!scannerConfig.getQuicDelegate().isQuic()) {
             findWorkingConfig();
@@ -76,6 +111,12 @@ public class ConfigSelector {
         return workingConfig != null || workingTl13Config != null;
     }
 
+    /**
+     * Searches for a working (D)TLS 1.2 configuration by testing various filter profiles. Iterates
+     * through default profiles until a working configuration is found.
+     *
+     * @return true if a working configuration was found, false otherwise
+     */
     public boolean findWorkingConfig() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls12ConfigProfiles()) {
             Config baseConfig = getConfigForProfile(DEFAULT_CONFIG, configProfile);
@@ -90,6 +131,15 @@ public class ConfigSelector {
         return false;
     }
 
+    /**
+     * Creates a configuration based on the specified starting configuration file and applies the
+     * given filter profile.
+     *
+     * @param startingConfigFile the base configuration file to start with
+     * @param configProfile the filter profile to apply
+     * @return the prepared configuration
+     * @throws ConfigurationException if the configuration cannot be created or prepared
+     */
     public Config getConfigForProfile(String startingConfigFile, ConfigFilterProfile configProfile)
             throws ConfigurationException {
         if (scannerConfig.isConfigSearchCooldown()) {
@@ -102,6 +152,13 @@ public class ConfigSelector {
         return baseConfig;
     }
 
+    /**
+     * Reports limitations based on the applied configuration filter profile. Logs a warning if
+     * certain features had to be filtered out to achieve a working configuration.
+     *
+     * @param configProfile the filter profile that was applied
+     * @param versionText the TLS version description (e.g., "TLS 1.2", "TLS 1.3")
+     */
     public void reportLimitation(ConfigFilterProfile configProfile, String versionText) {
         if (configProfile.getConfigFilterTypes().length > 0) {
             LOGGER.warn(
@@ -111,6 +168,12 @@ public class ConfigSelector {
         }
     }
 
+    /**
+     * Searches for a working TLS 1.3 configuration by testing various filter profiles specific to
+     * TLS 1.3. Iterates through TLS 1.3 profiles until a working configuration is found.
+     *
+     * @return true if a working TLS 1.3 configuration was found, false otherwise
+     */
     public boolean findWorkingTls13Config() {
         for (ConfigFilterProfile configProfile : DefaultConfigProfile.getTls13ConfigProfiles()) {
             Config baseConfig = getConfigForProfile(TLS13_CONFIG, configProfile);
@@ -136,6 +199,14 @@ public class ConfigSelector {
         return false;
     }
 
+    /**
+     * Prepares a base configuration for use in scanning by applying scanner-specific settings and
+     * adjustments. This includes setting connection parameters, timeouts, and protocol-specific
+     * configurations.
+     *
+     * @param baseConfig the configuration to prepare
+     * @throws ConfigurationException if the configuration cannot be properly prepared
+     */
     public void prepareBaseConfig(Config baseConfig) throws ConfigurationException {
         applyDelegates(baseConfig);
         applyPerformanceParamters(baseConfig);
@@ -214,6 +285,14 @@ public class ConfigSelector {
         }
     }
 
+    /**
+     * Repairs a configuration by adjusting various settings to ensure compatibility. This includes
+     * handling ECC extensions, key share fields, cipher suite selection, and basic feature
+     * restrictions.
+     *
+     * @param config the configuration to repair
+     * @return the repaired configuration
+     */
     public Config repairConfig(Config config) {
         restrictBasicFeatures(config);
         if (config.getHighestProtocolVersion().isTLS13()) {
@@ -225,6 +304,13 @@ public class ConfigSelector {
         return config;
     }
 
+    /**
+     * Adjusts ECC-related extensions for pre-(D)TLS 1.3 configurations. Ensures that ECC point
+     * formats and elliptic curves extensions are properly configured based on the selected cipher
+     * suites.
+     *
+     * @param config the configuration to adjust
+     */
     public void adjustEccExtensionsPreTls13(Config config) {
         boolean containsEc =
                 config.getDefaultClientSupportedCipherSuites().stream()
@@ -238,6 +324,12 @@ public class ConfigSelector {
         config.setAddECPointFormatExtension(containsEc);
     }
 
+    /**
+     * Adjusts key share fields in the configuration based on the highest supported protocol
+     * version. For TLS 1.3, it configures appropriate key share entries.
+     *
+     * @param config the configuration to adjust
+     */
     public void adjustKeyShareFields(Config config) {
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(false);
@@ -252,6 +344,12 @@ public class ConfigSelector {
         }
     }
 
+    /**
+     * Sets default selected cipher suites based on the configuration's supported cipher suites.
+     * This ensures that the selected cipher suites are consistent with what's supported.
+     *
+     * @param config the configuration to update
+     */
     public void setDefaultSelectedCipherSuites(Config config) {
         CipherSuite defaultSelectedCipherSuite =
                 config.getDefaultClientSupportedCipherSuites().stream()
@@ -261,6 +359,13 @@ public class ConfigSelector {
         config.setDefaultSelectedCipherSuite(defaultSelectedCipherSuite);
     }
 
+    /**
+     * Restricts basic features in the configuration by disabling certain extensions and features
+     * that might interfere with scanning operations. This includes disabling session tickets,
+     * heartbeat, and other optional features.
+     *
+     * @param config the configuration to restrict
+     */
     public void restrictBasicFeatures(Config config) {
         Config relevantConfig =
                 config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
@@ -285,16 +390,33 @@ public class ConfigSelector {
         }
     }
 
+    /**
+     * Returns the base working configuration for (D)TLS 1.2 and earlier protocols.
+     *
+     * @return the working configuration, or null if none was found
+     */
     public Config getBaseConfig() {
         return workingConfig.createCopy();
     }
 
+    /**
+     * Returns an SSL2-specific base configuration. Creates a new configuration from the SSL2
+     * configuration file and prepares it for use.
+     *
+     * @return the prepared SSL2 configuration
+     * @throws ConfigurationException if the configuration cannot be created or prepared
+     */
     public Config getSSL2BaseConfig() {
         Config config = Config.createConfig(Config.class.getResourceAsStream(PATH + SSL2_CONFIG));
         prepareBaseConfig(config);
         return config;
     }
 
+    /**
+     * Returns the base working configuration for TLS 1.3.
+     *
+     * @return the working TLS 1.3 configuration, or null if none was found
+     */
     public Config getTls13BaseConfig() {
         if (workingTl13Config == null) {
             return Config.createConfig(Config.class.getResourceAsStream(PATH + TLS13_CONFIG));
@@ -302,30 +424,66 @@ public class ConfigSelector {
         return workingTl13Config.createCopy();
     }
 
+    /**
+     * Indicates whether the scanner successfully performed a handshake with the target server.
+     *
+     * @return true if a successful handshake was achieved, false otherwise
+     */
     public boolean isIsHandshaking() {
         return isHandshaking;
     }
 
+    /**
+     * Indicates whether the target server speaks the TLS protocol (i.e., responds to TLS messages
+     * even if handshaking fails).
+     *
+     * @return true if the server responds to TLS protocol messages, false otherwise
+     */
     public boolean isSpeaksProtocol() {
         return speaksProtocol;
     }
 
+    /**
+     * Indicates whether a QUIC retry is required for the connection.
+     *
+     * @return true if QUIC retry is required, false otherwise
+     */
     public boolean isQuicRetryRequired() {
         return quicRetryRequired;
     }
 
+    /**
+     * Returns the scanner configuration used by this selector.
+     *
+     * @return the server scanner configuration
+     */
     public ServerScannerConfig getScannerConfig() {
         return scannerConfig;
     }
 
+    /**
+     * Checks whether a working smaller equal to TLS 1.2 configuration was found.
+     *
+     * @return true if a working configuration exists, false otherwise
+     */
     public boolean foundWorkingConfig() {
         return workingConfig != null;
     }
 
+    /**
+     * Checks whether a working TLS 1.3 configuration was found.
+     *
+     * @return true if a working TLS 1.3 configuration exists, false otherwise
+     */
     public boolean foundWorkingTls13Config() {
         return workingTl13Config != null;
     }
 
+    /**
+     * Returns any available working configuration, preferring TLS 1.3 over TLS 1.2.
+     *
+     * @return a working configuration (TLS 1.3 preferred), or null if none exists
+     */
     public Config getAnyWorkingBaseConfig() {
         if (workingConfig != null) {
             return getBaseConfig();
