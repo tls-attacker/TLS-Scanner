@@ -28,8 +28,8 @@ public class TicketTls12 implements Ticket {
     }
 
     /**
-     * Constructs a new TLS 1.2 (and below)ticket with the specified ticket bytes, 
-     * master secret, and session secrets.
+     * Constructs a new TLS 1.2 (and below) ticket with the specified ticket bytes, master secret,
+     * and session secrets.
      *
      * @param ticketBytes The ticket bytes
      * @param masterSecret The master secret associated with this ticket
@@ -43,9 +43,9 @@ public class TicketTls12 implements Ticket {
     }
 
     /**
-     * Copy constructor for creating a new TLS 1.2 ticket from an existing one.
+     * Copy constructor for creating a new TLS 1.2 (and below) ticket from an existing one.
      *
-     * @param toCopy The TLS 1.2 ticket to copy
+     * @param toCopy The TLS 1.2 (and below) ticket to copy
      */
     public TicketTls12(TicketTls12 toCopy) {
         this(toCopy.ticketBytes, toCopy.masterSecret, toCopy.sessionSecrets);
@@ -83,7 +83,7 @@ public class TicketTls12 implements Ticket {
     }
 
     /**
-     * Creates a copy of this TLS 1.2 ticket.
+     * Creates a copy of this TLS 1.2 (and below) ticket.
      *
      * @return A new TicketTls12 instance with the same values
      */
