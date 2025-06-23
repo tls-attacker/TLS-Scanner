@@ -280,24 +280,21 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
     }
 
     /**
-     * Computes the p-value using Fisher's exact test. This method must be implemented by
-     * subclasses.
+     * Computes the p-value using Fisher's exact test.
      *
      * @return The computed p-value
      */
     abstract double computePValueFisherExact();
 
     /**
-     * Computes the p-value using the Chi-squared test. This method must be implemented by
-     * subclasses.
+     * Computes the p-value using the Chi-squared test.
      *
      * @return The computed p-value
      */
     abstract double computePValueChiSquared();
 
     /**
-     * Determines whether Fisher's exact test is applicable for the current data. This method must
-     * be implemented by subclasses.
+     * Determines whether Fisher's exact test is applicable for the current data.
      *
      * @return true if Fisher's exact test can be used, false otherwise
      */
