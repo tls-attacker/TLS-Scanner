@@ -62,9 +62,11 @@ import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Stream;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -304,7 +306,6 @@ public final class TlsServerScanner
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml", "rfc9325.xml");
         GuidelineIO guidelineIO;
         try {
             guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
@@ -313,16 +314,70 @@ public final class TlsServerScanner
             return null;
         }
         List<Guideline<ServerReport>> guidelines = new ArrayList<>();
-        for (String guidelineName : guidelineFiles) {
-            try {
-                InputStream guideLineStream =
-                        TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
-            } catch (JAXBException | XMLStreamException ex) {
-                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
-                return null;
+        try {
+            URI uri = TlsServerScanner.class.getResource("/guideline/").toURI();
+
+            Path directoryPath;
+            FileSystem fileSystem = null;
+
+            if (uri.getScheme().equals("jar")) {
+                try {
+                    fileSystem =
+                            FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+                    directoryPath = fileSystem.getPath("/guideline/");
+                } catch (IOException e) {
+                    LOGGER.error("Failed to create FileSystem for JAR: {}", uri, e);
+                    return null;
+                }
+            } else {
+                directoryPath = Paths.get(uri);
             }
+
+            try (Stream<Path> walk = Files.walk(directoryPath, 1)) {
+                walk.filter(Files::isRegularFile)
+                        .filter(p -> p.getFileName().toString().endsWith(".xml"))
+                        .forEach(
+                                filePath -> {
+                                    String fileName = filePath.getFileName().toString();
+                                    try (InputStream guidelineStream =
+                                            TlsServerScanner.class.getResourceAsStream(
+                                                    "/guideline/" + fileName)) {
+                                        if (guidelineStream != null) {
+                                            guidelines.add(
+                                                    (Guideline<ServerReport>)
+                                                            guidelineIO.read(guidelineStream));
+                                        } else {
+                                            LOGGER.warn(
+                                                    "Could not find resource stream for guideline: {}",
+                                                    fileName);
+                                        }
+                                    } catch (JAXBException | XMLStreamException | IOException ex) {
+                                        throw new RuntimeException(
+                                                "Unable to read guideline "
+                                                        + fileName
+                                                        + " from file",
+                                                ex);
+                                    }
+                                });
+            } catch (RuntimeException e) {
+                LOGGER.error(
+                        "Error during guideline loading process: {}", e.getMessage(), e.getCause());
+                return null;
+            } finally {
+                if (fileSystem != null) {
+                    try {
+                        fileSystem.close();
+                    } catch (IOException e) {
+                        LOGGER.error("Error closing file system for JAR: {}", uri, e);
+                    }
+                }
+            }
+
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.error("Error accessing guideline directory or URI syntax issue", e);
+            return null;
         }
+
         return guidelines;
     }
 
