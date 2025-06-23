@@ -54,6 +54,22 @@ public class EntropyReport implements Serializable {
         this.failedTemplateTestPercentage = 0.0;
     }
 
+    /**
+     * Creates an entropy report with the specified test results.
+     *
+     * @param type The type of random data analyzed
+     * @param numberOfValues The number of values analyzed
+     * @param numberOfBytes The number of bytes per value
+     * @param duplicates Whether duplicates were found
+     * @param numberOfDuplicates The number of duplicate values found
+     * @param failedFrequencyTest Whether the frequency test failed
+     * @param failedMonoBitTest Whether the mono bit test failed
+     * @param failedRunsTest Whether the runs test failed
+     * @param failedLongestRunTest Whether the longest run test failed
+     * @param failedFourierTest Whether the Fourier test failed
+     * @param failedEntropyTest Whether the entropy test failed
+     * @param failedTemplateTestPercentage The percentage of failed template tests
+     */
     public EntropyReport(
             RandomType type,
             int numberOfValues,
@@ -81,50 +97,110 @@ public class EntropyReport implements Serializable {
         this.failedTemplateTestPercentage = failedTemplateTestPercentage;
     }
 
+    /**
+     * Returns the number of values analyzed.
+     *
+     * @return The number of values analyzed
+     */
     public int getNumberOfValues() {
         return numberOfValues;
     }
 
+    /**
+     * Returns the number of bytes per value.
+     *
+     * @return The number of bytes per value
+     */
     public int getNumberOfBytes() {
         return numberOfBytes;
     }
 
+    /**
+     * Returns the type of random data analyzed.
+     *
+     * @return The type of random data
+     */
     public RandomType getType() {
         return type;
     }
 
+    /**
+     * Returns whether duplicates were found in the analyzed data.
+     *
+     * @return True if duplicates were found, false otherwise
+     */
     public boolean isDuplicates() {
         return duplicates;
     }
 
+    /**
+     * Returns the number of duplicate values found.
+     *
+     * @return The number of duplicate values
+     */
     public int getNumberOfDuplicates() {
         return numberOfDuplicates;
     }
 
+    /**
+     * Returns whether the frequency test failed.
+     *
+     * @return True if the frequency test failed, false otherwise
+     */
     public boolean isFailedFrequencyTest() {
         return failedFrequencyTest;
     }
 
+    /**
+     * Returns whether the mono bit test failed.
+     *
+     * @return True if the mono bit test failed, false otherwise
+     */
     public boolean isFailedMonoBitTest() {
         return failedMonoBitTest;
     }
 
+    /**
+     * Returns whether the runs test failed.
+     *
+     * @return True if the runs test failed, false otherwise
+     */
     public boolean isFailedRunsTest() {
         return failedRunsTest;
     }
 
+    /**
+     * Returns whether the longest run test failed.
+     *
+     * @return True if the longest run test failed, false otherwise
+     */
     public boolean isFailedLongestRunTest() {
         return failedLongestRunTest;
     }
 
+    /**
+     * Returns whether the Fourier test failed.
+     *
+     * @return True if the Fourier test failed, false otherwise
+     */
     public boolean isFailedFourierTest() {
         return failedFourierTest;
     }
 
+    /**
+     * Returns whether the entropy test failed.
+     *
+     * @return True if the entropy test failed, false otherwise
+     */
     public boolean isFailedEntropyTest() {
         return failedEntropyTest;
     }
 
+    /**
+     * Returns the percentage of failed template tests.
+     *
+     * @return The percentage of failed template tests
+     */
     public double getFailedTemplateTestPercentage() {
         return failedTemplateTestPercentage;
     }

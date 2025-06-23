@@ -22,6 +22,11 @@ import java.util.HashMap;
 
 public class DefaultPrintingScheme {
 
+    /**
+     * Creates and returns the default printing scheme for TLS scan reports.
+     *
+     * @return A PrintingScheme configured with default color encodings and text mappings
+     */
     public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
@@ -556,6 +561,11 @@ public class DefaultPrintingScheme {
                 new HashMap<>());
     }
 
+    /**
+     * Creates a text encoder specifically for ALPACA vulnerability results.
+     *
+     * @return A TestResultTextEncoder with ALPACA-specific text mappings
+     */
     private static TestResultTextEncoder getAlpacaTextEncoding() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
@@ -571,6 +581,13 @@ public class DefaultPrintingScheme {
         return new TestResultTextEncoder(textEncodingMap);
     }
 
+    /**
+     * Creates a color encoding with the specified colors for true and false results.
+     *
+     * @param trueColor The color to use when a test result is TRUE
+     * @param falseColor The color to use when a test result is FALSE
+     * @return A ColorEncoding with the specified color mappings
+     */
     private static ColorEncoding getDefaultColorEncoding(
             AnsiColor trueColor, AnsiColor falseColor) {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
