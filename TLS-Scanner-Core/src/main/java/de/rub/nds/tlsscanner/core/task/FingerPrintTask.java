@@ -87,7 +87,7 @@ public class FingerPrintTask extends TlsTask {
     }
 
     /**
-     * Gets the TLS state associated with this task.
+     * Gets the state associated with this task.
      *
      * @return The TLS state
      */
