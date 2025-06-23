@@ -30,7 +30,7 @@ public class DestinationPortExtractor extends StatExtractor<State, Integer> {
      * Extracts the destination port from the state's transport handler if it is a UDP transport
      * handler.
      *
-     * @param state the TLS state to extract the destination port from
+     * @param state the state to extract the destination port from
      */
     @Override
     public void extract(State state) {
