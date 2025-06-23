@@ -8,6 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
+/**
+ * Enumeration of configuration filter types used to exclude specific TLS features from
+ * configurations.
+ */
 public enum ConfigFilterType {
     CIPHERSUITE_UNNEGOTIABLE,
     CIPHERSUITE_UNOFFICIAL,
@@ -38,14 +42,29 @@ public enum ConfigFilterType {
     SIGNATUREALGORITHM_DEPRECATED,
     SIGNATUREALGORITHM_TLS13;
 
+    /**
+     * Checks whether this filter type applies to cipher suites.
+     *
+     * @return true if this is a cipher suite filter, false otherwise
+     */
     public boolean isCipherSuiteFilter() {
         return this.name().contains("CIPHERSUITE");
     }
 
+    /**
+     * Checks whether this filter type applies to named groups.
+     *
+     * @return true if this is a named group filter, false otherwise
+     */
     public boolean isNamedGroupFilter() {
         return this.name().contains("NAMEDGROUP");
     }
 
+    /**
+     * Checks whether this filter type applies to signature algorithms.
+     *
+     * @return true if this is a signature algorithm filter, false otherwise
+     */
     public boolean isSignatureAlgorithmFilter() {
         return this.name().contains("SIGNATUREALGORITHM");
     }
