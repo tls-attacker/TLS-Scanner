@@ -10,8 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 /**
  * Enumeration of configuration filter types used to exclude specific TLS features from
- * configurations. Filters are categorized into three groups: cipher suite filters, named group
- * filters, and signature algorithm filters.
+ * configurations.
  */
 public enum ConfigFilterType {
     CIPHERSUITE_UNNEGOTIABLE,
