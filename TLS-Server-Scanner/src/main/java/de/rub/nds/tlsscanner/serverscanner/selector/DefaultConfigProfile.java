@@ -96,7 +96,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
      * Returns an array of configuration profiles suitable for TLS 1.2 and earlier versions. These
      * profiles provide various levels of feature reduction for testing compatibility.
      *
-     * @return array of DefaultConfigProfile enums for TLS 1.2
+     * @return array of DefaultConfigProfile enums for TLS 1.2 and earlier versions
      */
     public static DefaultConfigProfile[] getTls12ConfigProfiles() {
         return new DefaultConfigProfile[] {
