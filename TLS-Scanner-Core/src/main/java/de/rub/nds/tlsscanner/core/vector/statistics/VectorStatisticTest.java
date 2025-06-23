@@ -88,7 +88,7 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
     /**
      * Returns whether the distinct answers are statistically significant.
      *
-     * @return true if distinct answers are significant (p-value < 0.05), false otherwise
+     * @return true if distinct answers are significant (p-value smaller 0.05), false otherwise
      */
     public boolean isSignificantDistinctAnswers() {
         return significantDistinctAnswers;
