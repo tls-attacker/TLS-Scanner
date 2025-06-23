@@ -28,8 +28,8 @@ public class TicketTls12 implements Ticket {
     }
 
     /**
-     * Constructs a new TLS 1.2 ticket with the specified ticket bytes, master secret, and session
-     * secrets.
+     * Constructs a new TLS 1.2 (and below)ticket with the specified ticket bytes, 
+     * master secret, and session secrets.
      *
      * @param ticketBytes The ticket bytes
      * @param masterSecret The master secret associated with this ticket
