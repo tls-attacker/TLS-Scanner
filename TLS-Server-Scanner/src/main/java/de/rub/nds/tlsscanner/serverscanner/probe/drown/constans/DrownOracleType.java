@@ -8,7 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.drown.constans;
 
+/** Represents different types of oracles that can be exploited in DROWN attacks. */
 public enum DrownOracleType {
+    /** Oracle based on extra clear messages in SSLv2 protocol. */
     EXTRA_CLEAR,
+    /** Oracle based on leaky export cipher suites. */
     LEAKY_EXPORT
 }

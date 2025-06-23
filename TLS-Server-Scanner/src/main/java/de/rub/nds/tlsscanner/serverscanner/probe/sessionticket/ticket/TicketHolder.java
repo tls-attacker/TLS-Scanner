@@ -21,6 +21,13 @@ import java.util.stream.Collector;
  * annoying.
  */
 public class TicketHolder extends LinkedList<Ticket> {
+    /**
+     * Creates a collector for collecting tickets into a TicketHolder for a specific protocol
+     * version.
+     *
+     * @param protocolVersion The protocol version for the tickets being collected
+     * @return A collector that accumulates tickets into a TicketHolder
+     */
     public static Collector<Ticket, ?, TicketHolder> collector(ProtocolVersion protocolVersion) {
         return Collector.of(
                 () -> new TicketHolder(protocolVersion),
@@ -39,20 +46,42 @@ public class TicketHolder extends LinkedList<Ticket> {
         this.protocolVersion = null;
     }
 
+    /**
+     * Constructs a new empty TicketHolder for the specified protocol version.
+     *
+     * @param protocolVersion The protocol version for tickets in this holder
+     */
     public TicketHolder(ProtocolVersion protocolVersion) {
         super();
         this.protocolVersion = protocolVersion;
     }
 
+    /**
+     * Constructs a new TicketHolder with an initial ticket for the specified protocol version.
+     *
+     * @param protocolVersion The protocol version for tickets in this holder
+     * @param ticket The initial ticket to add to the holder
+     */
     public TicketHolder(ProtocolVersion protocolVersion, Ticket ticket) {
         this(protocolVersion);
         add(ticket);
     }
 
+    /**
+     * Gets the protocol version associated with this ticket holder.
+     *
+     * @return The protocol version
+     */
     public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
     }
 
+    /**
+     * Checks if this TicketHolder is equal to another object.
+     *
+     * @param o The object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,6 +91,11 @@ public class TicketHolder extends LinkedList<Ticket> {
         return protocolVersion == tickets.protocolVersion;
     }
 
+    /**
+     * Returns the hash code value for this TicketHolder.
+     *
+     * @return The hash code value
+     */
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), protocolVersion);
