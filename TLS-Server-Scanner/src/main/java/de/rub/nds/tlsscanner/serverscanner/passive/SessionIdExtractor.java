@@ -17,10 +17,17 @@ import java.util.Arrays;
 
 public class SessionIdExtractor extends StatExtractor<State, ComparableByteArray> {
 
+    /** Constructs a new SessionIdExtractor for extracting session IDs from TLS states. */
     public SessionIdExtractor() {
         super(TrackableValueType.SESSION_ID);
     }
 
+    /**
+     * Extracts the server session ID from the given TLS state if it differs from the client session
+     * ID. Session IDs are not extracted for TLS 1.3 connections.
+     *
+     * @param state the TLS state to extract the session ID from
+     */
     @Override
     public void extract(State state) {
         if (state.getTlsContext().getSelectedProtocolVersion() != ProtocolVersion.TLS13
