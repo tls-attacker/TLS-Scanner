@@ -96,9 +96,8 @@ public class ConfigSelector {
     }
 
     /**
-     * Attempts to find working configurations for both TLS 1.2 and TLS 1.3 protocols. For non-QUIC
-     * connections, it searches for TLS 1.2 configs. For non-DTLS connections, it searches for TLS
-     * 1.3 configs.
+     * Attempts to find working configurations for both TLS 1.2 and TLS 1.3 protocols as 
+     * needed by the protocol configuration.
      *
      * @return true if at least one working configuration was found, false otherwise
      */
