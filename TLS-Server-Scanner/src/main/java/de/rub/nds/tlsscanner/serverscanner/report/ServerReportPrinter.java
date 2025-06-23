@@ -789,8 +789,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     }
 
     /**
-     * Appends the RFC compliance section to the report that checks if servers are doing
-     * mandatory cryptographic checks.
+     * Appends the RFC compliance section to the report that checks if servers are doing mandatory
+     * cryptographic checks.
      *
      * @param builder The StringBuilder to append the RFC compliance information to
      * @return The same StringBuilder for method chaining
