@@ -62,6 +62,11 @@ public class ClientScannerConfig extends TlsScannerConfig {
 
     private Function<State, Integer> externalRunCallback = null;
 
+    /**
+     * Constructs a new ClientScannerConfig with the specified GeneralDelegate.
+     *
+     * @param delegate the general delegate containing common configuration parameters
+     */
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
 
@@ -72,6 +77,12 @@ public class ClientScannerConfig extends TlsScannerConfig {
         addDelegate(clientParameterDelegate);
     }
 
+    /**
+     * Creates and configures a Config instance for client scanning. Sets up logging levels,
+     * timeouts, and client-specific extensions.
+     *
+     * @return the configured Config instance
+     */
     @Override
     public Config createConfig() {
         if (getGeneralDelegate().isDebug()) {
@@ -88,18 +99,39 @@ public class ClientScannerConfig extends TlsScannerConfig {
         return config;
     }
 
+    /**
+     * Gets the shell command used to start the client.
+     *
+     * @return the run command string
+     */
     public String getRunCommand() {
         return runCommand;
     }
 
+    /**
+     * Gets the server delegate containing server-related configuration.
+     *
+     * @return the server delegate
+     */
     public ServerDelegate getServerDelegate() {
         return serverDelegate;
     }
 
+    /**
+     * Gets the client parameter delegate containing client-specific configuration.
+     *
+     * @return the client parameter delegate
+     */
     public ClientParameterDelegate getClientParameterDelegate() {
         return clientParameterDelegate;
     }
 
+    /**
+     * Checks if a valid run directory has been configured. A directory is considered valid if it
+     * exists, is a directory, and is readable.
+     *
+     * @return true if a proper run directory is configured, false otherwise
+     */
     public boolean hasProperRunDirectory() {
         if (runDirectory != null) {
             File runCommandDirectoryHandle = new File(runDirectory);
@@ -109,6 +141,11 @@ public class ClientScannerConfig extends TlsScannerConfig {
         }
     }
 
+    /**
+     * Gets the run directory as a File object.
+     *
+     * @return the run directory File, or null if no proper run directory is configured
+     */
     public File getRunDirectory() {
         if (!hasProperRunDirectory()) {
             return null;
@@ -116,6 +153,12 @@ public class ClientScannerConfig extends TlsScannerConfig {
         return new File(runDirectory);
     }
 
+    /**
+     * Checks if a valid log directory has been configured. A directory is considered valid if it
+     * exists, is a directory, and is writable.
+     *
+     * @return true if a proper log directory is configured, false otherwise
+     */
     public boolean hasProperLogDirectory() {
         if (logDirectory != null) {
             File runLogDirectoryHandle = new File(logDirectory);
@@ -125,6 +168,11 @@ public class ClientScannerConfig extends TlsScannerConfig {
         }
     }
 
+    /**
+     * Gets the log directory as a File object.
+     *
+     * @return the log directory File, or null if no proper log directory is configured
+     */
     public File getLogDirectory() {
         if (!hasProperLogDirectory()) {
             return null;
@@ -132,6 +180,12 @@ public class ClientScannerConfig extends TlsScannerConfig {
         return new File(logDirectory);
     }
 
+    /**
+     * Gets the callback function for executing the client run command. Returns the external
+     * callback if set, otherwise creates one from the run command.
+     *
+     * @return the run command execution callback function
+     */
     public Function<State, Integer> getRunCommandExecutionCallback() {
         if (externalRunCallback != null) {
             return externalRunCallback;
@@ -140,7 +194,14 @@ public class ClientScannerConfig extends TlsScannerConfig {
         }
     }
 
-    /** Provides a callback that executes the client run command. */
+    /**
+     * Provides a callback that executes the client run command. Replaces the port marker in the
+     * command with the actual server port, sets up the working directory and logging if configured,
+     * and starts the client process.
+     *
+     * @param baseCommand the base command string with port replacement marker
+     * @return a callback function that executes the client command
+     */
     public Function<State, Integer> getRunCommandExecutionCallback(String baseCommand) {
         return (State state) -> {
             Integer serverPort = getServerDelegate().getPort();
@@ -191,10 +252,20 @@ public class ClientScannerConfig extends TlsScannerConfig {
                 "Got unknown ServerTransportHandler when trying to extract server port.");
     }
 
+    /**
+     * Gets the external run callback function.
+     *
+     * @return the external run callback, or null if not set
+     */
     public Function<State, Integer> getExternalRunCallback() {
         return externalRunCallback;
     }
 
+    /**
+     * Sets an external run callback function to be used instead of the default command execution.
+     *
+     * @param externalRunCallback the external callback function to set
+     */
     public void setExternalRunCallback(Function<State, Integer> externalRunCallback) {
         this.externalRunCallback = externalRunCallback;
     }
