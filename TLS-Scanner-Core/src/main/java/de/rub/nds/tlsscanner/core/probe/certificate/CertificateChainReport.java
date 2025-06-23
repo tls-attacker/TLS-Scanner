@@ -139,100 +139,221 @@ public class CertificateChainReport {
         // met.
     }
 
+    /**
+     * Returns the certificate report for the leaf certificate in the chain.
+     *
+     * @return the leaf certificate report
+     */
     public CertificateReport getLeafReport() {
         return leafReport;
     }
 
+    /**
+     * Sets the certificate report for the leaf certificate in the chain.
+     *
+     * @param leafReport the leaf certificate report to set
+     */
     public void setLeafReport(CertificateReport leafReport) {
         this.leafReport = leafReport;
     }
 
+    /**
+     * Returns the list of trust paths found for this certificate chain.
+     *
+     * @return the list of trust paths
+     */
     public List<TrustPath> getTrustPaths() {
         return trustPaths;
     }
 
+    /**
+     * Returns the list of certificate issues found in this certificate chain.
+     *
+     * @return the list of certificate issues
+     */
     public List<CertificateIssue> getCertificateIssues() {
         return certificateIssues;
     }
 
+    /**
+     * Sets the list of certificate issues for this certificate chain.
+     *
+     * @param certificateIssues the list of certificate issues to set
+     */
     public void setCertificateIssues(List<CertificateIssue> certificateIssues) {
         this.certificateIssues = certificateIssues;
     }
 
+    /**
+     * Returns whether the certificate chain contains any not-yet-valid certificates.
+     *
+     * @return true if the chain contains not-yet-valid certificates, false otherwise
+     */
     public Boolean getContainsNotYetValid() {
         return containsNotYetValid;
     }
 
+    /**
+     * Sets whether the certificate chain contains any not-yet-valid certificates.
+     *
+     * @param containsNotYetValid true if the chain contains not-yet-valid certificates
+     */
     public void setContainsNotYetValid(Boolean containsNotYetValid) {
         this.containsNotYetValid = containsNotYetValid;
     }
 
+    /**
+     * Returns whether the certificate chain contains any expired certificates.
+     *
+     * @return true if the chain contains expired certificates, false otherwise
+     */
     public Boolean getContainsExpired() {
         return containsExpired;
     }
 
+    /**
+     * Sets whether the certificate chain contains any expired certificates.
+     *
+     * @param containsExpired true if the chain contains expired certificates
+     */
     public void setContainsExpired(Boolean containsExpired) {
         this.containsExpired = containsExpired;
     }
 
+    /**
+     * Returns whether the chain contains weakly-signed certificates that are not in trust stores.
+     *
+     * @return true if the chain contains weakly-signed non-trust-store certificates
+     */
     public Boolean getContainsWeakSignedNonTrustStoresCertificates() {
         return containsWeakSignedNonTrustStoresCertificates;
     }
 
+    /**
+     * Sets whether the chain contains weakly-signed certificates that are not in trust stores.
+     *
+     * @param containsWeakSignedNonTrustStoresCertificates true if the chain contains weakly-signed
+     *     non-trust-store certificates
+     */
     public void setContainsWeakSignedNonTrustStoresCertificates(
             Boolean containsWeakSignedNonTrustStoresCertificates) {
         this.containsWeakSignedNonTrustStoresCertificates =
                 containsWeakSignedNonTrustStoresCertificates;
     }
 
+    /**
+     * Returns the certificate report for the trust anchor in the chain.
+     *
+     * @return the trust anchor certificate report
+     */
     public CertificateReport getTrustAnchor() {
         return trustAnchor;
     }
 
+    /**
+     * Sets the certificate report for the trust anchor in the chain.
+     *
+     * @param trustAnchor the trust anchor certificate report to set
+     */
     public void setTrustAnchor(CertificateReport trustAnchor) {
         this.trustAnchor = trustAnchor;
     }
 
+    /**
+     * Returns whether the certificate chain is generally trusted.
+     *
+     * @return true if the chain is generally trusted, false otherwise
+     */
     public Boolean getGenerallyTrusted() {
         return generallyTrusted;
     }
 
+    /**
+     * Returns whether the certificate chain contains a trust anchor.
+     *
+     * @return true if the chain contains a trust anchor, false otherwise
+     */
     public Boolean getContainsTrustAnchor() {
         return containsTrustAnchor;
     }
 
+    /**
+     * Returns whether the certificate chain is complete.
+     *
+     * @return true if the chain is complete, false otherwise
+     */
     public Boolean getChainIsComplete() {
         return chainIsComplete;
     }
 
+    /**
+     * Returns whether the certificate chain is properly ordered.
+     *
+     * @return true if the chain is ordered correctly, false otherwise
+     */
     public Boolean getChainIsOrdered() {
         return chainIsOrdered;
     }
 
+    /**
+     * Returns whether the certificate chain contains multiple leaf certificates.
+     *
+     * @return true if the chain contains multiple leaves, false otherwise
+     */
     public Boolean getContainsMultipleLeaves() {
         return containsMultipleLeaves;
     }
 
+    /**
+     * Returns whether the certificate chain contains a valid leaf certificate.
+     *
+     * @return true if the chain contains a valid leaf, false otherwise
+     */
     public Boolean getContainsValidLeaf() {
         return containsValidLeaf;
     }
 
+    /**
+     * Returns the list of platforms that trust this certificate chain.
+     *
+     * @return the list of trusting platforms
+     */
     public List<TrustPlatform> getPlatformsTrustingCertificate() {
         return platformsTrustingCertificate;
     }
 
+    /**
+     * Returns the list of platforms that do not trust this certificate chain.
+     *
+     * @return the list of non-trusting platforms
+     */
     public List<TrustPlatform> getPlatformsNotTrustingCertificate() {
         return platformsNotTrustingCertificate;
     }
 
+    /**
+     * Returns the list of platforms that have blacklisted this certificate chain.
+     *
+     * @return the list of blacklisting platforms
+     */
     public List<TrustPlatform> getPlatformsBlacklistingCertificate() {
         return platformsBlacklistingCertificate;
     }
 
+    /**
+     * Returns the list of certificate reports for all certificates in the chain.
+     *
+     * @return the list of certificate reports
+     */
     public List<CertificateReport> getCertificateReportList() {
         return certificateReportList;
     }
 
+    /**
+     * Returns whether the certificate chain contains a custom trust anchor.
+     *
+     * @return true if the chain contains a custom trust anchor, false otherwise
+     */
     public Boolean getContainsCustomTrustAnchor() {
         return containsCustomTrustAnchor;
     }
