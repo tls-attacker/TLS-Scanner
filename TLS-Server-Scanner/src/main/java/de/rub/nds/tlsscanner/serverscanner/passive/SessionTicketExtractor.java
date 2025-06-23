@@ -16,15 +16,15 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket.TicketHold
 
 public class SessionTicketExtractor extends StatExtractor<State, TicketHolder> {
 
-    /** Constructs a new SessionTicketExtractor for extracting session tickets from TLS states. */
+    /** Constructs a new SessionTicketExtractor for extracting session tickets from states. */
     public SessionTicketExtractor() {
         super(TrackableValueType.SESSION_TICKET);
     }
 
     /**
-     * Extracts session tickets from the given TLS state.
+     * Extracts session tickets from the given state.
      *
-     * @param state the TLS state to extract session tickets from
+     * @param state the state to extract session tickets from
      */
     @Override
     public void extract(State state) {
