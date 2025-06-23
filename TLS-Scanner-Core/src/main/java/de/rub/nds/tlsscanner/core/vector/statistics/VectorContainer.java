@@ -15,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Container that holds a vector and its associated response fingerprints, tracking the occurrence
+ * count of each distinct response and providing statistical analysis capabilities.
+ */
 public class VectorContainer {
 
     private final Vector vector;
@@ -34,6 +38,12 @@ public class VectorContainer {
         this.responseStringList = new LinkedList<>();
     }
 
+    /**
+     * Creates a new vector container with the specified vector and response fingerprints.
+     *
+     * @param vector The vector associated with these responses
+     * @param responseFingerprintList List of response fingerprints for this vector
+     */
     public VectorContainer(Vector vector, List<ResponseFingerprint> responseFingerprintList) {
         this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();
@@ -53,6 +63,12 @@ public class VectorContainer {
         }
     }
 
+    /**
+     * Checks whether all distinct responses in this container are plausibly connection-based by
+     * verifying that all response fingerprints are compatible with each other.
+     *
+     * @return true if all responses are mutually compatible, false otherwise
+     */
     public boolean areResponsesPlausibleConnectionBased() {
         for (ResponseCounter counterOne : distinctResponsesCounterList) {
             for (ResponseCounter counterTwo : distinctResponsesCounterList) {
@@ -67,6 +83,13 @@ public class VectorContainer {
         return true;
     }
 
+    /**
+     * Calculates the probability of observing this specific response distribution assuming random
+     * behavior.
+     *
+     * @param totalResponseCounterList List of response counters representing the total distribution
+     * @return The calculated probability value
+     */
     public double getRandomProbability(List<ResponseCounter> totalResponseCounterList) {
         double totalProbability = factorial(distinctResponsesCounterList.size());
         for (ResponseCounter counter : totalResponseCounterList) {
@@ -79,12 +102,23 @@ public class VectorContainer {
         return totalProbability;
     }
 
+    /**
+     * Adds multiple response fingerprints to this container.
+     *
+     * @param fingerprintList List of response fingerprints to add
+     */
     public void addResponseFingerprint(List<ResponseFingerprint> fingerprintList) {
         for (ResponseFingerprint fingerPrint : fingerprintList) {
             addResponseFingerprint(fingerPrint);
         }
     }
 
+    /**
+     * Adds a single response fingerprint to this container and updates the response counters
+     * accordingly.
+     *
+     * @param fingerprint The response fingerprint to add
+     */
     public void addResponseFingerprint(ResponseFingerprint fingerprint) {
         responseList.add(fingerprint);
         responseStringList.add(fingerprint.toHumanReadable());
@@ -116,14 +150,31 @@ public class VectorContainer {
         return solution;
     }
 
+    /**
+     * Returns an unmodifiable list of response counters for all distinct responses.
+     *
+     * @return List of response counters for distinct responses
+     */
     public List<ResponseCounter> getDistinctResponsesCounterList() {
         return Collections.unmodifiableList(distinctResponsesCounterList);
     }
 
+    /**
+     * Returns an unmodifiable list of all response fingerprints in this container.
+     *
+     * @return List of all response fingerprints
+     */
     public List<ResponseFingerprint> getResponseFingerprintList() {
         return Collections.unmodifiableList(responseList);
     }
 
+    /**
+     * Returns the response counter for a specific fingerprint. If the fingerprint is not found,
+     * returns a counter with zero occurrences.
+     *
+     * @param fingerprint The response fingerprint to look up
+     * @return Response counter for the specified fingerprint
+     */
     public ResponseCounter getResponseCounterForFingerprint(ResponseFingerprint fingerprint) {
         for (ResponseCounter counter : distinctResponsesCounterList) {
             if (Objects.equals(counter.getFingerprint(), fingerprint)) {
@@ -133,6 +184,11 @@ public class VectorContainer {
         return new ResponseCounter(fingerprint, 0, responseList.size());
     }
 
+    /**
+     * Returns the vector associated with this container.
+     *
+     * @return The vector
+     */
     public Vector getVector() {
         return vector;
     }
