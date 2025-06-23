@@ -57,6 +57,11 @@ import org.apache.logging.log4j.Logger;
 public class ServerReport extends TlsScanReport {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Returns Jackson modules for serialization configuration.
+     *
+     * @return array of Jackson modules for JSON serialization
+     */
     public static Module[] getSerializerModules() {
         return new Module[] {
             new SimpleModule()
@@ -87,14 +92,28 @@ public class ServerReport extends TlsScanReport {
     private String configProfileIdentifier;
     private String configProfileIdentifierTls13;
 
+    /** Constructs an empty ServerReport. */
     public ServerReport() {
         this(null, null, null);
     }
 
+    /**
+     * Constructs a ServerReport for the specified host and port.
+     *
+     * @param host the hostname or IP address of the server
+     * @param port the port number of the server
+     */
     public ServerReport(String host, Integer port) {
         this(null, host, port);
     }
 
+    /**
+     * Constructs a ServerReport with SNI hostname, host and port.
+     *
+     * @param sniHostname the SNI hostname to use in the TLS handshake
+     * @param host the hostname or IP address of the server
+     * @param port the port number of the server
+     */
     public ServerReport(String sniHostname, String host, Integer port) {
         super();
         this.sniHostname = sniHostname;
@@ -129,22 +148,47 @@ public class ServerReport extends TlsScanReport {
         return port;
     }
 
+    /**
+     * Returns the version of TLS-Scanner used for this scan.
+     *
+     * @return the TLS-Scanner version string
+     */
     public synchronized String getTlsScannerVersion() {
         return tlsScannerVersion;
     }
 
+    /**
+     * Returns the version of TLS-Attacker used for this scan.
+     *
+     * @return the TLS-Attacker version string
+     */
     public synchronized String getTlsAttackerVersion() {
         return tlsAttackerVersion;
     }
 
+    /**
+     * Returns the Java version used for this scan.
+     *
+     * @return the Java version string
+     */
     public synchronized String getJavaVersion() {
         return javaVersion;
     }
 
+    /**
+     * Returns whether the server was reachable during the scan.
+     *
+     * @return true if the server was reachable, false otherwise
+     */
     public synchronized Boolean getServerIsAlive() {
         return serverIsAlive;
     }
 
+    /**
+     * Sets whether the server was reachable during the scan.
+     *
+     * @param serverIsAlive true if the server was reachable, false otherwise
+     */
     public synchronized void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
     }
@@ -161,10 +205,20 @@ public class ServerReport extends TlsScanReport {
         return objectResult == null ? null : objectResult.getValue();
     }
 
+    /**
+     * Returns whether the server speaks the expected protocol.
+     *
+     * @return true if the server speaks the protocol, false otherwise
+     */
     public synchronized Boolean getSpeaksProtocol() {
         return speaksProtocol;
     }
 
+    /**
+     * Sets whether the server speaks the expected protocol.
+     *
+     * @param speaksProtocol true if the server speaks the protocol, false otherwise
+     */
     public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
         this.speaksProtocol = speaksProtocol;
     }

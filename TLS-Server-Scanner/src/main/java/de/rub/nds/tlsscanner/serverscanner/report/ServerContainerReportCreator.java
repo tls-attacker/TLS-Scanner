@@ -49,14 +49,32 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Constructs a ServerContainerReportCreator with the specified scanner detail level.
+     *
+     * @param detail the level of detail for the scanner report
+     */
     public ServerContainerReportCreator(ScannerDetail detail) {
         super(detail, DefaultPrintingScheme.getDefaultPrintingScheme());
     }
 
+    /**
+     * Constructs a ServerContainerReportCreator with the specified scanner detail level and
+     * printing scheme.
+     *
+     * @param detail the level of detail for the scanner report
+     * @param scheme the printing scheme to use for formatting the report
+     */
     public ServerContainerReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
     }
 
+    /**
+     * Creates a comprehensive report container from the provided server report.
+     *
+     * @param report the server report containing scan results
+     * @return a ReportContainer with formatted scan results
+     */
     public ReportContainer createReport(ServerReport report) {
         ListContainer container = new ListContainer();
         container.add(
@@ -744,6 +762,12 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                         color));
     }
 
+    /**
+     * Creates a performance data container showing scanner execution metrics.
+     *
+     * @param report the server report containing performance data
+     * @return a ReportContainer with performance metrics
+     */
     public ReportContainer createPerformanceDataContainer(ServerReport report) {
         ListContainer container = new ListContainer();
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {

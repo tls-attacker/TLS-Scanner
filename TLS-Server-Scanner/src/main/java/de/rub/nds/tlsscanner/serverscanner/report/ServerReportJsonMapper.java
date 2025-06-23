@@ -43,6 +43,7 @@ public class ServerReportJsonMapper {
                 .build();
     }
 
+    /** Constructs a ServerReportJsonMapper with configured ObjectMapper settings. */
     public ServerReportJsonMapper() {
         this.objectMapper = new ObjectMapper();
 
