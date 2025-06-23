@@ -8,15 +8,18 @@
  */
 package de.rub.nds.tlsscanner.core.vector.response;
 
+/** Utility class for translating equality errors into human-readable descriptions. */
 public class EqualityErrorTranslator {
 
     private EqualityErrorTranslator() {}
 
     /**
-     * @param error
-     * @param fingerprint1
-     * @param fingerprint2
-     * @return
+     * Translates an equality error into a human-readable description.
+     *
+     * @param error The equality error to translate
+     * @param fingerprint1 The first fingerprint involved in the comparison
+     * @param fingerprint2 The second fingerprint involved in the comparison
+     * @return A human-readable description of the equality error
      */
     public static String translation(
             EqualityError error,
