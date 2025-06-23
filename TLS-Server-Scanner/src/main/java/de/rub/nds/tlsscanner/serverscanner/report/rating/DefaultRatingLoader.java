@@ -21,24 +21,37 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Utility class for loading default rating configurations for TLS server reports. This class
+ * provides functionality to load rating influencers and recommendations from XML resource files.
+ */
 public class DefaultRatingLoader {
 
     private static Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * The resource location for the rating influencers XML file. This file contains the
+     * configuration for how different properties influence the overall rating of a TLS server.
+     */
     public static String INFLUENCERS_RESOURCE_LOCATION = "rating/influencers.xml";
 
-    /** The default Config file to load. */
+    /**
+     * The default resource template path for recommendation files. Language-specific versions can
+     * be loaded by appending the language code (e.g., "rating/recommendations_en.xml" for English).
+     */
     public static final String DEFAULT_RECOMMENDATIONS_TEMPLATE = "rating/recommendations";
 
     /**
-     * Returns a generic SiteReportRater
+     * Creates and returns a SiteReportRater configured with rating influencers and
+     * language-specific recommendations for evaluating TLS server configurations.
      *
-     * @param recommendationLanguage Language of the recommendations. If no language file can be
-     *     found for selected language a default recommendation file in english is returned
-     * @return A generated SiteReportRater
-     * @throws JAXBException
-     * @throws java.io.IOException
-     * @throws javax.xml.stream.XMLStreamException
+     * @param recommendationLanguage the ISO language code for loading localized recommendations
+     *     (e.g., "en" for English, "de" for German). If no language-specific file is found,
+     *     defaults to English.
+     * @return a configured SiteReportRater instance ready to evaluate server reports
+     * @throws JAXBException if there is an error parsing the XML configuration files
+     * @throws IOException if there is an error reading the resource files
+     * @throws XMLStreamException if there is an error processing the XML stream
      */
     public static SiteReportRater getServerReportRater(String recommendationLanguage)
             throws JAXBException, IOException, XMLStreamException {
