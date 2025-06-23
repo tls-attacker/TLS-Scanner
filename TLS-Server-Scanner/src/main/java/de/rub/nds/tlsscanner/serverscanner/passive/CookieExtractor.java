@@ -32,7 +32,7 @@ public class CookieExtractor extends StatExtractor<State, ComparableByteArray> {
     /**
      * Extracts cookies from HelloVerifyRequest messages in the given DTLS state's workflow trace.
      *
-     * @param state the TLS state to extract cookies from
+     * @param state the state to extract cookies from
      */
     @Override
     public void extract(State state) {
