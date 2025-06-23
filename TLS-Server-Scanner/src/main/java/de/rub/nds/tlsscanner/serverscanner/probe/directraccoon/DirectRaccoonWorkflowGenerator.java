@@ -22,6 +22,15 @@ import java.math.BigInteger;
 
 public class DirectRaccoonWorkflowGenerator {
 
+    /**
+     * Generates a workflow trace for Direct Raccoon attack testing.
+     *
+     * @param tlsConfig The TLS configuration to use
+     * @param type The type of workflow to generate
+     * @param initialDhSecret The initial Diffie-Hellman secret
+     * @param withNullByte Whether to include a null byte in the pre-master secret
+     * @return The generated workflow trace
+     */
     public static WorkflowTrace generateWorkflow(
             Config tlsConfig,
             DirectRaccoonWorkflowType type,

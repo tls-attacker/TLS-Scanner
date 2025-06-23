@@ -23,30 +23,61 @@ public class InvalidCurveTestInfo extends TestInfo {
         this.vector = null;
     }
 
+    /**
+     * Constructs a new InvalidCurveTestInfo with the specified vector.
+     *
+     * @param vector the invalid curve vector to test
+     */
     public InvalidCurveTestInfo(InvalidCurveVector vector) {
         this.vector = vector;
     }
 
+    /**
+     * Returns a technical name for this test info.
+     *
+     * @return the string representation of the invalid curve vector
+     */
     @Override
     public String getTechnicalName() {
         return getVector().toString();
     }
 
+    /**
+     * Returns the names of the fields in this test info.
+     *
+     * @return a list containing a single element "Vector"
+     */
     @Override
     public List<String> getFieldNames() {
         return Collections.singletonList("Vector");
     }
 
+    /**
+     * Returns the values of the fields in this test info.
+     *
+     * @return a list containing the string representation of the vector
+     */
     @Override
     public List<String> getFieldValues() {
         return Collections.singletonList(getVector().toString());
     }
 
+    /**
+     * Returns a human-readable name for this test info.
+     *
+     * @return the string representation of the invalid curve vector
+     */
     @Override
     public String getPrintableName() {
         return getVector().toString();
     }
 
+    /**
+     * Checks if this test info is equal to another object.
+     *
+     * @param o the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (o instanceof InvalidCurveTestInfo) {
@@ -56,6 +87,11 @@ public class InvalidCurveTestInfo extends TestInfo {
         return false;
     }
 
+    /**
+     * Returns a hash code value for this test info.
+     *
+     * @return the hash code value
+     */
     @Override
     public int hashCode() {
         int hashCode = 7;
@@ -63,6 +99,11 @@ public class InvalidCurveTestInfo extends TestInfo {
         return hashCode;
     }
 
+    /**
+     * Returns the invalid curve vector for this test.
+     *
+     * @return the invalid curve vector
+     */
     public InvalidCurveVector getVector() {
         return vector;
     }
