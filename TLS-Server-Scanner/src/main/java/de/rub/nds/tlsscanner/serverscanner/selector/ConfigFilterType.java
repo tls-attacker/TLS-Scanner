@@ -52,7 +52,7 @@ public enum ConfigFilterType {
     }
 
     /**
-     * Checks whether this filter type applies to named groups (elliptic curves).
+     * Checks whether this filter type applies to named groups.
      *
      * @return true if this is a named group filter, false otherwise
      */
