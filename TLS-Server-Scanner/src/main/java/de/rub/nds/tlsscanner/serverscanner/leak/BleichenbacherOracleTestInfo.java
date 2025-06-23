@@ -35,6 +35,14 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
         this.bleichenbacherType = null;
     }
 
+    /**
+     * Constructs a new BleichenbacherOracleTestInfo with the specified parameters.
+     *
+     * @param version the protocol version to test
+     * @param cipherSuite the cipher suite to test
+     * @param bleichenbacherWorkflowType the type of Bleichenbacher workflow to use
+     * @param bleichenbacherType the type of Bleichenbacher scan to perform
+     */
     public BleichenbacherOracleTestInfo(
             ProtocolVersion version,
             CipherSuite cipherSuite,
@@ -46,6 +54,11 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
         this.bleichenbacherType = bleichenbacherType;
     }
 
+    /**
+     * Returns a technical name for this test info combining all test parameters.
+     *
+     * @return a colon-separated string of scan type, workflow type, version, and cipher suite
+     */
     @Override
     public String getTechnicalName() {
         return bleichenbacherType.name()
@@ -57,11 +70,21 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
                 + cipherSuite.name();
     }
 
+    /**
+     * Returns the names of the fields in this test info.
+     *
+     * @return a list containing the field names
+     */
     @Override
     public List<String> getFieldNames() {
         return Arrays.asList("Scan Type, Workflow Type", "Version", "CipherSuite");
     }
 
+    /**
+     * Returns the values of the fields in this test info.
+     *
+     * @return a list containing the field values as strings
+     */
     @Override
     public List<String> getFieldValues() {
         return Arrays.asList(
@@ -71,6 +94,11 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
                 cipherSuite.name());
     }
 
+    /**
+     * Returns a human-readable name for this test info.
+     *
+     * @return a tab-separated string of scan type, workflow type, version, and cipher suite
+     */
     @Override
     public String getPrintableName() {
         return bleichenbacherType.name()
@@ -82,6 +110,12 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
                 + cipherSuite.name();
     }
 
+    /**
+     * Checks if this test info is equal to another object.
+     *
+     * @param o the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (o instanceof BleichenbacherOracleTestInfo) {
@@ -97,6 +131,11 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
         return false;
     }
 
+    /**
+     * Returns a hash code value for this test info.
+     *
+     * @return the hash code value
+     */
     @Override
     public int hashCode() {
         int hashCode = 7;
@@ -107,18 +146,38 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
         return hashCode;
     }
 
+    /**
+     * Returns the protocol version for this test.
+     *
+     * @return the protocol version
+     */
     public ProtocolVersion getVersion() {
         return version;
     }
 
+    /**
+     * Returns the cipher suite for this test.
+     *
+     * @return the cipher suite
+     */
     public CipherSuite getCipherSuite() {
         return cipherSuite;
     }
 
+    /**
+     * Returns the Bleichenbacher workflow type for this test.
+     *
+     * @return the Bleichenbacher workflow type
+     */
     public BleichenbacherWorkflowType getBleichenbacherWorkflowType() {
         return bleichenbacherWorkflowType;
     }
 
+    /**
+     * Returns the Bleichenbacher scan type for this test.
+     *
+     * @return the Bleichenbacher scan type
+     */
     public BleichenbacherScanType getBleichenbacherType() {
         return bleichenbacherType;
     }
