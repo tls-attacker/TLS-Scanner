@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsattacker.core.constants.Bits;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
@@ -54,7 +54,7 @@ public class Pkcs1VectorGenerator {
         for (Pkcs1Vector vector : encryptedVectors) {
             BigInteger plaintext = new BigInteger(1, vector.getPlainValue());
             byte[] encrypted =
-                    ArrayConverter.bigIntegerToNullPaddedByteArray(
+                    DataConverter.bigIntegerToNullPaddedByteArray(
                             plaintext.modPow(publicKey.getPublicExponent(), publicKey.getModulus()),
                             publicKey.getModulus().bitLength() / Bits.IN_A_BYTE);
             vector.setEncryptedValue(encrypted);
@@ -211,7 +211,7 @@ public class Pkcs1VectorGenerator {
                 symmetricKey, 0, key, rsaKeyLength - symmetricKey.length, symmetricKey.length);
         LOGGER.debug(
                 "Generated a PKCS1 padded message a correct key length, but invalid protocol version: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
 
         return key;
     }
@@ -222,7 +222,7 @@ public class Pkcs1VectorGenerator {
         key[rsaKeyLength - symmetricKey.length + 1] = 0x42;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong TLS version bytes: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -231,7 +231,7 @@ public class Pkcs1VectorGenerator {
         key[0] = 23;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong first byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -240,7 +240,7 @@ public class Pkcs1VectorGenerator {
         key[1] = 23;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong second byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -253,7 +253,7 @@ public class Pkcs1VectorGenerator {
         }
         LOGGER.debug(
                 "Generated a PKCS1 padded message with no separating byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -262,7 +262,7 @@ public class Pkcs1VectorGenerator {
         key[3] = 0x00;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a 0x00 byte in the PKCS1 padding: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -271,7 +271,7 @@ public class Pkcs1VectorGenerator {
         key[11] = 0x00;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a 0x00 byte in padding: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -287,7 +287,7 @@ public class Pkcs1VectorGenerator {
         LOGGER.debug(
                 "Generated a PKCS1 padded symmetric key of size {}: {}",
                 size,
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 

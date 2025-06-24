@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.util.Arrays;
 import java.util.Objects;
@@ -146,9 +146,9 @@ public class Pkcs1Vector implements Vector {
                 + name
                 + "{"
                 + "plainValue="
-                + ArrayConverter.bytesToHexString(plainValue)
+                + DataConverter.bytesToHexString(plainValue)
                 + ", encryptedValue="
-                + ArrayConverter.bytesToHexString(encryptedValue)
+                + DataConverter.bytesToHexString(encryptedValue)
                 + '}';
     }
 }

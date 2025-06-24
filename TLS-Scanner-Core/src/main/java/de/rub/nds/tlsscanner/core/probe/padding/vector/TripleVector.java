@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -82,7 +82,7 @@ public class TripleVector extends PaddingVector {
                                 % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
 
         r.getComputations().setPadding(new byte[paddingLength]);
-        return ArrayConverter.concatenate(
+        return DataConverter.concatenate(
                         r.getCleanProtocolMessageBytes().getValue(),
                         r.getComputations().getMac().getValue(),
                         r.getComputations().getPadding().getValue())

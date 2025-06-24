@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.psk.PskSet;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
@@ -117,6 +117,6 @@ public class TicketTls13 implements Ticket {
      */
     @Override
     public String toString() {
-        return ArrayConverter.bytesToHexString(pskSet.getPreSharedKeyIdentity(), false, false);
+        return DataConverter.bytesToHexString(pskSet.getPreSharedKeyIdentity(), false, false);
     }
 }

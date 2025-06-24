@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 
 /**
  * Enumeration of default configuration filter profiles providing various levels of feature
@@ -67,7 +67,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
     CLEAN_NAMED_GROUPS_TLS_13(ConfigFilterType.NAMEDGROUP_DEPRECATED),
     CLEAN_SIGNATUREALGORITHMS_TLS_13(ConfigFilterType.SIGNATUREALGORITHM_TLS13),
     CLEAN_TLS_13(
-            ArrayConverter.concatenate(
+            DataConverter.concatenate(
                     CLEAN_NAMED_GROUPS_TLS_13.getConfigFilterTypes(),
                     CLEAN_SIGNATUREALGORITHMS_TLS_13.getConfigFilterTypes()));
 
@@ -79,7 +79,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
 
     private DefaultConfigProfile(
             ConfigFilterType[] previousFilters, ConfigFilterType... configFilterTypes) {
-        this.configFilterTypes = ArrayConverter.concatenate(previousFilters, configFilterTypes);
+        this.configFilterTypes = DataConverter.concatenate(previousFilters, configFilterTypes);
     }
 
     @Override
