@@ -21,6 +21,12 @@ public class ArrayUtil {
      * @return Index at which needle starts in haystack. Empty Optional if not found.
      */
     public static Optional<Integer> findSubarray(byte[] haystack, byte[] needle) {
+        if (haystack == null || needle == null) {
+            return Optional.empty();
+        }
+        if (needle.length == 0 || needle.length > haystack.length) {
+            return Optional.empty();
+        }
         for (int offset = 0; offset <= haystack.length - needle.length; offset++) {
             if (haystack[offset] == needle[0]) {
 
