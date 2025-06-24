@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 
 public class HpkpPin {
 
@@ -76,6 +76,6 @@ public class HpkpPin {
         return ""
                 + pinType.trim()
                 + " - "
-                + ArrayConverter.bytesToHexString(pin, false, false).replace(" ", "");
+                + DataConverter.bytesToHexString(pin, false, false).replace(" ", "");
     }
 }

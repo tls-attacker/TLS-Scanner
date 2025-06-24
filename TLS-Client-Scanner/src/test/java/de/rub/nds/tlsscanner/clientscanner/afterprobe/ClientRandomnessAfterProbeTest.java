@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -45,7 +45,7 @@ public class ClientRandomnessAfterProbeTest {
     // generates a single fixed, but "secure" 32 byte sequence over and over again
     private final FixedSecureRandom fixedSecureRandom =
             new FixedSecureRandom(
-                    ArrayConverter.hexStringToByteArray(
+                    DataConverter.hexStringToByteArray(
                             "88fd513f45ae0f96756b0984aa674c607ef076385da9f2b9a8e171087fb1bfca"));
 
     @BeforeEach

@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
@@ -497,7 +497,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         " "
                                 + QuicVersion.getFromVersionBytes(version)
                                 + "("
-                                + ArrayConverter.bytesToHexString(version)
+                                + DataConverter.bytesToHexString(version)
                                 + ")");
             }
         } else if (sendsTransportParameters == TestResults.FALSE) {
@@ -1077,7 +1077,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppendHexString(
                         builder,
                         "Fingerprint (SHA256)",
-                        ArrayConverter.bytesToHexString(
+                        DataConverter.bytesToHexString(
                                 certReport.getSHA256Fingerprint(), false, false));
             }
         }
@@ -1511,8 +1511,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
-                                        foundDefaultStek.key, false, false));
+                                DataConverter.bytesToHexString(foundDefaultStek.key, false, false));
                         prettyAppend(
                                 builder, "Found Secret", foundDefaultStek.secret.toReportString());
                     }
@@ -1543,7 +1542,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
+                                DataConverter.bytesToHexString(
                                         foundDefaultHmacKey.key, false, false));
                     }
                 }

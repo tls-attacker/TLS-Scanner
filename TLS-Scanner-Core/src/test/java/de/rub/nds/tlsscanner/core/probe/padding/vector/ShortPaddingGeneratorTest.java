@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -477,7 +477,7 @@ public class ShortPaddingGeneratorTest {
         r.setCleanProtocolMessageBytes(new byte[20]);
         r.getComputations().setMac(new byte[20]);
         r.getComputations().setPadding(new byte[20]);
-        return ArrayConverter.concatenate(
+        return DataConverter.concatenate(
                 r.getCleanProtocolMessageBytes().getValue(),
                 r.getComputations().getMac().getValue(),
                 r.getComputations().getPadding().getValue());

@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.List;
@@ -109,6 +109,6 @@ public class TicketTls12 implements Ticket {
      */
     @Override
     public String toString() {
-        return ArrayConverter.bytesToHexString(ticketBytes, false, false);
+        return DataConverter.bytesToHexString(ticketBytes, false, false);
     }
 }

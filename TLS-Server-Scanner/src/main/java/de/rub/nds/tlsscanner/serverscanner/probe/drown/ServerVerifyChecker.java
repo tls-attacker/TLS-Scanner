@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.SSL2MessageType;
 import de.rub.nds.tlsattacker.core.constants.ssl.SSL2ByteLength;
@@ -190,7 +190,7 @@ public class ServerVerifyChecker {
             secretKey = Arrays.copyOfRange(secretKey, 0, remainingLength);
         }
 
-        byte[] masterKey = ArrayConverter.concatenate(clearKey, secretKey);
+        byte[] masterKey = DataConverter.concatenate(clearKey, secretKey);
         return makeKeyMaterial(
                 masterKey, tlsContext.getClientRandom(), tlsContext.getServerRandom(), index);
     }

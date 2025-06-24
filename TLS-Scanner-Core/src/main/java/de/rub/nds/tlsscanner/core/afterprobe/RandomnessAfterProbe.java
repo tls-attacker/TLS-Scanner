@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.afterprobe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -42,16 +42,16 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
 
     // TLS 1.3 specific message requesting to send a new ClientHello
     private static final byte[] HELLO_RETRY_REQUEST_CONST =
-            ArrayConverter.hexStringToByteArray(
+            DataConverter.hexStringToByteArray(
                     "CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     // TLS 1.3 to TLS 1.2 Downgrade prevention
     private static final byte[] TLS_1_3_TO_TLS_1_2_DOWNGRADE_CONST =
-            ArrayConverter.hexStringToByteArray("444F574E47524401");
+            DataConverter.hexStringToByteArray("444F574E47524401");
 
     // TLS 1.3 to TLS 1.1 or lower Downgrade prevention
     private static final byte[] TLS_1_3_TO_TLS_1_1_DOWNGRADE_CONST =
-            ArrayConverter.hexStringToByteArray("444F574E47524400");
+            DataConverter.hexStringToByteArray("444F574E47524400");
 
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
@@ -79,7 +79,7 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
             if (serverRandom != null) {
                 byte[] unixTimeStamp = new byte[4];
                 System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
-                serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                serverUnixTime = DataConverter.bytesToInt(unixTimeStamp);
                 if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
                         || serverUnixTime
                                 < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {

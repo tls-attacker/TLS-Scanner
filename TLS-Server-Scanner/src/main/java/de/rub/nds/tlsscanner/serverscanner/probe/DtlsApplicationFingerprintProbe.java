@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import com.google.common.primitives.Bytes;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -66,7 +66,7 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
 
     private boolean isEchoServer() {
         byte[] appData =
-                ArrayConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
+                DataConverter.hexStringToByteArray("9988776655443322110000112233445566778899");
         byte[] data = isProtocolSupported(appData);
         if (Arrays.equals(data, appData)) {
             supportedApplications.add(ApplicationProtocol.ECHO);
@@ -76,22 +76,22 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     private void isVpnSupported() {
-        byte[] length = ArrayConverter.hexStringToByteArray("0118");
+        byte[] length = DataConverter.hexStringToByteArray("0118");
         byte[] string =
-                ArrayConverter.hexStringToByteArray(
+                DataConverter.hexStringToByteArray(
                         "0047467479706500636c7468656c6c6f005356504e434f4f4b494500");
         byte[] cookie =
-                ArrayConverter.hexStringToByteArray("34626a384f64735a486a6f644e736859512b59");
-        byte[] appData = ArrayConverter.concatenate(length, string, cookie);
+                DataConverter.hexStringToByteArray("34626a384f64735a486a6f644e736859512b59");
+        byte[] appData = DataConverter.concatenate(length, string, cookie);
         byte[] data = isProtocolSupported(appData);
         byte[] fortinetHandshakeFail =
-                ArrayConverter.hexStringToByteArray(
+                DataConverter.hexStringToByteArray(
                         "00214746747970650073767268656C6C6F0068616E647368616B65006661696C00");
         byte[] fortinetHandshakeOk =
-                ArrayConverter.hexStringToByteArray(
+                DataConverter.hexStringToByteArray(
                         "001f4746747970650073767268656C6C6F0068616E647368616B65006f6b00");
         byte[] citrixResponse =
-                ArrayConverter.hexStringToByteArray("FF0000010000000000000000000000000000000001");
+                DataConverter.hexStringToByteArray("FF0000010000000000000000000000000000000001");
         if (Bytes.indexOf(data, fortinetHandshakeFail) != -1) {
             supportedApplications.add(ApplicationProtocol.VPN_FORTINET);
             isAcceptingUnencryptedAppData(appData);
@@ -105,11 +105,11 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     private void isStunSupported() {
-        byte[] type = ArrayConverter.hexStringToByteArray("0001");
-        byte[] length = ArrayConverter.hexStringToByteArray("0000");
-        byte[] cookie = ArrayConverter.hexStringToByteArray("2112a442");
-        byte[] transactionId = ArrayConverter.hexStringToByteArray("112233445566778899001122");
-        byte[] appData = ArrayConverter.concatenate(type, length, cookie, transactionId);
+        byte[] type = DataConverter.hexStringToByteArray("0001");
+        byte[] length = DataConverter.hexStringToByteArray("0000");
+        byte[] cookie = DataConverter.hexStringToByteArray("2112a442");
+        byte[] transactionId = DataConverter.hexStringToByteArray("112233445566778899001122");
+        byte[] appData = DataConverter.concatenate(type, length, cookie, transactionId);
         byte[] data = isProtocolSupported(appData);
         if (Bytes.indexOf(data, transactionId) != -1) {
             supportedApplications.add(ApplicationProtocol.STUN);
@@ -118,13 +118,13 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     private void isTurnSupported() {
-        byte[] type = ArrayConverter.hexStringToByteArray("0003");
-        byte[] length = ArrayConverter.hexStringToByteArray("0008");
-        byte[] cookie = ArrayConverter.hexStringToByteArray("2112a442");
-        byte[] transactionId = ArrayConverter.hexStringToByteArray("112233445566778899001122");
-        byte[] requestedTransport = ArrayConverter.hexStringToByteArray("0019000411000000");
+        byte[] type = DataConverter.hexStringToByteArray("0003");
+        byte[] length = DataConverter.hexStringToByteArray("0008");
+        byte[] cookie = DataConverter.hexStringToByteArray("2112a442");
+        byte[] transactionId = DataConverter.hexStringToByteArray("112233445566778899001122");
+        byte[] requestedTransport = DataConverter.hexStringToByteArray("0019000411000000");
         byte[] appData =
-                ArrayConverter.concatenate(type, length, cookie, transactionId, requestedTransport);
+                DataConverter.concatenate(type, length, cookie, transactionId, requestedTransport);
         byte[] data = isProtocolSupported(appData);
         if (Bytes.indexOf(data, transactionId) != -1) {
             supportedApplications.add(ApplicationProtocol.TURN);
@@ -133,9 +133,9 @@ public class DtlsApplicationFingerprintProbe extends TlsServerProbe {
     }
 
     private void isCoapSupported() {
-        byte[] header = ArrayConverter.hexStringToByteArray("4000");
-        byte[] messageId = ArrayConverter.hexStringToByteArray("9812");
-        byte[] appData = ArrayConverter.concatenate(header, messageId);
+        byte[] header = DataConverter.hexStringToByteArray("4000");
+        byte[] messageId = DataConverter.hexStringToByteArray("9812");
+        byte[] appData = DataConverter.concatenate(header, messageId);
         byte[] data = isProtocolSupported(appData);
         if (Bytes.indexOf(data, messageId) != -1) {
             supportedApplications.add(ApplicationProtocol.COAP);
