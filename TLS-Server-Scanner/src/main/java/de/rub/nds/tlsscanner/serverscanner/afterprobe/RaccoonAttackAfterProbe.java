@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
@@ -64,9 +64,8 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
         List<?> extractedValueList = publicKeyContainer.getExtractedValueList();
         Map<Integer, BigInteger> smallestByteSizeModuloMap =
                 generateSmallestByteSizeModuloMap(extractedValueList);
-        for (Integer i : smallestByteSizeModuloMap.keySet()) {
-            BigInteger modulo = smallestByteSizeModuloMap.get(i);
-            attackProbabilityList.addAll(computeRaccoonAttackProbabilities(modulo));
+        for (Map.Entry<Integer, BigInteger> entry : smallestByteSizeModuloMap.entrySet()) {
+            attackProbabilityList.addAll(computeRaccoonAttackProbabilities(entry.getValue()));
         }
         report.putResult(TlsAnalyzedProperty.RACCOON_ATTACK_PROBABILITIES, attackProbabilityList);
 
@@ -88,7 +87,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
         Map<Integer, BigInteger> smallestByteSizeModuloMap = new HashMap<>();
         for (Object o : extractedValueList) {
             DhPublicKey publicKey = (DhPublicKey) o;
-            byte[] modulo = ArrayConverter.bigIntegerToByteArray(publicKey.getModulus());
+            byte[] modulo = DataConverter.bigIntegerToByteArray(publicKey.getModulus());
             if (smallestByteSizeModuloMap.containsKey(modulo.length)) {
                 if (smallestByteSizeModuloMap.get(modulo.length).compareTo(publicKey.getModulus())
                         > 0) {
@@ -129,7 +128,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe<ServerReport> {
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         /** For Legacy PRF the input gets halved rounded up into the hash function */
-        int inputLength = (ArrayConverter.bigIntegerToByteArray(modulus).length);
+        int inputLength = (DataConverter.bigIntegerToByteArray(modulus).length);
         if (inputLength % 2 == 1) {
             inputLength++;
         }

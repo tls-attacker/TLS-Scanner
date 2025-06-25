@@ -79,6 +79,12 @@ public final class TlsServerScanner
     private final ServerScannerConfig config;
     private final boolean closeAfterFinishParallel;
 
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration. Creates a new
+     * ParallelExecutor for executing probes.
+     *
+     * @param config the server scanner configuration to use
+     */
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getExecutorConfig());
         this.config = config;
@@ -92,6 +98,13 @@ public final class TlsServerScanner
         setCallbacks();
     }
 
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration and parallel executor. The
+     * parallel executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     */
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(config.getExecutorConfig());
         this.config = config;
@@ -101,6 +114,15 @@ public final class TlsServerScanner
         setCallbacks();
     }
 
+    /**
+     * Constructs a new TlsServerScanner with custom probe and after-probe lists. The parallel
+     * executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     * @param probeList the list of probes to execute
+     * @param afterList the list of after-probes to execute
+     */
     public TlsServerScanner(
             ServerScannerConfig config,
             ParallelExecutor parallelExecutor,
@@ -326,6 +348,10 @@ public final class TlsServerScanner
         return guidelines;
     }
 
+    /**
+     * Closes the scanner and shuts down the parallel executor if it was created internally. If the
+     * parallel executor was provided externally, it will not be shut down.
+     */
     @Override
     public void close() {
         if (closeAfterFinishParallel) {
@@ -345,6 +371,11 @@ public final class TlsServerScanner
         }
     }
 
+    /**
+     * Tests whether a connection can be established to the target server.
+     *
+     * @return true if the server is connectable, false otherwise
+     */
     public boolean isConnectable() {
         try {
             Config tlsConfig = config.createConfig();

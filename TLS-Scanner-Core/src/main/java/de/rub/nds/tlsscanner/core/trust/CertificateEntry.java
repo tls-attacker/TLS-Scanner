@@ -18,20 +18,37 @@ public class CertificateEntry {
     @JsonProperty("fingerprint")
     private final String fingerprint;
 
+    /**
+     * Constructs a new CertificateEntry with the specified subject name and fingerprint.
+     *
+     * @param subjectName the subject name of the certificate
+     * @param fingerprint the SHA-256 fingerprint of the certificate
+     */
     public CertificateEntry(String subjectName, String fingerprint) {
         this.subjectName = subjectName;
         this.fingerprint = fingerprint;
     }
 
+    /** Default constructor for CertificateEntry. Initializes all fields to null. */
     public CertificateEntry() {
         subjectName = null;
         fingerprint = null;
     }
 
+    /**
+     * Returns the subject name of the certificate.
+     *
+     * @return the subject name
+     */
     public String getSubjectName() {
         return subjectName;
     }
 
+    /**
+     * Returns the SHA-256 fingerprint of the certificate.
+     *
+     * @return the certificate fingerprint
+     */
     public String getFingerprint() {
         return fingerprint;
     }

@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
@@ -41,6 +41,12 @@ import java.util.concurrent.TimeUnit;
 
 public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreator<ReportT> {
 
+    /**
+     * Creates a TLS report creator with the specified detail level and printing scheme.
+     *
+     * @param detail The level of detail for the report
+     * @param scheme The printing scheme to use for formatting
+     */
     public TlsReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
     }
@@ -550,7 +556,7 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                 subCertificateContainer.add(
                         createDefaultKeyValueContainer(
                                 "Fingerprint (SHA256)",
-                                ArrayConverter.bytesToHexString(
+                                DataConverter.bytesToHexString(
                                         certReport.getSHA256Fingerprint(), false, false)));
                 container.add(subCertificateContainer);
             }

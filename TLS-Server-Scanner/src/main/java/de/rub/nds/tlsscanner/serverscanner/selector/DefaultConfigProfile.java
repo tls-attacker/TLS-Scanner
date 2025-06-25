@@ -8,8 +8,14 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 
+/**
+ * Enumeration of default configuration filter profiles providing various levels of feature
+ * reduction for TLS configurations. Each profile defines a set of filters to apply, ranging from
+ * unfiltered to extremely reduced feature sets for cipher suites, named groups, and signature
+ * algorithms.
+ */
 public enum DefaultConfigProfile implements ConfigFilterProfile {
     UNFILTERED(),
 
@@ -61,7 +67,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
     CLEAN_NAMED_GROUPS_TLS_13(ConfigFilterType.NAMEDGROUP_DEPRECATED),
     CLEAN_SIGNATUREALGORITHMS_TLS_13(ConfigFilterType.SIGNATUREALGORITHM_TLS13),
     CLEAN_TLS_13(
-            ArrayConverter.concatenate(
+            DataConverter.concatenate(
                     CLEAN_NAMED_GROUPS_TLS_13.getConfigFilterTypes(),
                     CLEAN_SIGNATUREALGORITHMS_TLS_13.getConfigFilterTypes()));
 
@@ -73,7 +79,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
 
     private DefaultConfigProfile(
             ConfigFilterType[] previousFilters, ConfigFilterType... configFilterTypes) {
-        this.configFilterTypes = ArrayConverter.concatenate(previousFilters, configFilterTypes);
+        this.configFilterTypes = DataConverter.concatenate(previousFilters, configFilterTypes);
     }
 
     @Override
@@ -86,6 +92,12 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
         return this.name();
     }
 
+    /**
+     * Returns an array of configuration profiles suitable for TLS 1.2 and earlier versions. These
+     * profiles provide various levels of feature reduction for testing compatibility.
+     *
+     * @return array of DefaultConfigProfile enums for TLS 1.2 and earlier versions
+     */
     public static DefaultConfigProfile[] getTls12ConfigProfiles() {
         return new DefaultConfigProfile[] {
             UNFILTERED,
@@ -103,6 +115,12 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
         };
     }
 
+    /**
+     * Returns an array of configuration profiles suitable for TLS 1.3. These profiles include both
+     * rich configurations and clean configurations with deprecated features removed.
+     *
+     * @return array of DefaultConfigProfile enums for TLS 1.3
+     */
     public static DefaultConfigProfile[] getTls13ConfigProfiles() {
         return new DefaultConfigProfile[] {
             RICH_TLS_13,

@@ -20,10 +20,25 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 public class ServerOptionsRequirement
         extends OptionsRequirement<ServerReport, ServerScannerConfig> {
 
+    /**
+     * Constructs a new ServerOptionsRequirement with the specified scanner configuration and probe
+     * type.
+     *
+     * @param scannerConfig the ServerScannerConfig containing scan options
+     * @param probeType the ProbeType to check requirements for
+     */
     public ServerOptionsRequirement(ServerScannerConfig scannerConfig, ProbeType probeType) {
         super(scannerConfig, probeType);
     }
 
+    /**
+     * Evaluates whether the configured options meet the requirements for the specified probe type.
+     *
+     * @param report the ServerReport to evaluate (not used in this implementation)
+     * @return true if the scanner configuration satisfies the requirements for the probe type,
+     *     false otherwise
+     * @throws IllegalArgumentException if the probe type is not a supported TlsProbeType
+     */
     @Override
     public boolean evaluate(ServerReport report) {
         if (scannerConfig == null) {
@@ -47,6 +62,11 @@ public class ServerOptionsRequirement
                 String.format("Invalid probe (%s) set for ServerOptionsRequirement", probeType));
     }
 
+    /**
+     * Returns a string representation of this requirement including the probe type.
+     *
+     * @return a string in the format "ServerOptionsRequirement[probeType]"
+     */
     @Override
     public String toString() {
         return String.format("ServerOptionsRequirement[%s]", probeType);

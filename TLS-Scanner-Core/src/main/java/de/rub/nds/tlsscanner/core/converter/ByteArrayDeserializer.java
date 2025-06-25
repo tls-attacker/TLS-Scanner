@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.core.converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import java.io.IOException;
 
 public class ByteArrayDeserializer extends StdDeserializer<byte[]> {
@@ -26,6 +26,6 @@ public class ByteArrayDeserializer extends StdDeserializer<byte[]> {
         if (hexString == null || hexString.isEmpty()) {
             return new byte[0];
         }
-        return ArrayConverter.hexStringToByteArray(hexString);
+        return DataConverter.hexStringToByteArray(hexString);
     }
 }

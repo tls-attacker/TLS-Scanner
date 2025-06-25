@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.EcCurveEquationType;
 import de.rub.nds.protocol.constants.NamedEllipticCurveParameters;
 import de.rub.nds.protocol.crypto.ec.EllipticCurve;
@@ -219,7 +219,7 @@ public class InvalidCurveAttacker {
         ModifiableByteArray pms = new ModifiableByteArray();
         byte[] explicitPMS =
                 BigIntegers.asUnsignedByteArray(
-                        ArrayConverter.bigIntegerToByteArray(curve.getModulus()).length,
+                        DataConverter.bigIntegerToByteArray(curve.getModulus()).length,
                         premasterSecret);
         pms.setModifications(new ByteArrayExplicitValueModification(explicitPMS));
 

@@ -8,8 +8,21 @@
  */
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
+/**
+ * Implements Fisher's exact test for the analysis of contingency tables. This test is used to
+ * determine if there are nonrandom associations between two categorical variables.
+ */
 public class FisherExactTest {
 
+    /**
+     * Calculates the p-value for Fisher's exact test on a 2x2 contingency table.
+     *
+     * @param inputAOutput1 Count of observations with input A and output 1
+     * @param inputBOutput1 Count of observations with input B and output 1
+     * @param inputAOutput2 Count of observations with input A and output 2
+     * @param inputBOutput2 Count of observations with input B and output 2
+     * @return The p-value indicating the probability of observing the given distribution by chance
+     */
     public static double getPValue(
             int inputAOutput1, int inputBOutput1, int inputAOutput2, int inputBOutput2) {
         return Math.pow(

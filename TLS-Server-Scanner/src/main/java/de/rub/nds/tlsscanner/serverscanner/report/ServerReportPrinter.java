@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
@@ -116,6 +116,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private final String hsForwardSecrecyFormat = "%-19s";
     private final String hsKeyLengthFormat = "%-17s";
 
+    /**
+     * Constructs a new ServerReportPrinter for generating human-readable reports from server scan
+     * results.
+     *
+     * @param report The ServerReport containing the scan results to be printed
+     * @param detail The level of detail to include in the report output
+     * @param scheme The printing scheme that determines how properties are formatted
+     * @param printColorful Whether to include ANSI color codes in the output for better readability
+     */
     public ServerReportPrinter(
             ServerReport report,
             ScannerDetail detail,
@@ -124,6 +133,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         super(detail, scheme, printColorful, report);
     }
 
+    /**
+     * Generates a complete human-readable report of the server scan results. The report includes
+     * all sections based on the configured detail level and available scan data.
+     *
+     * @return A formatted string containing the full server scan report
+     */
     @Override
     public String getFullReport() {
         StringBuilder builder = new StringBuilder();
@@ -482,7 +497,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         " "
                                 + QuicVersion.getFromVersionBytes(version)
                                 + "("
-                                + ArrayConverter.bytesToHexString(version)
+                                + DataConverter.bytesToHexString(version)
                                 + ")");
             }
         } else if (sendsTransportParameters == TestResults.FALSE) {
@@ -500,6 +515,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
     }
 
+    /**
+     * Appends the handshake simulation overview section to the report. This includes statistics
+     * about successful and failed handshakes with various simulated clients.
+     *
+     * @param builder The StringBuilder to append the handshake simulation results to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(
@@ -766,6 +788,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the RFC compliance section to the report that checks if servers are doing mandatory
+     * cryptographic checks.
+     *
+     * @param builder The StringBuilder to append the RFC compliance information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC (Experimental)");
         prettyAppend(
@@ -803,6 +832,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the certificate chain analysis section to the report. This includes detailed
+     * information about each certificate in the server's certificate chain, including validity,
+     * trust issues, and certificate properties.
+     *
+     * @param builder The StringBuilder to append the certificate information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendCertificates(StringBuilder builder) {
         int certCtr = 1;
         if (report.getCertificateChainList() != null
@@ -1040,7 +1077,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppendHexString(
                         builder,
                         "Fingerprint (SHA256)",
-                        ArrayConverter.bytesToHexString(
+                        DataConverter.bytesToHexString(
                                 certReport.getSHA256Fingerprint(), false, false));
             }
         }
@@ -1086,6 +1123,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder.toString();
     }
 
+    /**
+     * Appends the session and resumption capabilities section to the report. This includes
+     * information about session IDs, session tickets, and resumption support.
+     *
+     * @param builder The StringBuilder to append the session information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppend(
@@ -1467,8 +1511,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
-                                        foundDefaultStek.key, false, false));
+                                DataConverter.bytesToHexString(foundDefaultStek.key, false, false));
                         prettyAppend(
                                 builder, "Found Secret", foundDefaultStek.secret.toReportString());
                     }
@@ -1499,7 +1542,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
+                                DataConverter.bytesToHexString(
                                         foundDefaultHmacKey.key, false, false));
                     }
                 }
@@ -1632,6 +1675,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the attack vulnerabilities section to the report. This includes information about the
+     * server's vulnerability to various known attacks such as Padding Oracle, Bleichenbacher,
+     * CRIME, BREACH, and others.
+     *
+     * @param builder The StringBuilder to append the vulnerability information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
         if (report.getKnownPaddingOracleVulnerability() == null) {
@@ -2071,6 +2122,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Converts a ProtocolVersion enum value to a human-readable string representation.
+     *
+     * @param version The ProtocolVersion to convert
+     * @return A human-readable string representation of the protocol version (e.g., "TLS 1.2")
+     */
     public String toHumanReadable(ProtocolVersion version) {
         switch (version) {
             case DTLS10:

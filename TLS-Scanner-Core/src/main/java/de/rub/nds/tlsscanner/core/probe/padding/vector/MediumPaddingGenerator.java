@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -57,7 +57,7 @@ public class MediumPaddingGenerator extends PaddingVectorGenerator {
                             "BasicMac-"
                                     + modification.getStartPosition()
                                     + "-"
-                                    + ArrayConverter.bytesToHexString(modification.getXor()),
+                                    + DataConverter.bytesToHexString(modification.getXor()),
                             "BasicMac" + i,
                             new ByteArrayExplicitValueModification(
                                     new byte

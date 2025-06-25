@@ -40,17 +40,41 @@ public class ClientParameterDelegate extends Delegate {
                             + "'")
     private String sniOptions = null;
 
+    /**
+     * Applies the delegate configuration to the provided Config object. This implementation does
+     * not modify the config.
+     *
+     * @param config the Config object to apply settings to
+     * @throws ConfigurationException if configuration fails
+     */
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {}
 
+    /**
+     * Gets the ALPN (Application-Layer Protocol Negotiation) options.
+     *
+     * @return the ALPN options string, or null if not configured
+     */
     public String getAlpnOptions() {
         return alpnOptions;
     }
 
+    /**
+     * Gets the session resumption options.
+     *
+     * @return the resumption options string, or null if not configured
+     */
     public String getResumptionOptions() {
         return resumptionOptions;
     }
 
+    /**
+     * Gets the SNI (Server Name Indication) options with the specified domain. Replaces the domain
+     * marker in the SNI options with the actual domain.
+     *
+     * @param domain the domain name to use for SNI
+     * @return the SNI options with domain replaced, or null if not configured or missing marker
+     */
     public String getSniOptions(String domain) {
         if (sniOptions == null || !sniOptions.contains(SNI_REPLACEMENT_MARKER)) {
             return null;

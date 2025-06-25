@@ -18,9 +18,22 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * AfterProbe implementation that analyzes DTLS retransmission behavior by counting retransmitted
+ * handshake messages and storing the results in the scan report.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
 public class DtlsRetransmissionAfterProbe<ReportT extends TlsScanReport>
         extends AfterProbe<ReportT> {
 
+    /**
+     * Analyzes DTLS retransmission data by extracting retransmitted handshake messages from the
+     * report, counting occurrences of each message type, and storing both the per-type counters and
+     * total retransmission count in the report.
+     *
+     * @param report the TLS scan report containing extracted DTLS retransmission data
+     */
     @Override
     public void analyze(ReportT report) {
         ExtractedValueContainer<HandshakeMessageType> container =

@@ -10,8 +10,17 @@ package de.rub.nds.tlsscanner.core.vector.response;
 
 import de.rub.nds.tlsattacker.core.record.Record;
 
+/** Utility class for checking equality between response fingerprints. */
 public class FingerprintChecker {
 
+    /**
+     * Checks for equality between two response fingerprints and returns the type of difference
+     * found.
+     *
+     * @param fingerprint1 The first response fingerprint to compare
+     * @param fingerprint2 The second response fingerprint to compare
+     * @return An EqualityError indicating the type of difference found, or NONE if equal
+     */
     public static EqualityError checkEquality(
             ResponseFingerprint fingerprint1, ResponseFingerprint fingerprint2) {
         boolean foundRecordContentMismatch = false;

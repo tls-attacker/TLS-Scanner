@@ -24,6 +24,12 @@ public class CertificateReportGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Generates certificate reports for all certificates in the provided chain.
+     *
+     * @param certs the X509 certificate chain to analyze
+     * @return a list of certificate reports, one for each certificate in the chain
+     */
     public static List<CertificateReport> generateReports(X509CertificateChain certs) {
         List<CertificateReport> reportList = new LinkedList<>();
         if (certs != null) {
@@ -35,6 +41,12 @@ public class CertificateReportGenerator {
         return reportList;
     }
 
+    /**
+     * Generates a comprehensive report for a single X509 certificate.
+     *
+     * @param cert the X509 certificate to analyze
+     * @return a detailed certificate report containing all extracted information
+     */
     public static CertificateReport generateReport(X509Certificate cert) {
         CertificateReport report = new CertificateReport();
         report.setCertificate(cert);

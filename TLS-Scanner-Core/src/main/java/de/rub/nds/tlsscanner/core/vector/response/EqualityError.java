@@ -8,28 +8,29 @@
  */
 package de.rub.nds.tlsscanner.core.vector.response;
 
+/** Enum representing different types of equality errors when comparing response fingerprints. */
 public enum EqualityError {
 
-    /** */
+    /** No difference found between fingerprints */
     NONE,
-    /** */
+    /** Socket state differs between fingerprints */
     SOCKET_STATE,
-    /** */
+    /** Number of messages differs between fingerprints */
     MESSAGE_COUNT,
-    /** */
+    /** Number of records differs between fingerprints */
     RECORD_COUNT,
-    /** */
+    /** Record class types differ between fingerprints */
     RECORD_CLASS,
-    /** */
+    /** Message class types differ between fingerprints */
     MESSAGE_CLASS,
-    /** */
+    /** Message content differs between fingerprints */
     MESSAGE_CONTENT,
-    /** */
+    /** Record content type differs between fingerprints */
     RECORD_CONTENT_TYPE,
-    /** */
+    /** Record length differs between fingerprints */
     RECORD_LENGTH,
-    /** */
+    /** Record version differs between fingerprints */
     RECORD_VERSION,
-    /** */
+    /** Record content differs between fingerprints */
     RECORD_CONTENT;
 }

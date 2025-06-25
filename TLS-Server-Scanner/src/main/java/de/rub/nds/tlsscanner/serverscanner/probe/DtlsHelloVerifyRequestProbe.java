@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
@@ -226,7 +226,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setSessionId(
-                Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
+                Modifiable.explicit(DataConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -242,7 +242,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCipherSuites(
-                Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
+                Modifiable.insert(DataConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -258,7 +258,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCompressions(
-                Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
+                Modifiable.insert(DataConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
