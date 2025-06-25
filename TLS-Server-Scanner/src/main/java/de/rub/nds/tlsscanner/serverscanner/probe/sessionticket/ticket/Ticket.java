@@ -64,7 +64,11 @@ public interface Ticket {
         if (haystack == null || haystack.length == 0) {
             return null;
         }
-        for (SessionSecret sessionSecret : getSessionSecrets()) {
+        List<SessionSecret> sessionSecrets = getSessionSecrets();
+        if (sessionSecrets == null) {
+            return null;
+        }
+        for (SessionSecret sessionSecret : sessionSecrets) {
             Optional<Integer> offset = sessionSecret.findIn(haystack);
             if (offset.isPresent()) {
                 return new FoundSecret(sessionSecret, offset.get());
