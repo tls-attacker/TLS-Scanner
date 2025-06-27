@@ -63,6 +63,7 @@ public enum TlsProbeType implements ProbeType {
     DTLS_MESSAGE_SEQUENCE_NUMBER("DTLS message sequence number"),
     DTLS_RETRANSMISSIONS("DTLS retransmissions"),
     DTLS_APPLICATION_FINGERPRINT("DTLS application fingerprint"),
+    APPLICATION_LAYER("Application layer detection"),
     HTTP_FALSE_START("HTTP false start"),
     HELLO_RETRY("Hello retry"),
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),
