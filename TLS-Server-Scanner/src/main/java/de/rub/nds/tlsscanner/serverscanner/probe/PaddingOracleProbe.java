@@ -49,6 +49,8 @@ public class PaddingOracleProbe extends TlsServerProbe {
 
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<PaddingOracleTestInfo>> resultList = new LinkedList<>();
+    private static final long MAX_PROBE_RUNTIME_MS = 1200000; // 20 minutes max per probe
+    private long probeStartTime;
 
     public PaddingOracleProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.PADDING_ORACLE, configSelector);
@@ -69,6 +71,7 @@ public class PaddingOracleProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         LOGGER.debug("Starting evaluation");
+        probeStartTime = System.currentTimeMillis();
         List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
         resultList = new LinkedList<>();
         for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
@@ -78,17 +81,35 @@ public class PaddingOracleProbe extends TlsServerProbe {
                         if (!suite.isPsk()
                                 && suite.isCBC()
                                 && CipherSuite.getImplemented().contains(suite)) {
+                            // Check if we've exceeded the maximum runtime
+                            long currentRuntime = System.currentTimeMillis() - probeStartTime;
+                            if (currentRuntime > MAX_PROBE_RUNTIME_MS) {
+                                LOGGER.warn(
+                                        "Padding oracle probe exceeded maximum runtime of {} minutes. Skipping remaining tests.",
+                                        MAX_PROBE_RUNTIME_MS / 60000);
+                                return;
+                            }
+
                             PaddingRecordGeneratorType recordGeneratorType =
                                     scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
                                             ? PaddingRecordGeneratorType.SHORT
                                             : PaddingRecordGeneratorType.VERY_SHORT;
-                            resultList.add(
-                                    getPaddingOracleInformationLeakTest(
-                                            vectorGeneratorType,
-                                            recordGeneratorType,
-                                            numberOfIterations,
-                                            pair.getVersion(),
-                                            suite));
+                            try {
+                                resultList.add(
+                                        getPaddingOracleInformationLeakTest(
+                                                vectorGeneratorType,
+                                                recordGeneratorType,
+                                                numberOfIterations,
+                                                pair.getVersion(),
+                                                suite));
+                            } catch (Exception e) {
+                                LOGGER.warn(
+                                        "Failed to test padding oracle for {} with {}: {}",
+                                        suite,
+                                        pair.getVersion(),
+                                        e.getMessage());
+                                // Continue with next suite instead of failing completely
+                            }
                         }
                     }
                 }
@@ -101,7 +122,24 @@ public class PaddingOracleProbe extends TlsServerProbe {
             for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : resultList) {
                 if (fingerprint.isDistinctAnswers()
                         || scanDetail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                    extendFingerPrint(fingerprint, numberOfAddtionalIterations);
+                    // Check runtime before extended evaluation
+                    long currentRuntime = System.currentTimeMillis() - probeStartTime;
+                    if (currentRuntime > MAX_PROBE_RUNTIME_MS) {
+                        LOGGER.warn(
+                                "Padding oracle probe exceeded maximum runtime during extended evaluation. Skipping remaining tests.");
+                        break;
+                    }
+
+                    try {
+                        extendFingerPrint(fingerprint, numberOfAddtionalIterations);
+                    } catch (Exception e) {
+                        LOGGER.warn(
+                                "Failed to extend fingerprint for {} with {}: {}",
+                                fingerprint.getTestInfo().getCipherSuite(),
+                                fingerprint.getTestInfo().getVersion(),
+                                e.getMessage());
+                        // Continue with next fingerprint
+                    }
                 }
             }
             LOGGER.debug("Finished extended evaluation");
