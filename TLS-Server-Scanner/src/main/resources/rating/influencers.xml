@@ -2168,6 +2168,9 @@
         <property>SUPPORTED_APPLICATIONS</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>SPEAKS_HTTP</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SUPPORTED_CIPHERSUITES</property>
     </ratingInfluencer>
     <ratingInfluencer>

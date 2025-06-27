@@ -49,6 +49,7 @@ import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
 import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ApplicationLayerProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
@@ -261,6 +262,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new EsniProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new TokenbindingProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HttpHeaderProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new ApplicationLayerProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new HttpFalseStartProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DrownProbe(configSelector, parallelExecutor));
         registerProbeForExecution(
