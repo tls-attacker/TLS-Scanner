@@ -216,6 +216,15 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.SUPPORTS_SRP,
                 getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
+                TlsAnalyzedProperty.SUPPORTS_SRP_EXTENSION,
+                getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.SRP_CIPHERSUITES,
+                getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.MISSING_SRP_EXTENSION_BUG,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_KERBEROS,
                 getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(

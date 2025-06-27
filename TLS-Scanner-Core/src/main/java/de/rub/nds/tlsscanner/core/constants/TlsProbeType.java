@@ -69,6 +69,7 @@ public enum TlsProbeType implements ProbeType {
     RANDOMNESS("Randomness"),
     TLS_FALLBACK_SCSV("TLS Fallback SCSV"),
     CONNECTION_CLOSING_DELTA("Connection Closing Delta"),
+    SRP("SRP"),
     // CLIENT SPECIFIC PROBES
     FORCED_COMPRESSION("Forced Compression"),
     FREAK("Freak"),

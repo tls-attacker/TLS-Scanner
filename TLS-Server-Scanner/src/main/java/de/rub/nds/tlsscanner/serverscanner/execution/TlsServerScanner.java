@@ -92,6 +92,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SignatureHashAlgorithmOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SrpProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsServerProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
@@ -216,6 +217,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new CipherSuiteProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteOrderProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new SrpProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ExtensionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ECPointFormatProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ResumptionProbe(configSelector, parallelExecutor));
