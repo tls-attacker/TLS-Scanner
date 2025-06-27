@@ -258,10 +258,25 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
 
     private void appendSignatureAndHashAlgorithms(ServerReport report, ListContainer container) {
         if (report.getSupportedSignatureAndHashAlgorithms() != null) {
-            container.add(new HeadlineContainer("Supported Signature and Hash Algorithms"));
+            container.add(
+                    new HeadlineContainer(
+                            "Supported Handshake Signature Algorithms (Server Key Exchange)"));
             if (!report.getSupportedSignatureAndHashAlgorithms().isEmpty()) {
                 for (SignatureAndHashAlgorithm algorithm :
                         report.getSupportedSignatureAndHashAlgorithms()) {
+                    container.add(createDefaultTextContainer(algorithm.toString()));
+                }
+            } else {
+                container.add(createDefaultTextContainer("none"));
+            }
+        }
+
+        if (report.getSupportedSignatureAndHashAlgorithmsTls13() != null) {
+            container.add(
+                    new HeadlineContainer("Supported Handshake Signature Algorithms TLS 1.3"));
+            if (!report.getSupportedSignatureAndHashAlgorithmsTls13().isEmpty()) {
+                for (SignatureAndHashAlgorithm algorithm :
+                        report.getSupportedSignatureAndHashAlgorithmsTls13()) {
                     container.add(createDefaultTextContainer(algorithm.toString()));
                 }
             } else {

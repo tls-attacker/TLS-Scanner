@@ -2914,7 +2914,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         List<SignatureAndHashAlgorithm> algorithms =
                 report.getSupportedSignatureAndHashAlgorithms();
         if (algorithms != null) {
-            prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
+            prettyAppendHeading(
+                    builder, "Supported Handshake Signature Algorithms (Server Key Exchange)");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
                 for (SignatureAndHashAlgorithm algorithm :
                         report.getSupportedSignatureAndHashAlgorithms()) {
@@ -2932,7 +2933,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         List<SignatureAndHashAlgorithm> algorithmsTls13 =
                 report.getSupportedSignatureAndHashAlgorithmsTls13();
         if (algorithmsTls13 != null) {
-            prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
+            prettyAppendHeading(builder, "Supported Handshake Signature Algorithms TLS 1.3");
             if (report.getSupportedSignatureAndHashAlgorithmsTls13().size() > 0) {
                 for (SignatureAndHashAlgorithm algorithm :
                         report.getSupportedSignatureAndHashAlgorithmsTls13()) {
