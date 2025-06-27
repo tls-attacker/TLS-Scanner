@@ -54,6 +54,8 @@ public class PaddingOracleAttacker {
     private long additionalTimeout = 1000;
     private long additionalTcpTimeout = 5000;
     private List<VectorResponse> fullResponseMap;
+    private static final int MAX_CONSECUTIVE_FAILURES = 20;
+    private static final double MAX_FAILURE_RATE = 0.75;
 
     public PaddingOracleAttacker(
             Config baseConfig,
@@ -135,11 +137,49 @@ public class PaddingOracleAttacker {
         }
         List<VectorResponse> tempResponseVectorList = new LinkedList<>();
         executor.bulkExecuteTasks(taskList);
+
+        int consecutiveFailures = 0;
+        int totalFailures = 0;
+        int totalProcessed = 0;
+
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
+            totalProcessed++;
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
                 LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                consecutiveFailures++;
+                totalFailures++;
+
+                // Check for early termination conditions
+                if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+                    LOGGER.warn(
+                            "Stopping padding oracle test due to {} consecutive failures. This may indicate connectivity issues or an unresponsive server.",
+                            consecutiveFailures);
+                    throw new AttackFailedException(
+                            "Too many consecutive failures ("
+                                    + consecutiveFailures
+                                    + "). Aborting to prevent endless execution.");
+                }
+
+                // Check overall failure rate
+                if (totalProcessed >= 10
+                        && (double) totalFailures / totalProcessed > MAX_FAILURE_RATE) {
+                    LOGGER.warn(
+                            "Stopping padding oracle test due to high failure rate: {}/{} ({}%)",
+                            totalFailures,
+                            totalProcessed,
+                            String.format("%.2f", (double) totalFailures / totalProcessed * 100));
+                    throw new AttackFailedException(
+                            "High failure rate detected ("
+                                    + totalFailures
+                                    + "/"
+                                    + totalProcessed
+                                    + "). Aborting to prevent endless execution.");
+                }
             } else {
+                // Reset consecutive failures on success
+                consecutiveFailures = 0;
+
                 testedSuite =
                         pair.getFingerPrintTask()
                                 .getState()
@@ -158,6 +198,18 @@ public class PaddingOracleAttacker {
                 tempResponseVectorList.add(new VectorResponse(pair.getVector(), fingerprint));
             }
         }
+
+        // Log final statistics
+        if (totalFailures > 0) {
+            LOGGER.info(
+                    "Padding oracle test completed with {}/{} failures ({}% success rate)",
+                    totalFailures,
+                    totalProcessed,
+                    String.format(
+                            "%.2f",
+                            (double) (totalProcessed - totalFailures) / totalProcessed * 100));
+        }
+
         return tempResponseVectorList;
     }
 
