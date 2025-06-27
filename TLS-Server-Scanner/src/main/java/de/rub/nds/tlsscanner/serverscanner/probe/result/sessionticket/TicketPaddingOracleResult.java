@@ -14,7 +14,6 @@ import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketPaddingOracleProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorLast;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPaddingOracleVectorSecond;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketVector;
@@ -76,8 +75,7 @@ public class TicketPaddingOracleResult implements SummarizableTestResult {
     private <V extends TicketVector, T extends TestInfo> List<V> getVectorsWithRareResponses(
             InformationLeakTest<T> leakTest, Class<V> vectorClass, int maxOccurences) {
         List<V> ret = new ArrayList<>();
-        for (VectorResponse response :
-                SessionTicketPaddingOracleProbe.getRareResponses(leakTest, maxOccurences)) {
+        for (VectorResponse response : leakTest.getRareResponses(maxOccurences)) {
             ret.add(vectorClass.cast(response.getVector()));
         }
         return ret;

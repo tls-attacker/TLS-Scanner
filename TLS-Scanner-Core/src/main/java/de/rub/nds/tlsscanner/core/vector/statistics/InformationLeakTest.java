@@ -8,10 +8,14 @@
  */
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
+import de.rub.nds.tlsscanner.core.vector.Vector;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
@@ -118,5 +122,43 @@ public class InformationLeakTest<TestInfoT extends TestInfo>
             responseFingerprintSet.add(counter.getFingerprint());
         }
         return responseFingerprintSet.size() <= 2;
+    }
+
+    /**
+     * Get responses that occurred at most {@code mostOccurrences} times across all vectors.
+     *
+     * @param mostOccurrences Maximum number of occurrences for a response to be considered rare
+     * @return List of VectorResponse objects representing rare responses
+     */
+    public List<VectorResponse> getRareResponses(int mostOccurrences) {
+        // Map from ResponseFingerprint to all vectors that produced this fingerprint
+        Map<ResponseFingerprint, List<Vector>> fingerprintToVectors = new HashMap<>();
+        // Map from ResponseFingerprint to total count across all vectors
+        Map<ResponseFingerprint, Integer> fingerprintTotalCount = new HashMap<>();
+
+        for (VectorContainer container : getVectorContainerList()) {
+            for (ResponseCounter counter : container.getDistinctResponsesCounterList()) {
+                ResponseFingerprint fingerprint = counter.getFingerprint();
+                fingerprintToVectors.computeIfAbsent(fingerprint, k -> new ArrayList<>());
+                if (!fingerprintToVectors.get(fingerprint).contains(container.getVector())) {
+                    fingerprintToVectors.get(fingerprint).add(container.getVector());
+                }
+                fingerprintTotalCount.merge(fingerprint, counter.getCounter(), Integer::sum);
+            }
+        }
+
+        List<VectorResponse> ret = new ArrayList<>();
+        for (Map.Entry<ResponseFingerprint, List<Vector>> entry : fingerprintToVectors.entrySet()) {
+            ResponseFingerprint fingerprint = entry.getKey();
+            List<Vector> vectors = entry.getValue();
+            Integer totalCount = fingerprintTotalCount.get(fingerprint);
+
+            if (totalCount != null && totalCount <= mostOccurrences) {
+                for (Vector vector : vectors) {
+                    ret.add(new VectorResponse(vector, fingerprint));
+                }
+            }
+        }
+        return ret;
     }
 }
