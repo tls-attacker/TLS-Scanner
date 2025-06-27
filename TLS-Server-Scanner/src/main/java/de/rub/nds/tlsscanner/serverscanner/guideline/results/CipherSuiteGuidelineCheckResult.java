@@ -17,6 +17,7 @@ import java.util.List;
 public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<CipherSuite> notRecommendedSuites;
+    private final List<CipherSuite> recommendedSuites;
 
     public CipherSuiteGuidelineCheckResult(
             String checkName,
@@ -24,6 +25,17 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
             List<CipherSuite> notRecommendedSuites) {
         super(checkName, adherence);
         this.notRecommendedSuites = notRecommendedSuites;
+        this.recommendedSuites = null;
+    }
+
+    public CipherSuiteGuidelineCheckResult(
+            String checkName,
+            GuidelineAdherence adherence,
+            List<CipherSuite> notRecommendedSuites,
+            List<CipherSuite> recommendedSuites) {
+        super(checkName, adherence);
+        this.notRecommendedSuites = notRecommendedSuites;
+        this.recommendedSuites = recommendedSuites;
     }
 
     @Override
@@ -38,5 +50,9 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     public List<CipherSuite> getNotRecommendedSuites() {
         return notRecommendedSuites;
+    }
+
+    public List<CipherSuite> getRecommendedSuites() {
+        return recommendedSuites;
     }
 }

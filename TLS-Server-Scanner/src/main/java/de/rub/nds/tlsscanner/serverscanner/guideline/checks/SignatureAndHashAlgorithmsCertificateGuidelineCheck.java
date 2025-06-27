@@ -60,7 +60,10 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck
             }
         }
         return new X509SignatureAlgorithmGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(),
+                GuidelineAdherence.of(nonRecommended.isEmpty()),
+                nonRecommended,
+                recommendedAlgorithms);
     }
 
     @Override

@@ -12,12 +12,14 @@ import com.google.common.base.Joiner;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<HashAlgorithm> notRecommendedAlgorithms;
+    private final List<HashAlgorithm> recommendedAlgorithms;
 
     public HashAlgorithmsGuidelineCheckResult(
             String checkName,
@@ -25,6 +27,17 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
             Set<HashAlgorithm> notRecommendedAlgorithms) {
         super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = null;
+    }
+
+    public HashAlgorithmsGuidelineCheckResult(
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<HashAlgorithm> notRecommendedAlgorithms,
+            List<HashAlgorithm> recommendedAlgorithms) {
+        super(checkName, adherence);
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
@@ -42,5 +55,9 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
     public Set<HashAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
+    }
+
+    public List<HashAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
     }
 }

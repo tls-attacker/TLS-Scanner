@@ -64,7 +64,10 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     public GuidelineCheckResult evaluate(ServerReport report) {
         List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
         return new CipherSuiteGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                getName(),
+                GuidelineAdherence.of(nonRecommended.isEmpty()),
+                nonRecommended,
+                recommendedCipherSuites);
     }
 
     @Override

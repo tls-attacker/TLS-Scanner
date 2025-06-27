@@ -21,6 +21,7 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
     private Set<NamedGroup> notRecommendedGroups;
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
+    private List<NamedGroup> recommendedGroups;
 
     public NamedGroupsGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
         super(checkName, adherence);
@@ -30,6 +31,16 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
             String checkName, GuidelineAdherence adherence, Set<NamedGroup> notRecommendedGroups) {
         super(checkName, adherence);
         this.notRecommendedGroups = notRecommendedGroups;
+    }
+
+    public NamedGroupsGuidelineCheckResult(
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<NamedGroup> notRecommendedGroups,
+            List<NamedGroup> recommendedGroups) {
+        super(checkName, adherence);
+        this.notRecommendedGroups = notRecommendedGroups;
+        this.recommendedGroups = recommendedGroups;
     }
 
     public NamedGroupsGuidelineCheckResult(
@@ -76,5 +87,9 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
 
     public Integer getGroupCount() {
         return groupCount;
+    }
+
+    public List<NamedGroup> getRecommendedGroups() {
+        return recommendedGroups;
     }
 }

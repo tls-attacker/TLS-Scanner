@@ -88,7 +88,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
         }
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    getName(), GuidelineAdherence.CHECK_FAILED, null, recommendedAlgorithms);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -96,9 +96,11 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck<Ser
                 notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult( // TODO this needs to
-                // be a new result now
-                getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+                getName(),
+                GuidelineAdherence.of(notRecommended.isEmpty()),
+                notRecommended,
+                recommendedAlgorithms);
     }
 
     @Override

@@ -103,7 +103,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck<ServerReport> {
             return new NamedGroupsGuidelineCheckResult(getName(), GuidelineAdherence.ADHERED);
         } else {
             return new NamedGroupsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, nonRecommended);
+                    getName(), GuidelineAdherence.VIOLATED, nonRecommended, recommendedGroups);
         }
     }
 
