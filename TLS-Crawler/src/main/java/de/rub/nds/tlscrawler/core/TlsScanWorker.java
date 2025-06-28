@@ -90,11 +90,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
         }
+        long scanDurationSeconds = (report.getScanEndTime() - report.getScanStartTime()) / 1000;
         LOGGER.info(
                 "Finished scanning '{}' ({}) in {} s (server alive: {})",
                 scanTarget,
                 scanConfig.getScannerDetail(),
-                (report.getScanEndTime() - report.getScanStartTime()) / 1000,
+                scanDurationSeconds,
                 report.getServerIsAlive());
         return createDocumentFromSiteReport(report);
     }
