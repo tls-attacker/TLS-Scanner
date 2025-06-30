@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,9 +71,8 @@ public abstract class VectorStatisticTest<TestInfoT extends TestInfo> {
                 vectorMap.put(response.getVector(), tempResponseList);
             }
         }
-        for (Vector vector : vectorMap.keySet()) {
-            List<ResponseFingerprint> tempResponseList = vectorMap.get(vector);
-            vectorContainerList.add(new VectorContainer(vector, tempResponseList));
+        for (Map.Entry<Vector, List<ResponseFingerprint>> entry : vectorMap.entrySet()) {
+            vectorContainerList.add(new VectorContainer(entry.getKey(), entry.getValue()));
         }
     }
 
