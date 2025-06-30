@@ -1,0 +1,46 @@
+# Set default behavior to automatically normalize line endings
+* text=auto eol=lf
+
+# Java source files
+*.java text eol=lf
+
+# XML files
+*.xml text eol=lf
+
+# Properties files
+*.properties text eol=lf
+
+# Script files
+*.sh text eol=lf
+
+# Markdown files
+*.md text eol=lf
+
+# YAML files
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# JSON files
+*.json text eol=lf
+
+# Plain text files
+*.txt text eol=lf
+
+# Docker files
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+
+# Git files
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Binary files (should not be modified)
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.tar binary
+*.gz binary
