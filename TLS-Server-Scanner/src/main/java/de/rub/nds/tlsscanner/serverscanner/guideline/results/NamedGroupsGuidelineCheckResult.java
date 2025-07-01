@@ -69,7 +69,7 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         if (groupCount != null) {
             return "Server only supports " + groupCount + " groups.";
         }
-        return null;
+        return "No specific named groups information available.";
     }
 
     public Set<NamedGroup> getNotRecommendedGroups() {
