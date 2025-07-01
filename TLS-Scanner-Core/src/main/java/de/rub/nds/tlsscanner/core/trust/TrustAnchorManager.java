@@ -119,7 +119,7 @@ public class TrustAnchorManager {
      * @return the list of trust platforms
      */
     public List<TrustPlatform> getTrustPlatformList() {
-        return trustPlatformList;
+        return trustPlatformList == null ? null : new ArrayList<>(trustPlatformList);
     }
 
     /**
@@ -208,7 +208,7 @@ public class TrustAnchorManager {
      * @return the set of trust anchors
      */
     public Set<TrustAnchor> getTrustAnchorSet() {
-        return trustAnchorSet;
+        return trustAnchorSet == null ? null : new HashSet<>(trustAnchorSet);
     }
 
     /**

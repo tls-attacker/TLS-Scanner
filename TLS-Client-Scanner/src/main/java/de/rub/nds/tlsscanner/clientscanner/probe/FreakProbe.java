@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -106,7 +105,7 @@ public class FreakProbe extends TlsClientProbe {
     public void adjustConfig(ClientReport report) {
         supportedRsaCipherSuites = new LinkedList<>();
         for (CipherSuite suite : report.getSupportedCipherSuites()) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
+            if (suite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.RSA) {
                 supportedRsaCipherSuites.add(suite);
             }
         }

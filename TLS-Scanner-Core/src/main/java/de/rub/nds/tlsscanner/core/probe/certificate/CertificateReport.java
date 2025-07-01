@@ -25,6 +25,7 @@ import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -843,7 +844,7 @@ public class CertificateReport {
                 || !Objects.equals(revoked, otherReport.getRevoked())
                 || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
                 || !Objects.equals(trusted, otherReport.getTrusted())
-                || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
+                || !Arrays.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
                 || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
                 || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
                 || !Objects.equals(selfSigned, otherReport.getSelfSigned())
@@ -875,7 +876,7 @@ public class CertificateReport {
         hash = 71 * hash + Objects.hashCode(this.revoked);
         hash = 71 * hash + Objects.hashCode(this.dnsCAA);
         hash = 71 * hash + Objects.hashCode(this.trusted);
-        hash = 71 * hash + Objects.hashCode(this.sha256Fingerprint);
+        hash = 71 * hash + Arrays.hashCode(this.sha256Fingerprint);
         hash = 71 * hash + Objects.hashCode(this.rocaVulnerable);
         hash = 71 * hash + Objects.hashCode(this.trustAnchor);
         hash = 71 * hash + Objects.hashCode(this.selfSigned);
