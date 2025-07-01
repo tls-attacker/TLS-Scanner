@@ -96,8 +96,7 @@ public class MacProbe extends TlsServerProbe {
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
         for (ProtocolMessage message : fingerprint.getMessageList()) {
-            if (message instanceof ProtocolMessage
-                    && message.getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
+            if (message.getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 return true;
             }
         }
