@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -79,7 +78,7 @@ public class RandomnessProbe extends TlsServerProbe {
                                             || pair.getVersion() == ProtocolVersion.TLS11)
                             || pair.getVersion() == ProtocolVersion.DTLS12
                             || pair.getVersion() == ProtocolVersion.DTLS10) {
-                        score += AlgorithmResolver.getCipher(suite).getBlocksize();
+                        score += suite.getCipherAlgorithm().getBlocksize();
                     }
                 } else {
                     score += 28;

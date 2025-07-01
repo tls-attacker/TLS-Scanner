@@ -690,13 +690,11 @@ public class InvalidCurveProbe extends TlsServerProbe {
                             && AlgorithmResolver.getSuiteableLeafCertificateKeyType(testCipher)[0]
                                     == X509PublicKeyType.RSA
                             && !namedCurveWitnesses.get(testGroup).isFoundUsingRsaCipher())
-                    || (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher)
-                                    == KeyExchangeAlgorithm.ECDHE_ECDSA
+                    || (testCipher.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDHE_ECDSA
                             && !namedCurveWitnesses
                                     .get(testGroup)
                                     .isFoundUsingEcdsaEphemeralCipher())
-                    || (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher)
-                                    == KeyExchangeAlgorithm.ECDH_ECDSA
+                    || (testCipher.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDH_ECDSA
                             && !namedCurveWitnesses
                                     .get(testGroup)
                                     .isFoundUsingEcdsaStaticCipher())) {
@@ -724,7 +722,7 @@ public class InvalidCurveProbe extends TlsServerProbe {
             }
         } else {
             // RSA cipher suites don't require any additional groups
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher).isEC()) {
+            if (testCipher.getKeyExchangeAlgorithm().isEC()) {
                 if (namedCurveWitnesses.get(testGroup).getEcdhPublicKeyGroup() != null
                         && namedCurveWitnesses.get(testGroup).getEcdhPublicKeyGroup()
                                 != testGroup) {

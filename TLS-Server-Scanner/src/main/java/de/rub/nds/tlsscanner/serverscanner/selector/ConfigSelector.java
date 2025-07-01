@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -316,10 +315,7 @@ public class ConfigSelector {
                 config.getDefaultClientSupportedCipherSuites().stream()
                         .filter(CipherSuite::isRealCipherSuite)
                         .filter(Predicate.not(CipherSuite::isTls13))
-                        .anyMatch(
-                                cipherSuite ->
-                                        AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                                                .isEC());
+                        .anyMatch(cipherSuite -> cipherSuite.getKeyExchangeAlgorithm().isEC());
         config.setAddEllipticCurveExtension(containsEc);
         config.setAddECPointFormatExtension(containsEc);
     }
