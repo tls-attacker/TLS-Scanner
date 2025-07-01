@@ -91,7 +91,7 @@ public class NamedGroupWitness implements Serializable {
     }
 
     public void setCertificateGroup(X509NamedCurve ecdsaSigGroupStatic) {
-        this.certificateGroup = certificateGroup;
+        this.certificateGroup = ecdsaSigGroupStatic;
     }
 
     public Set<CipherSuite> getCipherSuites() {
