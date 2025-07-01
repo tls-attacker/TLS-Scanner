@@ -432,8 +432,6 @@ public class MacProbe extends TlsServerProbe {
                     suiteList.add(suite);
                 }
             }
-        } else {
-            allSuiteList = CipherSuite.getImplemented();
         }
     }
 
