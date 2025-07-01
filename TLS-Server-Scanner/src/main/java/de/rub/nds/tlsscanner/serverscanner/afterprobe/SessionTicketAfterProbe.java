@@ -200,7 +200,7 @@ public class SessionTicketAfterProbe extends AfterProbe<ServerReport> {
     }
 
     private static boolean isAscii(byte b) {
-        return b >= 0x20 && b <= 0x7F;
+        return (b & 0xFF) >= 0x20 && (b & 0xFF) <= 0x7F;
     }
 
     /**
