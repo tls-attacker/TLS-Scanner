@@ -53,16 +53,16 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
 
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
-    private final double MINIMUM_P_VALUE = 0.01;
-    private final int MONOBIT_TEST_BLOCK_SIZE = 1;
-    private final int FREQUENCY_TEST_BLOCK_SIZE = 128;
-    private final int LONGEST_RUN_BLOCK_SIZE = 8;
-    private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
-    private final int ENTROPY_TEST_BLOCK_SIZE = 10;
+    private static final double MINIMUM_P_VALUE = 0.01;
+    private static final int MONOBIT_TEST_BLOCK_SIZE = 1;
+    private static final int FREQUENCY_TEST_BLOCK_SIZE = 128;
+    private static final int LONGEST_RUN_BLOCK_SIZE = 8;
+    private static final int TEMPLATE_TEST_BLOCK_SIZE = 9;
+    private static final int ENTROPY_TEST_BLOCK_SIZE = 10;
 
     // How much the time is allowed to deviate between two handshakes when
     // viewed using UNIX time prefix
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
+    private static final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
 
     /**
      * Checks if the Host utilities Unix time or similar counters for Randoms.
