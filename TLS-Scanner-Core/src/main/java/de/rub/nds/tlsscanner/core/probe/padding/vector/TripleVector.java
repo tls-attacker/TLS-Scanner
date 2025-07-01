@@ -76,10 +76,10 @@ public class TripleVector extends PaddingVector {
         r.setCleanProtocolMessageBytes(new byte[appDataLength]);
         r.getComputations().setMac(new byte[macLength]);
         int paddingLength =
-                AlgorithmResolver.getCipher(testedSuite).getBlocksize()
+                testedSuite.getCipherAlgorithm().getBlocksize()
                         - ((r.getCleanProtocolMessageBytes().getValue().length
                                         + r.getComputations().getMac().getValue().length)
-                                % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
+                                % testedSuite.getCipherAlgorithm().getBlocksize());
 
         r.getComputations().setPadding(new byte[paddingLength]);
         return DataConverter.concatenate(

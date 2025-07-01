@@ -15,7 +15,6 @@ import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -418,7 +417,7 @@ public abstract class TlsScanReport extends ScanReport {
                     .filter(
                             cipherSuite ->
                                     matchingKeyExchangeAlgorithms.contains(
-                                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)))
+                                            cipherSuite.getKeyExchangeAlgorithm()))
                     .collect(Collectors.toList());
         }
     }

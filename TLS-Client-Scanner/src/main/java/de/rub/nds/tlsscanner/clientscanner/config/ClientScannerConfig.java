@@ -91,7 +91,7 @@ public class ClientScannerConfig extends TlsScannerConfig {
             Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.OFF);
         }
 
-        Config config = super.createConfig(Config.createConfig());
+        Config config = super.createConfig(new Config());
         config.getDefaultClientConnection().setTimeout(getTimeout());
         config.setRespectClientProposedExtensions(true);
         // will only be added if proposed by client

@@ -47,9 +47,11 @@ import org.junit.jupiter.api.Test;
 public class ServerReportSerializerTest {
 
     @Test
-    void testSerializeEmpty() {
+    void testSerializeEmpty() throws Exception {
         ServerReport report = new ServerReport();
-        ServerReportSerializer.serialize(new SilentByteArrayOutputStream(), report);
+        ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+        SilentByteArrayOutputStream stream = new SilentByteArrayOutputStream();
+        stream.write(mapper.toJsonString(report).getBytes());
         // This should not throw an exception
     }
 
@@ -135,7 +137,9 @@ public class ServerReportSerializerTest {
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(certReport)));
         SilentByteArrayOutputStream outstream = new SilentByteArrayOutputStream();
-        ServerReportSerializer.serialize(outstream, report);
+        ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+        String jsonString = mapper.toJsonString(report);
+        outstream.write(jsonString.getBytes());
         System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
     }
