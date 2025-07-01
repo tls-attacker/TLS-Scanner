@@ -110,11 +110,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final String hsClientFormat = "%-28s";
-    private final String hsVersionFormat = "%-14s";
-    private final String hsCipherSuiteFormat = "%-52s";
-    private final String hsForwardSecrecyFormat = "%-19s";
-    private final String hsKeyLengthFormat = "%-17s";
+    private static final String hsClientFormat = "%-28s";
+    private static final String hsVersionFormat = "%-14s";
+    private static final String hsCipherSuiteFormat = "%-52s";
+    private static final String hsForwardSecrecyFormat = "%-19s";
+    private static final String hsKeyLengthFormat = "%-17s";
 
     /**
      * Constructs a new ServerReportPrinter for generating human-readable reports from server scan

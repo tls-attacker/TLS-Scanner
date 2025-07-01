@@ -27,7 +27,7 @@ public class TicketPaddingOracleVectorLast implements TicketPaddingOracleVector 
     -1 to correctly count from the back (e.g. offset=0 is transformed to -1).
     -1 because we want to xor the previous byte with the prefixXorValue.
     */
-    private final int CREATE_TICKET_XOR_OFFSET = 2;
+    private static final int CREATE_TICKET_XOR_OFFSET = 2;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
