@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.probe.certificate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.asn1.oid.ObjectIdentifier;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
@@ -637,7 +638,12 @@ public class CertificateReport {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Fingerprint: ").append(sha256Fingerprint).append("\n");
+        builder.append("Fingerprint: ")
+                .append(
+                        sha256Fingerprint != null
+                                ? DataConverter.bytesToHexString(sha256Fingerprint)
+                                : "null")
+                .append("\n");
         if (subject != null) {
             builder.append("Subject: ").append(subject).append("\n");
         }
