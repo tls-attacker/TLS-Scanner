@@ -36,7 +36,7 @@ public class TicketPaddingOracleVectorSecond implements TicketPaddingOracleVecto
     -1 to correctly count from the back (e.g. offset=0 is transformed to -1).
     -2 because we want to xor the byte before the second byte with the prefix xor value.
     */
-    private final int CREATE_TICKET_XOR_OFFSET = 3;
+    private static final int CREATE_TICKET_XOR_OFFSET = 3;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
