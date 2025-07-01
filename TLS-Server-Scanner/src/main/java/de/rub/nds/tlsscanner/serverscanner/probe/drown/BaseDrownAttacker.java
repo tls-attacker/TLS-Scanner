@@ -20,11 +20,9 @@ public abstract class BaseDrownAttacker {
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected Config tlsConfig;
-    protected ParallelExecutor executor;
 
     public BaseDrownAttacker(Config baseConfig, ParallelExecutor executor) {
         this.tlsConfig = baseConfig;
-        this.executor = executor;
     }
 
     public TestResults isVulnerable() {
