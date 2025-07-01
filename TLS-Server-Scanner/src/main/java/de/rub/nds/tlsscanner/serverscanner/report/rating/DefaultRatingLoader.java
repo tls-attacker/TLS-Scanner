@@ -27,13 +27,13 @@ import org.apache.logging.log4j.Logger;
  */
 public class DefaultRatingLoader {
 
-    private static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * The resource location for the rating influencers XML file. This file contains the
      * configuration for how different properties influence the overall rating of a TLS server.
      */
-    public static String INFLUENCERS_RESOURCE_LOCATION = "rating/influencers.xml";
+    public static final String INFLUENCERS_RESOURCE_LOCATION = "rating/influencers.xml";
 
     /**
      * The default resource template path for recommendation files. Language-specific versions can

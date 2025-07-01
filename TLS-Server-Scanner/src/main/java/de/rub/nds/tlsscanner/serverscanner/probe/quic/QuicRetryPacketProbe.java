@@ -39,7 +39,7 @@ import java.util.Arrays;
 
 public class QuicRetryPacketProbe extends QuicServerProbe {
 
-    public static Integer RETRY_TOKEN_LENGTH_ERROR_VALUE = -1;
+    public static final Integer RETRY_TOKEN_LENGTH_ERROR_VALUE = -1;
 
     private TestResult hasRetryTokenRetransmissions;
     private TestResult checksRetryToken;
