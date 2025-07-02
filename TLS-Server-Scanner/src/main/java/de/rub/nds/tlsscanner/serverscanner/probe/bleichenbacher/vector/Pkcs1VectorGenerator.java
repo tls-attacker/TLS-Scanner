@@ -10,10 +10,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
 import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.tlsattacker.core.constants.Bits;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
