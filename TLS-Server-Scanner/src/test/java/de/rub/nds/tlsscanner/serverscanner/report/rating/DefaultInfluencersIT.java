@@ -1158,6 +1158,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_RENEGOTIATION,
                                 TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
                                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION,
+                                TlsAnalyzedProperty.MIN_RECORD_LENGTH,
                                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
                                 TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
                                 TlsAnalyzedProperty

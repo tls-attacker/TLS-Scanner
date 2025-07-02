@@ -249,6 +249,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** does it handle a http false start */
     SUPPORTS_HTTP_FALSE_START(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
+    MIN_RECORD_LENGTH(TlsAnalyzedPropertyCategory.QUIRKS),
     /** does it have a grease value intolerance? */
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),

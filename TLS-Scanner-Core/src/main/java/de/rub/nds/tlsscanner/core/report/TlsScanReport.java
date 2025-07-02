@@ -83,6 +83,16 @@ public abstract class TlsScanReport extends ScanReport {
     }
 
     /**
+     * Returns the minimum supported record length of the SUT.
+     *
+     * @return The lowest possible record length still supported.
+     */
+    public synchronized Integer getMinRecordLength() {
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.MIN_RECORD_LENGTH);
+        return integerResult == null ? null : integerResult.getValue();
+    }
+
+    /**
      * Returns whether CCA is supported.
      *
      * @return True if CCA is supported, false otherwise
