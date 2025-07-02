@@ -21082,11 +21082,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -21124,16 +21124,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -21171,16 +21171,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -21218,16 +21218,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -21265,7 +21265,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -21303,11 +21303,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -21345,7 +21345,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -21383,11 +21383,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -21425,16 +21425,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -21472,11 +21472,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -21515,16 +21515,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -21562,11 +21562,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -21604,16 +21604,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -21651,16 +21651,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -21698,16 +21698,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -21745,16 +21745,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -21792,16 +21792,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -21839,11 +21839,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -21882,11 +21882,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -21925,16 +21925,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -21972,16 +21972,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22019,11 +22019,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22061,16 +22061,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22108,16 +22108,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -22155,11 +22155,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -22212,11 +22212,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22254,16 +22254,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22301,16 +22301,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22348,16 +22348,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -22395,7 +22395,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -22433,11 +22433,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -22475,7 +22475,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -22513,11 +22513,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -22555,16 +22555,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -22602,11 +22602,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -22645,16 +22645,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -22692,11 +22692,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -22734,16 +22734,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -22781,16 +22781,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -22828,16 +22828,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -22875,16 +22875,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -22922,16 +22922,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -22969,11 +22969,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -23012,11 +23012,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -23055,16 +23055,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -23102,16 +23102,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23149,11 +23149,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23191,16 +23191,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23238,16 +23238,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -23285,11 +23285,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -23342,11 +23342,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23384,16 +23384,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23431,16 +23431,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -23478,16 +23478,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -23525,7 +23525,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -23563,11 +23563,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -23605,7 +23605,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -23643,11 +23643,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -23685,16 +23685,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -23732,11 +23732,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -23775,16 +23775,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -23822,11 +23822,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -23864,16 +23864,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -23911,16 +23911,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -23958,16 +23958,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24005,16 +24005,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -24052,16 +24052,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -24099,11 +24099,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -24142,11 +24142,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -24185,16 +24185,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -24232,16 +24232,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24279,11 +24279,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24321,16 +24321,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24368,16 +24368,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -24415,11 +24415,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -24472,11 +24472,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24514,16 +24514,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24561,16 +24561,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -24608,16 +24608,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -24655,7 +24655,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -24693,11 +24693,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -24735,7 +24735,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -24773,11 +24773,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -24815,16 +24815,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -24862,11 +24862,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -24905,16 +24905,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -24952,11 +24952,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -24994,16 +24994,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -25041,16 +25041,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -25088,16 +25088,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25135,16 +25135,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -25182,16 +25182,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -25229,11 +25229,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -25272,11 +25272,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -25315,16 +25315,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -25362,16 +25362,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25409,11 +25409,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25451,16 +25451,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25498,16 +25498,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -25545,11 +25545,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -25602,11 +25602,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25644,16 +25644,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25691,16 +25691,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -25738,16 +25738,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -25785,7 +25785,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -25823,11 +25823,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -25865,7 +25865,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -25903,11 +25903,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -25945,16 +25945,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -25992,11 +25992,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -26035,16 +26035,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -26082,11 +26082,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -26124,16 +26124,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -26171,16 +26171,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -26218,16 +26218,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26265,16 +26265,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -26312,16 +26312,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -26359,11 +26359,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -26402,11 +26402,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -26445,16 +26445,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -26492,16 +26492,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26539,11 +26539,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26581,16 +26581,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26628,16 +26628,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -26675,11 +26675,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -26732,11 +26732,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26774,16 +26774,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26821,16 +26821,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -26868,16 +26868,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -26915,7 +26915,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -26953,11 +26953,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -26995,7 +26995,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -27033,11 +27033,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -27075,16 +27075,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -27122,11 +27122,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -27165,16 +27165,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -27212,11 +27212,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -27254,16 +27254,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -27301,16 +27301,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -27348,16 +27348,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27395,16 +27395,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -27442,16 +27442,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -27489,11 +27489,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -27532,11 +27532,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -27575,16 +27575,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -27622,16 +27622,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27669,11 +27669,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27711,16 +27711,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27758,16 +27758,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -27805,11 +27805,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -27862,11 +27862,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27904,16 +27904,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27951,16 +27951,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -27998,16 +27998,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -28045,7 +28045,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -28083,11 +28083,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -28125,7 +28125,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -28163,11 +28163,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -28205,16 +28205,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -28252,11 +28252,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -28295,16 +28295,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -28342,11 +28342,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -28384,16 +28384,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -28431,16 +28431,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -28478,16 +28478,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -28525,16 +28525,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -28572,16 +28572,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -28619,11 +28619,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -28662,11 +28662,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -28705,16 +28705,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -28752,16 +28752,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -28799,11 +28799,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -28841,16 +28841,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -28888,16 +28888,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -28935,11 +28935,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -28992,11 +28992,11 @@
                 "name": "InvPadValMac-[31]-0-63",
                 "identifier": "InvPadValMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29034,16 +29034,16 @@
                 "name": "ValPadInvMac-[8]-0-63",
                 "identifier": "ValPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29081,16 +29081,16 @@
                 "name": "InvPadInvMac-[31]-0-63",
                 "identifier": "InvPadInvMacMid0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pzc/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29128,16 +29128,16 @@
                 "name": "InvPadInvMac-[0]-57-6",
                 "identifier": "InvPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -29175,7 +29175,7 @@
                 "name": "Plain FF",
                 "identifier": "PlainTooMuchPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "//////////////////////////////////////////////////////////////////////////////////////////////////////////8="
                 }
               },
@@ -29213,11 +29213,11 @@
                 "name": "InvPadValMac-[0]-57-6",
                 "identifier": "InvPadValMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "hgYGBgYGBg=="
                 }
               },
@@ -29255,7 +29255,7 @@
                 "name": "Plain XF (0xXF=#padding bytes)",
                 "identifier": "PlainOnlyPadding",
                 "modification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT08="
                 }
               },
@@ -29293,11 +29293,11 @@
                 "name": "InvPadValMac-[3]-57-6",
                 "identifier": "InvPadValMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -29335,16 +29335,16 @@
                 "name": "ValPadInvMac-[8]-57-6",
                 "identifier": "ValPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -29382,11 +29382,11 @@
                 "name": "BasicMac-15-01",
                 "identifier": "BasicMac1",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 15
                 }
@@ -29425,16 +29425,16 @@
                 "name": "MissingMacByteLast",
                 "identifier": "MissingMacByteLast",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -29472,11 +29472,11 @@
                 "name": "InvPadValMac-[last]-57-6",
                 "identifier": "InvPadValMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -29514,16 +29514,16 @@
                 "name": "InvPadInvMac-[last]-57-6",
                 "identifier": "InvPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBw=="
                 }
               },
@@ -29561,16 +29561,16 @@
                 "name": "ValPadInvMac-[0]-57-6",
                 "identifier": "ValPadInvMacStart",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -29608,16 +29608,16 @@
                 "name": "ValPadInvMac-[15]-0-63",
                 "identifier": "ValPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29655,16 +29655,16 @@
                 "name": "InvPadInvMac-[3]-57-6",
                 "identifier": "InvPadInvMacMid",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGDgYGBg=="
                 }
               },
@@ -29702,16 +29702,16 @@
                 "name": "ValPadInvMac-[15]-57-6",
                 "identifier": "ValPadInvMacEnd",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 15
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "BgYGBgYGBg=="
                 }
               },
@@ -29749,11 +29749,11 @@
                 "name": "BasicMac-8-08",
                 "identifier": "BasicMac2",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "CA==",
                   "startPosition": 8
                 }
@@ -29792,11 +29792,11 @@
                 "name": "BasicMac-0-80",
                 "identifier": "BasicMac3",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "gA==",
                   "startPosition": 0
                 }
@@ -29835,16 +29835,16 @@
                 "name": "InvPadInvMac-[last]-0-63",
                 "identifier": "InvPadInvMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },
@@ -29882,16 +29882,16 @@
                 "name": "ValPadInvMac-[0]-0-63",
                 "identifier": "ValPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29929,11 +29929,11 @@
                 "name": "InvPadValMac-[0]-0-63",
                 "identifier": "InvPadValMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -29971,16 +29971,16 @@
                 "name": "InvPadInvMac-[0]-0-63",
                 "identifier": "InvPadInvMacStart0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification",
+                  "@type": "ByteArrayXorModification",
                   "xor": "AQ==",
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "vz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pw=="
                 }
               },
@@ -30018,16 +30018,16 @@
                 "name": "MissingMacByteFirst",
                 "identifier": "MissingMacByteFirst",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "macModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification",
+                  "@type": "ByteArrayDeleteModification",
                   "count": 1,
                   "startPosition": 0
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEA="
                 }
               },
@@ -30065,11 +30065,11 @@
                 "name": "InvPadValMac-[last]-0-63",
                 "identifier": "InvPadValMacEnd0",
                 "cleanModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": ""
                 },
                 "paddingModification": {
-                  "@class": "de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification",
+                  "@type": "ByteArrayExplicitValueModification",
                   "explicitValue": "Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pg=="
                 }
               },

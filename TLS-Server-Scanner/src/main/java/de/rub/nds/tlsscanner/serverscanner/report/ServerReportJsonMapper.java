@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import de.rub.nds.modifiablevariable.json.ModifiableVariableModule;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +47,9 @@ public class ServerReportJsonMapper {
     /** Constructs a ServerReportJsonMapper with configured ObjectMapper settings. */
     public ServerReportJsonMapper() {
         this.objectMapper = new ObjectMapper();
+        // include ModifiableVariable module
+        objectMapper.registerModule(new ModifiableVariableModule());
+        objectMapper.setVisibility(ModifiableVariableModule.getFieldVisibilityChecker());
 
         // Apply the stream read constraints defined in the static method
         StreamReadConstraints streamReadConstraints = createStreamReadConstraints();
