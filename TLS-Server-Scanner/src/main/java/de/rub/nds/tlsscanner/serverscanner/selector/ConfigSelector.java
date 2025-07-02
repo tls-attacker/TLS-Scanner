@@ -276,8 +276,9 @@ public class ConfigSelector {
     }
 
     private void repairSni(Config config) {
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-                || scannerConfig.getClientDelegate().getSniHostname() != null) {
+        if (!scannerConfig.isDoNotSendSNIExtension()
+                && (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
+                        || scannerConfig.getClientDelegate().getSniHostname() != null)) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);
