@@ -10,9 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner.config.delegate;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import java.net.IDN;
 import java.net.URI;
 import java.net.URISyntaxException;

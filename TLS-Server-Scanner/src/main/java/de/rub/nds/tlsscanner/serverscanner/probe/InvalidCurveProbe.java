@@ -686,8 +686,8 @@ public class InvalidCurveProbe extends TlsServerProbe {
         if (!testCipher.isTls13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;
-            } else if ((AlgorithmResolver.getSuiteableLeafCertificateKeyType(testCipher).length > 0
-                            && AlgorithmResolver.getSuiteableLeafCertificateKeyType(testCipher)[0]
+            } else if ((AlgorithmResolver.getSuitableLeafCertificateKeyType(testCipher).length > 0
+                            && AlgorithmResolver.getSuitableLeafCertificateKeyType(testCipher)[0]
                                     == X509PublicKeyType.RSA
                             && !namedCurveWitnesses.get(testGroup).isFoundUsingRsaCipher())
                     || (testCipher.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDHE_ECDSA
