@@ -1593,6 +1593,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Supports Record Fragmentation",
                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        prettyAppend(builder, "Mininum Record Length", "" + report.getMinRecordLength());
         return builder;
     }
 

@@ -2466,6 +2466,9 @@
         <property>SUPPORTS_RECORD_FRAGMENTATION</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>MIN_RECORD_LENGTH</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>HAS_GREASE_CIPHER_SUITE_INTOLERANCE</property>
     </ratingInfluencer>
     <ratingInfluencer>
