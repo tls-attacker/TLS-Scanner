@@ -43,17 +43,20 @@ public class Main {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 ServerReport report = scanner.scan();
-                LOGGER.info(
-                        AnsiColor.RESET.getCode()
-                                + "Scanned in: "
-                                + ((System.currentTimeMillis() - time) / 1000)
-                                + "s\n"
-                                + new ServerReportPrinter(
-                                                report,
-                                                config.getExecutorConfig().getReportDetail(),
-                                                DefaultPrintingScheme.getDefaultPrintingScheme(),
-                                                !config.getExecutorConfig().isNoColor())
-                                        .getFullReport());
+                if (report.getIsHandshaking()) {
+                    LOGGER.info(
+                            AnsiColor.RESET.getCode()
+                                    + "Scanned in: "
+                                    + ((System.currentTimeMillis() - time) / 1000)
+                                    + "s\n"
+                                    + new ServerReportPrinter(
+                                                    report,
+                                                    config.getExecutorConfig().getReportDetail(),
+                                                    DefaultPrintingScheme
+                                                            .getDefaultPrintingScheme(),
+                                                    !config.getExecutorConfig().isNoColor())
+                                            .getFullReport());
+                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }
