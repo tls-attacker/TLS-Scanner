@@ -286,19 +286,29 @@ public final class TlsServerScanner
 
         if (isConnectable()) {
             isConnectable = true;
-            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+            LOGGER.debug("{} is connectable", config.getClientDelegate().getHost());
             configSelector.findWorkingConfigs();
             report.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
             report.setConfigProfileIdentifierTls13(
                     configSelector.getConfigProfileIdentifierTls13());
             if (configSelector.isSpeaksProtocol()) {
                 speaksProtocol = true;
-                LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + getProtocolType());
+                LOGGER.debug(
+                        "{} speaks {}", config.getClientDelegate().getHost(), getProtocolType());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
-                    LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
+                    LOGGER.debug("{} is handshaking", config.getClientDelegate().getHost());
+                } else {
+                    LOGGER.error("{} is not handshaking", config.getClientDelegate().getHost());
                 }
+            } else {
+                LOGGER.error(
+                        "{} does not speak {}",
+                        config.getClientDelegate().getHost(),
+                        getProtocolType());
             }
+        } else {
+            LOGGER.error("{} is not connectable", config.getClientDelegate().getHost());
         }
 
         report.setServerIsAlive(isConnectable);
