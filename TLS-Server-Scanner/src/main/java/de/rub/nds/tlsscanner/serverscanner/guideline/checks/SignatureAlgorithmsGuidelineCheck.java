@@ -63,10 +63,13 @@ public class SignatureAlgorithmsGuidelineCheck extends GuidelineCheck<ServerRepo
                 }
             }
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
+                    getName(),
+                    GuidelineAdherence.of(notRecommended.isEmpty()),
+                    notRecommended,
+                    recommendedAlgorithms);
         } else {
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    getName(), GuidelineAdherence.CHECK_FAILED, null, recommendedAlgorithms);
         }
     }
 

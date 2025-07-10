@@ -12,6 +12,7 @@ import com.google.common.base.Joiner;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
         extends GuidelineCheckResult {
 
     private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
+    private final List<SignatureAndHashAlgorithm> recommendedAlgorithms;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
@@ -33,6 +35,17 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
             Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {
         super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = null;
+    }
+
+    public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms,
+            List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
+        super(checkName, adherence);
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
@@ -50,5 +63,9 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult
 
     public Set<SignatureAndHashAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
+    }
+
+    public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
     }
 }

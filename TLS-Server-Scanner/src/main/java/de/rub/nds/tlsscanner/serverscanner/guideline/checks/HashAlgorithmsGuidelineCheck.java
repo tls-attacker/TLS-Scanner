@@ -64,10 +64,16 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
                 }
             }
             return new HashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                    getName(),
+                    GuidelineAdherence.of(nonRecommended.isEmpty()),
+                    nonRecommended,
+                    recommendedAlgorithms);
         } else {
             return new HashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
+                    getName(),
+                    GuidelineAdherence.CHECK_FAILED,
+                    Collections.emptySet(),
+                    recommendedAlgorithms);
         }
     }
 

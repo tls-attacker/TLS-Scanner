@@ -12,12 +12,14 @@ import com.google.common.base.Joiner;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<X509SignatureAlgorithm> notRecommendedAlgorithms;
+    private final List<X509SignatureAlgorithm> recommendedAlgorithms;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
@@ -32,6 +34,17 @@ public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckRe
             Set<X509SignatureAlgorithm> notRecommendedAlgorithms) {
         super(checkName, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = null;
+    }
+
+    public X509SignatureAlgorithmGuidelineCheckResult(
+            String checkName,
+            GuidelineAdherence adherence,
+            Set<X509SignatureAlgorithm> notRecommendedAlgorithms,
+            List<X509SignatureAlgorithm> recommendedAlgorithms) {
+        super(checkName, adherence);
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
@@ -49,5 +62,9 @@ public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckRe
 
     public Set<X509SignatureAlgorithm> getNotRecommendedAlgorithms() {
         return notRecommendedAlgorithms;
+    }
+
+    public List<X509SignatureAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
     }
 }
