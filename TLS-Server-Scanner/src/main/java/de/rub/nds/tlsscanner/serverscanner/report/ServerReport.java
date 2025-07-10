@@ -22,6 +22,7 @@ import de.rub.nds.scanner.core.probe.result.MapResult;
 import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.StringResult;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
@@ -417,5 +418,17 @@ public class ServerReport extends TlsScanReport {
     public synchronized String getIpv6Address() {
         StringResult stringResult = getStringResult(QuicAnalyzedProperty.IPV6_ADDRESS);
         return stringResult == null ? null : stringResult.getValue();
+    }
+
+    public synchronized TestResult getSupportsOcspStapling() {
+        return getResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+    }
+
+    public synchronized TestResult getIssuesTls13SessionTicketsAfterHandshake() {
+        return getResult(TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE);
+    }
+
+    public synchronized TestResult getIssuesTls13SessionTicketsWithApplicationData() {
+        return getResult(TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA);
     }
 }
