@@ -35,7 +35,7 @@ public class CertificateReportGenerator {
         if (certs != null) {
             for (de.rub.nds.x509attacker.x509.model.X509Certificate cert :
                     certs.getCertificateList()) {
-                reportList.add(generateReport(cert));
+                reportList.add(generateReport(cert, certs.getCertificateList()));
             }
         }
         return reportList;
@@ -48,6 +48,11 @@ public class CertificateReportGenerator {
      * @return a detailed certificate report containing all extracted information
      */
     public static CertificateReport generateReport(X509Certificate cert) {
+        return generateReport(cert, null);
+    }
+
+    public static CertificateReport generateReport(
+            X509Certificate cert, List<X509Certificate> fullChain) {
         CertificateReport report = new CertificateReport();
         report.setCertificate(cert);
         setSubject(report, cert);
@@ -86,6 +91,15 @@ public class CertificateReportGenerator {
         } else {
             report.setSelfSigned(false);
         }
+
+        // Set the trusted field using certificate chain validation
+        if (fullChain != null && anchorManger.isInitialized()) {
+            boolean isTrusted = CertificateChainValidator.isCertificateTrusted(cert, fullChain);
+            report.setTrusted(isTrusted);
+        } else {
+            report.setTrusted(null);
+        }
+
         return report;
     }
 
