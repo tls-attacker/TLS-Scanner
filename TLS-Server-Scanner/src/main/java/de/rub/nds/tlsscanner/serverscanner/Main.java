@@ -59,6 +59,16 @@ public class Main {
                 }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
+            } catch (RuntimeException e) {
+                if (e.getCause()
+                        instanceof
+                        de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException) {
+                    LOGGER.error(
+                            "Scanner terminated due to connection failure: {}",
+                            e.getCause().getMessage());
+                } else {
+                    LOGGER.error("Scanner terminated unexpectedly", e);
+                }
             }
         } catch (ParameterException e) {
             LOGGER.error("Could not parse provided parameters", e);
